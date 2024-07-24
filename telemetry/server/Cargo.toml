@@ -1,0 +1,20 @@
+[package]
+name = "telemetry-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7"
+serde = { version = "1.0.204", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+dotenv = "0.15"
+# InfluxDB
+influxdb2 = "0.5.2"
+influxdb2-structmap = "0.2"
+influxdb2-derive = "0.1.1"
+num-traits = "0.2"
+chrono = "0.4.38"
+axum-macros = "0.4.1"
+
+[profile.release]
+debug = true
