@@ -52,7 +52,9 @@ struct TimespanQuery {
 async fn get_historical_reading(
     Path((pod, measurement_key)): Path<(String, String)>,
     Query(query): Query<TimespanQuery>,
-    State(state): State<TelemetryServerState>,
+    State(TelemetryServerState {
+        influxdb_client, ..
+    }): State<TelemetryServerState>,
 ) -> Result<Json<Vec<HistoricalReading>>, (StatusCode, String)> {
     let telemetry_bucket = std::env::var("INFLUXDB_TELEMETRY_BUCKET").unwrap();
 
@@ -73,8 +75,7 @@ async fn get_historical_reading(
     );
 
     let query = InfluxQuery::new(qs.to_string());
-    let influx_res = state
-        .influxdb_client
+    let influx_res = influxdb_client
         .query::<InfluxHistoricalReading>(Some(query))
         .await;
 
