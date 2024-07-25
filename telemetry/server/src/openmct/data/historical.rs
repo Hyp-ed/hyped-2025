@@ -18,7 +18,7 @@ pub fn get_routes() -> Router<TelemetryServerState> {
 
 #[derive(Debug, FromDataPoint, Serialize)]
 pub struct InfluxHistoricalReading {
-    measurement_key: String,
+    measurementKey: String,
     _time: DateTime<FixedOffset>,
     value: f64,
 }
@@ -34,7 +34,7 @@ pub struct HistoricalReading {
 impl Default for InfluxHistoricalReading {
     fn default() -> Self {
         Self {
-            measurement_key: "".to_string(),
+            measurementKey: "".to_string(),
             _time: DateTime::parse_from_rfc3339("1970-01-01T00:00:00Z").unwrap(),
             value: 0.0,
         }
@@ -84,7 +84,7 @@ async fn get_historical_reading(
             let res = Json(
                 res.into_iter()
                     .map(|reading| HistoricalReading {
-                        id: reading.measurement_key,
+                        id: reading.measurementKey,
                         timestamp: reading._time.timestamp_millis(),
                         value: reading.value,
                     })
