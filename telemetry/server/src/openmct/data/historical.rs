@@ -1,13 +1,15 @@
-use axum::extract::Query;
+use axum::extract::{Query, State};
 use axum::http::StatusCode;
 use axum::{extract::Path, routing::get, Json, Router};
 use axum_macros::debug_handler;
 use chrono::{DateTime, FixedOffset};
 use influxdb2::models::Query as InfluxQuery;
-use influxdb2::{Client, FromDataPoint};
+use influxdb2::FromDataPoint;
 use serde::Serialize;
 
-pub fn get_routes() -> Router {
+use crate::TelemetryServerState;
+
+pub fn get_routes() -> Router<TelemetryServerState> {
     Router::new().route(
         "/pods/:pod/measurements/:measurement_key",
         get(get_historical_reading),
@@ -50,12 +52,11 @@ struct TimespanQuery {
 async fn get_historical_reading(
     Path((pod, measurement_key)): Path<(String, String)>,
     Query(query): Query<TimespanQuery>,
+    State(TelemetryServerState {
+        influxdb_client, ..
+    }): State<TelemetryServerState>,
 ) -> Result<Json<Vec<HistoricalReading>>, (StatusCode, String)> {
-    let host = std::env::var("INFLUXDB_HOST").unwrap();
-    let org = std::env::var("INFLUXDB_ORG").unwrap();
-    let token = std::env::var("INFLUXDB_TOKEN").unwrap();
     let telemetry_bucket = std::env::var("INFLUXDB_TELEMETRY_BUCKET").unwrap();
-    let client = Client::new(host, org, token);
 
     let qs = format!(
         "from(bucket: \"{}\")
@@ -74,7 +75,9 @@ async fn get_historical_reading(
     );
 
     let query = InfluxQuery::new(qs.to_string());
-    let influx_res = client.query::<InfluxHistoricalReading>(Some(query)).await;
+    let influx_res = influxdb_client
+        .query::<InfluxHistoricalReading>(Some(query))
+        .await;
 
     match influx_res {
         Ok(res) => {

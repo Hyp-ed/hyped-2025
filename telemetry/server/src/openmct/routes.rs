@@ -1,11 +1,14 @@
 use axum::{routing::get, Json, Router};
 
-use crate::openmct::{
-    data, dictionary,
-    object_types::{OpenMctObject, OPEN_MCT_OBJECT_TYPES},
+use crate::{
+    openmct::{
+        data, dictionary,
+        object_types::{OpenMctObject, OPEN_MCT_OBJECT_TYPES},
+    },
+    TelemetryServerState,
 };
 
-pub fn get_routes() -> Router {
+pub fn get_routes() -> Router<TelemetryServerState> {
     Router::new()
         .route("/", get(handler))
         .route("/object-types", get(get_object_types))

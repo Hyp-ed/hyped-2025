@@ -1,6 +1,8 @@
 use axum::{extract::Path, routing::get, Json, Router};
 
-pub fn get_routes() -> Router {
+use crate::TelemetryServerState;
+
+pub fn get_routes() -> Router<TelemetryServerState> {
     Router::new()
         .route("/pods", get(pods))
         .route("/pods/:pod", get(get_pod))
