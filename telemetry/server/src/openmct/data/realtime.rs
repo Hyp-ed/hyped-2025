@@ -16,12 +16,23 @@ use tokio::sync::Mutex;
 
 use crate::TelemetryServerState;
 
-#[derive(Serialize, Deserialize)]
-struct MeasurementReading {
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct MeasurementReading {
     pod_id: String,
     measurement_key: String,
     value: f64,
     timestamp: u64, // Store timestamp in nanoseconds
+}
+
+impl MeasurementReading {
+    pub fn new(pod_id: &str, measurement_key: &str, value: f64, timestamp: u64) -> Self {
+        Self {
+            pod_id: pod_id.to_string(),
+            measurement_key: measurement_key.to_string(),
+            value,
+            timestamp,
+        }
+    }
 }
 
 pub fn get_routes() -> Router<TelemetryServerState> {
@@ -67,32 +78,41 @@ async fn websocket(ws: WebSocket, state: TelemetryServerState) {
     // but only if the client is subscribed to the data.
     let mut send_task = tokio::spawn(async move {
         while let Ok(msg) = rx.recv().await {
-            let reading: MeasurementReading = serde_json::from_str(&msg).unwrap();
-            let unlocked_rooms = send_rooms.lock().await;
-            if unlocked_rooms.contains(&reading.measurement_key) {
-                println!("Sending message: {}", msg);
-                let msg = serde_json::to_string(&reading).unwrap();
-                sender.send(Message::Text(msg)).await.unwrap();
-            }
+            // let reading: MeasurementReading = serde_json::from_str(&msg).unwrap();
+            // let unlocked_rooms = send_rooms.lock().await;
+            // if unlocked_rooms.contains(&reading.measurement_key) {
+            //     println!("Sending message: {}", msg);
+            //     let msg = serde_json::to_string(&reading).unwrap();
+            //     sender.send(Message::Text(msg)).await.unwrap();
+            // }
+            println!("Sending message: {:?}", msg);
+            sender
+                .send(Message::Text(serde_json::to_string(&msg).unwrap()))
+                .await
+                .unwrap();
         }
     });
 
     // task that adds messages to the broadcast channel
-    tokio::spawn(async move {
-        let mut interval = tokio::time::interval(Duration::from_secs(1));
-        loop {
-            interval.tick().await;
-            let reading = MeasurementReading {
-                pod_id: "pod-1".to_string(),
-                measurement_key: "temperature".to_string(),
-                value: 25.0,
-                timestamp: 0,
-            };
-            let msg = serde_json::to_string(&reading).unwrap();
-            println!("Add message to channel");
-            state.realtime_channel.send(msg).unwrap();
-        }
-    });
+    // tokio::spawn(async move {
+    //     let mut interval = tokio::time::interval(Duration::from_secs(1));
+    //     loop {
+    //         interval.tick().await;
+    //         let reading = MeasurementReading {
+    //             pod_id: "pod-1".to_string(),
+    //             measurement_key: "temperature".to_string(),
+    //             value: 25.0,
+    //             timestamp: 0,
+    //         };
+    //         let msg = serde_json::to_string(&reading).unwrap();
+    //         println!("Add message to channel");
+    //         println!(
+    //             "[realtime] Receiver count: {:?}",
+    //             state.realtime_channel.receiver_count()
+    //         );
+    //         state.realtime_channel.send(msg).unwrap();
+    //     }
+    // });
 
     // If any one of the tasks run to completion, we abort the other.
     tokio::select! {
