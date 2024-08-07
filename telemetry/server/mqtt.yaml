@@ -1,0 +1,4 @@
+mqtt_options:
+  client_id: 'telemetry-server'
+  host: 'localhost'
+  port: 1883

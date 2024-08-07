@@ -23,6 +23,7 @@ socketioxide = "0.14.0"
 axum-util = "0.2.2"
 tower-http = { version ="0.5.2", features = ["cors"]}
 rumqttc = "0.24.0"
+yaml-rust = "0.4.5"
 
 [profile.release]
 debug = true
