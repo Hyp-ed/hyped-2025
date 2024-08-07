@@ -38,9 +38,8 @@ async fn main() {
         .await
         .unwrap();
 
-    // Spawn ingestion service
+    // Start the MQTT ingestion service
     tokio::spawn(async {
-        // Initialise MQTT client
         let mut mqtt_client = MqttIngestionService::new().await;
         mqtt_client.ingest_measurements(tx).await;
     });

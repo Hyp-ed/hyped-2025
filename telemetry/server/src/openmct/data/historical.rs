@@ -18,6 +18,7 @@ pub fn get_routes() -> Router<TelemetryServerState> {
 
 #[derive(Debug, FromDataPoint, Serialize)]
 pub struct InfluxHistoricalReading {
+    // TODOLater: update this to not use camelCase
     measurementKey: String,
     _time: DateTime<FixedOffset>,
     value: f64,
