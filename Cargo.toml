@@ -1,0 +1,3 @@
+[workspace]
+members = [ "boards/navigation", "sensors"]
+resolver = "2"
