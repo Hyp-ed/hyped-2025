@@ -3,12 +3,12 @@ use std::str::from_utf8;
 use rumqttc::{
     AsyncClient,
     Event::{Incoming, Outgoing},
-    EventLoop, MqttOptions, QoS, SubscribeFilter,
+    EventLoop, QoS, SubscribeFilter,
 };
 use serde::Deserialize;
 use tokio::sync::broadcast;
-use yaml_rust::YamlLoader;
 
+use crate::config;
 use crate::openmct::data::realtime::MeasurementReading;
 
 pub struct MqttIngestionService {
@@ -22,21 +22,9 @@ struct MqttMessage {
     timestamp: u64,
 }
 
-/**
- * Get the MQTT configuration from the yaml file
- */
-fn get_mqtt_config() -> MqttOptions {
-    let config = YamlLoader::load_from_str(include_str!("../../mqtt.yaml")).unwrap();
-    let mqtt_config = &config[0]["mqtt_options"];
-    let client_id = mqtt_config["client_id"].as_str().unwrap();
-    let host = mqtt_config["host"].as_str().unwrap();
-    let port = mqtt_config["port"].as_i64().unwrap() as u16;
-    MqttOptions::new(client_id, host, port)
-}
-
 impl MqttIngestionService {
     pub async fn new() -> Self {
-        let (client, eventloop) = AsyncClient::new(get_mqtt_config(), 10);
+        let (client, eventloop) = AsyncClient::new(config::get_mqtt_config(), 10);
         MqttIngestionService { client, eventloop }
     }
 

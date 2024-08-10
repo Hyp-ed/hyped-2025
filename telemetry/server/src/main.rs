@@ -1,10 +1,9 @@
 use axum::Router;
-use dotenv::dotenv;
-use influxdb2::Client;
 use mqtt::ingestion::MqttIngestionService;
 use openmct::data::realtime::MeasurementReading;
 use tokio::sync::broadcast;
 
+mod config;
 mod mqtt;
 mod openmct;
 
@@ -16,17 +15,10 @@ pub struct TelemetryServerState {
 
 #[tokio::main]
 async fn main() {
-    dotenv().ok();
-
-    let host = std::env::var("INFLUXDB_HOST").unwrap();
-    let org = std::env::var("INFLUXDB_ORG").unwrap();
-    let token = std::env::var("INFLUXDB_TOKEN").unwrap();
-    let influxdb_client = Client::new(host, org, token);
-
     let (tx, _) = broadcast::channel(100);
 
     let state = TelemetryServerState {
-        influxdb_client,
+        influxdb_client: config::get_influxdb_client(),
         realtime_channel: tx.clone(),
     };
 

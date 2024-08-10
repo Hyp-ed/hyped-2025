@@ -7,7 +7,6 @@ edition = "2021"
 axum = { version = "0.7", features= ["ws"] }
 serde = { version = "1.0.204", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
-dotenv = "0.15"
 # InfluxDB
 influxdb2 = "0.5.2"
 influxdb2-structmap = "0.2"
@@ -24,6 +23,7 @@ axum-util = "0.2.2"
 tower-http = { version ="0.5.2", features = ["cors"]}
 rumqttc = "0.24.0"
 yaml-rust = "0.4.5"
+hyped_config = { path = "../../config" }
 
 [profile.release]
 debug = true

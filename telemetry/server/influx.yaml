@@ -1,0 +1,5 @@
+influxdb_config:
+  host: http://localhost:8086
+  org: hyped
+  token: edinburgh
+  telemetry_bucket: telemetry
