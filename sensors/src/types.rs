@@ -1,4 +1,4 @@
-// TODO: this should probably move to hyped_code
+// TODO: this should probably move to hyped_core
 
 #[derive(PartialEq)]
 pub enum DigitalSignal {

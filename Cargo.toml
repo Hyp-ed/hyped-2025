@@ -1,3 +1,3 @@
 [workspace]
-members = [ "boards/navigation", "sensors"]
+members = [ "boards/navigation", "io", "sensors"]
 resolver = "2"
