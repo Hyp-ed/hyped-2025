@@ -1,6 +1,4 @@
 use core::str::FromStr;
-
-#[cfg(not(feature = "std"))]
 use heapless::String;
 
 pub enum MqttTopics {
@@ -17,7 +15,6 @@ pub enum MqttTopics {
 
 // Write functions that will convert to and from the MqttTopics enum
 impl MqttTopics {
-    #[cfg(not(feature = "std"))]
     pub fn to_string(&self) -> String<48> {
         match self {
             MqttTopics::State => String::<48>::from_str("hyped/cart_2024/state/state").unwrap(),
@@ -43,21 +40,6 @@ impl MqttTopics {
                 String::<48>::from_str("hyped/cart_2024/navigation/acceleration").unwrap()
             }
             MqttTopics::Logs => String::<48>::from_str("hyped/cart_2024/logs").unwrap(),
-        }
-    }
-
-    #[cfg(feature = "std")]
-    pub fn to_string(&self) -> String {
-        match self {
-            MqttTopics::State => "hyped/cart_2024/state/state".to_string(),
-            MqttTopics::StateRequest => "hyped/cart_2024/state/state_request".to_string(),
-            MqttTopics::Accelerometer => "hyped/cart_2024/measurement/accelerometer".to_string(),
-            MqttTopics::OpticalFlow => "hyped/cart_2024/measurement/optical_flow".to_string(),
-            MqttTopics::Keyence => "hyped/cart_2024/measurement/keyence".to_string(),
-            MqttTopics::Displacement => "hyped/cart_2024/navigation/displacement".to_string(),
-            MqttTopics::Velocity => "hyped/cart_2024/navigation/velocity".to_string(),
-            MqttTopics::Acceleration => "hyped/cart_2024/navigation/acceleration".to_string(),
-            MqttTopics::Logs => "hyped/cart_2024/logs".to_string(),
         }
     }
 
