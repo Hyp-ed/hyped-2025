@@ -10,7 +10,7 @@ pub enum MeasurementFormat {
     Int,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum LimitLevel {
     #[serde(rename = "warning")]
     Warning,
@@ -20,7 +20,6 @@ pub enum LimitLevel {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MeasurementLimits {
-    priority: LimitLevel,
     min: f64,
     max: f64,
 }
@@ -30,7 +29,7 @@ pub struct Measurement {
     pub name: String,
     pub unit: String,
     pub format: MeasurementFormat,
-    pub limits: MeasurementLimits,
+    pub limits: HashMap<LimitLevel, MeasurementLimits>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -89,7 +88,7 @@ mod tests {
                         unit: 'number of stripes'
                         format: 'integer'
                         limits:
-                                priority: 'critical'
+                            critical:
                                 min: 0
                                 max: 16
                     accelerometer_1:
@@ -97,7 +96,7 @@ mod tests {
                         unit: 'm/s^2'
                         format: 'float'
                         limits:
-                                priority: 'critical'
+                            critical:
                                 min: -150
                                 max: 150
         "#;
@@ -110,9 +109,10 @@ mod tests {
         assert_eq!(keyence.name, "Keyence");
         assert_eq!(keyence.unit, "number of stripes");
         assert_eq!(keyence.format, MeasurementFormat::Int);
-        assert_eq!(keyence.limits.priority, LimitLevel::Critical);
-        assert_eq!(keyence.limits.min, 0.0);
-        assert_eq!(keyence.limits.max, 16.0);
+        assert_eq!(keyence.limits.len(), 1);
+        let keyence_limits = keyence.limits.get(&LimitLevel::Critical).unwrap();
+        assert_eq!(keyence_limits.min, 0.0);
+        assert_eq!(keyence_limits.max, 16.0);
     }
 
     #[test]
@@ -127,7 +127,7 @@ mod tests {
                         unit: 'number of stripes'
                         format: 'integer'
                         limits:
-                                priority: 'critical'
+                            critical:
                                 min: 0
                                 max: 16
             pod_2:
@@ -138,18 +138,13 @@ mod tests {
                         unit: 'm/s^2'
                         format: 'float'
                         limits:
-                                priority: 'critical'
+                            critical:
                                 min: -150
                                 max: 150
         "#;
-        let config = PodConfig::new(raw_config).unwrap();
+        let mut config = PodConfig::new(raw_config).unwrap();
         assert!(config.pod_ids.len() == 2);
-        // Convulted way to check that the pod_ids are correct in any order
-        assert!(config
-            .pods
-            .iter()
-            .zip(vec!["pod_1", "pod_2"].iter())
-            .all(|(a, b)| a.0 == *b));
+        assert!(config.pod_ids.sort() == vec!["pod_1", "pod_2"].sort());
         let pod1 = config.pods.get("pod_1").unwrap();
         let pod2 = config.pods.get("pod_2").unwrap();
         assert_eq!(pod1.name, "Pod 1");
@@ -170,7 +165,7 @@ mod tests {
                         unit: 'number of stripes'
                         format: 'integer'
                         limits:
-                                priority: 'warning'
+                            warning:
                                 min: 0
                                 max: 16
                     accelerometer_1:
@@ -178,15 +173,41 @@ mod tests {
                         unit: 'm/s^2'
                         format: 'float'
                         limits:
-                                priority: 'critical'
+                            critical:
                                 min: -150
                                 max: 150
+                    temperature:
+                        name: 'Temperature'
+                        unit: 'C'
+                        format: 'float'
+                        limits:
+                            warning:
+                                min: 0
+                                max: 50
+                            critical:
+                                min: -20
+                                max: 80
         "#;
         let config = PodConfig::new(raw_config).unwrap();
         let pod = config.pods.get("pod_1").unwrap();
         let keyence = pod.measurements.get("keyence").unwrap();
-        assert_eq!(keyence.limits.priority, LimitLevel::Warning);
+        assert_eq!(keyence.limits.len(), 1);
+        assert_eq!(keyence.limits.get(&LimitLevel::Warning).unwrap().min, 0.0);
         let accelerometer = pod.measurements.get("accelerometer_1").unwrap();
-        assert_eq!(accelerometer.limits.priority, LimitLevel::Critical);
+        assert_eq!(accelerometer.limits.len(), 1);
+        assert_eq!(
+            accelerometer.limits.get(&LimitLevel::Critical).unwrap().min,
+            -150.0
+        );
+        let temperature = pod.measurements.get("temperature").unwrap();
+        assert_eq!(temperature.limits.len(), 2);
+        assert_eq!(
+            temperature.limits.get(&LimitLevel::Warning).unwrap().max,
+            50.0
+        );
+        assert_eq!(
+            temperature.limits.get(&LimitLevel::Critical).unwrap().max,
+            80.0
+        );
     }
 }

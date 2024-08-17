@@ -7,14 +7,14 @@ pods:
           unit: 'number of stripes'
           format: 'integer'
           limits:
-                priority: 'critical'
-                min: 0
-                max: 16
+            critical:
+              min: 0
+              max: 16
       accelerometer_1:
           name: 'Accelerometer 1'
           unit: 'm/s^2'
           format: 'float'
           limits:
-                priority: 'critical'
-                min: -150
-                max: 150
+            critical:
+              min: -150
+              max: 150
