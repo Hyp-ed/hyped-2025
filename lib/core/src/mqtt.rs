@@ -1,48 +1,56 @@
 use defmt::*;
-#[cfg(not(feature = "std"))]
+use embassy_net::tcp::TcpSocket;
 use heapless::String;
 use rust_mqtt::{
     client::{client::MqttClient, client_config::ClientConfig},
     packet::v5::reason_codes::ReasonCode,
     utils::rng_generator::CountingRng,
 };
-use serde::{Deserialize, Serialize};
 
-#[cfg(not(feature = "std"))]
 pub struct MqttMessage {
     pub topic: String<48>,
     pub payload: String<512>,
 }
 
-#[cfg(feature = "std")]
-pub struct MqttMessage {
-    pub topic: String,
-    pub payload: String,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct ButtonMqttMessage {
-    pub task_id: u8,
-    pub status: bool,
-}
-
-pub struct HypedMqttClient<
-    'a,
+pub struct HypedMqttClient<'a, T, R>
+where
     T: embedded_io_async::Read + embedded_io_async::Write,
     R: rand_core::RngCore,
-> {
-    pub client: MqttClient<'a, T, 5, R>,
+{
+    client: MqttClient<'a, T, 5, R>,
 }
 
-pub fn initialise_mqtt_config() -> ClientConfig<'static, 5, CountingRng> {
+impl<'a> HypedMqttClient<'a, TcpSocket<'a>, CountingRng> {
+    pub fn new(
+        network_driver: TcpSocket<'a>,
+        buffer: &'a mut [u8],
+        buffer_len: usize,
+        recv_buffer: &'a mut [u8],
+        recv_buffer_len: usize,
+        client_id: &'a str,
+    ) -> Self {
+        let config = initialise_mqtt_config(client_id);
+        let client = MqttClient::new(
+            network_driver,
+            buffer,
+            buffer_len,
+            recv_buffer,
+            recv_buffer_len,
+            config,
+        );
+
+        HypedMqttClient { client }
+    }
+}
+
+pub fn initialise_mqtt_config<'a>(client_id: &'a str) -> ClientConfig<'a, 5, CountingRng> {
     let mut config = ClientConfig::new(
         rust_mqtt::client::client_config::MqttVersion::MQTTv5,
         CountingRng(20000),
     );
     config.add_max_subscribe_qos(rust_mqtt::packet::v5::publish_packet::QualityOfService::QoS1);
-    config.add_client_id("stm-client");
+    config.add_client_id(client_id);
     config.max_packet_size = 100;
-
     config
 }
 
