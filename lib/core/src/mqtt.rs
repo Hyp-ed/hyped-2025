@@ -2,32 +2,32 @@ use defmt::*;
 use embassy_net::tcp::TcpSocket;
 use heapless::String;
 use rust_mqtt::{
-    client::{self, client::MqttClient, client_config::ClientConfig},
+    client::{client::MqttClient, client_config::ClientConfig},
     packet::v5::reason_codes::ReasonCode,
     utils::rng_generator::CountingRng,
-}; // Add this line to import TcpSocket
+};
 
 pub struct MqttMessage {
     pub topic: String<48>,
     pub payload: String<512>,
 }
 
-struct HypedMqttClient<'a, T, R>
+pub struct HypedMqttClient<'a, T, R>
 where
     T: embedded_io_async::Read + embedded_io_async::Write,
     R: rand_core::RngCore,
 {
-    pub client: MqttClient<'a, T, 5, R>,
+    client: MqttClient<'a, T, 5, R>,
 }
 
-impl HypedMqttClient<'_, TcpSocket, CountingRng> {
+impl<'a> HypedMqttClient<'a, TcpSocket<'a>, CountingRng> {
     pub fn new(
-        network_driver: impl embedded_io_async::Read + embedded_io_async::Write,
-        buffer: &mut [u8],
+        network_driver: TcpSocket<'a>,
+        buffer: &'a mut [u8],
         buffer_len: usize,
-        recv_buffer: &mut [u8],
+        recv_buffer: &'a mut [u8],
         recv_buffer_len: usize,
-        client_id: &str,
+        client_id: &'a str,
     ) -> Self {
         let config = initialise_mqtt_config(client_id);
         let client = MqttClient::new(
@@ -39,11 +39,11 @@ impl HypedMqttClient<'_, TcpSocket, CountingRng> {
             config,
         );
 
-        Self { client }
+        HypedMqttClient { client }
     }
 }
 
-pub fn initialise_mqtt_config(client_id: &str) -> ClientConfig<'static, 5, CountingRng> {
+pub fn initialise_mqtt_config<'a>(client_id: &'a str) -> ClientConfig<'a, 5, CountingRng> {
     let mut config = ClientConfig::new(
         rust_mqtt::client::client_config::MqttVersion::MQTTv5,
         CountingRng(20000),
