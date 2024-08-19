@@ -24,24 +24,27 @@ use static_cell::StaticCell;
 
 // MQTT related imports
 use heapless::String;
-use rust_mqtt::{
-    client::{client::MqttClient, client_config::ClientConfig},
-    utils::rng_generator::CountingRng,
-};
 use typenum::consts::*;
 
 use hyped_core::{
     format,
     format_string::show,
     log_types::LogLevel,
-    mqtt::{initialise_mqtt_config, ButtonMqttMessage, HypedMqttClient, MqttMessage},
+    mqtt::{HypedMqttClient, MqttMessage},
     mqtt_topics::MqttTopics,
 };
+use serde::{Deserialize, Serialize};
 
 bind_interrupts!(struct Irqs {
     ETH => eth::InterruptHandler;
     RNG => rng::InterruptHandler<peripherals::RNG>;
 });
+
+#[derive(Debug, Serialize, Deserialize)]
+struct ButtonMqttMessage {
+    task_id: u8,
+    status: bool,
+}
 
 static SEND_CHANNEL: Channel<ThreadModeRawMutex, MqttMessage, 128> = Channel::new();
 
@@ -130,18 +133,16 @@ async fn mqtt_send_task(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>
         }
     };
 
-    let config = initialise_mqtt_config();
     let mut recv_buffer = [0; 1024];
     let mut write_buffer = [0; 1024];
-    let client = MqttClient::<_, 5, _>::new(
+    let mut mqtt_client = HypedMqttClient::new(
         socket,
         &mut write_buffer,
         1024,
         &mut recv_buffer,
         1024,
-        config,
+        "sender-stm-client",
     );
-    let mut mqtt_client = HypedMqttClient { client };
 
     mqtt_client.connect_to_broker().await;
 
@@ -179,24 +180,16 @@ async fn mqtt_recv_task(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>
             .await;
         }
     };
-    let mut config = ClientConfig::new(
-        rust_mqtt::client::client_config::MqttVersion::MQTTv5,
-        CountingRng(10000),
-    );
-    config.add_max_subscribe_qos(rust_mqtt::packet::v5::publish_packet::QualityOfService::QoS1);
-    config.max_packet_size = 100;
-    config.add_client_id("receiver-stm-client");
     let mut recv_buffer = [0; 1024];
     let mut write_buffer = [0; 1024];
-    let client = MqttClient::<_, 5, _>::new(
+    let mut mqtt_client = HypedMqttClient::new(
         socket,
         &mut write_buffer,
         1024,
         &mut recv_buffer,
         1024,
-        config,
+        "receiver-stm-client",
     );
-    let mut mqtt_client = HypedMqttClient { client };
     mqtt_client.connect_to_broker().await;
 
     mqtt_client.subscribe("command_sender").await;
