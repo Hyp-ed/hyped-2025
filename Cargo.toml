@@ -1,5 +1,5 @@
 [workspace]
 members = [
-    "lib/core"
+    "lib/*"
 ]
 resolver = "2"
