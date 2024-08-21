@@ -11,13 +11,13 @@ use {defmt_rtt as _, panic_probe as _};
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) -> ! {
     let p = embassy_stm32::init(Default::default());
-    let gpio_input = Input::new(p.PA0, Pull::Up);
+    let gpio_input = Input::new(p.PC13, Pull::Down);
     let gpio = EmbassyGpio::new(gpio_input);
     let mut keyence = Keyence::new(gpio);
 
     loop {
         keyence.update_stripe_count().unwrap();
         defmt::info!("Stripe count: {}", keyence.get_stripe_count());
-        Timer::after(Duration::from_millis(100)).await;
+        Timer::after(Duration::from_millis(50)).await;
     }
 }
