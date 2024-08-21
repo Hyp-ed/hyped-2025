@@ -1,3 +1,5 @@
 [workspace]
-members = []
+members = [
+    "config",
+]
 resolver = "2"
