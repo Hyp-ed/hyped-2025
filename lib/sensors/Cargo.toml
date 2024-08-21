@@ -1,0 +1,11 @@
+[package]
+name = "hyped_sensors"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+embassy-mock = "0.4.0"
+embassy-stm32 = { version = "0.1.0", features = ["stm32f767zi"] }
+heapless = "0.8.0"
+
+hyped_io = { path = "../io" }
