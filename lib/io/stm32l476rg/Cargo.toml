@@ -1,0 +1,9 @@
+[package]
+name = "hyped_io_stm32l476rg"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+embassy-stm32 = { version = "0.1.0", features = ["stm32l476rg"] }
+
+hyped_io = { path = "../" }
