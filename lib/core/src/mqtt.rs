@@ -21,6 +21,7 @@ where
 }
 
 impl<'a> HypedMqttClient<'a, TcpSocket<'a>, CountingRng> {
+    /// Create a new HypedMqttClient instance with the given network configuration
     pub fn new(
         network_driver: TcpSocket<'a>,
         buffer: &'a mut [u8],
@@ -43,6 +44,7 @@ impl<'a> HypedMqttClient<'a, TcpSocket<'a>, CountingRng> {
     }
 }
 
+/// Initialise the MQTT client configuration with the given client ID
 pub fn initialise_mqtt_config<'a>(client_id: &'a str) -> ClientConfig<'a, 5, CountingRng> {
     let mut config = ClientConfig::new(
         rust_mqtt::client::client_config::MqttVersion::MQTTv5,
@@ -54,7 +56,6 @@ pub fn initialise_mqtt_config<'a>(client_id: &'a str) -> ClientConfig<'a, 5, Cou
     config
 }
 
-// Implement send_message for HypedMqttClient
 impl<'a, T: embedded_io_async::Read + embedded_io_async::Write, R: rand_core::RngCore>
     HypedMqttClient<'a, T, R>
 {
