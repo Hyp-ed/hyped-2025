@@ -60,18 +60,30 @@ async fn temp() -> ! {
             .expect("Failed to write the address of the STTS22H_DATA_TEMP_H register.");
 
         let mut read = [];
-        let temperature_high_byte = i2c.blocking_read(address, &read);
+        let temperature_high_byte = match i2c.blocking_read(address, &mut read) {
+            Ok(_) => read[0],
+            Err(_) => {
+                defmt::info!("Failed to read the temperature high byte.");
+                0
+            }
+        };
 
         // Write the address of the STTS22H_DATA_TEMP_L register to the sensor to continue reading the temperature
         let write_result = i2c
             .blocking_write(address, [STTS22H_DATA_TEMP_L].as_ref())
             .expect("Failed to write the address of the STTS22H_DATA_TEMP_L register.");
 
-        let temperature_low_byte = i2c.blocking_read(address, &read);
+        let temperature_low_byte = match i2c.blocking_read(address, &mut read) {
+            Ok(_) => read[0],
+            Err(_) => {
+                defmt::info!("Failed to read the temperature low byte.");
+                0
+            }
+        };
 
         // Combine the high and low bytes to get the temperature
         let combined = (temperature_high_byte as u16) << 8 | temperature_low_byte as u16;
-        let temperature = f64::from_num(combined) * STTS22H_TEMP_SCALING_FACTOR;
+        let temperature = f64::from(combined) * STTS22H_TEMP_SCALING_FACTOR;
 
         defmt::info!("Temperature: {:?}", temperature);
     }
