@@ -5,17 +5,6 @@ use hyped_io::gpio::GpioPin;
 /// by the sensor. The Keyence sensor is connected to a GPIO pin which reads a high signal when a
 /// stripe is detected and a low signal when no stripe is detected. The stripe count is updated
 /// whenever the signal changes from low to high (positive edge).
-///
-/// # Example
-/// ```
-/// use hyped_sensors::keyence::Keyence;
-/// use hyped_io::mock_gpio::MockGpio;
-/// use heapless::Vec;
-///
-/// let gpio = MockGpio::new(Vec::from_slice(&[false]).unwrap());
-/// let keyence = Keyence::new(gpio);
-/// assert_eq!(keyence.get_stripe_count(), 0);
-/// ```
 pub struct Keyence<T: GpioPin> {
     /// The number of stripes that have passed by the sensor.
     stripe_count: u32,
@@ -54,7 +43,7 @@ impl<T: GpioPin> Keyence<T> {
 mod tests {
     use super::*;
     use heapless::Vec;
-    use hyped_io::mock_gpio::MockGpio;
+    use hyped_io::gpio::mock_gpio::MockGpio;
 
     #[test]
     fn test_keyence_new() {
