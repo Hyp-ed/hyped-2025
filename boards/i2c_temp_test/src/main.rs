@@ -1,100 +1,51 @@
 #![no_std]
 #![no_main]
 
-use defmt::*;
+use core::panic;
 use embassy_executor::Spawner;
 use embassy_stm32::i2c::I2c;
 use embassy_stm32::time::Hertz;
 use embassy_time::{Duration, Timer};
+use hyped_io_stm32l476rg::i2c::Stm32l476rgGpioI2c;
+use hyped_sensors::temperature::{Status, Temperature};
 use {defmt_rtt as _, panic_probe as _};
 
-// Registers
-const STTS22H_CTRL: u8 = 0x04;
-const STTS22H_DATA_TEMP_L: u8 = 0x06;
-const STTS22H_DATA_TEMP_H: u8 = 0x07;
-const STTS22H_STATUS: u8 = 0x05;
-// Values to check the status of the temperature sensor from the STTS22H_STATUS register
-const STTS22H_STATUS_BUSY: u8 = 0x01;
-const STTS22H_TEMP_OVER_UPPER_LIMIT: u8 = 0x02;
-const STTS22H_TEMP_UNDER_LOWER_LIMIT: u8 = 0x04;
-// Sets the sensor to continuous mode, sets IF_ADD_INC, and sets the sampling rate to 200Hz
-const STTS22H_CONFIG_SETTINGS: u8 = 0x3c;
-const STTS22H_TEMP_SCALING_FACTOR: f64 = 0.01;
-
-enum TemperatureAddresses {
-    Address3f = 0x3f,
-    Address38 = 0x38,
-    Address3c = 0x3c,
-    Address3e = 0x3e,
-}
-
-impl Into<u8> for TemperatureAddresses {
-    fn into(self) -> u8 {
-        match self {
-            TemperatureAddresses::Address3f => 0x3f,
-            TemperatureAddresses::Address38 => 0x38,
-            TemperatureAddresses::Address3c => 0x3c,
-            TemperatureAddresses::Address3e => 0x3e,
-        }
-    }
-}
-
-// Red: 3.3V
-// Black: GND
-// Yellow: SCL
-// Blue: SDA
-
+/// Test task that just reads the temperature from the sensor and prints it to the console
 #[embassy_executor::task]
 async fn temp() -> ! {
     let p = embassy_stm32::init(Default::default());
-    let mut i2c = I2c::new_blocking(p.I2C1, p.PB8, p.PB9, Hertz(100_000), Default::default());
+    let i2c = I2c::new_blocking(p.I2C1, p.PB8, p.PB9, Hertz(100_000), Default::default());
+    let hyped_i2c = Stm32l476rgGpioI2c::new(i2c);
 
-    let address: u8 = TemperatureAddresses::Address3f.into();
-
-    // Set up the temperature sensor by sending the configuration settings to the STTS22H_CTRL register
-    defmt::info!("Configuring the temperature sensor.");
-    let write_result = i2c
-        .blocking_write(address, [STTS22H_CTRL, STTS22H_CONFIG_SETTINGS].as_ref())
-        .expect("Failed to configure the temperature sensor.");
-    defmt::info!("Temperature sensor configured.");
+    let mut temperature_sensor = Temperature::new(hyped_i2c).expect(
+        "Failed to create temperature sensor. Check the wiring and the I2C address of the sensor.",
+    );
 
     loop {
-        // Read a temperature
-
-        // Write the address of the STTS22H_DATA_TEMP_H register to the sensor to start reading the temperature
-        defmt::info!("Reading the STTS22H_DATA_TEMP_H register.");
-        let write_result = i2c
-            .blocking_write(address, [STTS22H_DATA_TEMP_H].as_ref())
-            .expect("Failed to write the address of the STTS22H_DATA_TEMP_H register.");
-
-        let mut read = [0];
-        let temperature_high_byte = match i2c.blocking_read(address, &mut read) {
-            Ok(_) => read[0],
-            Err(_) => {
-                defmt::info!("Failed to read the temperature high byte.");
-                0
+        match temperature_sensor.check_status() {
+            Status::TempOverUpperLimit => {
+                defmt::error!("Temperature is over the upper limit.");
             }
-        };
-        defmt::info!("Temperature high byte: {:?}", temperature_high_byte);
-
-        // Write the address of the STTS22H_DATA_TEMP_L register to the sensor to continue reading the temperature
-        let write_result = i2c
-            .blocking_write(address, [STTS22H_DATA_TEMP_L].as_ref())
-            .expect("Failed to write the address of the STTS22H_DATA_TEMP_L register.");
-
-        let temperature_low_byte = match i2c.blocking_read(address, &mut read) {
-            Ok(_) => read[0],
-            Err(_) => {
-                defmt::info!("Failed to read the temperature low byte.");
-                0
+            Status::TempUnderLowerLimit => {
+                defmt::error!("Temperature is under the lower limit.");
             }
-        };
+            Status::Busy => {
+                defmt::warn!("Temperature sensor is busy.");
+            }
+            Status::Unknown => {
+                panic!("Could not get the status of the temperature sensor.")
+            }
+            Status::Ok => {}
+        }
 
-        // Combine the high and low bytes to get the temperature
-        let combined = (temperature_high_byte as u16) << 8 | temperature_low_byte as u16;
-        let temperature = f64::from(combined) * STTS22H_TEMP_SCALING_FACTOR;
-
-        defmt::info!("Temperature: {:?}", temperature);
+        match temperature_sensor.read() {
+            Some(temperature) => {
+                defmt::info!("Temperature: {:?}", temperature);
+            }
+            None => {
+                defmt::info!("Failed to read temperature.");
+            }
+        }
     }
 }
 

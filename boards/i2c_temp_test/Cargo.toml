@@ -23,5 +23,8 @@ critical-section = "1.1"
 embedded-storage = "0.3.1"
 static_cell = "2"
 
+hyped_io_stm32l476rg = { path = "../../lib/io/stm32l476rg" }
+hyped_sensors = { path = "../../lib/sensors" }
+
 [profile.release]
 debug = 2
