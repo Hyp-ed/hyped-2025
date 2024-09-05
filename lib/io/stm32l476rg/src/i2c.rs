@@ -1,11 +1,11 @@
 use embassy_stm32::{i2c::I2c, mode::Blocking};
 use hyped_io::i2c::HypedI2c;
 
-pub struct Stm32l476rgGpioI2c<'d> {
+pub struct Stm32l476rgI2c<'d> {
     i2c: I2c<'d, Blocking>,
 }
 
-impl<'d> HypedI2c for Stm32l476rgGpioI2c<'d> {
+impl<'d> HypedI2c for Stm32l476rgI2c<'d> {
     /// Read a byte from a register on a device
     fn read_byte(&mut self, device_address: u8, register_address: u8) -> Option<u8> {
         let mut read = [0];
@@ -35,7 +35,7 @@ impl<'d> HypedI2c for Stm32l476rgGpioI2c<'d> {
     }
 }
 
-impl<'d> Stm32l476rgGpioI2c<'d> {
+impl<'d> Stm32l476rgI2c<'d> {
     /// Create a new instance of our I2C implementation for the STM32L476RG
     pub fn new(i2c: I2c<'d, Blocking>) -> Self {
         Self { i2c }
