@@ -1,4 +1,4 @@
-use crate::types::DigitalSignal;
+use hyped_core::types::DigitalSignal;
 use hyped_io::gpio::GpioPin;
 
 /// Keyence represents a Keyence sensor which keeps track of the number of stripes that have passed

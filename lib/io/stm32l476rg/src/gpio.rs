@@ -1,6 +1,7 @@
 use embassy_stm32::gpio::{Input, Pin};
 use hyped_io::gpio::GpioPin;
 
+/// A GPIO pin on the STM32L476RG.
 pub struct Stm32l476rgGpio<P: Pin> {
     pin: Input<'static, P>,
 }

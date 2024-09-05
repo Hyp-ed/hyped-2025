@@ -1,6 +1,4 @@
-/**
- * This trait is used to abstract the GPIO pin so that sensors can be tested with a mock GPIO pin.
- */
+/// Abstraction for a GPIO pin so that sensors can be tested with a mock GPIO pin
 pub trait GpioPin {
     fn is_high(&mut self) -> bool;
 }
@@ -8,9 +6,7 @@ pub trait GpioPin {
 pub mod mock_gpio {
     use heapless::Vec;
 
-    /**
-     * This struct is used to represent a mock GPIO pin that can be used for testing.
-     */
+    /// A mock GPIO pin that can be used for testing
     pub struct MockGpio {
         current_value: bool,
         next_values: Vec<bool, 10>,
