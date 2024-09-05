@@ -25,6 +25,7 @@ static_cell = "2"
 
 hyped_sensors = { path = "../../lib/sensors" }
 hyped_io = { path = "../../lib/io" }
+hyped_io_stm32l476rg = { path = "../../lib/io/stm32l476rg" }
 
 [profile.release]
 debug = 2

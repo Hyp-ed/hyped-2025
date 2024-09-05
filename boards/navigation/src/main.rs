@@ -2,9 +2,9 @@
 #![no_main]
 
 use embassy_executor::Spawner;
-use embassy_stm32::gpio::{Input, Pin, Pull};
+use embassy_stm32::gpio::{Input, Pull};
 use embassy_time::{Duration, Timer};
-use hyped_io::gpio::GpioPin;
+use hyped_io_stm32l476rg::gpio::Stm32l476rgGpio;
 use hyped_sensors::keyence::Keyence;
 use {defmt_rtt as _, panic_probe as _};
 
@@ -28,23 +28,5 @@ async fn main(spawner: Spawner) -> ! {
 
     loop {
         Timer::after(Duration::from_secs(1)).await;
-    }
-}
-
-// Define a struct that implements the GpioPin trait for this board (STM32L476RG).
-
-pub struct Stm32l476rgGpio<P: Pin> {
-    pin: Input<'static, P>,
-}
-
-impl<P: Pin> GpioPin for Stm32l476rgGpio<P> {
-    fn is_high(&mut self) -> bool {
-        self.pin.is_high()
-    }
-}
-
-impl<P: Pin> Stm32l476rgGpio<P> {
-    pub fn new(pin: Input<'static, P>) -> Self {
-        Self { pin }
     }
 }
