@@ -22,7 +22,7 @@ const STTS22H_CONFIG_SETTINGS: u8 = 0x3c;
 const STTS22H_TEMP_SCALING_FACTOR: f64 = 0.01;
 
 enum TemperatureAddresses {
-    Address7f = 0x7f,
+    Address3f = 0x3f,
     Address38 = 0x38,
     Address3c = 0x3c,
     Address3e = 0x3e,
@@ -31,7 +31,7 @@ enum TemperatureAddresses {
 impl Into<u8> for TemperatureAddresses {
     fn into(self) -> u8 {
         match self {
-            TemperatureAddresses::Address7f => 0x7f,
+            TemperatureAddresses::Address3f => 0x3f,
             TemperatureAddresses::Address38 => 0x38,
             TemperatureAddresses::Address3c => 0x3c,
             TemperatureAddresses::Address3e => 0x3e,
@@ -39,27 +39,35 @@ impl Into<u8> for TemperatureAddresses {
     }
 }
 
+// Red: 3.3V
+// Black: GND
+// Yellow: SCL
+// Blue: SDA
+
 #[embassy_executor::task]
 async fn temp() -> ! {
     let p = embassy_stm32::init(Default::default());
-    let mut i2c = I2c::new_blocking(p.I2C2, p.PB10, p.PB11, Hertz(100_000), Default::default());
+    let mut i2c = I2c::new_blocking(p.I2C1, p.PB8, p.PB9, Hertz(100_000), Default::default());
 
-    let address: u8 = TemperatureAddresses::Address7f.into();
+    let address: u8 = TemperatureAddresses::Address3f.into();
 
     // Set up the temperature sensor by sending the configuration settings to the STTS22H_CTRL register
+    defmt::info!("Configuring the temperature sensor.");
     let write_result = i2c
         .blocking_write(address, [STTS22H_CTRL, STTS22H_CONFIG_SETTINGS].as_ref())
         .expect("Failed to configure the temperature sensor.");
+    defmt::info!("Temperature sensor configured.");
 
     loop {
         // Read a temperature
 
         // Write the address of the STTS22H_DATA_TEMP_H register to the sensor to start reading the temperature
+        defmt::info!("Reading the STTS22H_DATA_TEMP_H register.");
         let write_result = i2c
             .blocking_write(address, [STTS22H_DATA_TEMP_H].as_ref())
             .expect("Failed to write the address of the STTS22H_DATA_TEMP_H register.");
 
-        let mut read = [];
+        let mut read = [0];
         let temperature_high_byte = match i2c.blocking_read(address, &mut read) {
             Ok(_) => read[0],
             Err(_) => {
@@ -67,6 +75,7 @@ async fn temp() -> ! {
                 0
             }
         };
+        defmt::info!("Temperature high byte: {:?}", temperature_high_byte);
 
         // Write the address of the STTS22H_DATA_TEMP_L register to the sensor to continue reading the temperature
         let write_result = i2c
