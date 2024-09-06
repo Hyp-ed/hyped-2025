@@ -11,6 +11,14 @@ jobs:
       - name: Run clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
 
+  rust-fmt:
+    name: Run rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run rustfmt
+        run: cargo fmt --all -- --check
+
   find-todos-fixme:
     name: Find todos and fixmes
     runs-on: ubuntu-latest
