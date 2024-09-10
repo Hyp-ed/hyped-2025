@@ -30,16 +30,6 @@ impl<T: HypedI2c> Temperature<T> {
 
     /// Read the temperature from the sensor and return it as a floating point value in degrees Celsius
     pub fn read(&mut self) -> Option<f32> {
-        // Set up the temperature sensor by sending the configuration settings to the STTS22H_CTRL register
-        let write_result = self.i2c.write_byte_to_register(
-            self.device_address,
-            STTS22H_CTRL,
-            STTS22H_CONFIG_SETTINGS,
-        );
-        if write_result.is_err() {
-            return None;
-        }
-
         // Read the high and low bytes of the temperature and combine them to get the temperature
         let temperature_high_byte =
             match self.i2c.read_byte(self.device_address, STTS22H_DATA_TEMP_H) {
