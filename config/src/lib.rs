@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use serde_yml;
 use std::collections::HashMap;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -47,7 +46,7 @@ pub struct PodConfig {
 
 impl PodConfig {
     fn new(raw_config: &str) -> Result<Self, serde_yml::Error> {
-        let config = match serde_yml::from_str::<PodConfig>(&raw_config) {
+        let config = match serde_yml::from_str::<PodConfig>(raw_config) {
             Ok(mut config) => {
                 config.pod_ids = config.pods.keys().cloned().collect();
                 Ok(config)
@@ -142,9 +141,10 @@ mod tests {
                                 min: -150
                                 max: 150
         "#;
-        let mut config = PodConfig::new(raw_config).unwrap();
+        let config = PodConfig::new(raw_config).unwrap();
         assert!(config.pod_ids.len() == 2);
-        assert!(config.pod_ids.sort() == vec!["pod_1", "pod_2"].sort());
+        assert!(config.pod_ids[0] == "pod_1" || config.pod_ids[1] == "pod_1");
+        assert!(config.pod_ids[0] == "pod_2" || config.pod_ids[1] == "pod_2");
         let pod1 = config.pods.get("pod_1").unwrap();
         let pod2 = config.pods.get("pod_2").unwrap();
         assert_eq!(pod1.name, "Pod 1");
