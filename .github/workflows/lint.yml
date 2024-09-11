@@ -19,6 +19,14 @@ jobs:
       - name: Run rustfmt
         run: cargo fmt --all -- --check
 
+  typos:
+    name: Spell check with typos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run typos
+        uses: crate-ci/typos@master
+
   find-todos-fixme:
     name: Find todos and fixmes
     runs-on: ubuntu-latest
