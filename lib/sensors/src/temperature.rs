@@ -13,16 +13,13 @@ pub struct Temperature<T: HypedI2c> {
 
 impl<T: HypedI2c> Temperature<T> {
     /// Create a new instance of the temperature sensor and attempt to configure it
-    pub fn new(mut i2c: T) -> Result<Self, ()> {
+    pub fn new(mut i2c: T, device_address: TemperatureAddresses) -> Result<Self, ()> {
+        let device_address = device_address as u8;
         // Set up the temperature sensor by sending the configuration settings to the STTS22H_CTRL register
-        match i2c.write_byte_to_register(
-            TemperatureAddresses::Address3f as u8,
-            STTS22H_CTRL,
-            STTS22H_CONFIG_SETTINGS,
-        ) {
+        match i2c.write_byte_to_register(device_address, STTS22H_CTRL, STTS22H_CONFIG_SETTINGS) {
             Ok(_) => Ok(Self {
                 i2c,
-                device_address: TemperatureAddresses::Address3f as u8,
+                device_address,
             }),
             Err(_) => Err(()),
         }
@@ -62,7 +59,7 @@ impl<T: HypedI2c> Temperature<T> {
 
 /// Represents the possible I2C addresses for the STTS22H temperature sensor
 #[repr(u8)]
-enum TemperatureAddresses {
+pub enum TemperatureAddresses {
     Address3f = 0x3f,
     // Other possible addresses
     #[allow(dead_code)]

@@ -7,7 +7,7 @@ use embassy_stm32::i2c::I2c;
 use embassy_stm32::time::Hertz;
 use embassy_time::{Duration, Timer};
 use hyped_io_stm32l476rg::i2c::Stm32l476rgI2c;
-use hyped_sensors::temperature::{Status, Temperature};
+use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 use {defmt_rtt as _, panic_probe as _};
 
 /// Test task that just reads the temperature from the sensor and prints it to the console
@@ -17,7 +17,8 @@ async fn temp() -> ! {
     let i2c = I2c::new_blocking(p.I2C1, p.PB8, p.PB9, Hertz(100_000), Default::default());
     let hyped_i2c = Stm32l476rgI2c::new(i2c);
 
-    let mut temperature_sensor = Temperature::new(hyped_i2c).expect(
+    let mut temperature_sensor = Temperature::new(hyped_i2c, TemperatureAddresses::Address3f)
+        .expect(
         "Failed to create temperature sensor. Check the wiring and the I2C address of the sensor.",
     );
 
