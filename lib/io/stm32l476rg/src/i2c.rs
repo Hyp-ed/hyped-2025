@@ -21,13 +21,13 @@ impl<'d> HypedI2c for Stm32l476rgI2c<'d> {
     /// Write a byte to a register on a device
     fn write_byte_to_register(
         &mut self,
-        device_addres: u8,
+        device_address: u8,
         register_address: u8,
         data: u8,
     ) -> Result<(), ()> {
         let result = self
             .i2c
-            .blocking_write(device_addres, [register_address, data].as_ref());
+            .blocking_write(device_address, [register_address, data].as_ref());
         match result {
             Ok(_) => Ok(()),
             Err(_) => Err(()),
