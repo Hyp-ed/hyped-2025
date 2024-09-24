@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "lib/*",
-    "config",
+    "config", 
+    "debugger/tui",
 ]
 resolver = "2"
