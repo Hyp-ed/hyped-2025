@@ -426,6 +426,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_state_machine"
+version = "0.1.0"
+
+[[package]]
 name = "indexmap"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
