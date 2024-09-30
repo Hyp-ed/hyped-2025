@@ -3,5 +3,5 @@ name = "hyped_state_machine"
 version = "0.1.0"
 edition = "2021"
 
-[lib]
-path = "src/state_machine.rs"
+[features]
+std = []
