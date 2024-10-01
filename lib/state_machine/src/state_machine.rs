@@ -17,12 +17,11 @@ impl StateMachine {
 
     pub fn handle_transition(&mut self, to_state: &State) {
         let to_from_state = SourceAndTarget {
-            source: self.current_state.clone(),
-            target: to_state.clone(),
+            source: self.current_state,
+            target: *to_state,
         };
-        match self.transition_map.get(&to_from_state) {
-            Some(&new_state) => self.current_state = new_state,
-            None => (),
+        if let Some(&new_state) = self.transition_map.get(&to_from_state) {
+            self.current_state = new_state;
         }
     }
 
