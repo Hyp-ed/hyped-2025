@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  telemetry:
+    container_name: telemetry
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5173:5173
+      - 3000:3000
+      - 3001:3001
+      - 9323:9323
+    environment:
+      - PNPM_SCRIPT
+      - IS_DOCKER=true
+      - E2E_TEST_MQTT_BROKER=mqtt://mosquitto:1883
+      - PWTEST_SKIP_TEST_OUTPUT=1
+    volumes:
+      - ./:/usr/src/app
+      # Exclude node_modules from being mounted
+      - /usr/src/app/node_modules
+      - /usr/src/app/packages/constants/node_modules
+      - /usr/src/app/packages/server/node_modules
+      - /usr/src/app/packages/types/node_modules
+      - /usr/src/app/packages/ui/node_modules
+      - /usr/src/app/packages/public-app/node_modules
+      - /usr/src/app/packages/public-app/.next
+      - /usr/src/app/packages/fake/node_modules
+      - /usr/src/app/packages/eslint-config/node_modules
+      - /usr/src/app/packages/e2e-tests/node_modules
+    networks:
+      - telemetry
+  influxdb:
+    container_name: influxdb
+    image: influxdb:2.7
+    ports:
+      - 8086:8086
+    volumes:
+      - ./influxdb/data:/var/lib/influxdb2
+      - ./influxdb/config:/etc/influxdb2
+      - ./influxdb/scripts:/docker-entrypoint-initdb.d
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=hyped
+      - DOCKER_INFLUXDB_INIT_PASSWORD=edinburgh
+      - DOCKER_INFLUXDB_INIT_ORG=hyped
+      - DOCKER_INFLUXDB_INIT_BUCKET=telemetry
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=edinburgh
+    networks:
+      - telemetry
+
+volumes:
+  influxdb:
+
+networks:
+  telemetry:
+    driver: bridge
