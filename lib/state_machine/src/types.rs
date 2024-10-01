@@ -1,27 +1,27 @@
-#[derive(Hash)]
+#[derive(Hash, PartialEq, Eq, Clone, Copy)]
 pub enum State {
-    KIdle,
-    KCalibrate,
-    KPrecharge,
-    KReadyForLevitation,
-    KBeginLevitation,
-    KLevitating,
-    KReady,
-    KAccelerate,
-    KLimBrake,
-    KFrictionBrake,
-    KStopLevitation,
-    KStopped,
-    KBatteryRecharge,
-    KCapacitorDischarge,
-    KFailureBrake,
-    KFailure,
-    KSafe,
-    KShutdown,
+    Idle,
+    Calibrate,
+    Precharge,
+    ReadyForLevitation,
+    BeginLevitation,
+    Levitating,
+    Ready,
+    Accelerate,
+    LimBrake,
+    FrictionBrake,
+    StopLevitation,
+    Stopped,
+    BatteryRecharge,
+    CapacitorDischarge,
+    FailureBrake,
+    Failure,
+    Safe,
+    Shutdown,
 }
 
-#[derive(Hash)]
+#[derive(Hash, PartialEq, Eq)]
 pub struct SourceAndTarget {
-    source: State,
-    target: State,
+    pub(crate) source: State,
+    pub(crate) target: State,
 }

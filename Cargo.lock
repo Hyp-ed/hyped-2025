@@ -428,6 +428,9 @@ dependencies = [
 [[package]]
 name = "hyped_state_machine"
 version = "0.1.0"
+dependencies = [
+ "heapless",
+]
 
 [[package]]
 name = "indexmap"

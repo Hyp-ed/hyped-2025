@@ -1,12 +1,34 @@
-use crate::types::State;
+use crate::types::{SourceAndTarget, State};
+use heapless::FnvIndexMap;
 
 pub struct StateMachine {
-    current_state: State,
-    // transition_map: HashMap<SourceAndTarget, State> (use heapless::FnvIndexMap)?
+    pub(crate) current_state: State,
+    pub(crate) transition_map: FnvIndexMap<SourceAndTarget, State, 32>, // TODO: bring constant out
 }
 
 impl StateMachine {
-    pub fn handle_transition(&mut self) {
-        self.current_state = State::KStopped;
+    pub fn new() -> Self {
+        StateMachine {
+            current_state: State::Idle,
+            transition_map: FnvIndexMap::<SourceAndTarget, State, 32>::new(),
+        }
+        // TODO: populate transition_map (idk if this can be done inplace which is annoying)
+    }
+
+    pub fn handle_transition(&mut self, to_state: &State) {
+        let to_from_state = SourceAndTarget {
+            source: self.current_state.clone(),
+            target: to_state.clone(),
+        };
+        match self.transition_map.get(&to_from_state) {
+            Some(&new_state) => self.current_state = new_state,
+            None => (),
+        }
+    }
+
+    pub fn run(&mut self) {
+        loop {
+            // TODO: consume, update, publish
+        }
     }
 }
