@@ -1,0 +1,20 @@
+{
+  "extends": "@hyped/tsconfig/base.json",
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "moduleResolution": "bundler",
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next",
+      },
+    ],
+    "paths": {
+      "@/*": ["./*"],
+    },
+    "allowJs": true,
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"],
+}
