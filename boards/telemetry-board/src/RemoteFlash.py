@@ -1,14 +1,20 @@
-#Location of RemoteFlash.py will change however it remains here for testing
+# Location of RemoteFlash.py will change however it remains here for testing
 
-import os
-from subprocess import Popen
+# Require python >=3.11
 import sys 
+if not (sys.version_info[0] == 3 and sys.version_info[1] >= 11):
+    raise Exception("Requires >3.11 for built-in toml parsing,W as I don't want to have to use dependencys")
 
-def inf(s:str) -> str: "\x1b[34;49m[I] " + s + "\x1b"
-def que(s:str) -> str: "\x1b[35;49m[Q] " + s + "\x1b"
-def err(s:str) -> str: "\x1b[31;49m[E] " + s + "\x1b" 
+import tomllib as tl
+import os
 
-def main(*args) -> None:
+
+
+def inf(s:str) -> str: return "\x1b[34;49m[I] " + s + "\x1b"
+def que(s:str) -> str: return "\x1b[35;49m[Q] " + s + "\x1b"
+def err(s:str) -> str: return "\x1b[31;49m[E] " + s + "\x1b" 
+
+def main(args) -> None:
     cargo_path, target_toml = get_paths(args)
     build_path:str = create_build_path(cargo_path)
     build_toml(build_path) 
@@ -25,10 +31,10 @@ def main(*args) -> None:
     # 5. THE HARD BIT FLASH THE BOARD   
     
     
-def get_paths(*args) -> tuple[str, str]:
+def get_paths(args) -> tuple[str, str]:
     cargo_path:str = ""
     if args : cargo_path = args[0]
-    else :    cargo_path = os.abspath(input(que("Please enter the path to the folder that contains the target Cargo.toml: ")))
+    else :    cargo_path = os.path.abspath(input(que("Please enter the path to the folder that contains the target Cargo.toml: ")))
     
     try:
         assert os.path.isdir(cargo_path)
@@ -60,16 +66,19 @@ def create_build_path(cargo_path:str) -> str :
     return build_path
     
 def build_toml(build_path:str) -> None:
+    from subprocess import Popen, PIPE
     print(inf("Running cargo build..."), end=" ")
     p:Popen # as we shouldnt error before p is initilised 
     try:
-        p = Popen(["cargo", "build", "--target-dir", build_path])
+        p = Popen(["cargo", "build", "--target-dir", build_path], stderr=PIPE, stdout=PIPE)  
+        p.wait()# p is opened sepraly 
         assert p.returncode == 0 # error
     except Exception:
         print("\x1b[31;49m ERROR \x1b")
-        print(err("Build failed with the following output:\n") + str(p.communicate[0]))
+        print(err("Build failed with the following output:\n") + str(p.stdout.read()) + str(p.stderr.read())) # type: ignore as we know there being piped in
         exit(3)
+        
     print("\r" + inf("Running cargo build...SUCCESS"))
 
 if __name__ == "__main__":
-    main(sys.argv[1:], sys.kw)
+    main(sys.argv[1:])
