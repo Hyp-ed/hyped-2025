@@ -1,3 +1,5 @@
+use std::process::Command;
+use std::time::SystemTime;
 use std::{
     env, fs,
     io::{self, Write},
@@ -19,7 +21,8 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     println!("{:?}", args);
     let (cargo_pth, trg_toml, trg_conf) = get_paths(&args);
-    println!( // evil print statment that works :)
+    println!(
+        // evil print statment that works :)
         "{}",
         inf(&format!(
             "Got location of target toml as {} {}",
@@ -35,7 +38,12 @@ fn main() {
         ))
     );
 
-    create_build_path(&cargo_pth);
+    let tmp_path = create_build_path(&cargo_pth);
+    if let Err(_) = build_toml(&tmp_path) {
+        exit(5);
+    }
+
+    
 }
 
 fn get_input_line(s: String) -> String {
@@ -51,7 +59,8 @@ fn get_input_line(s: String) -> String {
 
 #[inline] // I know this only affects external packages, however it makes it clear it doenst need to be seprate flow of logic
 fn get_paths(args: &Vec<String>) -> (PathBuf, PathBuf, Option<PathBuf>) {
-    let cargo_pth = path::absolute(if args.len() > 1 { // first arg is bin path
+    let cargo_pth = path::absolute(if args.len() > 1 {
+        // first arg is bin path
         args[1].to_owned()
     } else {
         get_input_line(que(
@@ -93,7 +102,59 @@ fn get_paths(args: &Vec<String>) -> (PathBuf, PathBuf, Option<PathBuf>) {
             None
         };
 
+    println!(
+        "{}",
+        inf("Moving current working directory to be provided cargo path")
+    );
+
     return (cargo_pth, trg_toml, trg_conf);
 }
 
-fn create_build_path(cargo_pth: &PathBuf) {}
+#[inline]
+fn create_build_path(cargo_pth: &PathBuf) -> PathBuf {
+    let tmp_dir = cargo_pth.join(format!(
+        ".tmp_build_{}",
+        SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap() //unwarp as you shouldn't be flashing boards as a time traveler
+            .as_secs()
+            .to_string()
+    ));
+    if fs::exists(&tmp_dir).unwrap_or(true) {
+        println!(
+            "{}",
+            inf("Unable to create tmp dirm, please remove old build dir's and try again")
+        );
+        exit(3)
+    }
+
+    if let Err(e) = fs::create_dir(&tmp_dir) {
+        println!("{}", err(&format!("Unable to create tmp dir due to {}", e)));
+        exit(3)
+    }
+
+    println!(
+        "{}",
+        inf(&format!("Created tmp dir {}", tmp_dir.to_str().unwrap()))
+    );
+
+    tmp_dir
+}
+
+#[inline]
+fn build_toml(build_path: &PathBuf) -> Result<(), io::Error> {
+    // should have already changed CWD to be the target's dir
+    print!("{}", inf("Running Cargo Build..."));
+
+    let output = Command::new("cargo")
+        .arg("build")
+        .arg("--target-dir")
+        .arg(build_path.to_str().unwrap())
+        .output();
+    if let Err(e) = output {
+        println!("ERR\n{}", err(&format!("Cargo build failed due to {}", e)));
+        return Err(e);
+    };
+    println!("SUCCESS\n");
+    Ok(())
+}
