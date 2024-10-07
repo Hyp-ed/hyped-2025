@@ -106,6 +106,10 @@ fn get_paths(args: &Vec<String>) -> (PathBuf, PathBuf, Option<PathBuf>) {
         "{}",
         inf("Moving current working directory to be provided cargo path")
     );
+    if env::set_current_dir(&cargo_pth).is_err() {
+        println!("{}", err("Unable to change working dir to the requestsed directory"));
+        exit(4);
+    }
 
     return (cargo_pth, trg_toml, trg_conf);
 }
@@ -145,7 +149,7 @@ fn create_build_path(cargo_pth: &PathBuf) -> PathBuf {
 fn build_toml(build_path: &PathBuf) -> Result<(), io::Error> {
     // should have already changed CWD to be the target's dir
     print!("{}", inf("Running Cargo Build..."));
-
+    let _ = io::stdout().flush();
     let output = Command::new("cargo")
         .arg("build")
         .arg("--target-dir")
