@@ -1,3 +1,4 @@
+use std::io::Read;
 use std::process::Command;
 use std::time::SystemTime;
 use std::{
@@ -20,7 +21,7 @@ fn err<'a>(s: &'a str) -> String {
 fn main() {
     let args: Vec<String> = env::args().collect();
     println!("{:?}", args);
-    let (cargo_pth, trg_toml, trg_conf) = get_paths(&args);
+    let (cargo_pth, trg_toml, trg_conf) = get_paths(&args); 
     println!(
         // evil print statment that works :)
         "{}",
@@ -29,7 +30,7 @@ fn main() {
             trg_toml.to_str().unwrap(),
             format!(
                 "{}",
-                if let Some(s) = trg_conf {
+                if let Some(ref s) = trg_conf {
                     format!("and descovered config file in {}", s.to_str().unwrap())
                 } else {
                     Default::default()
@@ -43,6 +44,8 @@ fn main() {
         exit(5);
     }
 
+    let (bin_path, bin_name) = find_target_binary(tmp_path, &trg_toml, &trg_conf); // this will fail if looking for a bin that has file extention
+    println!("{}", inf(&format!("Found target bin {} at {}", bin_name, bin_path.to_str().unwrap())));
     
 }
 
@@ -161,4 +164,81 @@ fn build_toml(build_path: &PathBuf) -> Result<(), io::Error> {
     };
     println!("SUCCESS\n");
     Ok(())
+}
+
+fn find_target_binary(mut build_path: PathBuf, trg_toml: &PathBuf, trg_conf: &Option<PathBuf>) -> (PathBuf, String) { // path and binary name
+    let bin_name = parse_toml(trg_toml, "package", "name");
+    if let Err(e) = bin_name {
+        println!("{} - {} - {}", err("Unable to parse target toml due to the following error"), trg_toml.to_str().unwrap(), e);
+        exit(6)
+    }
+    let bin_name = bin_name.unwrap();
+    
+
+    if let Some(conf) = trg_conf {
+        let sub_path = parse_toml(conf, "build", "target");
+        if let Err(e) = sub_path {
+            println!("{} - {} - {}", err("Unable to parse target toml due to the following error"), conf.to_str().unwrap(), e);
+            exit(6)
+        }
+        let sub_path = sub_path.unwrap();
+        build_path = build_path.join(sub_path);
+    };
+
+    build_path = build_path.join("debug").join(&bin_name);
+    if build_path.is_file() {
+            return (build_path, bin_name)
+        }   
+        else {
+            println!("{} - {}", err("Error couldnt find build at"), build_path.to_str().unwrap());
+            exit(7);
+        }
+}
+
+
+
+
+fn parse_toml<'a>(targ_file: &PathBuf, target_table: &'a str, target_key: &'a str) -> Result<String, Box<dyn std::error::Error>> {
+    let mut toml = fs::File::open(targ_file)?;
+    let mut buff = Vec::new();
+    toml.read_to_end(&mut buff)?;
+    let file = String::from_utf8(buff)?;
+    let file = file.lines();
+    
+    let mut curr_table = String::new(); 
+    for line in file {
+        let line = line.trim(); // Trim leading and trailing whitespace
+        if line.is_empty() {
+            continue;
+        }
+        if line.starts_with('[') && line.ends_with(']') {
+            curr_table = line[1..line.len() - 1].to_owned();
+            dbg!(&curr_table);
+            continue;
+        }
+        if curr_table == target_table {
+            let parts: Vec<&str> = line.splitn(2, '=').collect();
+            if parts.len() == 2 {
+                let key = parts[0].trim();
+                let value = parts[1].trim().trim_matches('"');
+                if key == target_key {
+                    return Ok(value.to_owned());
+                }
+            }
+        }
+    }
+    Err(format!("Couldn't find key {} in table {}", target_key, target_table).into())
+}
+
+fn load_bin(bin_path: &PathBuf) -> Vec<u8> {
+    let f = fs::File::open(bin_path);
+    if let Err(e) = f {
+        println!("{}", err("Unable to open target binary"));
+        exit(8)
+    }
+    let f = f.unwrap();
+
+
+
+    todo!();
 }
