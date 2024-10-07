@@ -213,7 +213,6 @@ fn parse_toml<'a>(targ_file: &PathBuf, target_table: &'a str, target_key: &'a st
         }
         if line.starts_with('[') && line.ends_with(']') {
             curr_table = line[1..line.len() - 1].to_owned();
-            dbg!(&curr_table);
             continue;
         }
         if curr_table == target_table {
