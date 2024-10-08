@@ -95,5 +95,5 @@ export const sensorData: SensorData = Object.fromEntries(
     ]),
 );
 
-// Parameter storing distance of track, once finsih point is reached program will end
+// Parameter storing distance of track, once finish point is reached program will end
 export const trackLength = measurements.displacement.limits.critical.high;

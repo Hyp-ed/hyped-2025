@@ -29,7 +29,7 @@ To iteratively generate transient and physically reasonable series of data point
 simulation of the expected sensor readings during a live run. Data will be uploaded live to the GUI through the mqtt server, and assessed
 for error handling and other metrics.
 
-I.e. all of the thermnistors have the exact same proerty values. In actuality, their readings will differ as they placed in different locations across the pod. However, the data structure does not hold this information and therefore they are equivalent, so only one generic 'thermistor' object will be studied.
+I.e. all of the thermnistors have the exact same property values. In actuality, their readings will differ as they placed in different locations across the pod. However, the data structure does not hold this information and therefore they are equivalent, so only one generic 'thermistor' object will be studied.
 
 In contrast, the pressure gauges have descriptive names which allow one to infer their likely behaviour during operation (front/back-push refers to gauging pressure upon acceleration, which would see an absolute increase in gauge pressure on both ends of the pod due to the greater stagnation pressure and the nose of the pod and pressure wake field behind). Similarly, the pressure gauges of the reservoirs can be reasonably assumed to not vary significantly, but as temperature rises the pressure will increase slightly due to Amonton's Law.
 
@@ -39,11 +39,11 @@ In contrast, the pressure gauges have descriptive names which allow one to infer
 
 The program will record and store all values calculated by each sensor's methods defined in `sensors.ts` over a user-specified timeframe, with each sensor set to a specific sampling time interval. `main.ts` filters and constructs an array of relevant and unique sensors from the Pod Ness sensor object structure. A new interface is created called `Sensor Data`. It extends `RangeMeasurement` - adding the properties of `currentValue` and `movingAvg`, and encapsulates the measurement object with the sensor's name as a `Record`, reflecting the object shape of the pod's sensor objects.
 
-A Singleton class was created in its dedicated file, `data-manager.ts`. When the program is run, a single instance of this class is created. The instance holds the current set of data, and at each iteration is updated before the current data is pushed into data storage arrays for all sensors. Once created, this instance and its data property is accessible from both the main file, and the pod behavious class file, which holds all the methods written to generate each sensor's next value.
+A Singleton class was created in its dedicated file, `data-manager.ts`. When the program is run, a single instance of this class is created. The instance holds the current set of data, and at each iteration is updated before the current data is pushed into data storage arrays for all sensors. Once created, this instance and its data property is accessible from both the main file, and the pod behaviours class file, which holds all the methods written to generate each sensor's next value.
 
 In the main file, the program's main function, `generateDataSeries`, runs a loop iterating through the time period defined. For each sensor type, it calls the relevant static method in the `Behaviour` class. Some sensors can be categorised, e.g. the navigation sensors. The values for displacement, velocity and acceleration are interdependet. As the pod's velocity is increased, its displacement and acceleration can be calculated, given the acceleration constraints provided by its critical limits nested object.
 
-A logistic function was chosen as the appropriate function for pod velocity to follow. This allows us to minimse the time to reach maximum speed by adjusting the peak acceleration (dv/dt) to reach but not exceed 5m/s^2 at the velocity-time inflection point.
+A logistic function was chosen as the appropriate function for pod velocity to follow. This allows us to minimise the time to reach maximum speed by adjusting the peak acceleration (dv/dt) to reach but not exceed 5m/s^2 at the velocity-time inflection point.
 
 Similar functions have been or are in the process of being created for the rest of the sensors. Complexity varies, and some require a lot more guesswork.
 
@@ -106,7 +106,7 @@ Classes are instantiated once each in `main.ts`. The Sensor class is constructed
 
 The `_currentValue` variable is mutable, so that only a single instance per class is needed, updating its current value.
 
-Not all sensors/measurements require their own class instance. For instance, in the navigation category only velocity (or the accelerometer reading) needs to be recorded in the class instance. From this value and given a reasonable function of time, the other navigation variables can be calculated accordingly at each time step using basic kinematics and calculus of limts. Additionally, many other measurements have a dependency on pod velocity, generally increasing in proportion to the speed. Temperature is another measurement which dictates certain others, like reservoir pressure for example.
+Not all sensors/measurements require their own class instance. For instance, in the navigation category only velocity (or the accelerometer reading) needs to be recorded in the class instance. From this value and given a reasonable function of time, the other navigation variables can be calculated accordingly at each time step using basic kinematics and calculus of limits. Additionally, many other measurements have a dependency on pod velocity, generally increasing in proportion to the speed. Temperature is another measurement which dictates certain others, like reservoir pressure for example.
 
 Read more about sensors <a href="#sensorsStructure">here</a>.
 
@@ -166,7 +166,7 @@ Runs the main loop with user-defined parameters, with the actual functionality a
             <li class="done">Total runtime for the data generation loop</li>
         </ul>
         </li>
-        <li class="done">Instantiate sensor classses and finish loop functionality</li>
+        <li class="done">Instantiate sensor classes and finish loop functionality</li>
         <ul>
             <li class="done">Plan the logic conceptually</li>
             <li class="done">Program it into the loop</li>
@@ -289,7 +289,7 @@ Read from file and set new ones as ICs in object below -->
 
 <ol>
     <strong>Thursday notes from discussion with David + discussion with Damen about the public app, React and Three.js</strong><hr>
-    <li><strong>Seperate all sensor data into its own file. This sensor data structure will be like the one in pods, but reduced to the data-gen relevant sensors, and with added/removed properties. Outside of this file, no other functional part of the program will be able to modify or access the file. The data file will be imported. Its properties are constant (so no 'currentVal' or 'movingAvg'). They are properties inherent to the sensor, like with the pod object. A new property David would like is a sampling rate property. This will define the delta T for that sensor's data generation, giving us a lot more freedom and making the code run a lot quicker as right now, there's only one global delta T variable so if we needed say 0.05s, all variables would be measured twenty times per second which would be unnecessary and slow. Of course, the value of this property will be changed and modified by our team, but not during runtime. This is a fixed object which is exporting its data for the data generation function to run. Another object or array will store the transient values, which we will also send live to the server as they are calculated and a graph can be animated in real time.</strong></li>
+    <li><strong>Separate all sensor data into its own file. This sensor data structure will be like the one in pods, but reduced to the data-gen relevant sensors, and with added/removed properties. Outside of this file, no other functional part of the program will be able to modify or access the file. The data file will be imported. Its properties are constant (so no 'currentVal' or 'movingAvg'). They are properties inherent to the sensor, like with the pod object. A new property David would like is a sampling rate property. This will define the delta T for that sensor's data generation, giving us a lot more freedom and making the code run a lot quicker as right now, there's only one global delta T variable so if we needed say 0.05s, all variables would be measured twenty times per second which would be unnecessary and slow. Of course, the value of this property will be changed and modified by our team, but not during runtime. This is a fixed object which is exporting its data for the data generation function to run. Another object or array will store the transient values, which we will also send live to the server as they are calculated and a graph can be animated in real time.</strong></li>
     <li>One issue I foresee is that if different sensors have different delta Ts, it will make the main loop more complicated. Say the thermistor takes a reading every 0.2s. The accelerometer every 0.5s. So we'd run the loop ever 0.2, while checking if the time is also a multiple of 0.5 (and all the other sensors' times). To mitigate this slightly, I will add functionality to the ```specific``` parameter, so we can view a select few variables in one run, or all of them if we want to.</li>
     <li>Different sensors will have a new property which defines its time interval (dt) and perhaps its degree of noise (as higher quality sensors would have less noise due to better electronic circuits)</li>
     Separate the sensor file into a new file with the sensor object and its properties relevant to the data generation
