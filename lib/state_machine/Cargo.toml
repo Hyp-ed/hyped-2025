@@ -1,0 +1,10 @@
+[package]
+name = "hyped_state_machine"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+std = []
+
+[dependencies]
+heapless = "0.8.0"
