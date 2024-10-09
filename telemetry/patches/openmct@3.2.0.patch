@@ -1,0 +1,37 @@
+diff --git a/dist/openmct.d.ts b/dist/openmct.d.ts
+index 10970357e59ea7dd55d44ca2456bdc64c066b401..39365d0b6930b7eed835665c2e2b1a430faf008b 100644
+--- a/dist/openmct.d.ts
++++ b/dist/openmct.d.ts
+@@ -35,14 +35,17 @@ type OpenMCT = {
+     getAssetPath: {
+         (): string;
+     };
+-    start: (domElement: HTMLElement, isHeadlessMode: boolean) => void;
++    setAssetPath: {
++        (path: string): void;
++    }
++    start: (domElement?: HTMLElement, isHeadlessMode?: boolean) => void;
+     startHeadless: {
+         (): void;
+     };
+     destroy: {
+         (): void;
+     };
+-    plugins: OpenMCTPlugin[];
++    plugins: any;
+     components: OpenMCTComponent[];
+ };
+ type BuildInfo = {
+diff --git a/dist/src/api/time/TimeContext.d.ts b/dist/src/api/time/TimeContext.d.ts
+index b61930ae139005422268c412a3ac1f440768c1a2..94f08914c082def0459f9ab105bd103d2a4cc0fb 100644
+--- a/dist/src/api/time/TimeContext.d.ts
++++ b/dist/src/api/time/TimeContext.d.ts
+@@ -30,7 +30,7 @@ declare class TimeContext {
+      * @memberof module:openmct.TimeAPI#
+      * @method timeSystem
+      */
+-    timeSystem(timeSystemOrKey: TimeSystem | string, bounds: any, ...args: any[]): TimeSystem;
++    timeSystem(timeSystemOrKey: TimeSystem | string, bounds?: any, ...args: any[]): TimeSystem;
+     /**
+      * Clock offsets are used to calculate temporal bounds when the system is
+      * ticking on a clock source.

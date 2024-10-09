@@ -1,6 +1,7 @@
 use core::str::FromStr;
 use heapless::String;
 
+/// Enum representing all MQTT topics used by the pod
 pub enum MqttTopics {
     State,
     StateRequest,
@@ -15,6 +16,7 @@ pub enum MqttTopics {
 
 // Write functions that will convert to and from the MqttTopics enum
 impl MqttTopics {
+    /// Convert an `MqttTopics` enum variant to a string
     pub fn to_string(&self) -> String<48> {
         match self {
             MqttTopics::State => String::<48>::from_str("hyped/cart_2024/state/state").unwrap(),
@@ -43,6 +45,7 @@ impl MqttTopics {
         }
     }
 
+    /// Get an `MqttTopics` enum variant from a string
     pub fn from_string(topic: &str) -> Option<MqttTopics> {
         match topic {
             "hyped/cart_2024/state/state" => Some(MqttTopics::State),

@@ -1,0 +1,26 @@
+{
+  "name": "@hyped/telemetry-constants",
+  "private": true,
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/telemetry-constants.esm.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "lint": "eslint \"src/**/*.ts\" --max-warnings 0 --report-unused-disable-directives",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix"
+  },
+  "devDependencies": {
+    "@hyped/telemetry-types": "workspace:*",
+    "@hyped/eslint-config": "workspace:*",
+    "@hyped/tsconfig": "workspace:*",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.5.3",
+    "typescript": "^5.3.3"
+  }
+}
