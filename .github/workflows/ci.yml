@@ -28,3 +28,7 @@ jobs:
         working-directory: boards
       - run: cargo test --verbose
         working-directory: boards
+      - run: cargo build --verbose
+        working-directory: config
+      - run: cargo test --verbose
+        working-directory: config

@@ -1,0 +1,5 @@
+[workspace]
+members = [
+  "test/*",
+]
+resolver = "2"
