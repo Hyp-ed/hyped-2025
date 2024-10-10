@@ -70,7 +70,7 @@ async fn net_task(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) -> 
 
 #[embassy_executor::task]
 async fn button_task(pin: AnyPin) {
-    let button: Input<_> = Input::new(pin, Pull::Down);
+    let button: Input = Input::new(pin, Pull::Down);
     loop {
         SEND_CHANNEL
             .send(MqttMessage {
