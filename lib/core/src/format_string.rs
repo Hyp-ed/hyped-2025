@@ -1,5 +1,4 @@
-use core::cmp::min;
-use core::fmt;
+use core::{cmp::min, fmt};
 
 pub struct FormatString<'a> {
     buffer: &'a mut [u8],
