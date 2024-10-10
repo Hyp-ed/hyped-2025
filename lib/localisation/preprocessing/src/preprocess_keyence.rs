@@ -25,6 +25,8 @@ pub fn check_keyence_agrees(keyence_data: &Vec<f64>) -> sensor_checks {
         }
     }
 
+    previous_data_status = current_data_status;
+
     if current_data_status == keyence_data_status::disagreed && previous_data_status == keyence_data_status:: disagreed {
         println!("Keyence disagreement for two consecutive readings.");
 
@@ -32,8 +34,6 @@ pub fn check_keyence_agrees(keyence_data: &Vec<f64>) -> sensor_checks {
 
         sensor_check
     }
-
-    previous_data_status = current_data_status;
 
     sensor_check
 }
