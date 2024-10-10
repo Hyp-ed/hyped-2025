@@ -14,6 +14,7 @@ pub enum MqttTopics {
     Logs,
 }
 
+// Write functions that will convert to and from the MqttTopics enum
 impl MqttTopics {
     /// Convert an `MqttTopics` enum variant to a string
     pub fn to_string(&self) -> String<48> {
