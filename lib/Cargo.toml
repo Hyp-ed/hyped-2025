@@ -1,5 +1,7 @@
 [workspace]
 members = [
-  "*",
+  "core",
+  "io",
+  "sensors",
 ]
 resolver = "2"
