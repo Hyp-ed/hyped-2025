@@ -1,4 +1,4 @@
-use defmt::*;
+use defmt::{info, warn};
 use embassy_net::tcp::TcpSocket;
 use heapless::String;
 use rust_mqtt::{
