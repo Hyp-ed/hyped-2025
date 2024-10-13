@@ -1521,7 +1521,7 @@
           "id": "6092a811-1f60-4ae6-a648-682122918562",
           "configuration": {
             "name": "Unnamed Condition",
-            "output": "onn",
+            "output": "on",
             "trigger": "all",
             "criteria": [
               {

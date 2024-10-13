@@ -17,7 +17,7 @@ import { POD_IDS, PodId } from '@hyped/telemetry-constants';
 export class PublicDataController {
   constructor(
     private publicDataService: PublicDataService,
-    private historialTelemetryDataService: HistoricalTelemetryDataService,
+    private historicalTelemetryDataService: HistoricalTelemetryDataService,
   ) {}
 
   @Get('launch-time')
@@ -44,7 +44,7 @@ export class PublicDataController {
       throw new HttpException("Missing 'start' query parameter", 400);
     }
     this.validatePodId(podId);
-    return this.historialTelemetryDataService.getHistoricalReading(
+    return this.historicalTelemetryDataService.getHistoricalReading(
       podId,
       'velocity',
       startTimestamp,
@@ -62,7 +62,7 @@ export class PublicDataController {
       throw new HttpException("Missing 'start' query parameter", 400);
     }
     this.validatePodId(podId);
-    return this.historialTelemetryDataService.getHistoricalReading(
+    return this.historicalTelemetryDataService.getHistoricalReading(
       podId,
       'displacement',
       startTimestamp,
@@ -80,7 +80,7 @@ export class PublicDataController {
       throw new HttpException("Missing 'start' query parameter", 400);
     }
     this.validatePodId(podId);
-    return this.historialTelemetryDataService.getHistoricalReading(
+    return this.historicalTelemetryDataService.getHistoricalReading(
       podId,
       'acceleration',
       startTimestamp,
@@ -105,37 +105,37 @@ export class PublicDataController {
       levitation_height_lateral_1,
       levitation_height_lateral_2,
     ] = await Promise.all([
-      this.historialTelemetryDataService.getHistoricalReading(
+      this.historicalTelemetryDataService.getHistoricalReading(
         podId,
         'levitation_height_1',
         startTimestamp,
         endTimestamp ?? new Date().getTime().toString(),
       ),
-      this.historialTelemetryDataService.getHistoricalReading(
+      this.historicalTelemetryDataService.getHistoricalReading(
         podId,
         'levitation_height_2',
         startTimestamp,
         endTimestamp ?? new Date().getTime().toString(),
       ),
-      this.historialTelemetryDataService.getHistoricalReading(
+      this.historicalTelemetryDataService.getHistoricalReading(
         podId,
         'levitation_height_3',
         startTimestamp,
         endTimestamp ?? new Date().getTime().toString(),
       ),
-      this.historialTelemetryDataService.getHistoricalReading(
+      this.historicalTelemetryDataService.getHistoricalReading(
         podId,
         'levitation_height_4',
         startTimestamp,
         endTimestamp ?? new Date().getTime().toString(),
       ),
-      this.historialTelemetryDataService.getHistoricalReading(
+      this.historicalTelemetryDataService.getHistoricalReading(
         podId,
         'levitation_height_lateral_1',
         startTimestamp,
         endTimestamp ?? new Date().getTime().toString(),
       ),
-      this.historialTelemetryDataService.getHistoricalReading(
+      this.historicalTelemetryDataService.getHistoricalReading(
         podId,
         'levitation_height_lateral_2',
         startTimestamp,
