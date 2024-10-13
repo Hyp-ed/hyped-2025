@@ -1,7 +1,7 @@
 [workspace]
 members = [
-  "core",
-  "io",
-  "sensors",
+  "boards/*",
+  "config",
+  "lib/*",
 ]
 resolver = "2"

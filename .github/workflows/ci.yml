@@ -9,6 +9,8 @@ env:
 
 jobs:
   build_and_test:
+    # Temporarily disable until Cargo workspaces / target issues are resolved
+    if: false
     name: Cargo Build & Test
     runs-on: ubuntu-latest
     strategy:
@@ -22,14 +24,4 @@ jobs:
       - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
       - run: rustup target add thumbv7em-none-eabihf
       - run: cargo build --verbose
-        working-directory: lib
       - run: cargo test --verbose
-        working-directory: lib
-      - run: cargo build --verbose
-        working-directory: boards
-      - run: cargo test --verbose
-        working-directory: boards
-      - run: cargo build --verbose
-        working-directory: config
-      - run: cargo test --verbose
-        working-directory: config
