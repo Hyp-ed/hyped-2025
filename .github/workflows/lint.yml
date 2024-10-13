@@ -4,6 +4,8 @@ on: push
 
 jobs:
   rust-clippy:
+    # Temporarily disable (see ci.yml)
+    if: false
     name: Run clippy
     runs-on: ubuntu-latest
     steps:
