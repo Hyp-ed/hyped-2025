@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "lib/*",
+    "boards/*", "FirmwareUpdater",
     "config",
 ]
 resolver = "2"
