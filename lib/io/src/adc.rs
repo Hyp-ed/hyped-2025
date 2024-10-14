@@ -1,6 +1,6 @@
+use embassy_stm32::{adc::AnyAdcChannel}
+
 // ADC trait used to abstract the ADC peripheral
-pub trait HypedADC {
-    // Read AIN value
-    // Return a voltage between 0 and 1.8V  
-    fn readValue(&mut self) -> Option<f32>;
+pub trait HypedAdc {
+    fn read_value(&mut self, channel: AnyAdcChannel<T>) -> Option<u16>;
 }
