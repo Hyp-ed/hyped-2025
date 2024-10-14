@@ -16,7 +16,7 @@ pub enum WordSize {
 /// SPI trait used to abstract SPI and allow for mocking
 pub trait HypedSpi {
     /// Read data into `words` from the SPI sensor
-    fn read(&mut self, words: &mut [WordSize]) -> Result<(), SpiError>;
+    fn refmtad(&mut self, words: &mut [WordSize]) -> Result<(), SpiError>;
     /// Write data from `words` to the SPI sensor
     fn write(&mut self, words: &[WordSize]) -> Result<(), SpiError>;
 }
