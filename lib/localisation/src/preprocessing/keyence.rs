@@ -35,5 +35,6 @@ pub fn check_keyence_agrees(keyence_data: &Vec<f64>) -> sensor_checks {
         sensor_check
     }
 
+    
     sensor_check
 }
