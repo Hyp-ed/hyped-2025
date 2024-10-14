@@ -4,9 +4,17 @@
 use core::str::FromStr;
 
 use defmt::*;
+use embassy_boot_stm32::{AlignedBuffer, BlockingFirmwareUpdater, FirmwareUpdaterConfig};
 use rand_core::RngCore;
 use {defmt_rtt as _, panic_probe as _};
-
+use defmt_rtt::*;
+use embassy_stm32::exti::ExtiInput;
+use embassy_stm32::flash::{Flash, WRITE_SIZE};
+use embassy_stm32::gpio::{ Level, Output,  Speed};
+use core::cell::RefCell;
+use embassy_stm32::Peripherals;
+use embassy_sync::blocking_mutex::Mutex;
+use embedded_storage::nor_flash::NorFlash;
 use embassy_executor::Spawner;
 use embassy_net::{tcp::TcpSocket, Ipv4Address, Ipv4Cidr, Stack, StackResources};
 use embassy_stm32::{
@@ -246,8 +254,37 @@ async fn main(spawner: Spawner) -> ! {
         config.rcc.sys = Sysclk::PLL1_P;
     }
     let p = embassy_stm32::init(config);
-    spawner.spawn(button_task(p.PC13.degrade())).unwrap();
+    //spawner.spawn(button_task(p.PC13.degrade())).unwrap();
 
+    {
+        let flash = Flash::new_blocking(p.FLASH);
+
+        let flash = Mutex::new(RefCell::new(flash));
+    
+        let mut button = Input::new(p.PC13, Pull::Down);
+    
+        let mut led = Output::new(p.PB7, Level::Low, Speed::Low);   
+        led.set_high();
+    
+        let config = FirmwareUpdaterConfig::from_linkerfile_blocking(&flash, &flash);
+        let mut magic = AlignedBuffer([0; WRITE_SIZE]);
+        let mut updater = BlockingFirmwareUpdater::new(config, &mut magic.0);
+        let writer = updater.prepare_update().unwrap();
+        while !button.is_high(){};
+        let mut offset = 0;
+        let mut buf = AlignedBuffer([0; 4096]);
+        for chunk in [1u8,2u8,3u8,4u8].chunks(4096) {
+            buf.as_mut()[..chunk.len()].copy_from_slice(chunk);
+            writer.write(offset, buf.as_ref()).unwrap();
+            offset += chunk.len() as u32;
+        }
+        updater.mark_updated().unwrap();
+        led.set_low();
+        cortex_m::peripheral::SCB::sys_reset();
+    }
+    //spawner.spawn(button_task(p.PC13.degrade())).unwrap();
+    
+/*
     log(LogLevel::Info, "Hello World!").await;
 
     // let seed: u64 = 0xdeadbeef;
@@ -319,5 +356,5 @@ async fn main(spawner: Spawner) -> ! {
             })
             .await;
         Timer::after(Duration::from_millis(1000)).await;
-    }
+    }*/
 }
