@@ -1,9 +1,10 @@
-use hyped_io::i2c::HypedI2c;
+use hyped_io::i2c::{HypedI2c, I2cError};
 
 /// Temperature implements the logic to read the temperature from the STTS22H temperature sensor
-/// using the I2C peripheral provided by the HypedI2c trait. The temperature sensor is configured
-/// to continuous mode with a sampling rate of 200Hz. The temperature is read from the sensor and
-/// converted to a floating point value in degrees Celsius.
+/// using the I2C peripheral provided by the HypedI2c trait.
+///
+/// The temperature sensor is configured to continuous mode with a sampling rate of 200Hz.
+/// The temperature is read from the sensor and converted to a floating point value in degrees Celsius.
 ///
 /// Data sheet: https://www.st.com/resource/en/datasheet/stts22h.pdf
 pub struct Temperature<T: HypedI2c> {
@@ -13,7 +14,7 @@ pub struct Temperature<T: HypedI2c> {
 
 impl<T: HypedI2c> Temperature<T> {
     /// Create a new instance of the temperature sensor and attempt to configure it
-    pub fn new(mut i2c: T, device_address: TemperatureAddresses) -> Result<Self, ()> {
+    pub fn new(mut i2c: T, device_address: TemperatureAddresses) -> Result<Self, I2cError> {
         let device_address = device_address as u8;
         // Set up the temperature sensor by sending the configuration settings to the STTS22H_CTRL register
         match i2c.write_byte_to_register(device_address, STTS22H_CTRL, STTS22H_CONFIG_SETTINGS) {
@@ -21,7 +22,7 @@ impl<T: HypedI2c> Temperature<T> {
                 i2c,
                 device_address,
             }),
-            Err(_) => Err(()),
+            Err(_) => Err(I2cError::Unknown),
         }
     }
 
@@ -50,10 +51,10 @@ impl<T: HypedI2c> Temperature<T> {
 
     /// Check the status of the temperature sensor
     pub fn check_status(&mut self) -> Status {
-        return match self.i2c.read_byte(self.device_address, STTS22H_STATUS) {
+        match self.i2c.read_byte(self.device_address, STTS22H_STATUS) {
             Some(byte) => Status::from_byte(byte),
             None => Status::Unknown,
-        };
+        }
     }
 }
 
