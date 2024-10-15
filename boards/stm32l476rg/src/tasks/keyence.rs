@@ -9,7 +9,7 @@ pub async fn read_keyence() -> ! {
     let mut keyence = Keyence::new(Stm32l476rgGpio::new(Input::new(p.PC13, Pull::Down)));
 
     loop {
-        keyence.update_stripe_count().unwrap();
+        keyence.update_stripe_count();
         defmt::info!("Stripe count: {}", keyence.get_stripe_count());
         Timer::after(Duration::from_millis(100)).await;
     }

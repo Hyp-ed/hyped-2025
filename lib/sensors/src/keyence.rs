@@ -29,13 +29,12 @@ impl<T: GpioPin> Keyence<T> {
     }
 
     /// Increments the stripe count if the signal changes from low to high (positive edge).
-    pub fn update_stripe_count(&mut self) -> Result<(), ()> {
+    pub fn update_stripe_count(&mut self) {
         let current_signal = DigitalSignal::from_bool(self.gpio.is_high());
         if current_signal == DigitalSignal::High && self.last_signal == DigitalSignal::Low {
             self.stripe_count += 1;
         }
         self.last_signal = current_signal;
-        return Ok(());
     }
 }
 
@@ -57,9 +56,9 @@ mod tests {
         let gpio = MockGpio::new(Vec::from_slice(&[false, true]).unwrap());
         let mut keyence = Keyence::new(gpio);
 
-        keyence.update_stripe_count().unwrap();
+        keyence.update_stripe_count();
         assert_eq!(keyence.get_stripe_count(), 0);
-        keyence.update_stripe_count().unwrap();
+        keyence.update_stripe_count();
         assert_eq!(keyence.get_stripe_count(), 1);
     }
 
@@ -68,9 +67,9 @@ mod tests {
         let gpio = MockGpio::new(Vec::from_slice(&[true, false]).unwrap());
         let mut keyence = Keyence::new(gpio);
 
-        keyence.update_stripe_count().unwrap();
+        keyence.update_stripe_count();
         assert_eq!(keyence.get_stripe_count(), 1);
-        keyence.update_stripe_count().unwrap();
+        keyence.update_stripe_count();
         assert_eq!(keyence.get_stripe_count(), 1);
     }
 
@@ -79,9 +78,9 @@ mod tests {
         let gpio = MockGpio::new(Vec::from_slice(&[true, true]).unwrap());
         let mut keyence = Keyence::new(gpio);
 
-        keyence.update_stripe_count().unwrap();
+        keyence.update_stripe_count();
         assert_eq!(keyence.get_stripe_count(), 1);
-        keyence.update_stripe_count().unwrap();
+        keyence.update_stripe_count();
         assert_eq!(keyence.get_stripe_count(), 1);
     }
 
@@ -90,9 +89,9 @@ mod tests {
         let gpio = MockGpio::new(Vec::from_slice(&[false, false]).unwrap());
         let mut keyence = Keyence::new(gpio);
 
-        keyence.update_stripe_count().unwrap();
+        keyence.update_stripe_count();
         assert_eq!(keyence.get_stripe_count(), 0);
-        keyence.update_stripe_count().unwrap();
+        keyence.update_stripe_count();
         assert_eq!(keyence.get_stripe_count(), 0);
     }
 }
