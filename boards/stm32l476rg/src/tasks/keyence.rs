@@ -3,6 +3,7 @@ use embassy_stm32::gpio::{Input, Pull};
 use embassy_time::{Duration, Timer};
 use hyped_sensors::keyence::Keyence;
 
+/// Test task that just continually updates the stripe count from the Keyence sensor (or other GPIO pin input)
 #[embassy_executor::task]
 pub async fn read_keyence() -> ! {
     let p = embassy_stm32::init(Default::default());
