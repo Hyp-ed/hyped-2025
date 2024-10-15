@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto:2.0.18
+    ports:
+      - 1883:1883
+      - 8080:8080
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    restart: always
+    networks:
+      - telemetry
+
+volumes:
+  mosquitto:

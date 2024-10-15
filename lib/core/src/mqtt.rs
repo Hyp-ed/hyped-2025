@@ -1,4 +1,4 @@
-use defmt::*;
+use defmt::{info, warn};
 use embassy_net::tcp::TcpSocket;
 use heapless::String;
 use rust_mqtt::{
@@ -45,7 +45,7 @@ impl<'a> HypedMqttClient<'a, TcpSocket<'a>, CountingRng> {
 }
 
 /// Initialise the MQTT client configuration with the given client ID
-pub fn initialise_mqtt_config<'a>(client_id: &'a str) -> ClientConfig<'a, 5, CountingRng> {
+pub fn initialise_mqtt_config(client_id: &str) -> ClientConfig<'_, 5, CountingRng> {
     let mut config = ClientConfig::new(
         rust_mqtt::client::client_config::MqttVersion::MQTTv5,
         CountingRng(20000),
@@ -119,11 +119,11 @@ impl<'a, T: embedded_io_async::Read + embedded_io_async::Write, R: rand_core::Rn
             Err(mqtt_error) => match mqtt_error {
                 ReasonCode::NetworkError => {
                     info!("MQTT Network Error");
-                    return Err(ReasonCode::NetworkError);
+                    Err(ReasonCode::NetworkError)
                 }
                 _ => {
                     warn!("Other MQTT Error: {:?}", mqtt_error);
-                    return Err(mqtt_error);
+                    Err(mqtt_error)
                 }
             },
         }
