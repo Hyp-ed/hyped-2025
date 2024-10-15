@@ -14,10 +14,7 @@ impl DigitalSignal {
     }
 }
 
-type AccelerometerData = Vec<RawAccelerationData>;
-type RawAccelerometerData = Vec<RawAccelerationData>;
-
-struct RawAccelerationData {
+pub struct RawAccelerationData {
     x: i32,
     y: i32,
     z: i32,
@@ -25,8 +22,11 @@ struct RawAccelerationData {
     is_sensor_active: bool,
 }
 
-static kNumAccelerators: i32 = 3;
-static kNumAxis: i32 = 3;
+pub const K_NUM_ACCELEROMETERS: i32 = 3;
+pub const K_NUM_AXIS: i32 = 3;
+
+pub type RawAccelerometerData = [[f32; K_NUM_AXIS as usize]; K_NUM_ACCELEROMETERS as usize];
+pub type AccelerometerData = [f32; K_NUM_ACCELEROMETERS as usize];
 
 #[cfg(test)]
 mod tests {
