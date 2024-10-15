@@ -24,9 +24,3 @@ mod tests {
         assert_eq!(DigitalSignal::from_bool(false), DigitalSignal::Low);
     }
 }
-
-#[derive(Debug)]
-pub enum Status {
-    Ready,
-    NotReady,
-}

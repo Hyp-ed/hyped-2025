@@ -7,3 +7,4 @@ edition = "2021"
 heapless = "0.8.0"
 
 hyped_io = { path = "../io" }
+

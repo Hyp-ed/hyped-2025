@@ -9,8 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run clippy
-        # Add back --all-targets when `error[E0463]: can't find crate for `test`` is fixed
-        run: cargo clippy --all-features -- -D warnings
+        run: cargo clippy --all-targets --all-features -- -D warnings
 
   rust-fmt:
     name: Run rustfmt
