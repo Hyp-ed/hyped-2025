@@ -1,0 +1,10 @@
+[package]
+name = "hyped_sensors"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+heapless = "0.8.0"
+
+hyped_io = { path = "../io" }
+
