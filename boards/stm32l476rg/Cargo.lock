@@ -526,6 +526,7 @@ checksum = "0bfb9eb618601c89945a70e254898da93b13be0388091d42117462b265bb3fad"
 dependencies = [
  "defmt",
  "hash32",
+ "serde",
  "stable_deref_trait",
 ]
 
@@ -554,6 +555,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_core"
+version = "0.1.0"
+dependencies = [
+ "defmt",
+ "embassy-net",
+ "embedded-io-async",
+ "heapless",
+ "rand_core",
+ "rust-mqtt",
+ "serde",
+]
+
+[[package]]
 name = "hyped_io"
 version = "0.1.0"
 dependencies = [
@@ -565,6 +579,7 @@ name = "hyped_sensors"
 version = "0.1.0"
 dependencies = [
  "heapless",
+ "hyped_core",
  "hyped_io",
 ]
 
@@ -693,6 +708,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 
 [[package]]
+name = "rust-mqtt"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8f71160765f368fd9a84e0955e2ddb6d64ac9018fee1c5323354d6d08c816b40"
+dependencies = [
+ "defmt",
+ "embedded-io",
+ "embedded-io-async",
+ "heapless",
+ "rand_core",
+]
+
+[[package]]
 name = "rustc_version"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -721,6 +749,26 @@ name = "semver-parser"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
+
+[[package]]
+name = "serde"
+version = "1.0.210"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c8e3592472072e6e22e0a54d5904d9febf8508f65fb8552499a1abc7d1078c3a"
+dependencies = [
+ "serde_derive",
+]
+
+[[package]]
+name = "serde_derive"
+version = "1.0.210"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "243902eda00fad750862fc144cea25caca5e20d615af0a81bee94ca738f1df1f"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.79",
+]
 
 [[package]]
 name = "smoltcp"
