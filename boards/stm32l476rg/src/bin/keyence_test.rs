@@ -10,8 +10,6 @@ use {defmt_rtt as _, panic_probe as _};
 async fn main(spawner: Spawner) -> ! {
     spawner.spawn(read_keyence()).unwrap();
 
-    // Some other tasks for navigation here...
-
     loop {
         Timer::after(Duration::from_secs(1)).await;
     }

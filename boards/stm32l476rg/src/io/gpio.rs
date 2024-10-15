@@ -8,7 +8,7 @@ pub struct Stm32l476rgGpio {
 
 impl GpioPin for Stm32l476rgGpio {
     fn is_high(&mut self) -> bool {
-        !self.pin.is_high()
+        self.pin.is_high()
     }
 }
 
