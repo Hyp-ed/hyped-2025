@@ -14,6 +14,20 @@ impl DigitalSignal {
     }
 }
 
+type AccelerometerData = Vec<RawAccelerationData>;
+type RawAccelerometerData = Vec<RawAccelerationData>;
+
+struct RawAccelerationData {
+    x: i32,
+    y: i32,
+    z: i32,
+    timestamp: i32,
+    is_sensor_active: bool,
+}
+
+static kNumAccelerators: i32 = 3;
+static kNumAxis: i32 = 3;
+
 #[cfg(test)]
 mod tests {
     use super::*;
