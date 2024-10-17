@@ -1,5 +1,9 @@
+use crate::preprocessing::keyence::*;
+use crate::preprocessing::optical::*;
+use crate::preprocessing::accelerometer::*;
 
-pub struct Nabigator {
+
+pub struct Navigator {
 
     displacement: f64,
     velocity: f64,
@@ -17,6 +21,8 @@ impl Navigator {
         }
     }
 
+    //Setters
+
     pub fn set_displacement(&mut self, displacement: f64) {
         self.displacement = displacement;
     }
@@ -27,6 +33,20 @@ impl Navigator {
 
     pub fn set_acceleration(&mut self, acceleration: f64) {
         self.acceleration = acceleration;
+    }
+
+    //Getters
+
+    pub fn get_displacement(&self) -> f64 {
+        self.displacement
+    }
+
+    pub fn get_velocity(&self) -> f64 {
+        self.velocity
+    }
+
+    pub fn get_acceleration(&self) -> f64 {
+        self.acceleration
     }
 
 
