@@ -4,4 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+<<<<<<< HEAD
 nalgebra = "0.33.0"
+=======
+nalgebra = "0.33.0"
+>>>>>>> main
