@@ -58,10 +58,18 @@ impl KalmanFilter {
         // K_k = P_k*H^T*(H*P_k*H^T + R)^-1
         let kalman_gain = &self.covariance * self.observation_matrix.transpose() * (&self.observation_matrix * &self.covariance * self.observation_matrix.transpose() + &self.measurement_noise).try_inverse().unwrap();
 
+        // x_k = x_k + K_k*(z_k - H*x_k)
+        self.state = &self.state + &kalman_gain * (measurement - &self.observation_matrix * &self.state);
         
-
+        // P_k = (I - K_k*H)*P_k*(I - K_k*H)^T + K_k*R*K_k^T
+        let identity = DMatrix::<f64>::identity(self.covariance.nrows(), self.covariance.ncols());
+        let difference = &identity - &kalman_gain * &self.observation_matrix;
+        self.covariance = &difference * &self.covariance * difference.transpose()
+            + &kalman_gain * &self.measurement_noise * kalman_gain.transpose();
     
-    // x_k = x_k + K_k*(z_k - H*x_k)
-    // P_k = (I - K_k*H)*P_k*(I - K_k*H)^T + K_k*R*K_k^T
+    }
+
+    pub fn get_state(&self) -> DVector<f64> {
+        self.state.clone()
     }
 }  

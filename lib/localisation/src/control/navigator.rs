@@ -1,6 +1,5 @@
-use crate::preprocessing::keyence::*;
-use crate::preprocessing::optical::*;
-use crate::preprocessing::accelerometer::*;
+
+use crate::filtering::kalman_filter::KalmanFilter;
 
 
 pub struct Navigator {
@@ -8,16 +7,18 @@ pub struct Navigator {
     displacement: f64,
     velocity: f64,
     acceleration: f64,
+    kalman_filter: KalmanFilter,
 
 }
 
 impl Navigator {
 
-    pub fn new() -> Navigator {
+    pub fn new(kalman_filter: KalmanFilter) -> Navigator {
         Navigator {
             displacement: 0.0,
             velocity: 0.0,
             acceleration: 0.0,
+            kalman_filter,
         }
     }
 
@@ -48,6 +49,20 @@ impl Navigator {
     pub fn get_acceleration(&self) -> f64 {
         self.acceleration
     }
+
+    pub fn update(&mut self) {
+
+        //TEMP
+        let measurement = nalgebra::DVector::from_vec(vec![0.0, 0.0, 0.0]);
+
+        let measurement
+        self.kalman_filter.predict();
+        self.kalman_filter.update(measurement);
+        self.displacement = self.kalman_filter.get_state()[0];
+        self.velocity = self.kalman_filter.get_state()[1];
+        self.acceleration = self.kalman_filter.get_state()[2];
+    }
+        
 
 
 }
