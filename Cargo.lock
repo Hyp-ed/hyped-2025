@@ -426,6 +426,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_io"
+version = "0.1.0"
+dependencies = [
+ "heapless",
+]
+
+[[package]]
+name = "hyped_sensors"
+version = "0.1.0"
+dependencies = [
+ "heapless",
+ "hyped_io",
+]
+
+[[package]]
 name = "indexmap"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
