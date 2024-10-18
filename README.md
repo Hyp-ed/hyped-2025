@@ -5,24 +5,27 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Hyp-ed/hyped-2024/assets/43144010/12892983-b036-4ec3-b624-1c997f85bf94">
   <source media="(prefers-color-scheme: light)" srcset="https://github.com/Hyp-ed/hyped-2024/assets/43144010/54f3db17-be2b-4473-a963-b7d7d8c24a9a">
-  <img alt="The HYPED logo." style="margin-bottom: 20px" src="[https://user-images.githubusercontent.com/25423296/163456779-a8556205-d0a5-45e2-ac17-42d089e3c3f8.png](https://github.com/Hyp-ed/hyped-2024/assets/43144010/54f3db17-be2b-4473-a963-b7d7d8c24a9a)">
+  <img alt="The HYPED logo." src="[https://user-images.githubusercontent.com/25423296/163456779-a8556205-d0a5-45e2-ac17-42d089e3c3f8.png](https://github.com/Hyp-ed/hyped-2024/assets/43144010/54f3db17-be2b-4473-a963-b7d7d8c24a9a)">
 </picture>
+
+&nbsp;
 
 ![Build Shield](https://github.com/Hyp-ed/hyped-2025/actions/workflows/ci.yml/badge.svg) ![TODO Shield](https://img.shields.io/github/search/hyp-ed/hyped-2025/TODOLater?color=red&label=TODO%20counter)
 
-## HYPED Software 2025
+## Software Architecture
 
 This repository contains the software for the HYPED 2025 pod. The software is divided into two main components:
 
 ### 1. Pod-side Code
 
-The pod-side code is responsible for controlling the pod's systems, including the motor & levitation controllers, sensors, localisation system, and communication with the base station. The pod-side code is written in Rust and runs on the pod's STM32 microcontrollers.
+The pod-side code is responsible for controlling the pod's systems, including the motor & levitation controllers, sensors, localisation system, and communication with the base station. The pod-side code is written in Rust using [Embassy](https://embassy.dev/) and runs on the pod's STM32 microcontrollers.
 
 We use the following microcontrollers on our pod:
 
 - [STM32L476RG](https://www.st.com/en/microcontrollers-microprocessors/stm32l476rg.html)
 - [STM32F767ZI](https://www.st.com/en/microcontrollers-microprocessors/stm32f767zi.html)
 - [STM32H743](https://www.st.com/en/microcontrollers-microprocessors/stm32h743zi.html)
+- [STM23L432](https://www.st.com/en/microcontrollers-microprocessors/stm32l432kc.html)
 
 | Sub-system         | Microcontroller | Number |
 | ------------------ | --------------- | ------ |
@@ -31,9 +34,11 @@ We use the following microcontrollers on our pod:
 | Levitation control | STM32F767       | 8      |
 | Motor control      | TBD             | 1      |
 
+All microcontrollers on our pod will communicate with each other (for sending sensor data, commands, logs, etc.) using [CAN](https://en.wikipedia.org/wiki/CAN_bus) (Controller Area Network).
+
 ### 2. Base Station (Telemetry)
 
-The base station (aka Telemetry) is responsible for monitoring the pod's systems, visualising data, and sending commands to the pod. Telemetry is written in TypeScript and runs on a computer connected to the pod via 2.4GHz radio antennas ([Ubiquiti Rocket M2s](https://techspecs.ui.com/uisp/wireless/rocketm2)).
+The base station (aka Telemetry) is responsible for monitoring the pod's systems, visualising data, and sending commands to the pod. The Telemetry system is written in TypeScript and runs on a base station computer connected to the pod via 2.4GHz radio antennas ([Ubiquiti Rocket M2s](https://techspecs.ui.com/uisp/wireless/rocketm2)). (On the pod-side, the Telemetry board is connected to one of the Rockets and relays messages onto the other microcontrollers over CAN.) The [MQTT](https://mqtt.org/) IoT messaging protocol is used to transfer messages between the pod and the base station.
 
 The base station consists of two main components:
 
@@ -51,7 +56,7 @@ You can learn more about our Telemetry system on our Wiki [here](https://github.
 
 Our Wiki contains a guide on how to get started with Rust and `probe-rs` [here](https://github.com/Hyp-ed/hyped-2025/wiki/Getting-Started-with-Rust).
 
-### Base Station (TypeScript)
+### Base Station (Node.js)
 
 - [Node.js](https://nodejs.org/en/download/)
 - [pnpm](https://pnpm.io/installation)
@@ -66,11 +71,7 @@ For more details on how to set up a development environment for the Telemetry sy
 
 ### Pod-side
 
-To flash some code to an STM32 microcontroller, first navigate to the `boards` directory and then to the board-specific directory. For example, to flash code to the `stm32f476rg` board, run the following commands:
-
-```bash
-cd boards/stm32f476rg
-```
+To flash some code to an STM32 microcontroller, first navigate to the `boards` directory and then to the board-specific directory. For example, to run code on the `stm32f476rg` board you would first change directory into `boards/stm32f476rg`.
 
 Then, to flash some particular code to the microcontroller, `bin/{your_code}.rs`, run the following command:
 
