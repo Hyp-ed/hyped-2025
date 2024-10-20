@@ -31,7 +31,7 @@ We use the following microcontrollers on our pod:
 | ------------------ | --------------- | ------ |
 | Localisation       | STM32H743       | 1      |
 | Telemetry          | STM32H743       | 1      |
-| Levitation control | STM32F767       | 8      |
+| Levitation control | STM32F767       | TBD    |
 | Motor control      | TBD             | 1      |
 
 All microcontrollers on our pod will communicate with each other (for sending sensor data, commands, logs, etc.) using [CAN](https://en.wikipedia.org/wiki/CAN_bus) (Controller Area Network).
