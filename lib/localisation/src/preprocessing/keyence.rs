@@ -1,9 +1,9 @@
-enum keyence_data_status{
-    agreed,
+enum KeyenceDataStatus{
+    Agreed,
     disagreed,
 }
 
-enum sensor_checks{
+enum SensorChecks{
     acceptable,
     unnaceptable,
 }
@@ -36,4 +36,17 @@ pub fn check_keyence_agrees(keyence_data: &Vec<f64>) -> sensor_checks {
     }
 
     sensor_check
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_acceptable_success() {
+        let keyence_data = vec![true, true, false, true, true];
+        let desired_outcome = sensor_checks::acceptable;
+        let result = check_keyence_agrees(keyence_data);
+        assert_eq!(result, desired_outcome);
+    }
 }
