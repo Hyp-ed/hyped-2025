@@ -1,7 +1,6 @@
 use nalgebra::{DMatrix, DVector};
 
 pub struct KalmanFilter {
-
     // Current state estimate
     state: DVector<f64>,
 
@@ -19,11 +18,9 @@ pub struct KalmanFilter {
 
     // Measurement noise covariance
     measurement_noise: DMatrix<f64>,
-
 }
 
 impl KalmanFilter {
-
     pub fn new(
         initial_state: DVector<f64>,
         initial_covariance: DMatrix<f64>,
@@ -44,32 +41,37 @@ impl KalmanFilter {
 
     // Predict
     pub fn predict(&mut self) {
-
         // x_k = F * x_k-1 + B * u_k
         self.state = &self.transition_matrix * &self.state;
 
         // P_k = F * P_k-1 * F^T + Q
-        self.covariance = &self.transition_matrix * &self.covariance * self.transition_matrix.transpose() + &self.process_noise;
+        self.covariance =
+            &self.transition_matrix * &self.covariance * self.transition_matrix.transpose()
+                + &self.process_noise;
     }
 
     // Update
     pub fn update(&mut self, measurement: DVector<f64>) {
-
         // K_k = P_k*H^T*(H*P_k*H^T + R)^-1
-        let kalman_gain = &self.covariance * self.observation_matrix.transpose() * (&self.observation_matrix * &self.covariance * self.observation_matrix.transpose() + &self.measurement_noise).try_inverse().unwrap();
+        let kalman_gain = &self.covariance
+            * self.observation_matrix.transpose()
+            * (&self.observation_matrix * &self.covariance * self.observation_matrix.transpose()
+                + &self.measurement_noise)
+                .try_inverse()
+                .unwrap();
 
         // x_k = x_k + K_k*(z_k - H*x_k)
-        self.state = &self.state + &kalman_gain * (measurement - &self.observation_matrix * &self.state);
-        
+        self.state =
+            &self.state + &kalman_gain * (measurement - &self.observation_matrix * &self.state);
+
         // P_k = (I - K_k*H)*P_k*(I - K_k*H)^T + K_k*R*K_k^T
         let identity = DMatrix::<f64>::identity(self.covariance.nrows(), self.covariance.ncols());
         let difference = &identity - &kalman_gain * &self.observation_matrix;
         self.covariance = &difference * &self.covariance * difference.transpose()
             + &kalman_gain * &self.measurement_noise * kalman_gain.transpose();
-    
     }
 
     pub fn get_state(&self) -> DVector<f64> {
         self.state.clone()
     }
-}  
+}

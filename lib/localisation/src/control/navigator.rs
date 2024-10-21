@@ -1,20 +1,14 @@
-
 use crate::filtering::kalman_filter::KalmanFilter;
 use nalgebra::DVector;
 
-
-
 pub struct Navigator {
-
     displacement: f64,
     velocity: f64,
     acceleration: f64,
     kalman_filter: KalmanFilter,
-
 }
 
 impl Navigator {
-
     pub fn new(kalman_filter: KalmanFilter) -> Navigator {
         Navigator {
             displacement: 0.0,
@@ -53,17 +47,13 @@ impl Navigator {
     }
 
     pub fn update(&mut self) {
-
         //
         let measurement = DVector::zeros(self.kalman_filter.get_state().len());
-        
+
         self.kalman_filter.predict();
         self.kalman_filter.update(measurement);
         self.displacement = self.kalman_filter.get_state()[0];
         self.velocity = self.kalman_filter.get_state()[1];
         self.acceleration = self.kalman_filter.get_state()[2];
     }
-        
-
-
 }
