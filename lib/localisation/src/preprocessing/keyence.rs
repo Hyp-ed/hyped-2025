@@ -11,13 +11,13 @@ enum SensorChecks{
     Unnaceptable,
 }
 
-fn main() {
+pub fn main() {
     let keyence_data = vec![true, true, false, true, true];
     let sensor_check = check_keyence_agrees(&keyence_data);
     println!("{:?}", sensor_check);
 }
 
-pub fn check_keyence_agrees(keyence_data: &Vec<bool>) -> SensorChecks {
+fn check_keyence_agrees(keyence_data: &Vec<bool>) -> SensorChecks {
     let mut sensor_check = SensorChecks::Acceptable;
     let mut data_status = KeyenceDataStatus::Agreed;
 
