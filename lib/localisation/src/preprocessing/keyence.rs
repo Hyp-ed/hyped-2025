@@ -11,31 +11,21 @@ enum SensorChecks{
     Unnaceptable,
 }
 
-pub fn main() {
-    let keyence_data = vec![true, true, false, true, true];
+fn main() -> SensorChecks {
+    let keyence_data = vec![true, true];
     let sensor_check = check_keyence_agrees(&keyence_data);
-    println!("{:?}", sensor_check);
+    return sensor_check;
 }
 
-fn check_keyence_agrees(keyence_data: &Vec<bool>) -> SensorChecks {
-    let mut sensor_check = SensorChecks::Acceptable;
-    let mut data_status = KeyenceDataStatus::Agreed;
+pub fn check_keyence_agrees(keyence_data: &Vec<bool>) -> SensorChecks {
 
-    for i in 0..keyence_data.len()-1 {
-        if keyence_data[i] != keyence_data[i+1] {
-            data_status = KeyenceDataStatus::Disagreed;
-        }
-    }
-
-    if data_status == KeyenceDataStatus::Disagreed {
+    if keyence_data[0] != keyence_data[1] {
         println!("Keyence disagreement for two consecutive readings.");
 
-        sensor_check = SensorChecks::Unnaceptable;
-
-        return sensor_check
+        return SensorChecks::Unnaceptable;
     }
 
-    sensor_check
+    return SensorChecks::Acceptable
 }
 
 #[cfg(test)]
@@ -44,8 +34,16 @@ mod tests {
 
     #[test]
     fn test_acceptable_success() {
-        let keyence_data = vec![true, true, false, true, true];
+        let keyence_data = vec![true, true];
         let desired_outcome = SensorChecks::Acceptable;
+        let result = check_keyence_agrees(&keyence_data);
+        assert_eq!(result, desired_outcome);
+    }
+
+    #[test]
+    fn test_uncceptable_success() {
+        let keyence_data = vec![true, false];
+        let desired_outcome = SensorChecks::Unnaceptable;
         let result = check_keyence_agrees(&keyence_data);
         assert_eq!(result, desired_outcome);
     }
