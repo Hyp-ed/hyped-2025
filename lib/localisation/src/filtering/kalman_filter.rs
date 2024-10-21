@@ -20,6 +20,9 @@ pub struct KalmanFilter {
     measurement_noise: DMatrix<f64>,
 }
 
+
+//DEFINE THE MATRICES 
+
 impl KalmanFilter {
     pub fn new(
         initial_state: DVector<f64>,
@@ -74,4 +77,50 @@ impl KalmanFilter {
     pub fn get_state(&self) -> DVector<f64> {
         self.state.clone()
     }
+}
+
+#[cfg(test)]
+ 
+mod tests {
+
+    use super::KalmanFilter;
+    use nalgebra::{DMatrix, DVector};
+
+    #[test]
+
+    fn test_kalman_filter() {
+        
+        let initial_state = DVector::zeros(3);
+        let initial_covariance = DMatrix::identity(3, 3);
+        let transition_matrix = DMatrix::identity(3, 3);
+        let observation_matrix = DMatrix::identity(3, 3);
+        let process_noise = DMatrix::identity(3, 3);
+        let measurement_noise = DMatrix::identity(3, 3);
+        
+
+        // Create the Kalman filter
+        let mut kalman_filter = KalmanFilter::new(
+            initial_state,
+            initial_covariance,
+            transition_matrix,
+            observation_matrix,
+            process_noise,
+            measurement_noise,
+        );
+
+        // Predict
+        kalman_filter.predict();
+
+        // Update
+        let measurement = DVector::zeros(3);
+        kalman_filter.update(measurement);
+
+        // Get the state
+        let state = kalman_filter.get_state();
+
+        // Check the state
+        println!("{:?}", state);
+        assert_eq!(state, DVector::zeros(3));
+    }
+
 }
