@@ -1,11 +1,14 @@
+#[derive(PartialEq)]
 enum KeyenceDataStatus{
     Agreed,
-    disagreed,
+    Disagreed,
 }
 
+#[derive(PartialEq)]
+#[derive(Debug)]
 enum SensorChecks{
-    acceptable,
-    unnaceptable,
+    Acceptable,
+    Unnaceptable,
 }
 
 fn main() {
@@ -14,25 +17,25 @@ fn main() {
     println!("{:?}", sensor_check);
 }
 
-pub fn check_keyence_agrees(keyence_data: &Vec<f64>) -> sensor_checks {
-    let mut sensor_check = sensor_checks::acceptable;
-    let mut previous_data_status = keyence_data_status::agreed;
-    let mut current_data_status = keyence_data_status::agreed;
+pub fn check_keyence_agrees(keyence_data: &Vec<f64>) -> SensorChecks {
+    let mut sensor_check = SensorChecks::Acceptable;
+    let mut previous_data_status = KeyenceDataStatus::Agreed;
+    let mut current_data_status = KeyenceDataStatus::Agreed;
 
     for i in 0..keyence_data.len()-1 {
-        if keyence_data[i] != keyence_data{i+1} {
-            current_data_status = keyence_data_status::disagreed;
+        if keyence_data[i] != keyence_data[i+1] {
+            current_data_status = KeyenceDataStatus::Disagreed;
         }
     }
 
     previous_data_status = current_data_status;
 
-    if current_data_status == keyence_data_status::disagreed && previous_data_status == keyence_data_status:: disagreed {
+    if current_data_status == KeyenceDataStatus::Disagreed && previous_data_status == KeyenceDataStatus:: Disagreed {
         println!("Keyence disagreement for two consecutive readings.");
 
-        sensor_check = sensor_checks::unnaceptable;
+        sensor_check = SensorChecks::Unnaceptable;
 
-        sensor_check
+        return sensor_check
     }
 
     sensor_check
@@ -45,7 +48,7 @@ mod tests {
     #[test]
     fn test_acceptable_success() {
         let keyence_data = vec![true, true, false, true, true];
-        let desired_outcome = sensor_checks::acceptable;
+        let desired_outcome = SensorChecks::Acceptable;
         let result = check_keyence_agrees(keyence_data);
         assert_eq!(result, desired_outcome);
     }
