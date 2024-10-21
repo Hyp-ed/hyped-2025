@@ -17,20 +17,17 @@ fn main() {
     println!("{:?}", sensor_check);
 }
 
-pub fn check_keyence_agrees(keyence_data: &Vec<f64>) -> SensorChecks {
+pub fn check_keyence_agrees(keyence_data: &Vec<bool>) -> SensorChecks {
     let mut sensor_check = SensorChecks::Acceptable;
-    let mut previous_data_status = KeyenceDataStatus::Agreed;
-    let mut current_data_status = KeyenceDataStatus::Agreed;
+    let mut data_status = KeyenceDataStatus::Agreed;
 
     for i in 0..keyence_data.len()-1 {
         if keyence_data[i] != keyence_data[i+1] {
-            current_data_status = KeyenceDataStatus::Disagreed;
+            data_status = KeyenceDataStatus::Disagreed;
         }
     }
 
-    previous_data_status = current_data_status;
-
-    if current_data_status == KeyenceDataStatus::Disagreed && previous_data_status == KeyenceDataStatus:: Disagreed {
+    if data_status == KeyenceDataStatus::Disagreed {
         println!("Keyence disagreement for two consecutive readings.");
 
         sensor_check = SensorChecks::Unnaceptable;
@@ -49,7 +46,7 @@ mod tests {
     fn test_acceptable_success() {
         let keyence_data = vec![true, true, false, true, true];
         let desired_outcome = SensorChecks::Acceptable;
-        let result = check_keyence_agrees(keyence_data);
+        let result = check_keyence_agrees(&keyence_data);
         assert_eq!(result, desired_outcome);
     }
 }
