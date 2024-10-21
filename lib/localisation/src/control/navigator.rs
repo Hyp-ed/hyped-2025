@@ -54,6 +54,7 @@ impl Navigator {
 
     pub fn update(&mut self) {
 
+        //
         let measurement = DVector::zeros(self.kalman_filter.get_state().len());
         
         self.kalman_filter.predict();
