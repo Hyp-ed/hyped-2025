@@ -1,5 +1,7 @@
 
 use crate::filtering::kalman_filter::KalmanFilter;
+use nalgebra::DVector;
+
 
 
 pub struct Navigator {
@@ -52,10 +54,8 @@ impl Navigator {
 
     pub fn update(&mut self) {
 
-        //TEMP
-        let measurement = nalgebra::DVector::from_vec(vec![0.0, 0.0, 0.0]);
-
-        let measurement
+        let measurement = DVector::zeros(self.kalman_filter.get_state().len());
+        
         self.kalman_filter.predict();
         self.kalman_filter.update(measurement);
         self.displacement = self.kalman_filter.get_state()[0];
