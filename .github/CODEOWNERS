@@ -1,0 +1,21 @@
+* @davidbeechey
+
+# Infrastructure
+debugger @kshxtij
+lib/core @kshxtij
+lib/config @kshxtij
+lib/state_machine @DylanCavers
+
+# Localisation
+lib/localisation @misha7b
+
+# Motors & Levitation Control
+lib/motors @jpfbastos
+lib/levitation @jpfbastos
+
+# Sensors
+lib/sensors @licornes-fluos @H-Allen
+lib/io @licornes-fluos @H-Allen
+
+# Telemetry
+telemetry @arjunnaha
