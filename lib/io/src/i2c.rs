@@ -26,7 +26,7 @@ pub mod mock_i2c {
     use heapless::FnvIndexMap;
 
     /// A fixed-size map of I2C values, indexed by device address and register address
-    type I2cValues = FnvIndexMap<(u8, u8), u8, 10>;
+    type I2cValues = FnvIndexMap<(u8, u8), u8, 16>;
 
     /// A mock I2C instance which can be used for testing
     pub struct MockI2c {
