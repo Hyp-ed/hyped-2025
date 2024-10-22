@@ -113,3 +113,26 @@ const STTS22H_CONFIG_SETTINGS: u8 = 0x3c;
 
 // Scaling factor to convert the temperature from the sensor to degrees Celsius
 const STTS22H_TEMP_SCALING_FACTOR: f32 = 0.01;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use heapless::FnvIndexMap;
+    use hyped_io::i2c::mock_i2c::MockI2c;
+
+    #[test]
+    fn test_temperature_read_0() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H),
+            0x00,
+        );
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
+            0x00,
+        );
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut temperature = Temperature::new(i2c, TemperatureAddresses::Address3f).unwrap();
+        assert_eq!(temperature.read(), Some(0.0));
+    }
+}
