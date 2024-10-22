@@ -81,6 +81,7 @@ pub enum TemperatureError {
 }
 
 /// Represents the possible statuses of the temperature sensor
+#[derive(Debug, PartialEq)]
 pub enum Status {
     Busy,
     TempOverUpperLimit,
@@ -172,5 +173,41 @@ mod tests {
         let i2c = MockI2c::new(i2c_values);
         let mut temperature = Temperature::new(i2c, TemperatureAddresses::Address3f).unwrap();
         assert_eq!(temperature.read(), Some(-10.0));
+    }
+
+    #[test]
+    fn test_temperature_status_busy() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
+            STTS22H_STATUS_BUSY,
+        );
+        let i2c = MockI2c::new(i2c_values);
+        let mut temperature = Temperature::new(i2c, TemperatureAddresses::Address3f).unwrap();
+        assert_eq!(temperature.check_status(), Status::Busy);
+    }
+
+    #[test]
+    fn test_temperature_status_temp_over_upper_limit() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
+            STTS22H_TEMP_OVER_UPPER_LIMIT,
+        );
+        let i2c = MockI2c::new(i2c_values);
+        let mut temperature = Temperature::new(i2c, TemperatureAddresses::Address3f).unwrap();
+        assert_eq!(temperature.check_status(), Status::TempOverUpperLimit);
+    }
+
+    #[test]
+    fn test_temperature_status_temp_under_lower_limit() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
+            STTS22H_TEMP_UNDER_LOWER_LIMIT,
+        );
+        let i2c = MockI2c::new(i2c_values);
+        let mut temperature = Temperature::new(i2c, TemperatureAddresses::Address3f).unwrap();
+        assert_eq!(temperature.check_status(), Status::TempUnderLowerLimit);
     }
 }

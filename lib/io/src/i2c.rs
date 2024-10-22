@@ -56,12 +56,5 @@ pub mod mock_i2c {
         pub fn new(values: I2cValues) -> MockI2c {
             MockI2c { values }
         }
-
-        /// Inserts a value into the map. If the value already exists, it is overwritten.
-        pub fn insert(&mut self, device_address: u8, register_address: u8, value: u8) {
-            let _ = self
-                .values
-                .insert((device_address, register_address), value);
-        }
     }
 }
