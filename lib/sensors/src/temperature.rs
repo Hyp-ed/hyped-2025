@@ -46,6 +46,11 @@ impl<T: HypedI2c> Temperature<T> {
         let combined: f32 =
             ((temperature_high_byte as u16) << 8 | temperature_low_byte as u16) as f32;
 
+        if combined >= TWO_POWER_15 {
+            // Convert the temperature to a negative value
+            return Some((combined - TWO_POWER_16) * STTS22H_TEMP_SCALING_FACTOR);
+        }
+
         Some(combined * STTS22H_TEMP_SCALING_FACTOR)
     }
 
@@ -112,6 +117,8 @@ const STTS22H_CONFIG_SETTINGS: u8 = 0x3c;
 
 // Scaling factor to convert the temperature from the sensor to degrees Celsius
 const STTS22H_TEMP_SCALING_FACTOR: f32 = 0.01;
+const TWO_POWER_15: f32 = 32768.0;
+const TWO_POWER_16: f32 = 65536.0;
 
 #[cfg(test)]
 mod tests {
@@ -151,19 +158,19 @@ mod tests {
         assert_eq!(temperature.read(), Some(25.0));
     }
 
-    // #[test]
-    // fn test_temperature_read_minus_10() {
-    //     let mut i2c_values = FnvIndexMap::new();
-    //     let _ = i2c_values.insert(
-    //         (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H),
-    //         0xfc,
-    //     );
-    //     let _ = i2c_values.insert(
-    //         (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
-    //         0x18,
-    //     );
-    //     let i2c = MockI2c::new(i2c_values);
-    //     let mut temperature = Temperature::new(i2c, TemperatureAddresses::Address3f).unwrap();
-    //     assert_eq!(temperature.read(), Some(-10.0));
-    // }
+    #[test]
+    fn test_temperature_read_minus_10() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H),
+            0xfc,
+        );
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
+            0x18,
+        );
+        let i2c = MockI2c::new(i2c_values);
+        let mut temperature = Temperature::new(i2c, TemperatureAddresses::Address3f).unwrap();
+        assert_eq!(temperature.read(), Some(-10.0));
+    }
 }
