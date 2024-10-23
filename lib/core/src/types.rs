@@ -1,3 +1,5 @@
+use heapless::Vec;
+
 #[derive(PartialEq, Debug)]
 pub enum DigitalSignal {
     High,
@@ -22,11 +24,19 @@ pub struct RawAccelerationData {
     is_sensor_active: bool,
 }
 
-pub const K_NUM_ACCELEROMETERS: i32 = 3;
-pub const K_NUM_AXIS: i32 = 3;
+pub const K_NUM_ACCELEROMETERS: usize = 3;
+pub const K_NUM_AXIS: usize = 3;
+pub const K_NUM_ALLOWED_ACCELEROMETER_OUTLIERS: i32 = 2;
 
-pub type RawAccelerometerData = [[f32; K_NUM_AXIS as usize]; K_NUM_ACCELEROMETERS as usize];
-pub type AccelerometerData = [f32; K_NUM_ACCELEROMETERS as usize];
+#[derive(PartialEq)]
+pub enum SensorChecks {
+    Unacceptable,
+    Acceptable,
+}
+
+pub type RawAccelerometerData<const NUM_AXIS: usize, const NUM_ACC: usize> =
+    Vec<Vec<f32, NUM_AXIS>, NUM_ACC>;
+pub type AccelerometerData<const NUM_ACC: usize> = Vec<f32, NUM_ACC>;
 
 #[cfg(test)]
 mod tests {
