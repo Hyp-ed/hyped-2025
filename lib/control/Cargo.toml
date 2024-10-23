@@ -1,0 +1,11 @@
+[package]
+name = "hyped_control"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+heapless = "0.8.0"
+
+hyped_core = { path = "../core" }
+hyped_io = { path = "../io" }
+
