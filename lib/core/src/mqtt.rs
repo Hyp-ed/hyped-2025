@@ -56,6 +56,7 @@ pub fn initialise_mqtt_config(client_id: &str) -> ClientConfig<'_, 5, CountingRn
     config
 }
 
+// Implement send_message for HypedMqttClient
 impl<'a, T: embedded_io_async::Read + embedded_io_async::Write, R: rand_core::RngCore>
     HypedMqttClient<'a, T, R>
 {
