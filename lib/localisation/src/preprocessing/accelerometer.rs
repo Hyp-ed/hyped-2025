@@ -1,3 +1,4 @@
+use heapless::Vec;
 use hyped_core::types::{AccelerometerData, RawAccelerometerData, SensorChecks};
 use hyped_core::types::{K_NUM_ACCELEROMETERS, K_NUM_ALLOWED_ACCELEROMETER_OUTLIERS, K_NUM_AXIS};
 
@@ -11,15 +12,6 @@ struct Quartiles {
     q1: f32,
     q2: f32,
     q3: f32,
-}
-
-fn get_quartiles<const SIZE: usize>(data: &AccelerometerData<SIZE>) -> Quartiles {
-    let mut sorted_data = data.clone();
-    sorted_data.sort_by(|a, b| a.partial_cmp(b).unwrap());
-    let q1 = sorted_data[K_NUM_ACCELEROMETERS / 4];
-    let q2 = sorted_data[K_NUM_ACCELEROMETERS / 2];
-    let q3 = sorted_data[K_NUM_ACCELEROMETERS * 3 / 4];
-    return Quartiles { q1, q2, q3 };
 }
 
 impl AccelerometerPreprocessor {
@@ -65,7 +57,7 @@ impl AccelerometerPreprocessor {
     ) -> Option<Quartiles> {
         let quartiles: Quartiles;
         if self.num_reliable_accelerometers_ == K_NUM_ACCELEROMETERS as i32 {
-            quartiles = get_quartiles(data);
+            quartiles = self.get_quartiles(data);
         } else if self.num_reliable_accelerometers_ == (K_NUM_ACCELEROMETERS as i32 - 1) {
             const SIZE: usize = K_NUM_ACCELEROMETERS - 1;
             let filtered_data: AccelerometerData<SIZE> = (0..SIZE)
@@ -76,7 +68,7 @@ impl AccelerometerPreprocessor {
                 })
                 .collect();
 
-            quartiles = get_quartiles(&filtered_data);
+            quartiles = self.get_quartiles(&filtered_data);
         } else {
             return None;
         }
@@ -131,11 +123,35 @@ impl AccelerometerPreprocessor {
 
         SensorChecks::Acceptable
     }
+
+    fn get_quartiles<const SIZE: usize>(&self, data: &AccelerometerData<SIZE>) -> Quartiles {
+        let mut sorted_data = data.clone();
+        sorted_data.sort_by(|a, b| a.partial_cmp(b).unwrap());
+
+        let quartile_keys: Vec<f32, 3> = Vec::from_slice(&[0.25, 0.5, 0.75]).unwrap();
+        let quartiles: Vec<f32, 3> = quartile_keys
+            .iter()
+            .map(|quartile| {
+                let index_quartile: f32 = self.num_reliable_accelerometers_ as f32 * quartile;
+                let index_quartile_floor = index_quartile.floor() as usize;
+                let index_quartile_ceil = index_quartile.ceil() as usize;
+
+                (data.get(index_quartile_floor).unwrap_or_else(|| &0.0)
+                    + data.get(index_quartile_ceil).unwrap_or_else(|| &0.0))
+                    / 2.0
+            })
+            .collect();
+
+        Quartiles {
+            q1: quartiles[0],
+            q2: quartiles[1],
+            q3: quartiles[2],
+        }
+    }
 }
 
 mod tests {
     use super::*;
-    use heapless::Vec;
 
     #[test]
     fn test_accelerometer_preprocessor() {
