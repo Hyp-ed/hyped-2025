@@ -45,9 +45,13 @@ impl<T: HypedI2c> Temperature<T> {
             };
         let combined: f32 =
             ((temperature_high_byte as u16) << 8 | temperature_low_byte as u16) as f32;
-        let temperature = combined * STTS22H_TEMP_SCALING_FACTOR;
 
-        Some(temperature)
+        if combined >= TWO_POWER_15 {
+            // Convert the temperature to a negative value
+            return Some((combined - TWO_POWER_16) * STTS22H_TEMP_SCALING_FACTOR);
+        }
+
+        Some(combined * STTS22H_TEMP_SCALING_FACTOR)
     }
 
     /// Check the status of the temperature sensor
@@ -77,6 +81,7 @@ pub enum TemperatureError {
 }
 
 /// Represents the possible statuses of the temperature sensor
+#[derive(Debug, PartialEq)]
 pub enum Status {
     Busy,
     TempOverUpperLimit,
@@ -113,3 +118,96 @@ const STTS22H_CONFIG_SETTINGS: u8 = 0x3c;
 
 // Scaling factor to convert the temperature from the sensor to degrees Celsius
 const STTS22H_TEMP_SCALING_FACTOR: f32 = 0.01;
+const TWO_POWER_15: f32 = 32768.0;
+const TWO_POWER_16: f32 = 65536.0;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use heapless::FnvIndexMap;
+    use hyped_io::i2c::mock_i2c::MockI2c;
+
+    #[test]
+    fn test_temperature_read_0() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H),
+            0x00,
+        );
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
+            0x00,
+        );
+        let i2c = MockI2c::new(i2c_values);
+        let mut temperature = Temperature::new(i2c, TemperatureAddresses::Address3f).unwrap();
+        assert_eq!(temperature.read(), Some(0.0));
+    }
+
+    #[test]
+    fn test_temperature_read_25() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H),
+            0x09,
+        );
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
+            0xc4,
+        );
+        let i2c = MockI2c::new(i2c_values);
+        let mut temperature = Temperature::new(i2c, TemperatureAddresses::Address3f).unwrap();
+        assert_eq!(temperature.read(), Some(25.0));
+    }
+
+    #[test]
+    fn test_temperature_read_minus_10() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H),
+            0xfc,
+        );
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
+            0x18,
+        );
+        let i2c = MockI2c::new(i2c_values);
+        let mut temperature = Temperature::new(i2c, TemperatureAddresses::Address3f).unwrap();
+        assert_eq!(temperature.read(), Some(-10.0));
+    }
+
+    #[test]
+    fn test_temperature_status_busy() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
+            STTS22H_STATUS_BUSY,
+        );
+        let i2c = MockI2c::new(i2c_values);
+        let mut temperature = Temperature::new(i2c, TemperatureAddresses::Address3f).unwrap();
+        assert_eq!(temperature.check_status(), Status::Busy);
+    }
+
+    #[test]
+    fn test_temperature_status_temp_over_upper_limit() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
+            STTS22H_TEMP_OVER_UPPER_LIMIT,
+        );
+        let i2c = MockI2c::new(i2c_values);
+        let mut temperature = Temperature::new(i2c, TemperatureAddresses::Address3f).unwrap();
+        assert_eq!(temperature.check_status(), Status::TempOverUpperLimit);
+    }
+
+    #[test]
+    fn test_temperature_status_temp_under_lower_limit() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
+            STTS22H_TEMP_UNDER_LOWER_LIMIT,
+        );
+        let i2c = MockI2c::new(i2c_values);
+        let mut temperature = Temperature::new(i2c, TemperatureAddresses::Address3f).unwrap();
+        assert_eq!(temperature.check_status(), Status::TempUnderLowerLimit);
+    }
+}
