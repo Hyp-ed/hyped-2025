@@ -1,0 +1,15 @@
+diff --git a/package.json b/package.json
+index d618c5b39872a64b809eac6c27402241d77f79f7..0ce26cf2e52786645c5b8fe528df38cda55f969d 100644
+--- a/package.json
++++ b/package.json
+@@ -32,8 +32,8 @@
+     "test:e2e": "jest --config ./test/jest-e2e.json"
+   },
+   "peerDependencies": {
+-    "@nestjs/common": "^6.10.11 || ^7.0.0 || ^8.0.0",
+-    "@nestjs/core": "^6.10.11 || ^7.0.0 || ^8.0.0",
++    "@nestjs/common": "^6.10.11 || ^7.0.0 || ^8.0.0 || ^9.0.0",
++    "@nestjs/core": "^6.10.11 || ^7.0.0 || ^8.0.0 || ^9.0.0",
+     "mqtt": "^3.0.0"
+   },
+   "devDependencies": {

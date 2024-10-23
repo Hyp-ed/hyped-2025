@@ -1,0 +1,17 @@
+{
+  "name": "@hyped/telemetry-types",
+  "private": true,
+  "version": "0.0.0",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "eslint --ext .ts src --max-warnings 0  --report-unused-disable-directives",
+    "lint:fix": "eslint --ext .ts src --fix"
+  },
+  "dependencies": {
+    "@hyped/eslint-config": "workspace:*",
+    "@hyped/tsconfig": "workspace:*",
+    "typescript": "^5.3.3"
+  }
+}
