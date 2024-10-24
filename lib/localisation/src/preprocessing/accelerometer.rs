@@ -60,14 +60,14 @@ impl AccelerometerPreprocessor {
             quartiles = self.get_quartiles(data);
         } else if self.num_reliable_accelerometers_ == (K_NUM_ACCELEROMETERS as i32 - 1) {
             const SIZE: usize = K_NUM_ACCELEROMETERS - 1;
-            let filtered_data: AccelerometerData<SIZE> = (0..SIZE)
-                .into_iter()
-                .map(|i| match self.reliable_accelerometers_[i] {
-                    true => data[i],
-                    false => 0.0,
-                })
-                .collect();
-
+            let mut filtered_data: AccelerometerData<SIZE> = Vec::new();
+            let mut filtered_data_idx = 0;
+            data.iter().enumerate().for_each(|(i, val)| {
+                if self.reliable_accelerometers_[i] {
+                    filtered_data[filtered_data_idx] = val.clone();
+                    filtered_data_idx += 1;
+                }
+            });
             quartiles = self.get_quartiles(&filtered_data);
         } else {
             return None;
