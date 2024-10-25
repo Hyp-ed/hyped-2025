@@ -26,11 +26,12 @@ pub mod mock_i2c {
     use heapless::FnvIndexMap;
 
     /// A fixed-size map of I2C values, indexed by device address and register address
-    type I2cValues = FnvIndexMap<(u8, u8), u8, 16>;
+    type I2cValues = FnvIndexMap<(u8, u8), Option<u8>, 16>;
 
     /// A mock I2C instance which can be used for testing
     pub struct MockI2c {
         values: I2cValues,
+        writes: I2cValues,
     }
 
     impl crate::i2c::HypedI2c for MockI2c {
@@ -39,22 +40,37 @@ pub mod mock_i2c {
             self.values
                 .get(&(device_address, register_address))
                 .copied()
+                .unwrap()
         }
 
-        /// Always succeeds, but does nothing
+        /// Writes a byte to the map so that it can be read later to check the value
         fn write_byte_to_register(
             &mut self,
-            _device_address: u8,
-            _register_address: u8,
-            _data: u8,
+            device_address: u8,
+            register_address: u8,
+            data: u8,
         ) -> Result<(), super::I2cError> {
-            Ok(())
+            match self
+                .writes
+                .insert((device_address, register_address), Some(data))
+            {
+                Ok(_) => Ok(()),
+                Err(_) => Err(super::I2cError::Unknown),
+            }
         }
     }
 
     impl MockI2c {
         pub fn new(values: I2cValues) -> MockI2c {
-            MockI2c { values }
+            MockI2c {
+                values,
+                writes: I2cValues::new(),
+            }
+        }
+
+        /// Returns a reference to the I2C values map
+        pub fn get_writes(&self) -> &I2cValues {
+            &self.writes
         }
     }
 }
