@@ -6,11 +6,15 @@ pub struct I2cMux<T: HypedI2c> {
     channel: u8,
 }
 
+pub enum I2cMuxError {
+    InvalidChannel,
+}
+
 impl<T: HypedI2c> I2cMux<T> {
-    pub fn new(i2c: T, channel: u8, mux_address: u8) -> Result<Self, ()> {
+    pub fn new(i2c: T, channel: u8, mux_address: u8) -> Result<Self, I2cMuxError> {
         // Check that the channel is valid
         if channel >= MAX_MUX_CHANNELS {
-            return Err(());
+            return Err(I2cMuxError::InvalidChannel);
         }
         Ok(Self {
             i2c,
@@ -30,14 +34,14 @@ impl<T: HypedI2c> HypedI2c for I2cMux<T> {
 
     fn write_byte_to_register(
         &mut self,
-        device_addres: u8,
+        device_address: u8,
         register_address: u8,
         data: u8,
     ) -> Result<(), I2cError> {
         match self.select_channel() {
             Ok(_) => self
                 .i2c
-                .write_byte_to_register(device_addres, register_address, data),
+                .write_byte_to_register(device_address, register_address, data),
             Err(e) => Err(e as I2cError),
         }
     }
