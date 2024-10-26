@@ -1,17 +1,26 @@
-use crate::i2c::{HypedI2c, HypedI2cMux, I2cError};
+use crate::i2c::{HypedI2c, I2cError};
+use embassy_sync::{
+    blocking_mutex::raw::CriticalSectionRawMutex,
+    mutex::{Mutex, MutexGuard},
+};
 
-pub struct I2cMux<T: HypedI2c> {
-    i2c: T,
+pub struct I2cMux<'a, T: HypedI2c> {
+    i2c: &'a Mutex<CriticalSectionRawMutex, T>,
     mux_address: u8,
     channel: u8,
 }
 
+#[derive(Debug)]
 pub enum I2cMuxError {
     InvalidChannel,
 }
 
-impl<T: HypedI2c> I2cMux<T> {
-    pub fn new(i2c: T, channel: u8, mux_address: u8) -> Result<Self, I2cMuxError> {
+impl<'a, T: HypedI2c> I2cMux<'a, T> {
+    pub fn new(
+        i2c: &'a Mutex<CriticalSectionRawMutex, T>,
+        channel: u8,
+        mux_address: u8,
+    ) -> Result<Self, I2cMuxError> {
         // Check that the channel is valid
         if channel >= MAX_MUX_CHANNELS {
             return Err(I2cMuxError::InvalidChannel);
@@ -22,12 +31,32 @@ impl<T: HypedI2c> I2cMux<T> {
             mux_address,
         })
     }
+
+    fn get_lock(&self) -> MutexGuard<'_, CriticalSectionRawMutex, T> {
+        loop {
+            match self.i2c.try_lock() {
+                Ok(i2c) => return i2c,
+                Err(_) => continue,
+            }
+        }
+    }
+
+    /// Selects the channel on the multiplexer
+    fn select_channel(&mut self) -> Result<(), I2cError> {
+        match self
+            .get_lock()
+            .write_byte(self.mux_address, 1 << self.channel)
+        {
+            Ok(_) => Ok(()),
+            Err(e) => Err(e as I2cError),
+        }
+    }
 }
 
-impl<T: HypedI2c> HypedI2c for I2cMux<T> {
+impl<'a, T: HypedI2c> HypedI2c for I2cMux<'a, T> {
     fn read_byte(&mut self, device_address: u8, register_address: u8) -> Option<u8> {
         match self.select_channel() {
-            Ok(_) => self.i2c.read_byte(device_address, register_address),
+            Ok(_) => self.get_lock().read_byte(device_address, register_address),
             Err(_) => None,
         }
     }
@@ -40,7 +69,7 @@ impl<T: HypedI2c> HypedI2c for I2cMux<T> {
     ) -> Result<(), I2cError> {
         match self.select_channel() {
             Ok(_) => self
-                .i2c
+                .get_lock()
                 .write_byte_to_register(device_address, register_address, data),
             Err(e) => Err(e as I2cError),
         }
@@ -48,17 +77,7 @@ impl<T: HypedI2c> HypedI2c for I2cMux<T> {
 
     fn write_byte(&mut self, device_address: u8, data: u8) -> Result<(), I2cError> {
         match self.select_channel() {
-            Ok(_) => self.i2c.write_byte(device_address, data),
-            Err(e) => Err(e as I2cError),
-        }
-    }
-}
-
-impl<T: HypedI2c> HypedI2cMux for I2cMux<T> {
-    /// Selects the channel on the multiplexer
-    fn select_channel(&mut self) -> Result<(), I2cError> {
-        match self.i2c.write_byte(self.mux_address, 1 << self.channel) {
-            Ok(_) => Ok(()),
+            Ok(_) => self.get_lock().write_byte(device_address, data),
             Err(e) => Err(e as I2cError),
         }
     }

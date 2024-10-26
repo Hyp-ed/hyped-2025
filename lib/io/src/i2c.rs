@@ -23,8 +23,3 @@ pub trait HypedI2c {
     ) -> Result<(), I2cError>;
     fn write_byte(&mut self, device_address: u8, data: u8) -> Result<(), I2cError>;
 }
-
-/// I2C mux trait used to abstract the I2C multiplexer
-pub trait HypedI2cMux: HypedI2c {
-    fn select_channel(&mut self) -> Result<(), I2cError>;
-}
