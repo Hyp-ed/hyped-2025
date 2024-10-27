@@ -1,8 +1,10 @@
+use core::cell::RefCell;
+
 use crate::io::i2c::Stm32f767ziI2c;
 use defmt_rtt as _;
 use embassy_stm32::i2c::I2c;
 use embassy_stm32::time::Hertz;
-use embassy_sync::mutex::Mutex;
+use embassy_sync::blocking_mutex::Mutex;
 use hyped_io::i2c_mux::{I2cMux, DEFAULT_MUX_ADDRESS};
 use hyped_sensors::temperature::{Temperature, TemperatureAddresses};
 
@@ -11,7 +13,7 @@ pub async fn example() -> ! {
     let p = embassy_stm32::init(Default::default());
     let i2c = I2c::new_blocking(p.I2C1, p.PB8, p.PB9, Hertz(100_000), Default::default());
 
-    let hyped_i2c = Mutex::new(Stm32f767ziI2c::new(i2c));
+    let hyped_i2c = Mutex::new(RefCell::new(Stm32f767ziI2c::new(i2c)));
 
     // Let's say we have 4 temperature sensors connected to the multiplexer
     let i2c_mux_1 =
