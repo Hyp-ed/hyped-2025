@@ -1,4 +1,5 @@
 use crate::filtering::kalman_filter::KalmanFilter;
+use nalgebra::DVector;
 
 pub struct Navigator {
     displacement: f64,
@@ -48,10 +49,15 @@ impl Navigator {
     pub fn run(&mut self) {}
 
     pub fn update(&mut self) {
-        //self.kalman_filter.predict(control);
-        //self.kalman_filter.update(measurement);
-        self.displacement = self.kalman_filter.get_state()[0];
-        self.velocity = self.kalman_filter.get_state()[1];
-        self.acceleration = self.kalman_filter.get_state()[2];
+
+        let control_input = DVector::from_column_slice(&[0.0]);
+        self.kalman_filter.predict(&control_input);
+
+        let measurement = DVector::from_column_slice(&[0.0,0.0]);
+        self.kalman_filter.update(&measurement);
+
+        self.set_displacement(self.kalman_filter.get_state()[0]);
+        self.set_velocity(self.kalman_filter.get_state()[1]);
+        self.set_acceleration(self.kalman_filter.get_state()[2]);
     }
 }
