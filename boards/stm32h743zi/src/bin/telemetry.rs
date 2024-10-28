@@ -12,6 +12,7 @@ use embassy_stm32::{
     rng::{self, Rng},
     time::Hertz,
     Config,
+    rcc
 };
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32h743zi::{
@@ -40,17 +41,19 @@ async fn main(spawner: Spawner) -> ! {
             freq: Hertz(8_000_000),
             mode: HseMode::Bypass,
         });
-        config.rcc.pll_src = PllSource::HSE;
-        config.rcc.pll = Some(Pll {
+        config.rcc.pll1 = Some(rcc::Pll {
+            source: PllSource::HSE,
             prediv: PllPreDiv::DIV4,
             mul: PllMul::MUL216,
-            divp: Some(PllPDiv::DIV2), // 8mhz / 4 * 216 / 2 = 216Mhz
+            divp: Some(rcc::PllDiv::DIV2), // check me
             divq: None,
             divr: None,
         });
         config.rcc.ahb_pre = AHBPrescaler::DIV1;
         config.rcc.apb1_pre = APBPrescaler::DIV4;
         config.rcc.apb2_pre = APBPrescaler::DIV2;
+        config.rcc.apb3_pre = APBPrescaler::DIV2;
+        config.rcc.apb4_pre = APBPrescaler::DIV2;
         config.rcc.sys = Sysclk::PLL1_P;
     }
     let p = embassy_stm32::init(config);
