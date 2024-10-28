@@ -36,6 +36,64 @@ impl<T: HypedI2c> Accelerometer<T> {
         // Return Self only if all values are written successfully
         Ok(Self{i2c, device_address})
     }
+
+    /// Read the acceleration for each axis and return them as a floating point value in gs.
+    pub fn read(&mut self) -> Option<(f32, f32, f32)> {
+
+        // Read the low and high bytes of the acceleration and combine them to get the acceleration for each axis
+        let x_low_byte =
+            match self.i2c.read_byte(self.device_address, LIS2DS12_OUT_X_L) {
+                Some(byte) => byte,
+                None => {
+                    return None;
+                }
+            };
+        let x_high_byte =
+            match self.i2c.read_byte(self.device_address, LIS2DS12_OUT_X_H) {
+                Some(byte) => byte,
+                None => {
+                    return None;
+                }
+            };
+        let y_low_byte =
+            match self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Y_L) {
+                Some(byte) => byte,
+                None => {
+                    return None;
+                }
+            };
+        let y_high_byte =
+            match self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Y_H) {
+                Some(byte) => byte,
+                None => {
+                    return None;
+                }
+            };
+        let z_low_byte =
+            match self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Z_L) {
+                Some(byte) => byte,
+                None => {
+                    return None;
+                }
+            };
+        let z_high_byte =
+            match self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Z_H) {
+                Some(byte) => byte,
+                None => {
+                    return None;
+                }
+            };
+    
+        let x_combined = ((x_high_byte as u16) << 8 | x_low_byte as u16) as f32;
+        let y_combined = ((y_high_byte as u16) << 8 | y_low_byte as u16) as f32;
+        let z_combined = ((z_high_byte as u16) << 8 | z_low_byte as u16) as f32;
+
+        let x = x_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
+        let y = y_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
+        let z = z_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
+
+        Some((x,y,z))
+    }
 }
 
 pub enum AccelerometerAddresses {
@@ -58,6 +116,9 @@ const LIS2DS12_OUT_Y_L: u8 = 0x2A;
 const LIS2DS12_OUT_Y_H: u8 = 0x2B;
 const LIS2DS12_OUT_Z_L: u8 = 0x2C;
 const LIS2DS12_OUT_Z_H: u8 = 0x2D;
+
+// Scaling factor to convert accelerations into gs
+const LIS2DS12_ACCEL_SCALING_FACTOR: f32 = 0.488;
 
 const LIS2DS12_STATUS: u8 = 0x27;
 
