@@ -1,4 +1,5 @@
-/// Error codes from: https://docs.embassy.dev/embassy-stm32/git/stm32g031c8/i2c/enum.Error.html
+/// I2C errors that can occur
+/// From: https://docs.embassy.dev/embassy-stm32/git/stm32g031c8/i2c/enum.Error.html
 #[derive(Debug)]
 pub enum I2cError {
     Bus,
