@@ -99,7 +99,7 @@ mod tests {
         let observation_matrix = DMatrix::from_row_slice(1, 2, &[1.0, 0.0]);
 
         let process_noise =
-            DMatrix::from_row_slice(2, 2, &[0.000009765, 0.000078125, 0.000078125, 0.0625]);
+            DMatrix::from_row_slice(2, 2, &[0.00000976562, 0.000078125, 0.000078125, 0.0625]);
         let measurement_noise = DMatrix::from_diagonal_element(1, 1, 400.0);
 
         let mut kalman_filter = KalmanFilter::new(
@@ -139,6 +139,6 @@ mod tests {
         }
 
         let final_state = kalman_filter.get_state();
-        assert!((final_state - DVector::from_column_slice(&[851.9, 223.2])).norm() < 1.0);
+        assert!((final_state - DVector::from_column_slice(&[851.9, 223.2])).norm() < 0.5);
     }
 }
