@@ -19,4 +19,3 @@ impl<'d, T: Instance> Stm32l476rgAdc<'d, T> {
         Self { adc, channel }
     }
 }
-
