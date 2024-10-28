@@ -1,5 +1,5 @@
-#![no_std]
+// #![no_std]
 
-mod preprocessing {
+pub mod preprocessing {
     pub mod accelerometer;
 }
