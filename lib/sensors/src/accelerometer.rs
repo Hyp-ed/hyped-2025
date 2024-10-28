@@ -94,6 +94,14 @@ impl<T: HypedI2c> Accelerometer<T> {
 
         Some((x,y,z))
     }
+
+    pub fn check_status(&mut self) -> Status {
+        match self.i2c.read_byte(self.device_address, LIS2DS12_STATUS) {
+            Some(byte) => Status::from_byte(byte),
+            None => Status::Unknown,
+        }
+    }
+
 }
 
 pub enum AccelerometerAddresses {
@@ -103,6 +111,21 @@ pub enum AccelerometerAddresses {
 
 pub enum AccelerometerError {
     I2cError(I2cError),
+}
+
+pub enum Status {
+    Ok,
+    DataNotReady,
+    Unknown
+}
+
+impl Status {
+    pub fn from_byte(byte: u8) -> Self {
+        match byte {
+            LIS2DS12_DATA_NOT_READY => Self::DataNotReady,
+            _ => Self::Ok,
+        }
+    }
 }
 
 // Registers for the LIS2DS12 accelerometer
@@ -121,6 +144,8 @@ const LIS2DS12_OUT_Z_H: u8 = 0x2D;
 const LIS2DS12_ACCEL_SCALING_FACTOR: f32 = 0.488;
 
 const LIS2DS12_STATUS: u8 = 0x27;
+// Values to check the status of the accelerometer
+const LIS2DS12_DATA_NOT_READY: u8 = 0x00;
 
 // Values written to control registers (may need to change later)
 const LIS2DS12_CTRL1_VALUE: u8 = 0x54; // 200Hz, high performance, continuous, +-16g
