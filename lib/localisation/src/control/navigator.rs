@@ -45,13 +45,9 @@ impl Navigator {
         self.acceleration
     }
 
-    pub fn run(&mut self) {
-        //TODO do this
-    }
+    pub fn run(&mut self) {}
 
     pub fn update(&mut self) {
-        //
-
         //self.kalman_filter.predict(control);
         //self.kalman_filter.update(measurement);
         self.displacement = self.kalman_filter.get_state()[0];
