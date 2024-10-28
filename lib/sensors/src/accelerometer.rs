@@ -20,15 +20,15 @@ impl<T: HypedI2c> Accelerometer<T> {
     /// Create a new instance of the accelerometer and attempt to configure it
     pub fn new(mut i2c: T, device_address: AccelerometerAddresses) -> Result<Self, AccelerometerError> {
         let device_address = device_address as u8;
-        let _ctrl_1_result = match i2c.write_byte_to_register(device_address, LIS2DS12_CTRL1_ADDRESS, LIS2DS12_CTRL1_VALUE) {
+        match i2c.write_byte_to_register(device_address, LIS2DS12_CTRL1_ADDRESS, LIS2DS12_CTRL1_VALUE) {
             Err(e) => return Err(AccelerometerError::I2cError(e)),
             Ok(p) =>  p
         };
-        let _ctrl_2_result = match i2c.write_byte_to_register(device_address, LIS2DS12_CTRL2_ADDRESS, LIS2DS12_CTRL2_VALUE) {
+        match i2c.write_byte_to_register(device_address, LIS2DS12_CTRL2_ADDRESS, LIS2DS12_CTRL2_VALUE) {
             Err(e) => return Err(AccelerometerError::I2cError(e)),
             Ok(p) =>  p
         };
-        let _fifo_ctrl_result = match i2c.write_byte_to_register(device_address, LIS2DS12_FIFO_CTRL_ADDRESS, LIS2DS12_FIFO_CTRL_VALUE) {
+        match i2c.write_byte_to_register(device_address, LIS2DS12_FIFO_CTRL_ADDRESS, LIS2DS12_FIFO_CTRL_VALUE) {
             Err(e) => return Err(AccelerometerError::I2cError(e)),
             Ok(p) =>  p
         };
