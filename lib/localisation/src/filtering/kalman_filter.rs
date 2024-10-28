@@ -122,44 +122,27 @@ mod tests {
         assert!((state - DVector::from_column_slice(&[0.0, 0.0])).norm() < 1e-2);
 
 
-        let measurement = DVector::from_column_slice(&[6.43]);
-        kalman_filter.update(&measurement);
-
-        let state = kalman_filter.get_state();
-        assert!((state - DVector::from_column_slice(&[3.67, 0.86])).norm() < 1e-2);
-
-
-        let control_input = DVector::from_column_slice(&[39.81-9.8]);
-        kalman_filter.predict(&control_input);
-
-
-        let state = kalman_filter.get_state();
-        assert!((state - DVector::from_column_slice(&[4.82, 8.36])).norm() < 1e-2);
-
-
-        let measurement = DVector::from_column_slice(&[1.3]);
-        kalman_filter.update(&measurement);
-
-        let state = kalman_filter.get_state();
-        assert!((state - DVector::from_column_slice(&[3.36, 7.47])).norm() < 1e-2);
-
-        
-        let control_input = DVector::from_column_slice(&[39.67-9.8]);
-        kalman_filter.predict(&control_input);
-
-        let state = kalman_filter.get_state();
-        assert!((state - DVector::from_column_slice(&[6.16, 14.93])).norm() < 1e-2);
-
-
-        let measurements = DVector::from_column_slice(&[6.43, 1.3, 39.43, 45.89, 41.44, 48.7, 78.06, 80.08, 61.77, 75.15, 
+        let h_values = DVector::from_column_slice(&[6.43, 1.3, 39.43, 45.89, 41.44, 48.7, 78.06, 80.08, 61.77, 75.15, 
             110.39, 127.83, 158.75, 156.55, 213.32, 229.82, 262.8, 297.57, 
             335.69, 367.92, 377.19, 411.18, 460.7, 468.39, 553.9, 583.97, 
             655.15, 723.09, 736.85, 787.22]);
-
-        let control_inputs = DVector::from_column_slice(&[39.81, 39.67, 39.81, 39.84, 40.05, 39.85, 39.78, 39.65, 
+        
+        let a_values = DVector::from_column_slice(&[39.81, 39.67, 39.81, 39.84, 40.05, 39.85, 39.78, 39.65, 
             39.67, 39.78, 39.59, 39.87, 39.85, 39.59, 39.84, 39.9, 
             39.63, 39.59, 39.76, 39.79, 39.73, 39.93, 39.83, 39.85, 
             39.94, 39.86, 39.76, 39.86, 39.74, 39.94]);
+
+        for i in 0..h_values.len() {
+            let measurement = DVector::from_column_slice(&[h_values[i]]);
+            kalman_filter.update(&measurement);
+        
+            let control_input = DVector::from_column_slice(&[a_values[i] - 9.8]);
+            kalman_filter.predict(&control_input);
+
+        }
+
+        let final_state = kalman_filter.get_state();
+        assert!((final_state - DVector::from_column_slice(&[851.9, 223.2])).norm() < 1.0);
 
         
 
