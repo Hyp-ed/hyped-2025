@@ -1,5 +1,5 @@
 [workspace]
 members = [
-    "boards/*"
-]
+    "boards/*",
+    "lib/*"]
 resolver = "2"
