@@ -1,5 +1,4 @@
-use crate::log::log;
-use crate::GATEWAY_ADDRESS;
+use crate::{log::log, config::GATEWAY_ADDRESS};
 
 use embassy_net::{tcp::TcpSocket, Ipv4Address, Stack};
 use embassy_stm32::{

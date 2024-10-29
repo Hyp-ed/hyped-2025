@@ -21,9 +21,9 @@ use hyped_boards_stm32h743zi::{
         mqtt_send_and_recv::{mqtt_recv_task, mqtt_send_task, net_task},
         test_mqtt_tasks::{button_task, five_seconds_task},
     },
-    BROKER_CIDR,
-    GATEWAY_IP
+    config::{BROKER_CIDR,GATEWAY_IP}
 };
+
 use hyped_core::log_types::LogLevel;
 use rand_core::RngCore;
 use static_cell::StaticCell;
