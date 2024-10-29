@@ -21,7 +21,7 @@ use hyped_boards_stm32h743zi::{
         mqtt_send_and_recv::{mqtt_recv_task, mqtt_send_task, net_task},
         test_mqtt_tasks::{button_task, five_seconds_task},
     },
-    config::{BROKER_CIDR,GATEWAY_IP}
+    config::{BOARD_STATIC_ADDRESS, MQTT_BROKER_IP}
 };
 
 use hyped_core::log_types::LogLevel;
@@ -92,9 +92,9 @@ async fn main(spawner: Spawner) -> ! {
 
     // let config = embassy_net::Config::dhcpv4(Default::default());
     let config = embassy_net::Config::ipv4_static(embassy_net::StaticConfigV4 {
-        address: BROKER_CIDR,
+        address: BOARD_STATIC_ADDRESS,
         dns_servers: heapless::Vec::new(),
-        gateway: Some(GATEWAY_IP),
+        gateway: Some(MQTT_BROKER_IP),
     });
 
     // Init network stack
