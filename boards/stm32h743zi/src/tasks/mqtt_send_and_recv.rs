@@ -1,4 +1,6 @@
 use crate::log::log;
+use crate::GATEWAY_ADDRESS;
+
 use embassy_net::{tcp::TcpSocket, Ipv4Address, Stack};
 use embassy_stm32::{
     eth::{generic_smi::GenericSMI, Ethernet},
@@ -27,7 +29,7 @@ pub async fn mqtt_recv_task(stack: &'static Stack<Ethernet<'static, ETH, Generic
     socket.set_timeout(Some(embassy_time::Duration::from_secs(600)));
     log(LogLevel::Info, "Connecting to Receive Socket...").await;
     match socket
-        .connect((Ipv4Address::new(169, 254, 195, 141), 1883))
+        .connect(GATEWAY_ADDRESS)
         .await
     {
         Ok(()) => {
@@ -94,7 +96,7 @@ pub async fn mqtt_send_task(stack: &'static Stack<Ethernet<'static, ETH, Generic
     log(LogLevel::Info, "Connecting to Send Socket...").await;
     match socket
         // TODO: put this in config
-        .connect((Ipv4Address::new(169, 254, 195, 141), 1883))
+        .connect(GATEWAY_ADDRESS)
         .await
     {
         Ok(()) => log(LogLevel::Info, "Connected to Send!").await,

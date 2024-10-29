@@ -21,6 +21,8 @@ use hyped_boards_stm32h743zi::{
         mqtt_send_and_recv::{mqtt_recv_task, mqtt_send_task, net_task},
         test_mqtt_tasks::{button_task, five_seconds_task},
     },
+    BROKER_CIDR,
+    GATEWAY_IP
 };
 use hyped_core::log_types::LogLevel;
 use rand_core::RngCore;
@@ -90,9 +92,9 @@ async fn main(spawner: Spawner) -> ! {
 
     // let config = embassy_net::Config::dhcpv4(Default::default());
     let config = embassy_net::Config::ipv4_static(embassy_net::StaticConfigV4 {
-        address: Ipv4Cidr::new(Ipv4Address::new(169, 254, 195, 61), 24),
+        address: BROKER_CIDR,
         dns_servers: heapless::Vec::new(),
-        gateway: Some(Ipv4Address::new(169, 254, 195, 141)),
+        gateway: Some(GATEWAY_IP),
     });
 
     // Init network stack
