@@ -25,7 +25,7 @@ pub async fn button_task(pin: AnyPin) {
     loop {
         SEND_CHANNEL
             .send(MqttMessage {
-                topic: MqttTopics::to_string(&MqttTopics::Acceleration),
+                topic: MqttTopics::to_string(&MqttTopics::Debug),
                 payload: String::<512>::from_str(
                     serde_json_core::to_string::<U512, ButtonMqttMessage>(&ButtonMqttMessage {
                         task_id: 0,
@@ -48,7 +48,7 @@ pub async fn five_seconds_task() {
         log(LogLevel::Info, "Ping from five second loop").await;
         SEND_CHANNEL
             .send(MqttMessage {
-                topic: MqttTopics::to_string(&MqttTopics::Acceleration),
+                topic: MqttTopics::to_string(&MqttTopics::Debug),
                 payload: String::<512>::from_str(
                     serde_json_core::to_string::<U512, ButtonMqttMessage>(&ButtonMqttMessage {
                         task_id: 2,

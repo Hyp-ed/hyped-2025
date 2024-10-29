@@ -12,6 +12,7 @@ pub enum MqttTopics {
     Velocity,
     Acceleration,
     Logs,
+    Debug
 }
 
 impl MqttTopics {
@@ -41,6 +42,7 @@ impl MqttTopics {
                 String::<48>::from_str("hyped/cart_2024/navigation/acceleration").unwrap()
             }
             MqttTopics::Logs => String::<48>::from_str("hyped/cart_2024/logs").unwrap(),
+            MqttTopics::Debug => String::<48>::from_str("hyped/cart_2024/debug").unwrap(),
         }
     }
 
@@ -56,6 +58,7 @@ impl MqttTopics {
             "hyped/cart_2024/navigation/velocity" => Some(MqttTopics::Velocity),
             "hyped/cart_2024/navigation/acceleration" => Some(MqttTopics::Acceleration),
             "hyped/cart_2024/logs" => Some(MqttTopics::Logs),
+            "hyped/cart_2024/debug" => Some(MqttTopics::Debug),
             _ => None,
         }
     }
