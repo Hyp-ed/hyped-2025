@@ -1,4 +1,4 @@
-use crate::{log::log, config::MQTT_BROKER_ADDRESS};
+use crate::{config::MQTT_BROKER_ADDRESS, log::log};
 
 use embassy_net::{tcp::TcpSocket, Ipv4Address, Stack};
 use embassy_stm32::{
@@ -27,10 +27,7 @@ pub async fn mqtt_recv_task(stack: &'static Stack<Ethernet<'static, ETH, Generic
     let mut socket = TcpSocket::new(&stack, &mut rx_buffer, &mut tx_buffer);
     socket.set_timeout(Some(embassy_time::Duration::from_secs(600)));
     log(LogLevel::Info, "Connecting to Receive Socket...").await;
-    match socket
-        .connect(MQTT_BROKER_ADDRESS)
-        .await
-    {
+    match socket.connect(MQTT_BROKER_ADDRESS).await {
         Ok(()) => {
             log(LogLevel::Info, "Connected to Receive!").await;
         }
@@ -93,10 +90,7 @@ pub async fn mqtt_send_task(stack: &'static Stack<Ethernet<'static, ETH, Generic
     let mut socket = TcpSocket::new(&stack, &mut rx_buffer, &mut tx_buffer);
     socket.set_timeout(Some(embassy_time::Duration::from_secs(60)));
     log(LogLevel::Info, "Connecting to Send Socket...").await;
-    match socket
-        .connect(MQTT_BROKER_ADDRESS)
-        .await
-    {
+    match socket.connect(MQTT_BROKER_ADDRESS).await {
         Ok(()) => log(LogLevel::Info, "Connected to Send!").await,
         Err(connection_error) => {
             log(

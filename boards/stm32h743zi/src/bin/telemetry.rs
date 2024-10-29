@@ -9,19 +9,19 @@ use embassy_stm32::{
     eth::{self, generic_smi::GenericSMI, Ethernet, PacketQueue},
     gpio::Pin,
     peripherals::{self, ETH},
+    rcc,
     rng::{self, Rng},
     time::Hertz,
     Config,
-    rcc
 };
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32h743zi::{
+    config::{BOARD_STATIC_ADDRESS, MQTT_BROKER_IP},
     log::log,
     tasks::{
         mqtt_send_and_recv::{mqtt_recv_task, mqtt_send_task, net_task},
         test_mqtt_tasks::{button_task, five_seconds_task},
     },
-    config::{BOARD_STATIC_ADDRESS, MQTT_BROKER_IP}
 };
 
 use hyped_core::log_types::LogLevel;
@@ -47,15 +47,15 @@ async fn main(spawner: Spawner) -> ! {
             source: PllSource::HSE,
             prediv: PllPreDiv::DIV4,
             mul: PllMul::MUL216,
-            divp: Some(rcc::PllDiv::DIV2), // check me
+            divp: Some(rcc::PllDiv::DIV2),
             divq: None,
             divr: None,
         });
         config.rcc.ahb_pre = AHBPrescaler::DIV1;
-        config.rcc.apb1_pre = APBPrescaler::DIV4;
-        config.rcc.apb2_pre = APBPrescaler::DIV2;
-        config.rcc.apb3_pre = APBPrescaler::DIV2;
-        config.rcc.apb4_pre = APBPrescaler::DIV2;
+        config.rcc.apb1_pre = APBPrescaler::DIV4; // APB are additional clocks for external devices
+        config.rcc.apb2_pre = APBPrescaler::DIV2; // and just need to be set to some value less
+        config.rcc.apb3_pre = APBPrescaler::DIV2; // than the real clock
+        config.rcc.apb4_pre = APBPrescaler::DIV2; //
         config.rcc.sys = Sysclk::PLL1_P;
     }
     let p = embassy_stm32::init(config);
