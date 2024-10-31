@@ -5,8 +5,9 @@ use hyped_io::i2c::{HypedI2c, I2cError};
 ///
 /// finish this write up later.
 /// 
-/// Data sheet:
-
+/// Data Sheet: https://www.st.com/en/imaging-and-photonics-solutions/vl6180.html#overview
+/// 
+/// Application Sheet: https://www.st.com/resource/en/application_note/an4545-vl6180x-basic-ranging-application-note-stmicroelectronics.pdf
 
 pub struct TimeOfFlight<T: HypedI2c> {
     i2c: T,
@@ -15,24 +16,90 @@ pub struct TimeOfFlight<T: HypedI2c> {
 
 impl<T: HypedI2c> TimeOfFlight<T> {
     // Create a new instance of time of flight sensor, configure
-    pub fn new(mut i2c: T, device_address: ToFAddresses) -> Result<Self, ToFError> {
+    pub fn new(mut i2c: T, device_address: ToFAddresses) -> Result<Self, ToFError> { // SR03 Settings as seen in Application Sheet
         let device_address = device_address as u8;
-        // Set up the ToF sensor, sending config settings and setting mode to the appropriate registers
-        // need to set up loops / iterators to match i2c.write_byte_to_register to various addresses...
-        for n in 0..30 { // private registers
-            i2c.write_byte_to_register(device_address, PRIVATE_REGISTERS[n], PRIVATE_REGISTER_DATA[n]);
+        for i in 0..30 { // writing to private registers
+        match i2c.write_byte_to_register_16(device_address, PRIVATE_REGISTERS[i], PRIVATE_REGISTER_DATA[i]) {
+            Ok(p) => p, // unused
+            Err(e) =>  return Err(ToFError::I2cError(e)),
         }
-        return Ok(Self {
+    } 
+        // Recommended Public Registers now (see Application Sheet)
+        match i2c.write_byte_to_register(device_address, SYS_MODE_GPIO1, SYS_MODE_GPIO_VAL) {
+            Ok(p) => p,
+            Err(e) =>  return Err(ToFError::I2cError(e)),
+        }
+        match i2c.write_byte_to_register_16(device_address, AVG_SAMPLE_PERIOD, AVG_SAMPLE_PERIOD_VAL) {
+            Ok(p) => p,
+            Err(e) =>  return Err(ToFError::I2cError(e)),
+        }
+        match i2c.write_byte_to_register(device_address, SYSRANGE_VHV_REPEAT_RATE, SYSRANGE_VHV_REPEAT_RATE_VAL) {
+            Ok(p) => p,
+            Err(e) =>  return Err(ToFError::I2cError(e)),
+        }
+        match i2c.write_byte_to_register(device_address, SYSRANGE_VHV_RECALIBRATE, SYSRANGE_VHV_RECALIBRATE_VAL) {
+            Ok(p) => p,
+            Err(e) =>  return Err(ToFError::I2cError(e)),
+        }
+        match i2c.write_byte_to_register(device_address, SYSRANGE_INTERMEASURE_PERIOD, SYSRANGE_INTERMEASURE_PERIOD_VAL) {
+            Ok(p) => p,
+            Err(e) =>  return Err(ToFError::I2cError(e)),
+        }
+        match i2c.write_byte_to_register(device_address, SYS_INTERRUPT_CONFIG_GPIO, SYS_INTERRUPT_CONFIG_GPIO_VAL) {
+            Ok(p) => p,
+            Err(e) =>  return Err(ToFError::I2cError(e)),
+        }
+
+        // not sure if this works? effectively if no errors returned from previous match arms, return Ok(Self)
+        Ok(Self {
             i2c,
             device_address,
-        })  // this feels quite unsafe, add error handling..
+        })
+    }
+
+    pub fn start_ss_measure(mut i2c: T, device_address: ToFAddresses) -> Result<Self, ToFError> { // start single shot measurement
+        let device_address = device_address as u8;
+        match i2c.write_byte_to_register(device_address, SYSRANGE_START, SYSRANGE_START_SS_VAL) {
+            Ok(p) => p,
+            Err(e) =>  return Err(ToFError::I2cError(e)),
+        }
+        
+        Ok (Self {
+            i2c,
+            device_address
+        })
+    }
+
+    pub fn poll_range(&mut self) {
+        let status_byte = 
+        match self.i2c.read_byte(self.device_address, RESULT_INTERR_STATUS_GPIO) {
+            Some(byte) => byte,
+            None => 0, // not sure about returning 0 for None - will this somehow break stuff?
+        };
+        let range_status = status_byte & 0x07;
+        while (range_status != 0x04) {
+            let status_byte = match self.i2c.read_byte(self.device_address, RESULT_INTERR_STATUS_GPIO) {
+                Some(byte) => byte,
+                None => 0,
+            };
+            let range_status = status_byte & 0x07;
+        }
+
+    }
+
+    pub fn read_range(&mut self) -> Option<f32> {
+        let range_byte =
+            match self.i2c.read_byte(self.device_address, RESULT_RANGE_VAL) {
+                Some(byte) => byte,
+                None => {
+                    return None;
+                }
+            }; // implement logic to convert byte to f32 (mm)
+            let range = range_byte as f32; // hopefully this works, not sure how it's encoded..
+        Some(range)
     }
 }
 
-
-// implement SR03 settings (application sheet)
-// implement switching between continuous and single shot measuring
-// code
 
 
 pub enum ToFAddresses {
@@ -43,8 +110,32 @@ pub enum ToFError {
     I2cError(I2cError)
 }
 
-// private registers array (if you have a better idea please i beg you)
-const PRIVATE_REGISTERS: [u8; 30] = [
+// public register addresses
+const SYS_MODE_GPIO1: u8 = 0x0011;
+const AVG_SAMPLE_PERIOD: u16 = 0x010a;
+// can't find reference to 0x003f address for light and dark gain in datasheet from the application note
+const SYSRANGE_VHV_REPEAT_RATE: u8 = 0x031;
+// can't find reference to 0x0041, see above.
+const SYSRANGE_VHV_RECALIBRATE: u8 = 0x002e;
+const SYSRANGE_INTERMEASURE_PERIOD: u8 = 0x01b;
+// same story with 0x003e
+const SYS_INTERRUPT_CONFIG_GPIO: u8 = 0x014;
+const SYSRANGE_START: u8 = 0x018;
+const RESULT_INTERR_STATUS_GPIO: u8 = 0x04f;
+// this one has VAL because that's what its' called in the docs, not actually a VALUE.
+const RESULT_RANGE_VAL: u8 = 0x062;
+
+// init values for public registers
+const SYS_MODE_GPIO_VAL: u8 = 0x01;
+const AVG_SAMPLE_PERIOD_VAL: u8 = 0x30;
+const SYSRANGE_VHV_REPEAT_RATE_VAL: u8 = 0xFF;
+const SYSRANGE_VHV_RECALIBRATE_VAL: u8 = 0x01;
+const SYSRANGE_INTERMEASURE_PERIOD_VAL: u8 = 0x09;
+const SYS_INTERRUPT_CONFIG_GPIO_VAL: u8 = 0x24;
+const SYSRANGE_START_SS_VAL: u8 = 0x01;
+
+// private registers array
+const PRIVATE_REGISTERS: [u16; 30] = [
     0x0207,
     0x0208,
     0x0096,
@@ -76,7 +167,7 @@ const PRIVATE_REGISTERS: [u8; 30] = [
     0x01a7,
     0x0030
 ];
-// create init values for private registers array
+// init values for private registers array
 const PRIVATE_REGISTER_DATA: [u8; 30] = [
     0x01,
     0x01,

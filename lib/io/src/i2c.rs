@@ -21,4 +21,11 @@ pub trait HypedI2c {
         register_address: u8,
         data: u8,
     ) -> Result<(), I2cError>;
+    fn read_byte_16(&mut self, device_address: u8, register_address: u16) -> Option<u8>;
+    fn write_byte_to_register_16(
+        &mut self,
+        device_address: u8,
+        register_address: u16,
+        data: u8,
+    ) -> Result<(), I2cError>;
 }
