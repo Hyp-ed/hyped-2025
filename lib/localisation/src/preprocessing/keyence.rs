@@ -20,7 +20,7 @@ impl KeyenceAgrees {
             return SensorChecks::Unnaceptable;
         }
 
-        return SensorChecks::Acceptable;
+        SensorChecks::Acceptable
     }
 }
 
