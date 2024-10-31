@@ -308,6 +308,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_levitation"
+version = "0.1.0"
+
+[[package]]
 name = "hyped_localisation"
 version = "0.1.0"
 dependencies = [
