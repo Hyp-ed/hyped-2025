@@ -37,8 +37,8 @@ impl<T: HypedI2c> Accelerometer<T> {
         Ok(Self{i2c, device_address})
     }
 
-    /// Read the acceleration for each axis and return them as a floating point value in gs.
-    pub fn read(&mut self) -> Option<(f32, f32, f32)> {
+    /// Read the acceleration for each axis and return them as floating point values in gs.
+    pub fn read(&mut self) -> Option<AccelValues> {
 
         // Read the low and high bytes of the acceleration and combine them to get the acceleration for each axis
         let x_low_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_X_L)?;
@@ -56,7 +56,7 @@ impl<T: HypedI2c> Accelerometer<T> {
         let y = y_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
         let z = z_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
 
-        Some((x,y,z))
+        Some(AccelValues { x: x, y: y, z: z })
     }
 
     pub fn check_status(&mut self) -> Status {
@@ -66,6 +66,12 @@ impl<T: HypedI2c> Accelerometer<T> {
         }
     }
 
+}
+
+pub struct AccelValues {
+    x: f32,
+    y: f32,
+    z: f32,
 }
 
 pub enum AccelerometerAddresses {
