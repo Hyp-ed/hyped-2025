@@ -1,32 +1,26 @@
 use heapless::Vec;
 
-#[derive(PartialEq)]
-#[derive(Debug)]
-pub enum SensorChecks{
+#[derive(PartialEq, Debug)]
+pub enum SensorChecks {
     Acceptable,
     Unnaceptable,
 }
 
-pub struct KeyenceAgrees{
+pub struct KeyenceAgrees {
     keyence_data: Vec<bool, 2>,
 }
 
-impl KeyenceAgrees{
-    pub fn new(
-        keyence_data: Vec<bool, 2>,
-    ) -> Self {
-        KeyenceAgrees {
-            keyence_data,
-        }
+impl KeyenceAgrees {
+    pub fn new(keyence_data: Vec<bool, 2>) -> Self {
+        KeyenceAgrees { keyence_data }
     }
 
     pub fn check_keyence_agrees(&self) -> SensorChecks {
-
         if self.keyence_data[0] != self.keyence_data[1] {
             return SensorChecks::Unnaceptable;
         }
 
-        return SensorChecks::Acceptable
+        return SensorChecks::Acceptable;
     }
 }
 
@@ -36,7 +30,7 @@ mod tests {
 
     #[test]
     fn test_acceptable_success() {
-        let keyence_data : Vec<bool, 2> = Vec::from_slice(&[true, true]).unwrap();
+        let keyence_data: Vec<bool, 2> = Vec::from_slice(&[true, true]).unwrap();
         let keyence_agrees = KeyenceAgrees::new(keyence_data);
         let desired_outcome = SensorChecks::Acceptable;
         let result = keyence_agrees.check_keyence_agrees();
@@ -45,7 +39,7 @@ mod tests {
 
     #[test]
     fn test_uncceptable_success() {
-        let keyence_data : Vec<bool, 2> = Vec::from_slice(&[true, true]).unwrap();
+        let keyence_data: Vec<bool, 2> = Vec::from_slice(&[true, true]).unwrap();
         let keyence_agrees = KeyenceAgrees::new(keyence_data);
         let desired_outcome = SensorChecks::Acceptable;
         let result = keyence_agrees.check_keyence_agrees();
