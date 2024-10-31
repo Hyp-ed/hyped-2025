@@ -2,17 +2,17 @@ use embassy_stm32::gpio::Input;
 use hyped_io::gpio::HypedGpioPin;
 
 /// A GPIO pin on the STM32L476RG.
-pub struct Stm32l476rgGpio {
+pub struct Stm32f767ziGpio {
     pin: Input<'static>,
 }
 
-impl HypedGpioPin for Stm32l476rgGpio {
+impl HypedGpioPin for Stm32f767ziGpio {
     fn is_high(&mut self) -> bool {
         self.pin.is_high()
     }
 }
 
-impl Stm32l476rgGpio {
+impl Stm32f767ziGpio {
     /// Create a new instance of our GPIO implementation for the STM32L476RG
     pub fn new(pin: Input<'static>) -> Self {
         Self { pin }
