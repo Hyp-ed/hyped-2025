@@ -22,15 +22,15 @@ impl<T: HypedI2c> Accelerometer<T> {
         let device_address = device_address as u8;
         match i2c.write_byte_to_register(device_address, LIS2DS12_CTRL1_ADDRESS, LIS2DS12_CTRL1_VALUE) {
             Err(e) => return Err(AccelerometerError::I2cError(e)),
-            Ok(_) => ()
+            _ => ()
         };
         match i2c.write_byte_to_register(device_address, LIS2DS12_CTRL2_ADDRESS, LIS2DS12_CTRL2_VALUE) {
             Err(e) => return Err(AccelerometerError::I2cError(e)),
-            Ok(_) => ()
+            _ => ()
         };
         match i2c.write_byte_to_register(device_address, LIS2DS12_FIFO_CTRL_ADDRESS, LIS2DS12_FIFO_CTRL_VALUE) {
             Err(e) => return Err(AccelerometerError::I2cError(e)),
-            Ok(_) => ()
+            _ => ()
         };
 
         // Return Self only if all values are written successfully
