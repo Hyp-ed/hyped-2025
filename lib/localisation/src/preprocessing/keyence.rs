@@ -1,31 +1,33 @@
-#[derive(PartialEq)]
-enum KeyenceDataStatus{
-    Agreed,
-    Disagreed,
-}
+use heapless::Vec;
 
 #[derive(PartialEq)]
 #[derive(Debug)]
-enum SensorChecks{
+pub enum SensorChecks{
     Acceptable,
     Unnaceptable,
 }
 
-fn main() -> SensorChecks {
-    let keyence_data = vec![true, true];
-    let sensor_check = check_keyence_agrees(&keyence_data);
-    return sensor_check;
+pub struct KeyenceAgrees{
+    keyence_data: Vec<bool, 2>,
 }
 
-pub fn check_keyence_agrees(keyence_data: &Vec<bool>) -> SensorChecks {
-
-    if keyence_data[0] != keyence_data[1] {
-        println!("Keyence disagreement for two consecutive readings.");
-
-        return SensorChecks::Unnaceptable;
+impl KeyenceAgrees{
+    pub fn new(
+        keyence_data: Vec<bool, 2>,
+    ) -> Self {
+        KeyenceAgrees {
+            keyence_data,
+        }
     }
 
-    return SensorChecks::Acceptable
+    pub fn check_keyence_agrees(&self) -> SensorChecks {
+
+        if self.keyence_data[0] != self.keyence_data[1] {
+            return SensorChecks::Unnaceptable;
+        }
+
+        return SensorChecks::Acceptable
+    }
 }
 
 #[cfg(test)]
@@ -34,17 +36,19 @@ mod tests {
 
     #[test]
     fn test_acceptable_success() {
-        let keyence_data = vec![true, true];
+        let keyence_data : Vec<bool, 2> = Vec::from_slice(&[true, true]).unwrap();
+        let keyence_agrees = KeyenceAgrees::new(keyence_data);
         let desired_outcome = SensorChecks::Acceptable;
-        let result = check_keyence_agrees(&keyence_data);
+        let result = keyence_agrees.check_keyence_agrees();
         assert_eq!(result, desired_outcome);
     }
 
     #[test]
     fn test_uncceptable_success() {
-        let keyence_data = vec![true, false];
-        let desired_outcome = SensorChecks::Unnaceptable;
-        let result = check_keyence_agrees(&keyence_data);
+        let keyence_data : Vec<bool, 2> = Vec::from_slice(&[true, true]).unwrap();
+        let keyence_agrees = KeyenceAgrees::new(keyence_data);
+        let desired_outcome = SensorChecks::Acceptable;
+        let result = keyence_agrees.check_keyence_agrees();
         assert_eq!(result, desired_outcome);
     }
 }
