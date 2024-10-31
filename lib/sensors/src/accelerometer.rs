@@ -41,48 +41,12 @@ impl<T: HypedI2c> Accelerometer<T> {
     pub fn read(&mut self) -> Option<(f32, f32, f32)> {
 
         // Read the low and high bytes of the acceleration and combine them to get the acceleration for each axis
-        let x_low_byte =
-            match self.i2c.read_byte(self.device_address, LIS2DS12_OUT_X_L) {
-                Some(byte) => byte,
-                None => {
-                    return None;
-                }
-            };
-        let x_high_byte =
-            match self.i2c.read_byte(self.device_address, LIS2DS12_OUT_X_H) {
-                Some(byte) => byte,
-                None => {
-                    return None;
-                }
-            };
-        let y_low_byte =
-            match self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Y_L) {
-                Some(byte) => byte,
-                None => {
-                    return None;
-                }
-            };
-        let y_high_byte =
-            match self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Y_H) {
-                Some(byte) => byte,
-                None => {
-                    return None;
-                }
-            };
-        let z_low_byte =
-            match self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Z_L) {
-                Some(byte) => byte,
-                None => {
-                    return None;
-                }
-            };
-        let z_high_byte =
-            match self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Z_H) {
-                Some(byte) => byte,
-                None => {
-                    return None;
-                }
-            };
+        let x_low_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_X_L)?;
+        let x_high_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_X_H)?;
+        let y_low_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Y_L)?;
+        let y_high_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Y_H)?;
+        let z_low_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Z_L)?;
+        let z_high_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Z_H)?;
     
         let x_combined = ((x_high_byte as u16) << 8 | x_low_byte as u16) as f32;
         let y_combined = ((y_high_byte as u16) << 8 | y_low_byte as u16) as f32;
