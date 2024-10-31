@@ -1,0 +1,22 @@
+{
+  "extends": "@hyped/tsconfig/base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "noEmit": false,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": false,
+    "paths": {
+      "@/modules/*": ["src/modules/*"],
+      "@/core/*": ["src/modules/core/*"],
+    },
+  },
+  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"],
+}
