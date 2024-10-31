@@ -12,7 +12,7 @@ pub enum MqttTopics {
     Velocity,
     Acceleration,
     Logs,
-    Debug
+    Debug,
 }
 
 impl MqttTopics {
