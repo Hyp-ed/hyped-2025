@@ -2,8 +2,6 @@ use heapless::Vec;
 use hyped_core::types::{AccelerometerData, RawAccelerometerData, SensorChecks};
 use hyped_core::types::{K_NUM_ACCELEROMETERS, K_NUM_ALLOWED_ACCELEROMETER_OUTLIERS, K_NUM_AXIS};
 
-use std::io::{stdout, Write};
-
 #[derive(Debug)]
 pub struct AccelerometerPreprocessor {
     num_reliable_accelerometers_: i32,
@@ -40,10 +38,10 @@ impl Quartiles {
 }
 
 impl AccelerometerPreprocessor {
-    fn handle_outliers<const SIZE: usize>(
+    fn handle_outliers(
         &mut self,
         data: AccelerometerData<K_NUM_ACCELEROMETERS>,
-    ) -> Option<AccelerometerData<SIZE>> {
+    ) -> Option<AccelerometerData<K_NUM_ACCELEROMETERS>> {
         let quartiles = match self.calculate_quartiles(&data) {
             Some(quartiles) => quartiles,
             None => return None,
@@ -235,8 +233,8 @@ mod tests {
         assert_eq!(processed_data.q2, 2.5);
         assert_eq!(processed_data.q3, 3.5);
         assert_eq!(processed_data.iqr, 2.0);
-        assert_eq!(processed_data.lower_bound, -1.5);
-        assert_eq!(processed_data.upper_bound, 6.5);
+        assert_eq!((processed_data.lower_bound * 100.0).round(), -150.0);
+        assert_eq!((processed_data.upper_bound * 100.0).round(), 650.0);
     }
 
     #[test]
@@ -255,11 +253,16 @@ mod tests {
         assert_eq!(processed_data.q1, 1.0);
         assert_eq!(processed_data.q2, 3.0);
         assert_eq!(processed_data.q3, 4.0);
+        assert_eq!(processed_data.iqr, 3.0);
+        assert_eq!((processed_data.lower_bound * 100.0).round(), -260.0);
+        assert_eq!((processed_data.upper_bound * 100.0).round(), 760.0);
     }
 
     #[test]
-    fn test_handle_outliers() {
+    fn test_handle_outlier_replace_median() {
         let mut preprocessor = default_preprocessor();
+        preprocessor.reliable_accelerometers_ = [true, false, true, true];
+        preprocessor.num_reliable_accelerometers_ = 3;
 
         let data: AccelerometerData<K_NUM_ACCELEROMETERS> =
             AccelerometerData::from_slice(&[1.0, 2.0, 3.0, 10.0]).unwrap();
@@ -269,8 +272,21 @@ mod tests {
 
         let processed_data: AccelerometerData<K_NUM_ACCELEROMETERS> = processed_data.unwrap();
         assert_eq!(processed_data[0], 1.0);
-        assert_eq!(processed_data[1], 2.0);
+        assert_eq!(processed_data[1], 3.0); // replace unreliable with median
         assert_eq!(processed_data[2], 3.0);
         assert_eq!(processed_data[3], 10.0);
+    }
+
+    #[test]
+    fn test_handle_outliers_no_quartiles() {
+        let mut preprocessor = default_preprocessor();
+        preprocessor.reliable_accelerometers_ = [true, false, false, true];
+        preprocessor.num_reliable_accelerometers_ = 2;
+
+        let data: AccelerometerData<K_NUM_ACCELEROMETERS> =
+            AccelerometerData::from_slice(&[1.0, 2.0, 3.0, 10.0]).unwrap();
+        let processed_data = preprocessor.handle_outliers(data);
+
+        assert_eq!(processed_data.is_some(), false);
     }
 }
