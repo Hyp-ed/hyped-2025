@@ -16,16 +16,8 @@ impl DigitalSignal {
     }
 }
 
-pub struct RawAccelerationData {
-    x: i32,
-    y: i32,
-    z: i32,
-    timestamp: i32,
-    is_sensor_active: bool,
-}
-
-pub const K_NUM_ACCELEROMETERS: usize = 4;
-pub const K_NUM_AXIS: usize = 3;
+pub const K_NUM_ACCELEROMETERS: i32 = 4;
+pub const K_NUM_AXIS: i32 = 3;
 pub const K_NUM_ALLOWED_ACCELEROMETER_OUTLIERS: i32 = 2;
 
 #[derive(PartialEq)]
