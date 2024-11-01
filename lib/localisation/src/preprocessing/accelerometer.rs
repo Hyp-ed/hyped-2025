@@ -210,7 +210,7 @@ mod tests {
             .unwrap();
 
         let processed_data = preprocessor.process_data(raw_data);
-        assert_eq!(processed_data.is_some(), true);
+        assert!(processed_data.is_some());
     }
 
     #[test]
@@ -234,7 +234,7 @@ mod tests {
             AccelerometerData::from_slice(&[1.0, 2.0, 3.0, 4.0]).unwrap();
         let processed_data = preprocessor.calculate_quartiles(&data);
 
-        assert_eq!(processed_data.is_some(), true);
+        assert!(processed_data.is_some());
 
         let processed_data = processed_data.unwrap();
         assert_eq!(processed_data.q1, 1.5);
@@ -255,7 +255,7 @@ mod tests {
             AccelerometerData::from_slice(&[1.0, 2.0, 3.0, 4.0]).unwrap();
         let processed_data = preprocessor.calculate_quartiles(&data);
 
-        assert_eq!(processed_data.is_some(), true);
+        assert!(processed_data.is_some());
 
         let processed_data = processed_data.unwrap();
         assert_eq!(processed_data.q1, 1.0);
@@ -276,7 +276,7 @@ mod tests {
             AccelerometerData::from_slice(&[1.0, 2.0, 3.0, 10.0]).unwrap();
         let processed_data = preprocessor.handle_outliers(data);
 
-        assert_eq!(processed_data.is_some(), true);
+        assert!(processed_data.is_some());
 
         let processed_data: AccelerometerData<K_NUM_ACCELEROMETERS> = processed_data.unwrap();
         assert_eq!(processed_data[0], 1.0);
@@ -295,6 +295,6 @@ mod tests {
             AccelerometerData::from_slice(&[1.0, 2.0, 3.0, 10.0]).unwrap();
         let processed_data = preprocessor.handle_outliers(data);
 
-        assert_eq!(processed_data.is_some(), false);
+        assert!(processed_data.is_none());
     }
 }
