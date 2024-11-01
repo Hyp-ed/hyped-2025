@@ -1,7 +1,4 @@
 #![no_std]
 
-pub mod preprocessing {
-    pub mod accelerometer;
-}
-
+pub mod preprocessing;
 pub mod types;

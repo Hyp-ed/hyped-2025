@@ -2,13 +2,8 @@ use super::super::types::{K_NUM_ACCELEROMETERS, K_NUM_ALLOWED_ACCELEROMETER_OUTL
 use heapless::Vec;
 use hyped_core::types::{AccelerometerData, RawAccelerometerData, SensorChecks};
 
-pub struct AccelerometerPreprocessor {
-    num_reliable_accelerometers: i32,
-    reliable_accelerometers: [bool; K_NUM_ACCELEROMETERS],
-    num_outliers_per_accelerometer: [i32; K_NUM_ACCELEROMETERS],
-}
-
-struct Quartiles {
+#[allow(dead_code)]
+pub struct Quartiles {
     q1: f32,
     q2: f32,
     q3: f32,
@@ -19,7 +14,7 @@ struct Quartiles {
 }
 
 impl Quartiles {
-    fn new(q1: f32, q2: f32, q3: f32, is_unreliable: bool) -> Self {
+    pub fn new(q1: f32, q2: f32, q3: f32, is_unreliable: bool) -> Self {
         let mut bound_factor = 1.5;
         if is_unreliable {
             bound_factor = 1.2;
@@ -36,8 +31,28 @@ impl Quartiles {
     }
 }
 
+pub struct AccelerometerPreprocessor {
+    num_reliable_accelerometers: i32,
+    reliable_accelerometers: [bool; K_NUM_ACCELEROMETERS],
+    num_outliers_per_accelerometer: [i32; K_NUM_ACCELEROMETERS],
+}
+
+impl Default for AccelerometerPreprocessor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AccelerometerPreprocessor {
-    fn handle_outliers(
+    pub fn new() -> Self {
+        Self {
+            num_reliable_accelerometers: K_NUM_ACCELEROMETERS as i32,
+            reliable_accelerometers: [true; K_NUM_ACCELEROMETERS],
+            num_outliers_per_accelerometer: [0; K_NUM_ACCELEROMETERS],
+        }
+    }
+
+    pub fn handle_outliers(
         &mut self,
         data: AccelerometerData<K_NUM_ACCELEROMETERS>,
     ) -> Option<AccelerometerData<K_NUM_ACCELEROMETERS>> {
@@ -65,7 +80,7 @@ impl AccelerometerPreprocessor {
         Some(accelerometer_data)
     }
 
-    fn calculate_quartiles(
+    pub fn calculate_quartiles(
         &self,
         data: &AccelerometerData<K_NUM_ACCELEROMETERS>,
     ) -> Option<Quartiles> {
@@ -91,7 +106,7 @@ impl AccelerometerPreprocessor {
         Some(quartiles)
     }
 
-    fn process_data(
+    pub fn process_data(
         &mut self,
         data: RawAccelerometerData<K_NUM_ACCELEROMETERS, K_NUM_AXIS>,
     ) -> Option<AccelerometerData<K_NUM_ACCELEROMETERS>> {
@@ -119,7 +134,7 @@ impl AccelerometerPreprocessor {
         Some(clean_accelerometer_data)
     }
 
-    fn check_reliable(&mut self) -> SensorChecks {
+    pub fn check_reliable(&mut self) -> SensorChecks {
         self.num_outliers_per_accelerometer
             .iter()
             .enumerate()
@@ -139,7 +154,7 @@ impl AccelerometerPreprocessor {
         SensorChecks::Acceptable
     }
 
-    fn get_quartiles<const SIZE: usize>(&self, data: &AccelerometerData<SIZE>) -> Quartiles {
+    pub fn get_quartiles<const SIZE: usize>(&self, data: &AccelerometerData<SIZE>) -> Quartiles {
         let mut sorted_data = data.clone();
         sorted_data.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
@@ -167,20 +182,13 @@ impl AccelerometerPreprocessor {
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
-    fn default_preprocessor() -> AccelerometerPreprocessor {
-        AccelerometerPreprocessor {
-            num_reliable_accelerometers: K_NUM_ACCELEROMETERS as i32,
-            reliable_accelerometers: [true; K_NUM_ACCELEROMETERS],
-            num_outliers_per_accelerometer: [0; K_NUM_ACCELEROMETERS],
-        }
-    }
-
     #[test]
-    fn test_returns_okay() {
-        let mut preprocessor = default_preprocessor();
+    pub fn test_returns_okay() {
+        let mut preprocessor = AccelerometerPreprocessor::new();
 
         assert_eq!(preprocessor.num_reliable_accelerometers, 4);
         assert_eq!(
@@ -206,8 +214,8 @@ mod tests {
     }
 
     #[test]
-    fn test_get_quartiles() {
-        let mut preprocessor = default_preprocessor();
+    pub fn test_get_quartiles() {
+        let preprocessor = AccelerometerPreprocessor::new();
 
         let data: AccelerometerData<K_NUM_ACCELEROMETERS> =
             AccelerometerData::from_slice(&[1.0, 2.0, 3.0, 4.0]).unwrap();
@@ -220,7 +228,7 @@ mod tests {
 
     #[test]
     fn test_calculate_quartiles_max_reliable() {
-        let mut preprocessor = default_preprocessor();
+        let preprocessor = AccelerometerPreprocessor::new();
 
         let data: AccelerometerData<K_NUM_ACCELEROMETERS> =
             AccelerometerData::from_slice(&[1.0, 2.0, 3.0, 4.0]).unwrap();
@@ -239,7 +247,7 @@ mod tests {
 
     #[test]
     fn test_calculate_quartiles_one_unreliable() {
-        let mut preprocessor = default_preprocessor();
+        let mut preprocessor = AccelerometerPreprocessor::new();
         preprocessor.reliable_accelerometers = [true, false, true, true];
         preprocessor.num_reliable_accelerometers = 3;
 
@@ -260,7 +268,7 @@ mod tests {
 
     #[test]
     fn test_handle_outlier_replace_median() {
-        let mut preprocessor = default_preprocessor();
+        let mut preprocessor = AccelerometerPreprocessor::new();
         preprocessor.reliable_accelerometers = [true, false, true, true];
         preprocessor.num_reliable_accelerometers = 3;
 
@@ -279,7 +287,7 @@ mod tests {
 
     #[test]
     fn test_handle_outliers_no_quartiles() {
-        let mut preprocessor = default_preprocessor();
+        let mut preprocessor = AccelerometerPreprocessor::new();
         preprocessor.reliable_accelerometers = [true, false, false, true];
         preprocessor.num_reliable_accelerometers = 2;
 
