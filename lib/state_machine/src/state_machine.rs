@@ -11,7 +11,6 @@ pub struct StateMachine<'a> {
 
 impl<'a> StateMachine<'a> {
     pub fn new(&self, mqtt_client: HypedMqttClient<'a, TcpSocket<'a>, CountingRng>) -> Self {
-        
         StateMachine {
             current_state: State::Idle,
             mqtt_client,
@@ -22,11 +21,17 @@ impl<'a> StateMachine<'a> {
         let transition = State::transition(to_state, &self.current_state);
         match transition {
             Some(transition) => {
-                info!("Transitioning from {:?} to {:?}", self.current_state, transition);
+                info!(
+                    "Transitioning from {:?} to {:?}",
+                    self.current_state, transition
+                );
                 self.current_state = transition;
             }
             None => {
-                warn!("Invalid transition requested from {:?} to {:?}", self.current_state, to_state);
+                warn!(
+                    "Invalid transition requested from {:?} to {:?}",
+                    self.current_state, to_state
+                );
             }
         }
     }

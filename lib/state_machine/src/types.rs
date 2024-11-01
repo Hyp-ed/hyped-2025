@@ -1,7 +1,6 @@
 use core::str::FromStr;
 use heapless::String;
 
-
 #[derive(Hash, PartialEq, Eq, Clone, Copy)]
 pub enum State {
     Idle,
@@ -74,7 +73,7 @@ impl State {
 
     pub fn transition(current_state: &State, to_state: &State) -> Option<State> {
         let to_from_state = (current_state, to_state);
-        
+
         match to_from_state {
             (State::Idle, State::Calibrate) => Some(State::Calibrate),
             (State::Calibrate, State::Precharge) => Some(State::Precharge),
@@ -93,6 +92,6 @@ impl State {
             (State::CapacitorDischarge, State::Safe) => Some(State::Safe),
             (State::Safe, State::Shutdown) => Some(State::Shutdown),
             _ => None,
-        } 
+        }
     }
 }
