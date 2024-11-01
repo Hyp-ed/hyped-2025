@@ -1,6 +1,7 @@
 use core::str::FromStr;
 use heapless::String;
 
+
 #[derive(Hash, PartialEq, Eq, Clone, Copy)]
 pub enum State {
     Idle,
@@ -70,10 +71,28 @@ impl State {
             _ => None,
         }
     }
-}
 
-#[derive(Hash, PartialEq, Eq)]
-pub struct SourceAndTarget {
-    pub(crate) source: State,
-    pub(crate) target: State,
+    pub fn transition(current_state: &State, to_state: &State) -> Option<State> {
+        let to_from_state = (current_state, to_state);
+        
+        match to_from_state {
+            (State::Idle, State::Calibrate) => Some(State::Calibrate),
+            (State::Calibrate, State::Precharge) => Some(State::Precharge),
+            (State::Precharge, State::ReadyForLevitation) => Some(State::ReadyForLevitation),
+            (State::ReadyForLevitation, State::BeginLevitation) => Some(State::BeginLevitation),
+            (State::BeginLevitation, State::Levitating) => Some(State::Levitating),
+            (State::Levitating, State::Ready) => Some(State::Ready),
+            (State::Ready, State::Accelerate) => Some(State::Accelerate),
+            (State::Accelerate, State::LimBrake) => Some(State::LimBrake),
+            (State::Accelerate, State::FailureBrake) => Some(State::FailureBrake),
+            (State::LimBrake, State::FrictionBrake) => Some(State::FrictionBrake),
+            (State::FrictionBrake, State::StopLevitation) => Some(State::StopLevitation),
+            (State::StopLevitation, State::Stopped) => Some(State::Stopped),
+            (State::Stopped, State::BatteryRecharge) => Some(State::BatteryRecharge),
+            (State::BatteryRecharge, State::CapacitorDischarge) => Some(State::CapacitorDischarge),
+            (State::CapacitorDischarge, State::Safe) => Some(State::Safe),
+            (State::Safe, State::Shutdown) => Some(State::Shutdown),
+            _ => None,
+        } 
+    }
 }

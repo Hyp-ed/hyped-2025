@@ -1,42 +1,33 @@
-use crate::types::{SourceAndTarget, State};
+use crate::types::State;
+use defmt::{info, warn};
 use embassy_net::tcp::TcpSocket;
-use heapless::FnvIndexMap;
 use hyped_core::mqtt::HypedMqttClient;
 use rust_mqtt::utils::rng_generator::CountingRng;
 
 pub struct StateMachine<'a> {
     pub(crate) current_state: State,
-    pub(crate) transition_map: FnvIndexMap<SourceAndTarget, State, 32>,
     pub(crate) mqtt_client: HypedMqttClient<'a, TcpSocket<'a>, CountingRng>,
 }
 
 impl<'a> StateMachine<'a> {
-    pub fn new(mqtt_client: HypedMqttClient<'a, TcpSocket<'a>, CountingRng>) -> Self {
-        let mut transition_map = FnvIndexMap::<SourceAndTarget, State, 32>::new();
-
-        // this is not a very nice way to do this, but it's a start (move out into a function consruct_transition_map)
-        let _ = transition_map.insert(
-            SourceAndTarget {
-                source: State::Idle,
-                target: State::Calibrate,
-            },
-            State::Calibrate,
-        );
-
+    pub fn new(&self, mqtt_client: HypedMqttClient<'a, TcpSocket<'a>, CountingRng>) -> Self {
+        
         StateMachine {
             current_state: State::Idle,
-            transition_map,
             mqtt_client,
         }
     }
 
     pub fn handle_transition(&mut self, to_state: &State) {
-        let to_from_state = SourceAndTarget {
-            source: self.current_state,
-            target: *to_state,
-        };
-        if let Some(&new_state) = self.transition_map.get(&to_from_state) {
-            self.current_state = new_state;
+        let transition = State::transition(to_state, &self.current_state);
+        match transition {
+            Some(transition) => {
+                info!("Transitioning from {:?} to {:?}", self.current_state, transition);
+                self.current_state = transition;
+            }
+            None => {
+                warn!("Invalid transition requested from {:?} to {:?}", self.current_state, to_state);
+            }
         }
     }
 
