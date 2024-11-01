@@ -51,12 +51,12 @@ async fn main(spawner: Spawner) -> ! {
             divq: None,
             divr: None,
         });
-        config.rcc.ahb_pre = AHBPrescaler::DIV1;
-        config.rcc.apb1_pre = APBPrescaler::DIV4; // APB are additional clocks for external devices
+        config.rcc.ahb_pre = AHBPrescaler::DIV2; // 200Mhz
+        config.rcc.apb1_pre = APBPrescaler::DIV2; // APB are additional clocks for external devices
         config.rcc.apb2_pre = APBPrescaler::DIV2; // and just need to be set to some value less
         config.rcc.apb3_pre = APBPrescaler::DIV2; // than the real clock
         config.rcc.apb4_pre = APBPrescaler::DIV2; //
-        config.rcc.sys = Sysclk::PLL1_P;
+        config.rcc.sys = Sysclk::PLL1_P; // 400Mhz
     }
     let p = embassy_stm32::init(config);
 
