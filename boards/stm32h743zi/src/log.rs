@@ -1,4 +1,4 @@
-use crate::tasks::mqtt_send_and_recv::SEND_CHANNEL;
+use crate::tasks::mqtt::SEND_CHANNEL;
 use core::str::FromStr;
 use defmt::{debug, error, info, warn};
 use heapless::String;

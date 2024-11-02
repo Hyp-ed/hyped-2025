@@ -3,11 +3,10 @@
 
 use defmt::*;
 use embassy_executor::Spawner;
-use embassy_net::{Ipv4Address, Ipv4Cidr, Stack, StackResources};
+use embassy_net::{Stack, StackResources};
 use embassy_stm32::{
     bind_interrupts,
     eth::{self, generic_smi::GenericSMI, Ethernet, PacketQueue},
-    gpio::Pin,
     peripherals::{self, ETH},
     rcc,
     rng::{self, Rng},
@@ -16,14 +15,13 @@ use embassy_stm32::{
 };
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32h743zi::{
-    config::{BOARD_STATIC_ADDRESS, MQTT_BROKER_IP},
+    config::{BOARD_STATIC_ADDRESS, GATEWAY_IP},
     log::log,
     tasks::{
-        mqtt_send_and_recv::{mqtt_recv_task, mqtt_send_task, net_task},
-        test_mqtt_tasks::{button_task, five_seconds_task},
+        heartbeat::heartbeat,
+        mqtt::{mqtt_recv_task, mqtt_send_task},
     },
 };
-
 use hyped_core::log_types::LogLevel;
 use rand_core::RngCore;
 use static_cell::StaticCell;
@@ -33,6 +31,12 @@ bind_interrupts!(struct Irqs {
     ETH => eth::InterruptHandler;
     RNG => rng::InterruptHandler<peripherals::RNG>;
 });
+
+/// Task for running the network stack
+#[embassy_executor::task]
+pub async fn net_task(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) -> ! {
+    stack.run().await
+}
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -58,13 +62,9 @@ async fn main(spawner: Spawner) -> ! {
         config.rcc.apb4_pre = APBPrescaler::DIV2; //
         config.rcc.sys = Sysclk::PLL1_P; // 400Mhz
     }
+
     let p = embassy_stm32::init(config);
 
-    spawner.spawn(button_task(p.PC13.degrade())).unwrap();
-
-    log(LogLevel::Info, "Hello World!").await;
-
-    // let seed: u64 = 0xdeadbeef;
     let mut rng = Rng::new(p.RNG, Irqs);
     let mut seed = [0; 8];
     rng.fill_bytes(&mut seed);
@@ -90,11 +90,10 @@ async fn main(spawner: Spawner) -> ! {
         mac_addr,
     );
 
-    // let config = embassy_net::Config::dhcpv4(Default::default());
     let config = embassy_net::Config::ipv4_static(embassy_net::StaticConfigV4 {
         address: BOARD_STATIC_ADDRESS,
         dns_servers: heapless::Vec::new(),
-        gateway: Some(MQTT_BROKER_IP),
+        gateway: Some(GATEWAY_IP),
     });
 
     // Init network stack
@@ -118,10 +117,9 @@ async fn main(spawner: Spawner) -> ! {
     // Launch MQTT send and receive tasks
     unwrap!(spawner.spawn(mqtt_send_task(stack)));
     unwrap!(spawner.spawn(mqtt_recv_task(stack)));
-
-    unwrap!(spawner.spawn(five_seconds_task()));
+    unwrap!(spawner.spawn(heartbeat()));
 
     loop {
-        Timer::after(Duration::from_millis(1000)).await;
+        Timer::after(Duration::from_secs(1)).await;
     }
 }

@@ -2,8 +2,11 @@ use defmt::{info, warn};
 use embassy_net::tcp::TcpSocket;
 use heapless::String;
 use rust_mqtt::{
-    client::{client::MqttClient, client_config::ClientConfig},
-    packet::v5::reason_codes::ReasonCode,
+    client::{
+        client::MqttClient,
+        client_config::{ClientConfig, MqttVersion},
+    },
+    packet::v5::{publish_packet::QualityOfService, reason_codes::ReasonCode},
     utils::rng_generator::CountingRng,
 };
 
@@ -46,11 +49,8 @@ impl<'a> HypedMqttClient<'a, TcpSocket<'a>, CountingRng> {
 
 /// Initialise the MQTT client configuration with the given client ID
 pub fn initialise_mqtt_config(client_id: &str) -> ClientConfig<'_, 5, CountingRng> {
-    let mut config = ClientConfig::new(
-        rust_mqtt::client::client_config::MqttVersion::MQTTv5,
-        CountingRng(20000),
-    );
-    config.add_max_subscribe_qos(rust_mqtt::packet::v5::publish_packet::QualityOfService::QoS1);
+    let mut config = ClientConfig::new(MqttVersion::MQTTv5, CountingRng(20000));
+    config.add_max_subscribe_qos(QualityOfService::QoS1);
     config.add_client_id(client_id);
     config.max_packet_size = 100;
     config
@@ -77,12 +77,7 @@ impl<'a, T: embedded_io_async::Read + embedded_io_async::Write, R: rand_core::Rn
     pub async fn send_message(&mut self, topic: &str, message: &[u8], retain: bool) {
         match self
             .client
-            .send_message(
-                topic,
-                message,
-                rust_mqtt::packet::v5::publish_packet::QualityOfService::QoS1,
-                retain,
-            )
+            .send_message(topic, message, QualityOfService::QoS1, retain)
             .await
         {
             Ok(()) => {}
