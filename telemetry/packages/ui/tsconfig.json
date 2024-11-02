@@ -1,0 +1,23 @@
+{
+  "extends": "@hyped/tsconfig/base.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./app/*"],
+    },
+  },
+  "tsc-alias": {
+    "replacers": {
+      "base-url": {
+        "enabled": false,
+      },
+    },
+  },
+  "include": ["app", "vite.config.ts", "openmct", "mqtt.d.ts", "app/config.ts"],
+  "exclude": ["node_modules", "dist"],
+}
