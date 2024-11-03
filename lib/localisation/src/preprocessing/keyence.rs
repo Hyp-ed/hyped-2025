@@ -8,16 +8,22 @@ pub enum SensorChecks {
 
 pub struct KeyenceAgrees {
     keyence_data: Vec<bool, 2>,
+    previous_keyance_agreement: <bool>,
 }
 
 impl KeyenceAgrees {
     pub fn new(keyence_data: Vec<bool, 2>) -> Self {
-        KeyenceAgrees { keyence_data }
+        KeyenceAgrees { 
+            keyence_data,
+            previous_keyance_agreement: true, 
+        }
     }
 
     pub fn check_keyence_agrees(&self) -> SensorChecks {
-        if self.keyence_data[0] != self.keyence_data[1] {
+        if self.keyence_data[0] != self.keyence_data[1] && self.previous_keyance_agreement == false {
             return SensorChecks::Unnaceptable;
+        } else if self.keyence_data[0] != self.keyence_data[1] {
+            self.previous_keyance_agreement = false;
         }
 
         SensorChecks::Acceptable
