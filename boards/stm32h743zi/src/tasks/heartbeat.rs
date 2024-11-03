@@ -1,5 +1,6 @@
 use super::mqtt::SEND_CHANNEL;
 use core::str::FromStr;
+use defmt::debug;
 use embassy_time::{Duration, Timer};
 use heapless::String;
 use hyped_core::{mqtt::MqttMessage, mqtt_topics::MqttTopics};
@@ -15,6 +16,7 @@ pub async fn heartbeat() {
                 payload: String::<512>::from_str("").unwrap(),
             })
             .await;
+        debug!("Heartbeat sent");
         Timer::after(Duration::from_secs(1)).await;
     }
 }
