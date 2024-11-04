@@ -18,7 +18,7 @@ impl KeyenceAgrees {
         }
     }
 
-    pub fn check_keyence_agrees(&mut self) -> SensorChecks {
+    pub fn check_keyence_agrees(&mut self, keyence_data: Vec<bool, 2>) -> SensorChecks {
         if self.keyence_data[0] != self.keyence_data[1] && !self.previous_keyance_agreement {
             return SensorChecks::Unnaceptable;
         } else {
