@@ -6,6 +6,7 @@ pub enum SensorChecks {
     Unnaceptable,
 }
 
+/// This struct checks if both the current and previous keyance data is in disagreement
 pub struct KeyenceAgrees {
     previous_keyance_agreement: bool,
 }
