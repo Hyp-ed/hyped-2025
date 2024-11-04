@@ -16,8 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run rustfmt
-        run: cargo fmt --all -- --check
+      - run: cargo fmt --all -- --check
+      - run: cargo fmt --manifest-path boards/stm32l476rg/Cargo.toml -- --check
+      - run: cargo fmt --manifest-path boards/stm32f767zi/Cargo.toml -- --check
+      - run: cargo fmt --manifest-path boards/stm32f429zi/Cargo.toml -- --check
 
   typos:
     name: Spell check with typos
