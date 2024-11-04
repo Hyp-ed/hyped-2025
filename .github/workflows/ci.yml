@@ -37,5 +37,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: rustup target add thumbv7em-none-eabihf
       - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.board }}
       - run: cargo build --verbose
         working-directory: boards/${{ matrix.board }}
