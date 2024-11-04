@@ -25,7 +25,7 @@ jobs:
       - run: cargo test --verbose
 
   build_boards:
-    name: Cargo Build (Boards)
+    name: Cargo Build (boards)
     runs-on: ubuntu-latest
     strategy:
       matrix:
