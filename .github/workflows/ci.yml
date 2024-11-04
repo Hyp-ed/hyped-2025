@@ -22,10 +22,18 @@ jobs:
       - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
       - run: cargo build --verbose
       - run: cargo test --verbose
+
+  build_boards:
+    name: Cargo Build (Boards)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        board:
+          - stm32l476rg
+          - stm32h743zi
+          - stm32f767zi
+    steps:
+      - uses: actions/checkout@v4
       - run: rustup target add thumbv7em-none-eabihf
       - run: cargo build --verbose
-        working-directory: boards/stm32l476rg
-      - run: cargo build --verbose
-        working-directory: boards/stm32h743zi
-      - run: cargo build --verbose
-        working-directory: boards/stm32f767zi
+        working-directory: boards/${{ matrix.board }}
