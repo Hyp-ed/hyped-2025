@@ -7,7 +7,6 @@ pub enum SensorChecks {
 }
 
 pub struct KeyenceAgrees {
-    keyence_data: Vec<bool, 2>,
     previous_keyance_agreement: bool,
 }
 
