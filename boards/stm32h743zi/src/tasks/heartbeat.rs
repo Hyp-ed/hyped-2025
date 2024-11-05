@@ -10,13 +10,13 @@ use {defmt_rtt as _, panic_probe as _};
 #[embassy_executor::task]
 pub async fn heartbeat() {
     loop {
+        debug!("Sending heartbeat...");
         SEND_CHANNEL
             .send(MqttMessage {
                 topic: MqttTopics::to_string(&MqttTopics::Heartbeat),
                 payload: String::<512>::from_str("").unwrap(),
             })
             .await;
-        debug!("Heartbeat sent");
         Timer::after(Duration::from_secs(1)).await;
     }
 }
