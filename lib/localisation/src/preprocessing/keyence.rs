@@ -11,6 +11,12 @@ pub struct KeyenceAgrees {
     previous_keyance_agreement: bool,
 }
 
+impl Default for KeyenceAgrees {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl KeyenceAgrees {
     pub fn new() -> Self {
         KeyenceAgrees {
