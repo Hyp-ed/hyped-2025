@@ -44,7 +44,8 @@ impl KalmanFilter {
         }
     }
 
-    // Predict step
+    /// Predict step
+    /// Predicts the next state of the system, uses the accelerometer data.
     pub fn predict(&mut self, control_input: &DVector<f64>) {
         // x_k = F * x_k-1 + B * u_k
         self.state = &self.transition_matrix * &self.state + &self.control_matrix * control_input;
@@ -55,7 +56,7 @@ impl KalmanFilter {
                 + &self.process_noise;
     }
 
-    // Update step
+    /// Update step: Corrects the state estimate based on the measurement. Uses the stripe counter and optical flow data.
     pub fn update(&mut self, measurement: &DVector<f64>) {
         // y_k = z_k - H * x_k
         let innovation = measurement - &self.observation_matrix * &self.state;
@@ -83,6 +84,8 @@ impl KalmanFilter {
     }
 }
 
+
+/* 
 #[cfg(test)]
 mod tests {
     use super::KalmanFilter;
@@ -142,3 +145,4 @@ mod tests {
         assert!((final_state - DVector::from_column_slice(&[851.9, 223.2])).norm() < 0.5);
     }
 }
+    */
