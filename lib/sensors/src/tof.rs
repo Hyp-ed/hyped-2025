@@ -3,7 +3,8 @@ use hyped_io::i2c::{HypedI2c, I2cError};
 ///ToF implements the logic to read Time of Flight data from the VL6180V1 Time of Flight
 ///sensor using I2C peripheral provided by the Hyped I2c trait.
 ///
-/// finish this write up later.
+/// The majority of this implementation was done by implementing code examples from the Application Sheet (see below)
+/// into Rust code; this implementation should allow us to start single-shot and continuous measurements and read their results.
 /// 
 /// Data Sheet: https://www.st.com/en/imaging-and-photonics-solutions/vl6180.html#overview
 /// 
@@ -20,37 +21,35 @@ impl<T: HypedI2c> TimeOfFlight<T> {
         let device_address = device_address as u8;
         for i in 0..30 { // writing to private registers
         match i2c.write_byte_to_register_16(device_address, PRIVATE_REGISTERS[i], PRIVATE_REGISTER_DATA[i]) {
-            Ok(p) => p, // unused
             Err(e) =>  return Err(ToFError::I2cError(e)),
+            _ => (), // unused
         }
     } 
         // Recommended Public Registers now (see Application Sheet)
         match i2c.write_byte_to_register(device_address, SYS_MODE_GPIO1, SYS_MODE_GPIO_VAL) {
-            Ok(p) => p,
             Err(e) =>  return Err(ToFError::I2cError(e)),
+            _ => (),
         }
         match i2c.write_byte_to_register_16(device_address, AVG_SAMPLE_PERIOD, AVG_SAMPLE_PERIOD_VAL) {
-            Ok(p) => p,
             Err(e) =>  return Err(ToFError::I2cError(e)),
+            _ => (),
         }
         match i2c.write_byte_to_register(device_address, SYSRANGE_VHV_REPEAT_RATE, SYSRANGE_VHV_REPEAT_RATE_VAL) {
-            Ok(p) => p,
             Err(e) =>  return Err(ToFError::I2cError(e)),
+            _ => (),
         }
         match i2c.write_byte_to_register(device_address, SYSRANGE_VHV_RECALIBRATE, SYSRANGE_VHV_RECALIBRATE_VAL) {
-            Ok(p) => p,
             Err(e) =>  return Err(ToFError::I2cError(e)),
+            _ => (),
         }
         match i2c.write_byte_to_register(device_address, SYSRANGE_INTERMEASURE_PERIOD, SYSRANGE_INTERMEASURE_PERIOD_VAL) {
-            Ok(p) => p,
             Err(e) =>  return Err(ToFError::I2cError(e)),
+            _ => (),
         }
         match i2c.write_byte_to_register(device_address, SYS_INTERRUPT_CONFIG_GPIO, SYS_INTERRUPT_CONFIG_GPIO_VAL) {
-            Ok(p) => p,
             Err(e) =>  return Err(ToFError::I2cError(e)),
+            _ => (),
         }
-
-        // not sure if this works? effectively if no errors returned from previous match arms, return Ok(Self)
         Ok(Self {
             i2c,
             device_address,
@@ -60,8 +59,8 @@ impl<T: HypedI2c> TimeOfFlight<T> {
     pub fn start_ss_measure(mut i2c: T, device_address: ToFAddresses) -> Result<Self, ToFError> { // start single shot measurement
         let device_address = device_address as u8;
         match i2c.write_byte_to_register(device_address, SYSRANGE_START, SYSRANGE_START_SS_VAL) {
-            Ok(p) => p,
             Err(e) =>  return Err(ToFError::I2cError(e)),
+            _ => (),
         }
         
         Ok (Self {
@@ -76,27 +75,59 @@ impl<T: HypedI2c> TimeOfFlight<T> {
             Some(byte) => byte,
             None => 0, // not sure about returning 0 for None - will this somehow break stuff?
         };
-        let range_status = status_byte & 0x07;
-        while (range_status != 0x04) {
-            let status_byte = match self.i2c.read_byte(self.device_address, RESULT_INTERR_STATUS_GPIO) {
+        let mut range_status = status_byte & 0x07;
+        while range_status != 0x04 {
+            range_status = match self.i2c.read_byte(self.device_address, RESULT_INTERR_STATUS_GPIO) {
                 Some(byte) => byte,
                 None => 0,
-            };
-            let range_status = status_byte & 0x07;
+            } & 0x07;
         }
 
-    }
+    } // consider using a 10-iteration loop, each time it waits, say, 1-2 seconds. if the result is not ready after 10-20 seconds, return an error?
 
-    pub fn read_range(&mut self) -> Option<f32> {
+    pub fn read_range(&mut self) -> Option<u8> {
         let range_byte =
             match self.i2c.read_byte(self.device_address, RESULT_RANGE_VAL) {
                 Some(byte) => byte,
                 None => {
                     return None;
                 }
-            }; // implement logic to convert byte to f32 (mm)
-            let range = range_byte as f32; // hopefully this works, not sure how it's encoded..
-        Some(range)
+            };
+        Some(range_byte)
+    }
+
+    pub fn start_cts_measure(mut i2c: T, device_address: ToFAddresses) -> Result<Self, ToFError> { // start continuous measurement
+        let device_address = device_address as u8;
+        match i2c.write_byte_to_register(device_address, SYSRANGE_START, SYSRANGE_START_CTS_VAL) {
+            Err(e) =>  return Err(ToFError::I2cError(e)),
+            _ => (),
+        }
+        
+        Ok (Self {
+            i2c,
+            device_address
+        })
+    }
+
+    pub fn check_reset(&mut self) -> bool {
+        let reset_value =  match self.i2c.read_byte(self.device_address, SYS_FRESH_OUT_RESET) {
+            Some(byte) => byte,
+            None => 0, // hopefully returning 0 is okay and won't break stuff
+        };
+        reset_value == 1
+    }
+
+    pub fn clear_interrupts(mut i2c: T, device_address: ToFAddresses) -> Result<Self, ToFError> { // at the end clear interrupts
+        let device_address = device_address as u8;
+        match i2c.write_byte_to_register(device_address, SYS_INTERRUPT_CLEAR, CLEAR_INTERRUPTS_VAL) {
+            Err(e) =>  return Err(ToFError::I2cError(e)),
+            _ => (),
+        }
+        
+        Ok (Self {
+            i2c,
+            device_address
+        })
     }
 }
 
@@ -122,6 +153,8 @@ const SYSRANGE_INTERMEASURE_PERIOD: u8 = 0x01b;
 const SYS_INTERRUPT_CONFIG_GPIO: u8 = 0x014;
 const SYSRANGE_START: u8 = 0x018;
 const RESULT_INTERR_STATUS_GPIO: u8 = 0x04f;
+const SYS_FRESH_OUT_RESET: u8 = 0x016;
+const SYS_INTERRUPT_CLEAR: u8 = 0x015;
 // this one has VAL because that's what its' called in the docs, not actually a VALUE.
 const RESULT_RANGE_VAL: u8 = 0x062;
 
@@ -133,6 +166,8 @@ const SYSRANGE_VHV_RECALIBRATE_VAL: u8 = 0x01;
 const SYSRANGE_INTERMEASURE_PERIOD_VAL: u8 = 0x09;
 const SYS_INTERRUPT_CONFIG_GPIO_VAL: u8 = 0x24;
 const SYSRANGE_START_SS_VAL: u8 = 0x01;
+const SYSRANGE_START_CTS_VAL: u8 = 0x03;
+const CLEAR_INTERRUPTS_VAL: u8 = 0x07;
 
 // private registers array
 const PRIVATE_REGISTERS: [u16; 30] = [
@@ -200,6 +235,4 @@ const PRIVATE_REGISTER_DATA: [u8; 30] = [
     0x1f,
     0x00
 ];
-
-
 
