@@ -20,19 +20,15 @@ impl<T: HypedI2c> Accelerometer<T> {
     /// Create a new instance of the accelerometer and attempt to configure it
     pub fn new(mut i2c: T, device_address: AccelerometerAddresses) -> Result<Self, AccelerometerError> {
         let device_address = device_address as u8;
-        match i2c.write_byte_to_register(device_address, LIS2DS12_CTRL1_ADDRESS, LIS2DS12_CTRL1_VALUE) {
-            Err(e) => return Err(AccelerometerError::I2cError(e)),
-            _ => ()
-        };
-        match i2c.write_byte_to_register(device_address, LIS2DS12_CTRL2_ADDRESS, LIS2DS12_CTRL2_VALUE) {
-            Err(e) => return Err(AccelerometerError::I2cError(e)),
-            _ => ()
-        };
-        match i2c.write_byte_to_register(device_address, LIS2DS12_FIFO_CTRL_ADDRESS, LIS2DS12_FIFO_CTRL_VALUE) {
-            Err(e) => return Err(AccelerometerError::I2cError(e)),
-            _ => ()
-        };
-
+        if let Err(e) = i2c.write_byte_to_register(device_address, LIS2DS12_CTRL1_ADDRESS, LIS2DS12_CTRL1_VALUE) {
+            return Err(AccelerometerError::I2cError(e));
+        }
+        if let Err(e) = i2c.write_byte_to_register(device_address, LIS2DS12_CTRL2_ADDRESS, LIS2DS12_CTRL2_VALUE) {
+            return Err(AccelerometerError::I2cError(e));
+        }
+        if let Err(e) = i2c.write_byte_to_register(device_address, LIS2DS12_FIFO_CTRL_ADDRESS, LIS2DS12_FIFO_CTRL_VALUE) {
+            return Err(AccelerometerError::I2cError(e));
+        }
         // Return Self only if all values are written successfully
         Ok(Self{i2c, device_address})
     }
@@ -56,7 +52,7 @@ impl<T: HypedI2c> Accelerometer<T> {
         let y = y_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
         let z = z_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
 
-        Some(AccelerationValues { x: x, y: y, z: z })
+        Some(AccelerationValues { x, y, z })
     }
 
     pub fn check_status(&mut self) -> Status {
@@ -68,6 +64,7 @@ impl<T: HypedI2c> Accelerometer<T> {
 
 }
 
+#[allow(dead_code)]
 pub struct AccelerationValues {
     x: f32,
     y: f32,
