@@ -66,12 +66,19 @@ impl KalmanFilter {
             &self.observation_matrix * &self.covariance * self.observation_matrix.transpose()
                 + &self.measurement_noise;
 
+        let a = innovation_covariance[(0, 0)];
+        let b = innovation_covariance[(0, 1)];
+        let c = innovation_covariance[(1, 0)];
+        let d = innovation_covariance[(1, 1)];
+
+        let determinant = a * d - b * c;
+
+        let innovation_covariance_inv = Matrix2::new(d, -b, -c, a) / determinant;
+
         // K = P_k * H^T * S^-1
         let kalman_gain = &self.covariance
             * self.observation_matrix.transpose()
-            * innovation_covariance
-                .try_inverse()
-                .expect("Innovation covariance matrix is not invertible");
+            * innovation_covariance_inv;
 
         self.state = &self.state + &kalman_gain * innovation;
 
