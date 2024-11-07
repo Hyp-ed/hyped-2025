@@ -20,7 +20,7 @@ impl Default for KeyenceAgrees {
 impl KeyenceAgrees {
     pub fn new() -> Self {
         KeyenceAgrees {
-            previous_keyance_agreement: true,
+            previous_keyence_agreement: true,
         }
     }
 
