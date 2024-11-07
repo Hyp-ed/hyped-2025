@@ -48,23 +48,23 @@ impl KalmanFilter {
     /// Predicts the next state of the system, uses the accelerometer data.
     pub fn predict(&mut self, control_input: &Vector1<f64>) {
         // x_k = F * x_k-1 + B * u_k
-        self.state = &self.transition_matrix * &self.state + &self.control_matrix * control_input;
+        self.state = self.transition_matrix * self.state + self.control_matrix * control_input;
 
         // P_k = F * P_k-1 * F^T + Q
         self.covariance =
-            &self.transition_matrix * &self.covariance * self.transition_matrix.transpose()
-                + &self.process_noise;
+            self.transition_matrix * self.covariance * self.transition_matrix.transpose()
+                + self.process_noise;
     }
 
     /// Update step: Corrects the state estimate based on the measurement. Uses the stripe counter and optical flow data.
     pub fn update(&mut self, measurement: &Vector2<f64>) {
         // y_k = z_k - H * x_k
-        let innovation = measurement - &self.observation_matrix * &self.state;
+        let innovation = measurement - self.observation_matrix * self.state;
 
         // S = H * P_k * H^T + R
         let innovation_covariance =
-            &self.observation_matrix * &self.covariance * self.observation_matrix.transpose()
-                + &self.measurement_noise;
+            self.observation_matrix * self.covariance * self.observation_matrix.transpose()
+                + self.measurement_noise;
 
         let a = innovation_covariance[(0, 0)];
         let b = innovation_covariance[(0, 1)];
@@ -77,12 +77,12 @@ impl KalmanFilter {
 
         // K = P_k * H^T * S^-1
         let kalman_gain =
-            &self.covariance * self.observation_matrix.transpose() * innovation_covariance_inv;
+            self.covariance * self.observation_matrix.transpose() * innovation_covariance_inv;
 
-        self.state = &self.state + &kalman_gain * innovation;
+        self.state = self.state + kalman_gain * innovation;
 
         let identity = Matrix2::identity();
-        self.covariance = (identity - &kalman_gain * &self.observation_matrix) * &self.covariance;
+        self.covariance = (identity - &kalman_gain * self.observation_matrix) * self.covariance;
     }
 
     pub fn get_state(&self) -> Vector2<f64> {
