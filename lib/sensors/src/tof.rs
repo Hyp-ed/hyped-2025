@@ -236,3 +236,13 @@ const PRIVATE_REGISTER_DATA: [u8; 30] = [
     0x00
 ];
 
+mod tests {
+    use super::*;
+    use heapless::FnvIndexMap;
+    use hyped_io::i2c::mock_i2c::MockI2c;
+
+    fn test_tof_init() {
+        
+    }
+
+}

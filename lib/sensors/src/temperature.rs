@@ -137,7 +137,7 @@ mod tests {
         let _ = Temperature::new(&mut i2c, TemperatureAddresses::Address3f);
         assert_eq!(
             i2c.get_writes()
-                .get(&(TemperatureAddresses::Address3f as u8, STTS22H_CTRL)),
+                .get(&(TemperatureAddresses::Address3f as u8, STTS22H_CTRL.into())),
             Some(&Some(STTS22H_CONFIG_SETTINGS))
         );
     }
@@ -146,11 +146,11 @@ mod tests {
     fn test_temperature_read_0() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H),
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H as u16),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L as u16),
             Some(0x00),
         );
         let mut i2c = MockI2c::new(i2c_values);
@@ -162,11 +162,11 @@ mod tests {
     fn test_temperature_read_25() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H),
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H as u16),
             Some(0x09),
         );
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L as u16),
             Some(0xc4),
         );
         let mut i2c = MockI2c::new(i2c_values);
@@ -178,11 +178,11 @@ mod tests {
     fn test_temperature_read_minus_10() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H),
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H as u16),
             Some(0xfc),
         );
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
+            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L as u16),
             Some(0x18),
         );
         let mut i2c = MockI2c::new(i2c_values);
@@ -194,7 +194,7 @@ mod tests {
     fn test_temperature_status_busy() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
+            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS.into()),
             Some(STTS22H_STATUS_BUSY),
         );
         let mut i2c = MockI2c::new(i2c_values);
@@ -206,7 +206,7 @@ mod tests {
     fn test_temperature_status_temp_over_upper_limit() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
+            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS.into()),
             Some(STTS22H_TEMP_OVER_UPPER_LIMIT),
         );
         let mut i2c = MockI2c::new(i2c_values);
@@ -218,7 +218,7 @@ mod tests {
     fn test_temperature_status_temp_under_lower_limit() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
+            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS.into()),
             Some(STTS22H_TEMP_UNDER_LOWER_LIMIT),
         );
         let mut i2c = MockI2c::new(i2c_values);
