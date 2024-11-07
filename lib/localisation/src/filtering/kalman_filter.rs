@@ -1,37 +1,37 @@
-use nalgebra::{DMatrix, DVector};
+use nalgebra::{Matrix2, Vector1, Vector2}; 
 
 pub struct KalmanFilter {
-    // Current state estimate
-    state: DVector<f64>,
+    // Current state estimate (2x1)
+    state: Vector2<f64>,
 
-    // Current error covariance
-    covariance: DMatrix<f64>,
+    // Current error covariance (2x2)
+    covariance: Matrix2<f64>,
 
-    // State transition matrix
-    transition_matrix: DMatrix<f64>,
+    // State transition matrix (2x2)
+    transition_matrix: Matrix2<f64>,
 
-    // Control matrix
-    control_matrix: DMatrix<f64>,
+    // Control matrix (2x1)
+    control_matrix: Vector2<f64>,
 
-    // Observation matrix
-    observation_matrix: DMatrix<f64>,
+    // Observation matrix (1x2)
+    observation_matrix: Matrix2<f64>,
 
-    // Process noise covariance
-    process_noise: DMatrix<f64>,
+    // Process noise covariance (2x2)
+    process_noise: Matrix2<f64>,
 
-    // Measurement noise covariance
-    measurement_noise: DMatrix<f64>,
+    // Measurement noise covariance (1x1)
+    measurement_noise: Matrix2<f64>,
 }
 
 impl KalmanFilter {
     pub fn new(
-        initial_state: DVector<f64>,
-        initial_covariance: DMatrix<f64>,
-        transition_matrix: DMatrix<f64>,
-        control_matrix: DMatrix<f64>,
-        observation_matrix: DMatrix<f64>,
-        process_noise: DMatrix<f64>,
-        measurement_noise: DMatrix<f64>,
+        initial_state: Vector2<f64>,
+        initial_covariance: Matrix2<f64>,
+        transition_matrix: Matrix2<f64>,
+        control_matrix: Vector2<f64>,
+        observation_matrix: Matrix2<f64>,
+        process_noise: Matrix2<f64>,
+        measurement_noise: Matrix2<f64>,
     ) -> Self {
         KalmanFilter {
             state: initial_state,
@@ -46,7 +46,7 @@ impl KalmanFilter {
 
     /// Predict step
     /// Predicts the next state of the system, uses the accelerometer data.
-    pub fn predict(&mut self, control_input: &DVector<f64>) {
+    pub fn predict(&mut self, control_input: &Vector1<f64>) {
         // x_k = F * x_k-1 + B * u_k
         self.state = &self.transition_matrix * &self.state + &self.control_matrix * control_input;
 
@@ -57,7 +57,7 @@ impl KalmanFilter {
     }
 
     /// Update step: Corrects the state estimate based on the measurement. Uses the stripe counter and optical flow data.
-    pub fn update(&mut self, measurement: &DVector<f64>) {
+    pub fn update(&mut self, measurement: &Vector2<f64>) {
         // y_k = z_k - H * x_k
         let innovation = measurement - &self.observation_matrix * &self.state;
 
@@ -71,21 +71,21 @@ impl KalmanFilter {
             * self.observation_matrix.transpose()
             * innovation_covariance
                 .try_inverse()
-                .expect("Failed to invert innovation covariance matrix");
+                .expect("Innovation covariance matrix is not invertible");
 
         self.state = &self.state + &kalman_gain * innovation;
 
-        let identity = DMatrix::<f64>::identity(self.state.nrows(), self.state.nrows());
+        let identity = Matrix2::identity();
         self.covariance = (&identity - &kalman_gain * &self.observation_matrix) * &self.covariance;
     }
 
-    pub fn get_state(&self) -> DVector<f64> {
+    pub fn get_state(&self) -> Vector2<f64> {
         self.state.clone()
     }
 }
 
 
-/* 
+/*
 #[cfg(test)]
 mod tests {
     use super::KalmanFilter;
@@ -145,4 +145,4 @@ mod tests {
         assert!((final_state - DVector::from_column_slice(&[851.9, 223.2])).norm() < 0.5);
     }
 }
-    */
+*/
