@@ -10,7 +10,7 @@ import { SERVER_ENDPOINT } from './core/config';
 
 openmct.setAssetPath('/openmct-lib');
 
-// Local storage of dashbaords
+// Local storage of dashboards
 openmct.install(openmct.plugins.LocalStorage());
 // https://github.com/nasa/openmct/tree/master/src/plugins/staticRootPlugin
 openmct.install(
