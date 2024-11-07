@@ -82,7 +82,7 @@ impl KalmanFilter {
         self.state = &self.state + &kalman_gain * innovation;
 
         let identity = Matrix2::identity();
-        self.covariance = (&identity - &kalman_gain * &self.observation_matrix) * &self.covariance;
+        self.covariance = (identity - &kalman_gain * &self.observation_matrix) * &self.covariance;
     }
 
     pub fn get_state(&self) -> Vector2<f64> {
