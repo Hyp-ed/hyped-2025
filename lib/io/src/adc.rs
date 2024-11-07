@@ -5,6 +5,7 @@ pub trait HypedAdc {
 
 pub mod mock_adc {
     use heapless::Vec;
+
     /// A mock ADC instance which can be used for testing
     pub struct MockAdc {
         current_value: u16,
@@ -25,7 +26,7 @@ pub mod mock_adc {
             let current_value = values.pop().unwrap();
             let mut next_values = values.clone();
             next_values.reverse();
-            MockAdc { 
+            MockAdc {
                 current_value,
                 next_values,
             }
