@@ -79,7 +79,7 @@ impl KalmanFilter {
         let kalman_gain =
             self.covariance * self.observation_matrix.transpose() * innovation_covariance_inv;
 
-        self.state = self.state + kalman_gain * innovation;
+        self.state += kalman_gain * innovation;
 
         let identity = Matrix2::identity();
         self.covariance = (identity - kalman_gain * self.observation_matrix) * self.covariance;
