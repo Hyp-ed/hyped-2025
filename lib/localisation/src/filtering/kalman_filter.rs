@@ -1,4 +1,4 @@
-use nalgebra::{Matrix2, Vector1, Vector2}; 
+use nalgebra::{Matrix2, Vector1, Vector2};
 
 pub struct KalmanFilter {
     // Current state estimate (2x1)
@@ -76,9 +76,8 @@ impl KalmanFilter {
         let innovation_covariance_inv = Matrix2::new(d, -b, -c, a) / determinant;
 
         // K = P_k * H^T * S^-1
-        let kalman_gain = &self.covariance
-            * self.observation_matrix.transpose()
-            * innovation_covariance_inv;
+        let kalman_gain =
+            &self.covariance * self.observation_matrix.transpose() * innovation_covariance_inv;
 
         self.state = &self.state + &kalman_gain * innovation;
 
@@ -90,7 +89,6 @@ impl KalmanFilter {
         self.state.clone()
     }
 }
-
 
 /*
 #[cfg(test)]
