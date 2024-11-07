@@ -7,8 +7,8 @@ use hyped_io::i2c::{HypedI2c, I2cError};
 /// The accelerometer is configured to a sampling rate of 200Hz with high performance mode and continuous update.
 /// The full scale of the accelerometer (+-16g) is used.
 ///  
-/// The acceleration value for each axis is read from the sensor and converted to a floating point value in gs. 
-/// 
+/// The acceleration value for each axis is read from the sensor and converted to a floating point value in gs.
+///
 /// Data sheet: https://www.st.com/resource/en/datasheet/lis2ds12.pdf
 /// Application notes: https://www.st.com/resource/en/application_note/an4748-lis2ds12-alwayson-3axis-accelerometer-stmicroelectronics.pdf
 pub struct Accelerometer<T: HypedI2c> {
@@ -18,24 +18,37 @@ pub struct Accelerometer<T: HypedI2c> {
 
 impl<T: HypedI2c> Accelerometer<T> {
     /// Create a new instance of the accelerometer and attempt to configure it
-    pub fn new(mut i2c: T, device_address: AccelerometerAddresses) -> Result<Self, AccelerometerError> {
+    pub fn new(
+        mut i2c: T,
+        device_address: AccelerometerAddresses,
+    ) -> Result<Self, AccelerometerError> {
         let device_address = device_address as u8;
-        if let Err(e) = i2c.write_byte_to_register(device_address, LIS2DS12_CTRL1_ADDRESS, LIS2DS12_CTRL1_VALUE) {
+        if let Err(e) =
+            i2c.write_byte_to_register(device_address, LIS2DS12_CTRL1_ADDRESS, LIS2DS12_CTRL1_VALUE)
+        {
             return Err(AccelerometerError::I2cError(e));
         }
-        if let Err(e) = i2c.write_byte_to_register(device_address, LIS2DS12_CTRL2_ADDRESS, LIS2DS12_CTRL2_VALUE) {
+        if let Err(e) =
+            i2c.write_byte_to_register(device_address, LIS2DS12_CTRL2_ADDRESS, LIS2DS12_CTRL2_VALUE)
+        {
             return Err(AccelerometerError::I2cError(e));
         }
-        if let Err(e) = i2c.write_byte_to_register(device_address, LIS2DS12_FIFO_CTRL_ADDRESS, LIS2DS12_FIFO_CTRL_VALUE) {
+        if let Err(e) = i2c.write_byte_to_register(
+            device_address,
+            LIS2DS12_FIFO_CTRL_ADDRESS,
+            LIS2DS12_FIFO_CTRL_VALUE,
+        ) {
             return Err(AccelerometerError::I2cError(e));
         }
         // Return Self only if all values are written successfully
-        Ok(Self{i2c, device_address})
+        Ok(Self {
+            i2c,
+            device_address,
+        })
     }
 
     /// Read the acceleration for each axis and return them as floating point values in gs.
     pub fn read(&mut self) -> Option<AccelerationValues> {
-
         // Read the low and high bytes of the acceleration and combine them to get the acceleration for each axis
         let x_low_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_X_L)?;
         let x_high_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_X_H)?;
@@ -43,7 +56,7 @@ impl<T: HypedI2c> Accelerometer<T> {
         let y_high_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Y_H)?;
         let z_low_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Z_L)?;
         let z_high_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Z_H)?;
-    
+
         let x_combined = ((x_high_byte as u16) << 8 | x_low_byte as u16) as f32;
         let y_combined = ((y_high_byte as u16) << 8 | y_low_byte as u16) as f32;
         let z_combined = ((z_high_byte as u16) << 8 | z_low_byte as u16) as f32;
@@ -61,7 +74,6 @@ impl<T: HypedI2c> Accelerometer<T> {
             None => Status::Unknown,
         }
     }
-
 }
 
 #[allow(dead_code)]
@@ -83,7 +95,7 @@ pub enum AccelerometerError {
 pub enum Status {
     Ok,
     DataNotReady,
-    Unknown
+    Unknown,
 }
 
 impl Status {
