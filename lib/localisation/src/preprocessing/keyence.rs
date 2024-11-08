@@ -6,9 +6,10 @@ pub enum SensorChecks {
     Unnaceptable,
 }
 
-/// This struct checks if both the current and previous Keyence data is in disagreement
+/// Checks if the two Keyence sensors are in agreement.
+/// If the sensors disagree for two consecutive readings, the check fails.
 pub struct KeyenceAgrees {
-    previous_keyance_agreement: bool,
+    previous_keyence_agreement: bool,
 }
 
 impl Default for KeyenceAgrees {
@@ -20,15 +21,15 @@ impl Default for KeyenceAgrees {
 impl KeyenceAgrees {
     pub fn new() -> Self {
         KeyenceAgrees {
-            previous_keyance_agreement: true,
+            previous_keyence_agreement: true,
         }
     }
 
     pub fn check_keyence_agrees(&mut self, keyence_data: Vec<bool, 2>) -> SensorChecks {
-        if keyence_data[0] != keyence_data[1] && !self.previous_keyance_agreement {
+        if keyence_data[0] != keyence_data[1] && !self.previous_keyence_agreement {
             return SensorChecks::Unnaceptable;
         } else {
-            self.previous_keyance_agreement = keyence_data[0] == keyence_data[1];
+            self.previous_keyence_agreement = keyence_data[0] == keyence_data[1];
         }
 
         SensorChecks::Acceptable
