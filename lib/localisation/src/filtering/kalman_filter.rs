@@ -1,19 +1,25 @@
 use nalgebra::{Matrix2, Vector1, Vector2};
-
+/// Kalman filter implementation for cart for sensor fusion.
+/// Recursively estimates the state from a series of nois measurements.
+///
+/// Uses keyence, optical flow and accelerometer data.
+///
+/// Control input: Accelerometer data
+/// Measurement: Optical flow data, keyence stripe counter
 pub struct KalmanFilter {
-    // Current state estimate (2x1)
+    /// Current state estimate (2x1)
     state: Vector2<f64>,
-    // Current error covariance (2x2)
+    /// Current error covariance (2x2)
     covariance: Matrix2<f64>,
-    // State transition matrix (2x2)
+    /// State transition matrix (2x2)
     transition_matrix: Matrix2<f64>,
-    // Control matrix (2x1)
+    /// Control matrix (2x1)
     control_matrix: Vector2<f64>,
-    // Observation matrix (1x2)
+    /// Observation matrix (1x2)
     observation_matrix: Matrix2<f64>,
-    // Process noise covariance (2x2)
+    /// Process noise covariance (2x2)
     process_noise: Matrix2<f64>,
-    // Measurement noise covariance (1x1)
+    /// Measurement noise covariance (1x1)
     measurement_noise: Matrix2<f64>,
 }
 
@@ -39,7 +45,8 @@ impl KalmanFilter {
     }
 
     /// Predict step
-    /// Predicts the next state of the system, uses the accelerometer data.
+    /// Predicts the next state of the system, using the accelerometer data as control input.
+    /// Predicts the next state covariance.
     pub fn predict(&mut self, control_input: &Vector1<f64>) {
         // x_k = F * x_k-1 + B * u_k
         self.state = self.transition_matrix * self.state + self.control_matrix * control_input;
@@ -50,7 +57,8 @@ impl KalmanFilter {
                 + self.process_noise;
     }
 
-    /// Update step: Corrects the state estimate based on the measurement. Uses the stripe counter and optical flow data.
+    /// Update step: Corrects the state estimate based on the measurement.
+    /// Uses the stripe counter (displacement) and optical flow data (velocity).
     pub fn update(&mut self, measurement: &Vector2<f64>) {
         // y_k = z_k - H * x_k
         let innovation = measurement - self.observation_matrix * self.state;
@@ -59,6 +67,8 @@ impl KalmanFilter {
         let innovation_covariance =
             self.observation_matrix * self.covariance * self.observation_matrix.transpose()
                 + self.measurement_noise;
+
+        // Calculate the inverse of the innovation covariance
 
         let a = innovation_covariance[(0, 0)];
         let b = innovation_covariance[(0, 1)];
@@ -91,8 +101,23 @@ mod tests {
     use nalgebra::{Matrix2, Vector1, Vector2};
 
     #[test]
-
     fn test_kalman_filter() {
+        // Test simulating simple cart movement
+
+        // Acceleration: 20ms^-2
+        // Initial velocity: 0
+        // Initial position: 0
+        // Measurements taken every 1s
+        // 20 measurements taken
+
+        // Variance of measurments:
+        //  Distance: 10
+        //  Velocity: 5
+        //  Acceleration: 3
+
+        // Expected displacement: 4000m
+        // Expected velocity: 400ms^-1
+
         let initial_state = Vector2::new(0.0, 0.0);
         let initial_covariance = Matrix2::new(1.0, 0.0, 0.0, 1.0);
         let transition_matrix = Matrix2::new(1.0, 1.0, 0.0, 1.0);
@@ -133,7 +158,7 @@ mod tests {
         }
 
         let final_state = kalman_filter.get_state();
-        assert!(final_state[0] - 4000.0 < 1e-2);
-        assert!(final_state[1] - 400.0 < 1e-2);
+        assert!(final_state[0] - 4000.0 < 1e-10);
+        assert!(final_state[1] - 400.0 < 1e-10);
     }
 }
