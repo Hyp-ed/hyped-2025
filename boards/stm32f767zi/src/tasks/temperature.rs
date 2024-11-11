@@ -1,4 +1,4 @@
-use crate::io::i2c::Stm32l476rgI2c;
+use crate::io::i2c::Stm32f767ziI2c;
 use defmt_rtt as _;
 use embassy_stm32::i2c::I2c;
 use embassy_stm32::time::Hertz;
@@ -9,7 +9,7 @@ use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 pub async fn read_temp() -> ! {
     let p = embassy_stm32::init(Default::default());
     let i2c = I2c::new_blocking(p.I2C1, p.PB8, p.PB9, Hertz(100_000), Default::default());
-    let mut hyped_i2c = Stm32l476rgI2c::new(i2c);
+    let mut hyped_i2c = Stm32f767ziI2c::new(i2c);
 
     let mut temperature_sensor = Temperature::new(&mut hyped_i2c, TemperatureAddresses::Address3f)
         .expect(
