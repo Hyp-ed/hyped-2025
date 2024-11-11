@@ -15,10 +15,7 @@ pub struct Quartiles {
 
 impl Quartiles {
     pub fn new(q1: f32, q2: f32, q3: f32, is_unreliable: bool) -> Self {
-        let mut bound_factor = 1.5;
-        if is_unreliable {
-            bound_factor = 1.2;
-        }
+        let bound_factor = if is_unreliable { 1.2 } else { 1.5 };
 
         Self {
             q1,
@@ -56,10 +53,7 @@ impl AccelerometerPreprocessor {
         &mut self,
         data: AccelerometerData<K_NUM_ACCELEROMETERS>,
     ) -> Option<AccelerometerData<K_NUM_ACCELEROMETERS>> {
-        let quartiles = match self.calculate_quartiles(&data) {
-            Some(quartiles) => quartiles,
-            None => return None,
-        };
+        let quartiles = self.calculate_quartiles(&data)?;
 
         let accelerometer_data = data
             .iter()
@@ -89,15 +83,12 @@ impl AccelerometerPreprocessor {
             quartiles = self.get_quartiles(data);
         } else if self.num_reliable_accelerometers == (K_NUM_ACCELEROMETERS as i32 - 1) {
             const SIZE: usize = K_NUM_ACCELEROMETERS - 1;
-            let mut filtered_data: AccelerometerData<SIZE> =
-                AccelerometerData::from_slice(&[0.0; SIZE]).unwrap();
-            let mut filtered_data_idx = 0;
-            data.iter().enumerate().for_each(|(i, val)| {
-                if self.reliable_accelerometers[i] {
-                    filtered_data[filtered_data_idx] = *val;
-                    filtered_data_idx += 1;
-                }
-            });
+            let filtered_data: AccelerometerData<SIZE> = data
+                .iter()
+                .enumerate()
+                .filter(|(i, _)| self.reliable_accelerometers[*i])
+                .map(|(_, val)| *val)
+                .collect();
             quartiles = self.get_quartiles(&filtered_data);
         } else {
             return None;
@@ -122,10 +113,7 @@ impl AccelerometerPreprocessor {
             accelerometer_data[i] = magnitude.sqrt();
         });
 
-        let clean_accelerometer_data = match self.handle_outliers(accelerometer_data) {
-            Some(data) => data,
-            None => return None,
-        };
+        let clean_accelerometer_data = self.handle_outliers(accelerometer_data)?;
 
         if self.check_reliable() == SensorChecks::Unacceptable {
             return None;
