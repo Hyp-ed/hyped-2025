@@ -1,6 +1,7 @@
 use crate::filtering::kalman_filter::KalmanFilter;
 
 
+
 pub struct Navigator {
     displacement: f64,
     velocity: f64,
