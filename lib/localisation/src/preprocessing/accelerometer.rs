@@ -28,6 +28,7 @@ impl Quartiles {
     }
 }
 
+#[derive(Default)]
 pub struct AccelerometerPreprocessor {
     num_reliable_accelerometers: i32,
     reliable_accelerometers: [bool; K_NUM_ACCELEROMETERS],
