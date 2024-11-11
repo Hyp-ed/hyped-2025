@@ -3,22 +3,16 @@ use nalgebra::{Matrix2, Vector1, Vector2};
 pub struct KalmanFilter {
     // Current state estimate (2x1)
     state: Vector2<f64>,
-
     // Current error covariance (2x2)
     covariance: Matrix2<f64>,
-
     // State transition matrix (2x2)
     transition_matrix: Matrix2<f64>,
-
     // Control matrix (2x1)
     control_matrix: Vector2<f64>,
-
     // Observation matrix (1x2)
     observation_matrix: Matrix2<f64>,
-
     // Process noise covariance (2x2)
     process_noise: Matrix2<f64>,
-
     // Measurement noise covariance (1x1)
     measurement_noise: Matrix2<f64>,
 }
@@ -90,25 +84,22 @@ impl KalmanFilter {
     }
 }
 
-/*
 #[cfg(test)]
 mod tests {
-    use super::KalmanFilter;
-    use nalgebra::{DMatrix, DVector};
+
+    use super::*;
+    use nalgebra::{Matrix2, Vector1, Vector2};
 
     #[test]
 
     fn test_kalman_filter() {
-        let initial_state = DVector::from_column_slice(&[0.0, 0.0]);
-        let initial_covariance = DMatrix::from_diagonal_element(2, 2, 500.0);
-
-        let transition_matrix = DMatrix::from_row_slice(2, 2, &[1.0, 0.25, 0.0, 1.0]);
-        let control_matrix = DMatrix::from_row_slice(2, 1, &[0.0313, 0.25]);
-        let observation_matrix = DMatrix::from_row_slice(1, 2, &[1.0, 0.0]);
-
-        let process_noise =
-            DMatrix::from_row_slice(2, 2, &[0.00000976562, 0.000078125, 0.000078125, 0.0625]);
-        let measurement_noise = DMatrix::from_diagonal_element(1, 1, 400.0);
+        let initial_state = Vector2::new(0.0, 0.0);
+        let initial_covariance = Matrix2::new(1.0, 0.0, 0.0, 1.0);
+        let transition_matrix = Matrix2::new(1.0, 1.0, 0.0, 1.0);
+        let control_matrix = Vector2::new(0.5, 1.0);
+        let process_noise = Matrix2::new(0.25 * 3.0, 0.5 * 3.0, 0.5 * 3.0, 1.0 * 3.0);
+        let observation_matrix = Matrix2::new(1.0, 0.0, 0.0, 1.0);
+        let measurement_noise = Matrix2::new(1.0, 0.0, 0.0, 0.0);
 
         let mut kalman_filter = KalmanFilter::new(
             initial_state,
@@ -120,34 +111,29 @@ mod tests {
             measurement_noise,
         );
 
-        let control_input = DVector::from_column_slice(&[0.0]);
-        kalman_filter.predict(&control_input);
+        let acc_measurements = [
+            20.38, 15.02, 19.17, 19.36, 20.6, 16.89, 20.42, 20.33, 21.53, 19.98, 26.08, 17.63,
+            21.01, 17.06, 21.83, 23.18, 26.03, 17.67, 22.99, 18.78,
+        ];
+        let dist_measurements = [
+            28.59, 51.7, 87.64, 169.39, 244.96, 363.2, 493.0, 626.97, 817.84, 1021.23, 1192.21,
+            1423.34, 1689.46, 1964.72, 2261.09, 2565.47, 2902.0, 3239.25, 3627.35, 4011.47,
+        ];
+        let vel_measurements = [
+            20.06, 42.43, 66.23, 83.03, 104.47, 122.93, 135.85, 157.55, 179.02, 201.75, 216.53,
+            240.63, 262.97, 285.75, 307.43, 321.04, 331.48, 354.47, 374.19, 394.29,
+        ];
 
-        let state = kalman_filter.get_state();
-        assert!((state - DVector::from_column_slice(&[0.0, 0.0])).norm() < 1e-2);
+        for i in 0..20 {
+            let measurement = Vector2::new(dist_measurements[i], vel_measurements[i]);
+            let control_input = Vector1::new(acc_measurements[i]);
 
-        let h_values = DVector::from_column_slice(&[
-            6.43, 1.3, 39.43, 45.89, 41.44, 48.7, 78.06, 80.08, 61.77, 75.15, 110.39, 127.83,
-            158.75, 156.55, 213.32, 229.82, 262.8, 297.57, 335.69, 367.92, 377.19, 411.18, 460.7,
-            468.39, 553.9, 583.97, 655.15, 723.09, 736.85, 787.22,
-        ]);
-
-        let a_values = DVector::from_column_slice(&[
-            39.81, 39.67, 39.81, 39.84, 40.05, 39.85, 39.78, 39.65, 39.67, 39.78, 39.59, 39.87,
-            39.85, 39.59, 39.84, 39.9, 39.63, 39.59, 39.76, 39.79, 39.73, 39.93, 39.83, 39.85,
-            39.94, 39.86, 39.76, 39.86, 39.74, 39.94,
-        ]);
-
-        for i in 0..h_values.len() {
-            let measurement = DVector::from_column_slice(&[h_values[i]]);
-            kalman_filter.update(&measurement);
-
-            let control_input = DVector::from_column_slice(&[a_values[i] - 9.8]);
             kalman_filter.predict(&control_input);
+            kalman_filter.update(&measurement);
         }
 
         let final_state = kalman_filter.get_state();
-        assert!((final_state - DVector::from_column_slice(&[851.9, 223.2])).norm() < 0.5);
+        assert!(final_state[0] - 4000.0 < 1e-2);
+        assert!(final_state[1] - 400.0 < 1e-2);
     }
 }
-*/
