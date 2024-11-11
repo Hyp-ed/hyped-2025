@@ -34,12 +34,6 @@ pub struct AccelerometerPreprocessor {
     num_outliers_per_accelerometer: [i32; K_NUM_ACCELEROMETERS],
 }
 
-impl Default for AccelerometerPreprocessor {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl AccelerometerPreprocessor {
     pub fn new() -> Self {
         Self {
