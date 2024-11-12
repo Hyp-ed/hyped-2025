@@ -10,6 +10,7 @@ pub struct LedDriver<'a, T: HypedI2c + 'a> {
 }
 
 impl<'a, T: HypedI2c> LedDriver<'a, T> {
+
     /// Create new instance of LED driver and attempt to configure
     pub fn new(
         i2c: &'a mut T,
@@ -28,12 +29,28 @@ impl<'a, T: HypedI2c> LedDriver<'a, T> {
         }
     }
 
+    pub fn reset(
+        self: &mut Self,
+    ) -> Result<(), LedDriverError>{
+        match self
+            .i2c
+            .write_byte_to_register(self.device_address, RESET, 0x00)
+            {
+                Ok(_) => (),
+                Err(e) => return Err(LedDriverError::I2cError(e))
+            }
+        
+        Ok(())
+    }
+
     /// set LED to bank control mode
     pub fn set_led_to_bank(
         self: &mut Self,
         led_configx: u8,
         ledx_bank_en: u8,
         ) -> Result<(), LedDriverError>{
+            let led_configx= led_configx as u8;
+
             // toggle LEDx_Bank_EN to bank control mode
             match self
             .i2c
@@ -112,33 +129,29 @@ pub enum LedDriverAddresses{
 
 // device registers
 const DEVICE_CONFIG0: u8 = 0x00;
-// const DEVICE_CONFIG1: u8 = 0x01;    // may not be needed
+
+const RESET: u8 = 0x38;
 
 // LED config registers
 const LED_CONFIG0: u8 = 0x02;
 const LED_CONFIG1: u8 = 0x03;
 
-
 /// LED bank EN addresses (hexadecimal)
 // LED_CONFIG0
-const LED0_BANK_EN: u8 = 0x1;
-const LED1_BANK_EN: u8 = 0x2;
-const LED2_BANK_EN: u8 = 0x4;
-const LED3_BANK_EN: u8 = 0x8;
+const LED0_BANK_EN: u8 = 0x01;
+const LED1_BANK_EN: u8 = 0x02;
+const LED2_BANK_EN: u8 = 0x04;
+const LED3_BANK_EN: u8 = 0x08;
 const LED4_BANK_EN: u8 = 0x10;
 const LED5_BANK_EN: u8 = 0x20;
 const LED6_BANK_EN: u8 = 0x40;
 const LED7_BANK_EN: u8 = 0x80;
 
 // LED_CONFIG1
-const LED8_BANK_EN: u8 = 0x1;
-const LED9_BANK_EN: u8 = 0x2;
+const LED8_BANK_EN: u8 = 0x01;
+const LED9_BANK_EN: u8 = 0x02;
 
-/* FOR REVIEWER: wasn't sure if i should have made the LEDx_BANK_ENs enumerated values.
-    Since values are repeated (some being handled by LED_CONFIG0 and others LED_CONFIG1),
-    would need to make 2 separate enums, which could be unnecessarily confusing for end users.
-    Please could I ask for a second opinion on this?
-*/
+// write in documentation
 
 // 6th bit for DEVICE_CONFIG0, enables LP503x
 const CHIP_EN: u8 = 0x20;
@@ -150,21 +163,13 @@ const BANK_B_COLOUR: u8 = 0x06;
 const BANK_C_COLOUR: u8 = 0x07;
 
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use heapless::FnvIndexMap;
+    use hyped_io::i2c::mock_i2c::MockI2c;
 
+    fn test_config(){
 
-
-
-
-// "3 programmable banks for easy software control of each colour"
-//  LED bank control provides easy programming approach to controlling LED lighting
-    // instead of controlling each individual led separately , which takes heavy resource-power
-
-// configure an led state (independent control, bank control) through LEDx_Bank_EN register
-    // LEDx_Bank_EN = 0 (default), LED is controlled independently by related colour-mixing and intensity-control registers
-    // LEDx_Bank_EN = 1, LP503x device drives LED in LED bank-control mode
-
-    // LED bank has its own independent PWM control scheme, same structure as PWM scheme of each channel
-
-// when channel in bank-control mode, the related colour mixing and intensity control is governed by
-    // bank control registers (BANK_A_COLOR, BANK_B_COLOR, BANK_C_COLOR, BANK_BRIGHTNESS) regardless
-    // of the inputs on its own color-mixing and intensity-control registers
+    }
+}
