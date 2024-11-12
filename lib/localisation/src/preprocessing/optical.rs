@@ -29,7 +29,7 @@ mod tests {
             Vec::from_slice(&[3.0, 4.0]).unwrap(),
         ])
         .unwrap();
-        let desired_outcome: Vec<f32, 2> = Vec::from_slice(&[1.4142135, 5.0]).unwrap();
+        let desired_outcome: Vec<f32, 2> = Vec::from_slice(&[sqrtf(2.0), 5.0]).unwrap();
         let result = process_data(raw_optical_data);
         assert_eq!(result, desired_outcome);
     }
