@@ -1,7 +1,7 @@
 use heapless::Vec;
 use libm::sqrtf;
 
-/// Processes the raw optical data to get the magnitude of the optical data for each sensor
+/// Processes the raw optical data to get the magnitude and added to the optical data for each sensor
 pub fn process_data(raw_optical_data: Vec<Vec<f64, 2>, 2>) -> Vec<f32, 2> {
     let mut optical_data: Vec<f32, 2> = Vec::from_slice(&[0.0, 0.0]).unwrap();
 
