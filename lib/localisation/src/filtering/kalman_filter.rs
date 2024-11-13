@@ -1,4 +1,5 @@
 use nalgebra::{Matrix2, Vector1, Vector2};
+
 /// Kalman filter implementation for cart for sensor fusion.
 /// Recursively estimates the state from a series of nois measurements.
 ///
@@ -70,14 +71,7 @@ impl KalmanFilter {
 
         // Calculate the inverse of the innovation covariance
 
-        let a = innovation_covariance[(0, 0)];
-        let b = innovation_covariance[(0, 1)];
-        let c = innovation_covariance[(1, 0)];
-        let d = innovation_covariance[(1, 1)];
-
-        let determinant = a * d - b * c;
-
-        let innovation_covariance_inv = Matrix2::new(d, -b, -c, a) / determinant;
+        let innvovation_covariance_inv = innovation_covariance.try_inverse().unwrap();
 
         // K = P_k * H^T * S^-1
         let kalman_gain =
