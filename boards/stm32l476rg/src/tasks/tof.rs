@@ -18,9 +18,9 @@ pub async fn read_tof_range() -> ! {
 
     loop {
 
-        tof_sensor.start_ss_measure()
+        tof_sensor.start_ss_measure();
 
-        tof_sensor.poll_range()
+        tof_sensor.poll_range();
 
         match tof_sensor.read_range() {
             Some(range) => {
