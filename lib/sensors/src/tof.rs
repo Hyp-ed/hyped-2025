@@ -5,6 +5,8 @@ use hyped_io::i2c::{HypedI2c, I2cError};
 ///
 /// The majority of this implementation was done by implementing code examples from the Application Sheet (see below)
 /// into Rust code; this implementation should allow us to start single-shot and continuous measurements and read their results.
+/// Switching between single-shot and continuous measurements is outlined at the end of page 22 of the Application Sheet. The sensor's
+/// task in /tasks/tof.rs is a test task that reads range via single-shot measurement. 
 /// 
 /// Data Sheet: https://www.st.com/en/imaging-and-photonics-solutions/vl6180.html#overview
 /// 
@@ -83,7 +85,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
             } & 0x07;
         }
 
-    } // consider using a 10-iteration loop, each time it waits, say, 1-2 seconds. if the result is not ready after 10-20 seconds, return an error?
+    }
 
     pub fn read_range(&mut self) -> Option<u8> {
         let range_byte =
@@ -137,6 +139,7 @@ pub enum ToFAddresses {
     Address29 = 0x29,
 }
 
+#[derive(Debug)]
 pub enum ToFError {
     I2cError(I2cError)
 }
@@ -241,6 +244,7 @@ mod tests {
     use heapless::FnvIndexMap;
     use hyped_io::i2c::mock_i2c::MockI2c;
 
+    #[test]
     fn test_tof_config() {
         let i2c_values = FnvIndexMap::new();
         let mut i2c = MockI2c::new(i2c_values);
@@ -278,6 +282,8 @@ mod tests {
                 Some(&Some(SYS_INTERRUPT_CONFIG_GPIO_VAL))
         );
     }
+    
+    #[test]
     fn test_start_ss() {
         let i2c_values = FnvIndexMap::new();
         let mut i2c = MockI2c::new(i2c_values);
@@ -288,6 +294,8 @@ mod tests {
             Some(&Some(SYSRANGE_START_SS_VAL))
         );
     }
+
+    #[test]
     fn test_start_cts() {
         let i2c_values = FnvIndexMap::new();
         let mut i2c = MockI2c::new(i2c_values);
@@ -298,6 +306,8 @@ mod tests {
             Some(&Some(SYSRANGE_START_CTS_VAL))
         );
     }
+
+    #[test]
     fn test_clear_interr() {
         let i2c_values = FnvIndexMap::new();
         let mut i2c = MockI2c::new(i2c_values);
@@ -307,5 +317,53 @@ mod tests {
             .get(&(ToFAddresses::Address29 as u8, SYS_INTERRUPT_CLEAR.into())),
             Some(&Some(CLEAR_INTERRUPTS_VAL))
         );
+    }
+
+    #[test]
+    fn test_range_read_0() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (ToFAddresses::Address29 as u8, RESULT_RANGE_VAL as u16),
+            Some(0x00),
+        );
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
+        assert_eq!(tof.read_range(), Some(0));
+    }
+
+    #[test]
+    fn test_range_read_200() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (ToFAddresses::Address29 as u8, RESULT_RANGE_VAL as u16),
+            Some(0xC8),
+        );
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
+        assert_eq!(tof.read_range(), Some(200));
+    }
+    
+    #[test]
+    fn test_range_read_255() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (ToFAddresses::Address29 as u8, RESULT_RANGE_VAL as u16),
+            Some(0xFF),
+        );
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
+        assert_eq!(tof.read_range(), Some(255));
+    }
+
+    #[test]
+    fn test_read_reset() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (ToFAddresses::Address29 as u8, SYS_FRESH_OUT_RESET as u16),
+            Some(0xFF),
+        );
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
+        assert_eq!(tof.check_reset(), true);
     }
 }
