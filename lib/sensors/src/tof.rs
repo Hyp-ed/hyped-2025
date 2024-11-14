@@ -326,6 +326,6 @@ mod tests {
         );
         let mut i2c = MockI2c::new(i2c_values);
         let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
-        assert_eq!(tof.check_reset(), true);
+        assert!(tof.check_reset());
     }
 }
