@@ -22,36 +22,15 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
     pub fn new(i2c: &'a mut T, device_address: ToFAddresses) -> Result<Self, ToFError> { // SR03 Settings as seen in Application Sheet
         let device_address = device_address as u8;
         for i in 0..30 { // writing to private registers
-        match i2c.write_byte_to_register_16(device_address, PRIVATE_REGISTERS[i], PRIVATE_REGISTER_DATA[i]) {
-            Err(e) =>  return Err(ToFError::I2cError(e)),
-            _ => (), // unused
-        }
+        if let Err(e) = i2c.write_byte_to_register_16(device_address, PRIVATE_REGISTERS[i], PRIVATE_REGISTER_DATA[i]) { return Err(ToFError::I2cError(e)) }
     } 
         // Recommended Public Registers now (see Application Sheet)
-        match i2c.write_byte_to_register(device_address, SYS_MODE_GPIO1, SYS_MODE_GPIO_VAL) {
-            Err(e) =>  return Err(ToFError::I2cError(e)),
-            _ => (),
-        }
-        match i2c.write_byte_to_register_16(device_address, AVG_SAMPLE_PERIOD, AVG_SAMPLE_PERIOD_VAL) {
-            Err(e) =>  return Err(ToFError::I2cError(e)),
-            _ => (),
-        }
-        match i2c.write_byte_to_register(device_address, SYSRANGE_VHV_REPEAT_RATE, SYSRANGE_VHV_REPEAT_RATE_VAL) {
-            Err(e) =>  return Err(ToFError::I2cError(e)),
-            _ => (),
-        }
-        match i2c.write_byte_to_register(device_address, SYSRANGE_VHV_RECALIBRATE, SYSRANGE_VHV_RECALIBRATE_VAL) {
-            Err(e) =>  return Err(ToFError::I2cError(e)),
-            _ => (),
-        }
-        match i2c.write_byte_to_register(device_address, SYSRANGE_INTERMEASURE_PERIOD, SYSRANGE_INTERMEASURE_PERIOD_VAL) {
-            Err(e) =>  return Err(ToFError::I2cError(e)),
-            _ => (),
-        }
-        match i2c.write_byte_to_register(device_address, SYS_INTERRUPT_CONFIG_GPIO, SYS_INTERRUPT_CONFIG_GPIO_VAL) {
-            Err(e) =>  return Err(ToFError::I2cError(e)),
-            _ => (),
-        }
+        if let Err(e) = i2c.write_byte_to_register(device_address, SYS_MODE_GPIO1, SYS_MODE_GPIO_VAL) { return Err(ToFError::I2cError(e)) }
+        if let Err(e) = i2c.write_byte_to_register_16(device_address, AVG_SAMPLE_PERIOD, AVG_SAMPLE_PERIOD_VAL) { return Err(ToFError::I2cError(e)) }
+        if let Err(e) = i2c.write_byte_to_register(device_address, SYSRANGE_VHV_REPEAT_RATE, SYSRANGE_VHV_REPEAT_RATE_VAL) { return Err(ToFError::I2cError(e)) }
+        if let Err(e) = i2c.write_byte_to_register(device_address, SYSRANGE_VHV_RECALIBRATE, SYSRANGE_VHV_RECALIBRATE_VAL) { return Err(ToFError::I2cError(e)) }
+        if let Err(e) = i2c.write_byte_to_register(device_address, SYSRANGE_INTERMEASURE_PERIOD, SYSRANGE_INTERMEASURE_PERIOD_VAL) { return Err(ToFError::I2cError(e)) }
+        if let Err(e) = i2c.write_byte_to_register(device_address, SYS_INTERRUPT_CONFIG_GPIO, SYS_INTERRUPT_CONFIG_GPIO_VAL) { return Err(ToFError::I2cError(e)) }
         Ok(Self {
             i2c,
             device_address,
@@ -60,10 +39,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
 
     pub fn start_ss_measure(i2c: &'a mut T, device_address: ToFAddresses) -> Result<Self, ToFError> { // start single shot measurement
         let device_address = device_address as u8;
-        match i2c.write_byte_to_register(device_address, SYSRANGE_START, SYSRANGE_START_SS_VAL) {
-            Err(e) =>  return Err(ToFError::I2cError(e)),
-            _ => (),
-        }
+        if let Err(e) = i2c.write_byte_to_register(device_address, SYSRANGE_START, SYSRANGE_START_SS_VAL) { return Err(ToFError::I2cError(e)) }
         
         Ok (Self {
             i2c,
@@ -73,16 +49,10 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
 
     pub fn poll_range(&mut self) {
         let status_byte = 
-        match self.i2c.read_byte(self.device_address, RESULT_INTERR_STATUS_GPIO) {
-            Some(byte) => byte,
-            None => 0, // not sure about returning 0 for None - will this somehow break stuff?
-        };
+        self.i2c.read_byte(self.device_address, RESULT_INTERR_STATUS_GPIO).unwrap_or(0);
         let mut range_status = status_byte & 0x07;
         while range_status != 0x04 {
-            range_status = match self.i2c.read_byte(self.device_address, RESULT_INTERR_STATUS_GPIO) {
-                Some(byte) => byte,
-                None => 0,
-            } & 0x07;
+            range_status = self.i2c.read_byte(self.device_address, RESULT_INTERR_STATUS_GPIO).unwrap_or_default() & 0x07;
         }
 
     }
@@ -100,10 +70,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
 
     pub fn start_cts_measure(i2c: &'a mut T, device_address: ToFAddresses) -> Result<Self, ToFError> { // start continuous measurement
         let device_address = device_address as u8;
-        match i2c.write_byte_to_register(device_address, SYSRANGE_START, SYSRANGE_START_CTS_VAL) {
-            Err(e) =>  return Err(ToFError::I2cError(e)),
-            _ => (),
-        }
+        if let Err(e) = i2c.write_byte_to_register(device_address, SYSRANGE_START, SYSRANGE_START_CTS_VAL) { return Err(ToFError::I2cError(e)) }
         
         Ok (Self {
             i2c,
@@ -112,19 +79,13 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
     }
 
     pub fn check_reset(&mut self) -> bool {
-        let reset_value =  match self.i2c.read_byte(self.device_address, SYS_FRESH_OUT_RESET) {
-            Some(byte) => byte,
-            None => 0, // hopefully returning 0 is okay and won't break stuff
-        };
+        let reset_value =  self.i2c.read_byte(self.device_address, SYS_FRESH_OUT_RESET).unwrap_or(0);
         reset_value == 1
     }
 
     pub fn clear_interrupts(i2c: &'a mut T, device_address: ToFAddresses) -> Result<Self, ToFError> { // at the end clear interrupts
         let device_address = device_address as u8;
-        match i2c.write_byte_to_register(device_address, SYS_INTERRUPT_CLEAR, CLEAR_INTERRUPTS_VAL) {
-            Err(e) =>  return Err(ToFError::I2cError(e)),
-            _ => (),
-        }
+        if let Err(e) = i2c.write_byte_to_register(device_address, SYS_INTERRUPT_CLEAR, CLEAR_INTERRUPTS_VAL) { return Err(ToFError::I2cError(e)) }
         
         Ok (Self {
             i2c,
@@ -239,6 +200,7 @@ const PRIVATE_REGISTER_DATA: [u8; 30] = [
     0x00
 ];
 
+#[cfg(test)]
 mod tests {
     use super::*;
     use heapless::FnvIndexMap;
