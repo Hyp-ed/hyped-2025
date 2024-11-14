@@ -282,6 +282,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_control"
+version = "0.1.0"
+dependencies = [
+ "hyped_io",
+]
+
+[[package]]
 name = "hyped_core"
 version = "0.1.0"
 dependencies = [
