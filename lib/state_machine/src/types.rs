@@ -1,7 +1,7 @@
 use core::str::FromStr;
 use heapless::String;
 
-#[derive(Hash, PartialEq, Eq, Clone, Copy)]
+#[derive(PartialEq)]
 pub enum State {
     Idle,
     Calibrate,
@@ -15,10 +15,7 @@ pub enum State {
     FrictionBrake,
     StopLevitation,
     Stopped,
-    BatteryRecharge,
-    CapacitorDischarge,
-    FailureBrake,
-    Failure,
+    EmergencyBrake,
     Safe,
     Shutdown,
 }
@@ -38,10 +35,7 @@ impl State {
             State::FrictionBrake => String::<20>::from_str("friction_brake").unwrap(),
             State::StopLevitation => String::<20>::from_str("stop_levitation").unwrap(),
             State::Stopped => String::<20>::from_str("stopped").unwrap(),
-            State::BatteryRecharge => String::<20>::from_str("battery_recharge").unwrap(),
-            State::CapacitorDischarge => String::<20>::from_str("capacitor_discharge").unwrap(),
-            State::FailureBrake => String::<20>::from_str("failure_brake").unwrap(),
-            State::Failure => String::<20>::from_str("failure").unwrap(),
+            State::EmergencyBrake => String::<20>::from_str("emergency_brake").unwrap(),
             State::Safe => String::<20>::from_str("safe").unwrap(),
             State::Shutdown => String::<20>::from_str("shutdown").unwrap(),
         }
@@ -61,10 +55,7 @@ impl State {
             "friction_brake" => Some(State::FrictionBrake),
             "stop_levitation" => Some(State::StopLevitation),
             "stopped" => Some(State::Stopped),
-            "battery_recharge" => Some(State::BatteryRecharge),
-            "capacitor_discharge" => Some(State::CapacitorDischarge),
-            "failure_brake" => Some(State::FailureBrake),
-            "failure" => Some(State::Failure),
+            "emergency_brake" => Some(State::EmergencyBrake),
             "safe" => Some(State::Safe),
             "shutdown" => Some(State::Shutdown),
             _ => None,
@@ -83,14 +74,61 @@ impl State {
             (State::Levitating, State::Ready) => Some(State::Ready),
             (State::Ready, State::Accelerate) => Some(State::Accelerate),
             (State::Accelerate, State::LimBrake) => Some(State::LimBrake),
-            (State::Accelerate, State::FailureBrake) => Some(State::FailureBrake),
+            (State::Accelerate, State::EmergencyBrake) => Some(State::EmergencyBrake),
             (State::LimBrake, State::FrictionBrake) => Some(State::FrictionBrake),
             (State::FrictionBrake, State::StopLevitation) => Some(State::StopLevitation),
             (State::StopLevitation, State::Stopped) => Some(State::Stopped),
-            (State::Stopped, State::BatteryRecharge) => Some(State::BatteryRecharge),
-            (State::BatteryRecharge, State::CapacitorDischarge) => Some(State::CapacitorDischarge),
-            (State::CapacitorDischarge, State::Safe) => Some(State::Safe),
+            (State::Stopped, State::Safe) => Some(State::Safe),
+            (State::EmergencyBrake, State::Safe) => Some(State::Safe),
             (State::Safe, State::Shutdown) => Some(State::Shutdown),
+            _ => None,
+        }
+    }
+
+    pub fn get_macro_state(state: &State) -> MacroState {
+        match state {
+            State::Idle => MacroState::Idle,
+            State::Calibrate => MacroState::Idle,
+            State::Precharge => MacroState::Active,
+            State::ReadyForLevitation => MacroState::Active,
+            State::BeginLevitation => MacroState::Active,
+            State::Levitating => MacroState::Active,
+            State::Ready => MacroState::Active,
+            State::Accelerate => MacroState::Demo,
+            State::LimBrake => MacroState::Demo,
+            State::FrictionBrake => MacroState::Demo,
+            State::StopLevitation => MacroState::Demo,
+            State::Stopped => MacroState::Active,
+            State::EmergencyBrake => MacroState::Emergency,
+            State::Safe => MacroState::Idle,
+            State::Shutdown => MacroState::Idle,
+        }
+    }
+}
+
+pub enum MacroState {
+    Idle,
+    Active,
+    Demo,
+    Emergency,
+}
+
+impl MacroState {
+    pub fn to_string(&self) -> String<20> {
+        match self {
+            MacroState::Idle => String::<20>::from_str("idle").unwrap(),
+            MacroState::Active => String::<20>::from_str("active").unwrap(),
+            MacroState::Demo => String::<20>::from_str("demo").unwrap(),
+            MacroState::Emergency => String::<20>::from_str("emergency").unwrap(),
+        }
+    }
+
+    pub fn from_string(state: &str) -> Option<MacroState> {
+        match state {
+            "idle" => Some(MacroState::Idle),
+            "active" => Some(MacroState::Active),
+            "demo" => Some(MacroState::Demo),
+            "emergency" => Some(MacroState::Emergency),
             _ => None,
         }
     }

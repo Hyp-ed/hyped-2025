@@ -18,7 +18,7 @@ impl<'a> StateMachine<'a> {
     }
 
     pub fn handle_transition(&mut self, to_state: &State) {
-        let transition = State::transition(to_state, &self.current_state);
+        let transition = State::transition(&self.current_state, to_state);
         match transition {
             Some(transition) => {
                 info!(
