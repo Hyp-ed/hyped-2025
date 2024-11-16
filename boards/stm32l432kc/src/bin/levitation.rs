@@ -13,19 +13,19 @@ use embassy_time::Instant;
 
 use {defmt_rtt as _, panic_probe as _};
 
-const MAX_VOLTAGE: f32 = 500.0; // TBD
-const MAX_CURRENT: f32 = 500.0; // TBD
-const TARGET_HEIGHT: f32 = 10.0; // to be determined by levitation
+const MAX_VOLTAGE: f32 = 500.0; // TODO Later
+const MAX_CURRENT: f32 = 500.0; // TODO Later
+const TARGET_HEIGHT: f32 = 10.0; // TODO Later to be determined by levitation
 
 const GAIN_HEIGHT: PidGain = PidGain{ 
-    // to be determined by levitation
+    // TODO Later to be determined by levitation
     kp: 1.0,
     ki: 0.05,
     kd: 0.005,
 };
 
 const GAIN_CURRENT: PidGain = PidGain{ 
-    // to be determined by levitation
+    // TODO Later determined by levitation
     kp: 1.1,
     ki: 0.12,
     kd: 0.05,
@@ -51,23 +51,19 @@ async fn main(_spawner: Spawner) {
 
     loop {
         
-        let actual_height = 0.7; // we'll get that from a sensor
+        let actual_height = 0.7; // TODO Later we'll get that from a sensor
         
         let dt = (Instant::now().as_micros() as f32) - time_start;
 
         let output_height_pid = pid_height.update(TARGET_HEIGHT, actual_height, dt);
 
-        let mut target_current = actual_height + output_height_pid;
+        let target_current = (actual_height + output_height_pid).min(MAX_CURRENT);
 
-        if target_current >= MAX_CURRENT {target_current = MAX_CURRENT};
-
-        let actual_current = 1.0; // we'll get that from a sensor
+        let actual_current = 1.0; // TODO Later we'll get that from a sensor
 
         let output_current_pid = pid_current.update(target_current, actual_current, dt);
 
-        let mut required_voltage = actual_current + output_current_pid;
-
-        if required_voltage >= MAX_VOLTAGE {required_voltage = MAX_VOLTAGE};
+        let required_voltage = (actual_height + output_height_pid).min(MAX_VOLTAGE);
 
         let duty_cycle = max_duty * (required_voltage / MAX_VOLTAGE);
 
