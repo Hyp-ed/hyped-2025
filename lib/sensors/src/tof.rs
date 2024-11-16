@@ -22,6 +22,16 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
     pub fn new(i2c: &'a mut T, device_address: ToFAddresses) -> Result<Self, ToFError> {
         // SR03 Settings as seen in Application Sheet
         let device_address = device_address as u8;
+        for (reg, val) in PRIVATE_REGISTERS_u8 {
+            // writing to private registers
+            if let Err(e) = i2c.write_byte_to_register(
+                device_address,
+                reg,
+                val,
+            ) {
+                panic!("Error writing private registers u8s REG: {:?}", reg);
+            }
+        }
         for (reg,val) in PRIVATE_REGISTERS_u16 {
             // writing to private registers u16
             if let Err(e) = i2c.write_byte_to_register_16(
@@ -233,10 +243,17 @@ mod tests {
         let i2c_values = FnvIndexMap::new();
         let mut i2c = MockI2c::new(i2c_values);
         let _ = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29);
+        for (reg,val) in PRIVATE_REGISTERS_u8 {
+            assert_eq!(
+                i2c.get_writes()
+                    .get(&(ToFAddresses::Address29 as u8, reg.into())),
+                Some(&Some(val))
+            )
+        }
         for (reg,val) in PRIVATE_REGISTERS_u16 {
             assert_eq!(
                 i2c.get_writes()
-                    .get(&(ToFAddresses::Address29 as u8, reg)),
+                    .get(&(ToFAddresses::Address29 as u8, reg.into())),
                 Some(&Some(val))
             )
         }
