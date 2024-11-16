@@ -71,7 +71,20 @@ impl KalmanFilter {
 
         // Calculate the inverse of the innovation covariance
 
-        let innvovation_covariance_inv = innovation_covariance.try_inverse().unwrap();
+        let inv = innovation_covariance.try_inverse().unwrap();
+
+        let a = innovation_covariance[0];
+        let b = innovation_covariance[1];
+        let c = innovation_covariance[2];
+        let d = innovation_covariance[3];
+
+        let mut det = a * d - b * c;
+
+        if det == 0.0 {
+            det = 1e-10;
+        }
+
+        let innovation_covariance_inv = Matrix2::new(d, -b, -c, a) / det;
 
         // K = P_k * H^T * S^-1
         let kalman_gain =
