@@ -51,7 +51,7 @@ impl<'d> HypedI2c for Stm32l476rgI2c<'d> {
     ) -> Result<(), I2cError> {
         let result = self
             .i2c
-            .blocking_write(device_address, [register_address, data.into()].as_ref());
+            .blocking_write(device_address, [register_address, data].as_ref());
         match result {
             Ok(_) => Ok(()),
             Err(e) => Err(match e {

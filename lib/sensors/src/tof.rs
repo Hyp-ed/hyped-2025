@@ -325,7 +325,7 @@ mod tests {
         let mut i2c = MockI2c::new(i2c_values);
         let tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29);
         match tof {
-            Ok (mut tof) => {
+            Ok(mut tof) => {
                 assert_eq!(tof.read_range(), Some(200))
             }
             Err(e) => {
