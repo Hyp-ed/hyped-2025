@@ -9,8 +9,8 @@
 	"scripts": {
 		"start": "tsdx watch",
 		"build": "tsdx build",
-		"lint": "eslint \"src/**/*.ts\" --max-warnings 0 --report-unused-disable-directives",
-		"lint:fix": "eslint \"src/**/*.ts\" --fix"
+		"lint": "biome lint .",
+		"lint:fix": "biome check --write ."
 	},
 	"devDependencies": {
 		"@hyped/telemetry-types": "workspace:*",
