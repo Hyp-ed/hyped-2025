@@ -500,6 +500,8 @@ export function StateMachine() {
 	/**
 	 * Push arrow connecting currently active state node to failure node
 	 */
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies:
 	useEffect(() => {
 		const active = nodes.find((n) => n.data.active) as CustomNodeType;
 		// handles UNKNOWN state, which does not have a node
@@ -516,12 +518,13 @@ export function StateMachine() {
 			},
 			markerEnd: arrow,
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentState, currentMode, edges]);
 
 	/**
 	 * Render only active nodes based on current mode
 	 */
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies:
 	useEffect(() => {
 		setDisplayNodes(
 			nodes.filter((node) =>
@@ -531,7 +534,6 @@ export function StateMachine() {
 				),
 			),
 		);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentState, currentMode]);
 
 	/**

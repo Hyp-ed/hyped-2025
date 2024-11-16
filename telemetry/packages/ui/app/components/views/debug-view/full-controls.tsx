@@ -155,13 +155,11 @@ const ControlButton = React.forwardRef<
 >((props, ref) => {
 	return (
 		<Button
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			ref={ref}
 			{...props}
 			className={cn(
 				'bg-openmct-dark-gray hover:bg-openmct-light-gray w-32 py-6',
-				// eslint-disable-next-line react/prop-types
 				props.className,
 			)}
 		/>
@@ -178,13 +176,11 @@ const LeftButton = React.forwardRef<
 >((props, ref) => {
 	return (
 		<ControlButton
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			ref={ref}
 			{...props}
 			className={cn(
 				'bg-openmct-dark-gray hover:bg-openmct-light-gray rounded-r-none pr-2 flex gap-2',
-				// eslint-disable-next-line react/prop-types
 				props.className,
 			)}
 		/>
@@ -201,13 +197,11 @@ const RightButton = React.forwardRef<
 >((props, ref) => {
 	return (
 		<ControlButton
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			ref={ref}
 			{...props}
 			className={cn(
 				'bg-openmct-dark-gray hover:bg-openmct-light-gray rounded-l-none pl-2 flex gap-2',
-				// eslint-disable-next-line react/prop-types
 				props.className,
 			)}
 		/>

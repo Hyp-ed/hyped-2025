@@ -141,6 +141,7 @@ export const PodsProvider = ({ children }: { children: React.ReactNode }) => {
 		[mqttConnectionStatus, raiseError],
 	);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies:
 	useEffect(
 		/**
 		 * When the client changes, set up the latency messages.
@@ -160,7 +161,6 @@ export const PodsProvider = ({ children }: { children: React.ReactNode }) => {
 			}, LATENCY_REQUEST_INTERVAL);
 			return () => clearInterval(interval);
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[client],
 	);
 
@@ -200,6 +200,7 @@ export const PodsProvider = ({ children }: { children: React.ReactNode }) => {
 		[lastLatencyResponse, raiseError],
 	);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies:
 	useEffect(
 		/**
 		 * Subscribe to MQTT messages and calculate latencies.
@@ -293,7 +294,6 @@ export const PodsProvider = ({ children }: { children: React.ReactNode }) => {
 				});
 			};
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[client],
 	);
 

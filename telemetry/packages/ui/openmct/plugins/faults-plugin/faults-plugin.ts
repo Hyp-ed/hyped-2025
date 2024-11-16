@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
-
 import { log } from '@/lib/logger';
 import type { OpenMctFault } from '@hyped/telemetry-types';
 import { http } from 'openmct/core/http';

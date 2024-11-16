@@ -7,7 +7,6 @@ import { http } from 'openmct/core/http';
  */
 export const log = (message: string, podId?: string) => {
 	if (podId) {
-		// eslint-disable-next-line no-console
 		console.log(`[LOG] (${podId}) ${message}`);
 		void http.post(`logs/${podId}`, {
 			body: JSON.stringify({ message }),
@@ -16,7 +15,6 @@ export const log = (message: string, podId?: string) => {
 			},
 		});
 	} else {
-		// eslint-disable-next-line no-console
 		console.log(`[LOG] ${message}`);
 		void http.post(`logs`, {
 			body: JSON.stringify({ message }),
