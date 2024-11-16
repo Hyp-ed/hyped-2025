@@ -1,4 +1,3 @@
-
 #[derive(PartialEq, Debug)]
 pub enum DigitalSignal {
     High,
