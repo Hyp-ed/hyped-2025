@@ -1,4 +1,4 @@
-use embassy_stm32::{adc::Adc, adc::AnyAdcChannel, adc::Instance};
+use embassy_stm32::adc::{Adc, AnyAdcChannel, Instance};
 use hyped_io::adc::HypedAdc;
 
 pub struct Stm32l476rgAdc<'d, T: Instance> {
