@@ -39,7 +39,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
                 reg,
                 val,
             ) {
-                panic!("Error writing private registers u16s");
+                panic!("Error writing private registers u8s REG: {:?}", reg);
             }
         }
         // Recommended Public Registers now (see Application Sheet)
@@ -212,7 +212,7 @@ const PRIVATE_REGISTERS_u8: [(u8,u8); 16] = [
     (0x009f,0x00),
     (0x00a3,0x3c),
     (0x00b7,0x00),
-    (0x00bb,0x3c),
+    (0x00bb,0x3c)
 ];
 
 const PRIVATE_REGISTERS_u16: [(u16,u8); 10] = [
