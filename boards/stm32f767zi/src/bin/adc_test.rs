@@ -28,7 +28,6 @@ async fn main(_spawner: Spawner) {
         (u32::from(sample) * VREFINT_MV / u32::from(vrefint_sample)) as u16
     };
 
-
     let mut hyped_adc = Stm32f767ziAdc::new(adc, pin.degrade_adc());
 
     loop {
