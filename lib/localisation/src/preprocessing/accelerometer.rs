@@ -214,10 +214,10 @@ mod tests {
         assert!(processed_data.is_some());
 
         let processed_data = processed_data.unwrap();
-        assert_eq!(processed_data[0], (14.0 as f32).sqrt());
-        assert_eq!(processed_data[1], (77.0 as f32).sqrt());
-        assert_eq!(processed_data[2], (194.0 as f32).sqrt());
-        assert_eq!(processed_data[3], (365.0 as f32).sqrt());
+        assert_eq!(processed_data[0], (14.0_f32).sqrt());
+        assert_eq!(processed_data[1], (77.0_f32).sqrt());
+        assert_eq!(processed_data[2], (194.0_f32).sqrt());
+        assert_eq!(processed_data[3], (365.0_f32).sqrt());
     }
 
     #[test]
@@ -251,10 +251,10 @@ mod tests {
         assert!(processed_data.is_some());
 
         let processed_data = processed_data.unwrap();
-        assert_eq!(processed_data[0], (14.0 as f32).sqrt());
-        assert_eq!(processed_data[1], (194.0 as f32).sqrt());
-        assert_eq!(processed_data[2], (194.0 as f32).sqrt());
-        assert_eq!(processed_data[3], (365.0 as f32).sqrt());
+        assert_eq!(processed_data[0], (14.0_f32).sqrt());
+        assert_eq!(processed_data[1], (194.0_f32).sqrt());
+        assert_eq!(processed_data[2], (194.0_f32).sqrt());
+        assert_eq!(processed_data[3], (365.0_f32).sqrt());
     }
 
     #[test]
