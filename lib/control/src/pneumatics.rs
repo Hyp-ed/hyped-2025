@@ -139,3 +139,43 @@ mod tests {
         assert_eq!(gpio_out.blue_2, DigitalSignal::High);
     }
 }
+
+enum BrakeState {
+    Engaged,
+    Disengaged,
+}
+
+enum LateralSuspensionState {
+    Deployed,
+    Retracted,
+}
+
+struct Pneumatics {
+    brakes: BrakeState,
+    lateral_suspension: LateralSuspensionState,
+}
+
+impl Pneumatics {
+    fn new() -> Self {
+        Pneumatics {
+            brakes: BrakeState::Engaged,
+            lateral_suspension: LateralSuspensionState::Retracted,
+        }
+    }
+
+    fn engage_brakes(&mut self) {
+        self.brakes = BrakeState::Engaged;
+    }
+
+    fn disengage_brakes(&mut self) {
+        self.brakes = BrakeState::Disengaged;
+    }
+
+    fn deploy_lateral_suspension(&mut self) {
+        self.lateral_suspension = LateralSuspensionState::Deployed;
+    }
+
+    fn retract_lateral_suspension(&mut self) {
+        self.lateral_suspension = LateralSuspensionState::Retracted;
+    }
+}

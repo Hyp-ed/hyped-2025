@@ -8,4 +8,3 @@ heapless = "0.8.0"
 
 hyped_core = { path = "../core" }
 hyped_io = { path = "../io" }
-
