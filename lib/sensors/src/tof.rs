@@ -22,14 +22,24 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
     pub fn new(i2c: &'a mut T, device_address: ToFAddresses) -> Result<Self, ToFError> {
         // SR03 Settings as seen in Application Sheet
         let device_address = device_address as u8;
-        for i in 0..30 {
+        for i in 0..20 {
             // writing to private registers
-            if let Err(e) = i2c.write_byte_to_register_16(
+            if let Err(e) = i2c.write_byte_to_register(
                 device_address,
                 PRIVATE_REGISTERS[i],
                 PRIVATE_REGISTER_DATA[i],
             ) {
-                panic!("Error writing private registers");
+                panic!("Error writing private registers u8s");
+            }
+        }
+        for i in 0..10 {
+            // writing to private registers
+            if let Err(e) = i2c.write_byte_to_register_16(
+                device_address,
+                PRIVATE_REGISTERS_u16[i],
+                PRIVATE_REGISTER_DATA_u16[i],
+            ) {
+                panic!("Error writing private registers u16s");
             }
         }
         // Recommended Public Registers now (see Application Sheet)
@@ -185,15 +195,23 @@ const SYSRANGE_START_CTS_VAL: u8 = 0x03;
 const CLEAR_INTERRUPTS_VAL: u8 = 0x07;
 
 // private registers array
-const PRIVATE_REGISTERS: [u16; 30] = [
-    0x0207, 0x0208, 0x0096, 0x0097, 0x00e3, 0x00e4, 0x00e5, 0x00e6, 0x00e7, 0x00f5, 0x00d9, 0x00db,
-    0x00dc, 0x00dd, 0x009f, 0x00a3, 0x00b7, 0x00bb, 0x00b2, 0x00ca, 0x0198, 0x01b0, 0x01ad, 0x00ff,
-    0x0100, 0x0199, 0x01a6, 0x01ac, 0x01a7, 0x0030,
+const PRIVATE_REGISTERS: [u8; 20] = [
+    0x0096, 0x0097, 0x00e3, 0x00e4, 0x00e5, 0x00e6, 0x00e7, 0x00f5, 0x00d9, 0x00db,
+    0x00dc, 0x00dd, 0x009f, 0x00a3, 0x00b7, 0x00bb, 0x00b2, 0x00ca, 0x00ff, 0x0030,
 ];
+
 // init values for private registers array
-const PRIVATE_REGISTER_DATA: [u8; 30] = [
-    0x01, 0x01, 0x00, 0xfd, 0x01, 0x03, 0x02, 0x01, 0x03, 0x02, 0x05, 0xce, 0x03, 0xf8, 0x00, 0x3c,
-    0x00, 0x3c, 0x09, 0x09, 0x01, 0x17, 0x00, 0x05, 0x05, 0x05, 0x1b, 0x3e, 0x1f, 0x00,
+const PRIVATE_REGISTER_DATA: [u8; 20] = [
+    0x00, 0xfd, 0x01, 0x03, 0x02, 0x01, 0x03, 0x02, 0x05, 0xce, 0x03, 0xf8, 0x00, 0x3c,
+    0x00, 0x3c, 0x09, 0x09, 0x05, 0x00
+];
+
+const PRIVATE_REGISTERS_u16: [u16; 10] = [
+    0x0207, 0x0208, 0x0198, 0x01b0, 0x01ad, 0x0100, 0x0199, 0x01a6, 0x01ac, 0x01a7
+];
+
+const PRIVATE_REGISTER_DATA_u16: [u8; 10] = [
+    0x01, 0x01, 0x01, 0x17, 0x00, 0x05, 0x05, 0x1b, 0x3e, 0x1f
 ];
 
 #[cfg(test)]
@@ -207,11 +225,18 @@ mod tests {
         let i2c_values = FnvIndexMap::new();
         let mut i2c = MockI2c::new(i2c_values);
         let _ = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29);
-        for i in 0..30 {
+        for i in 0..20 {
             assert_eq!(
                 i2c.get_writes()
-                    .get(&(ToFAddresses::Address29 as u8, PRIVATE_REGISTERS[i])),
+                    .get(&(ToFAddresses::Address29 as u8, PRIVATE_REGISTERS[i].into())),
                 Some(&Some(PRIVATE_REGISTER_DATA[i]))
+            )
+        }
+        for i in 0..10 {
+            assert_eq!(
+                i2c.get_writes()
+                    .get(&(ToFAddresses::Address29 as u8, PRIVATE_REGISTERS_u16[i])),
+                Some(&Some(PRIVATE_REGISTER_DATA_u16[i]))
             )
         }
         assert_eq!(
