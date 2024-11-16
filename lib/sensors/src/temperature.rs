@@ -1,3 +1,5 @@
+use core::cell::RefCell;
+use embassy_sync::blocking_mutex::{raw::CriticalSectionRawMutex, Mutex};
 use hyped_io::i2c::{HypedI2c, I2cError};
 
 /// Temperature implements the logic to read the temperature from the STTS22H temperature sensor
@@ -7,20 +9,26 @@ use hyped_io::i2c::{HypedI2c, I2cError};
 /// The temperature is read from the sensor and converted to a floating point value in degrees Celsius.
 ///
 /// Data sheet: https://www.st.com/resource/en/datasheet/stts22h.pdf
-pub struct Temperature<'a, T: HypedI2c + 'a> {
-    i2c: &'a mut T,
+pub struct Temperature<'a, T: HypedI2c> {
+    i2c: &'a Mutex<CriticalSectionRawMutex, RefCell<T>>,
     device_address: u8,
 }
 
 impl<'a, T: HypedI2c> Temperature<'a, T> {
     /// Create a new instance of the temperature sensor and attempt to configure it
     pub fn new(
-        i2c: &'a mut T,
+        i2c: &'a Mutex<CriticalSectionRawMutex, RefCell<T>>,
         device_address: TemperatureAddresses,
     ) -> Result<Self, TemperatureError> {
         // Set up the temperature sensor by sending the configuration settings to the STTS22H_CTRL register
         let device_address = device_address as u8;
-        match i2c.write_byte_to_register(device_address, STTS22H_CTRL, STTS22H_CONFIG_SETTINGS) {
+        match i2c.lock(|i2c| {
+            i2c.borrow_mut().write_byte_to_register(
+                device_address,
+                STTS22H_CTRL,
+                STTS22H_CONFIG_SETTINGS,
+            )
+        }) {
             Ok(_) => Ok(Self {
                 i2c,
                 device_address,

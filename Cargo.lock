@@ -96,7 +96,7 @@ dependencies = [
  "defmt",
  "document-features",
  "embassy-net-driver",
- "embassy-sync",
+ "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f706318cc0870a459550b7)",
  "embassy-time",
  "embedded-io-async",
  "embedded-nal-async",
@@ -121,6 +121,20 @@ dependencies = [
  "cfg-if",
  "critical-section",
  "embedded-io-async",
+ "futures-util",
+ "heapless",
+]
+
+[[package]]
+name = "embassy-sync"
+version = "0.6.0"
+source = "git+https://github.com/embassy-rs/embassy#6c4b3d82b637fce5ab6efdc312d7852381d8ddeb"
+dependencies = [
+ "cfg-if",
+ "critical-section",
+ "defmt",
+ "embedded-io-async",
+ "futures-sink",
  "futures-util",
  "heapless",
 ]
@@ -229,6 +243,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "05f29059c0c2090612e8d742178b0580d2dc940c837851ad723096f87af6663e"
 
 [[package]]
+name = "futures-sink"
+version = "0.3.31"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e575fab7d1e0dcb8d0c7bcf9a63ee213816ab51902e6d244a95819acacf1d4f7"
+
+[[package]]
 name = "futures-task"
 version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -314,6 +334,7 @@ dependencies = [
 name = "hyped_sensors"
 version = "0.1.0"
 dependencies = [
+ "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy)",
  "heapless",
  "hyped_core",
  "hyped_io",

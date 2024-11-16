@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 heapless = "0.8.0"
+embassy-sync = { version = "0.6.0", features = ["defmt"], git = "https://github.com/embassy-rs/embassy"}
 
 hyped_core = { path = "../core" }
 hyped_io = { path = "../io" }
