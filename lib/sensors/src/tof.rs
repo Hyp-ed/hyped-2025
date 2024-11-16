@@ -77,13 +77,16 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         })
     }
 
-    pub fn start_ss_measure(&mut self)  {
+    pub fn start_ss_measure(&mut self) -> Result<i32, ToFError> {
         // start single shot measurement
-        if let Err(e) =
-            self.i2c.write_byte_to_register(self.device_address, SYSRANGE_START, SYSRANGE_START_SS_VAL)
-        {
-            panic!("Failed to write byte to Singleshot Measurement register {:?}", e);
+        if let Err(e) = self.i2c.write_byte_to_register(
+            self.device_address,
+            SYSRANGE_START,
+            SYSRANGE_START_SS_VAL,
+        ) {
+            return Err(ToFError::I2cError(e));
         }
+        Ok(1)
     }
 
     pub fn poll_range(&mut self) {
@@ -111,13 +114,16 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         Some(range_byte)
     }
 
-    pub fn start_cts_measure(&mut self) {
+    pub fn start_cts_measure(&mut self) -> Result<i32, ToFError> {
         // start continuous measurement
-        if let Err(e) =
-            self.i2c.write_byte_to_register(self.device_address, SYSRANGE_START, SYSRANGE_START_CTS_VAL)
-        {
-            panic!("Failed to write byte to Continuous Measurement Register {:?}", e);
+        if let Err(e) = self.i2c.write_byte_to_register(
+            self.device_address,
+            SYSRANGE_START,
+            SYSRANGE_START_CTS_VAL,
+        ) {
+            return Err(ToFError::I2cError(e));
         }
+        Ok(1)
     }
 
     pub fn check_reset(&mut self) -> bool {
@@ -128,13 +134,16 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         reset_value == 1
     }
 
-    pub fn clear_interrupts(&mut self) {
+    pub fn clear_interrupts(&mut self) -> Result<i32, ToFError> {
         // at the end clear interrupts
-        if let Err(e) =
-            self.i2c.write_byte_to_register(self.device_address, SYS_INTERRUPT_CLEAR, CLEAR_INTERRUPTS_VAL)
-        {
-            panic!("Failed to write byte to Clear Interrupt {:?}", e);
+        if let Err(e) = self.i2c.write_byte_to_register(
+            self.device_address,
+            SYS_INTERRUPT_CLEAR,
+            CLEAR_INTERRUPTS_VAL,
+        ) {
+            return Err(ToFError::I2cError(e));
         }
+        Ok(1)
     }
 }
 
