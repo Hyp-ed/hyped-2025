@@ -13,19 +13,19 @@ use embassy_time::Instant;
 
 use {defmt_rtt as _, panic_probe as _};
 
-const MAX_VOLTAGE: f32 = 500.0; // TODO Later
-const MAX_CURRENT: f32 = 500.0; // TODO Later
-const TARGET_HEIGHT: f32 = 10.0; // TODO Later to be determined by levitation
+const MAX_VOLTAGE: f32 = 500.0; // TODOLater
+const MAX_CURRENT: f32 = 500.0; // TODOLater
+const TARGET_HEIGHT: f32 = 10.0; // TODOLater to be determined by levitation
 
 const GAIN_HEIGHT: PidGain = PidGain{ 
-    // TODO Later to be determined by levitation
+    // TODOLater to be determined by levitation
     kp: 1.0,
     ki: 0.05,
     kd: 0.005,
 };
 
 const GAIN_CURRENT: PidGain = PidGain{ 
-    // TODO Later determined by levitation
+    // TODOLater determined by levitation
     kp: 1.1,
     ki: 0.12,
     kd: 0.05,
@@ -51,7 +51,7 @@ async fn main(_spawner: Spawner) {
 
     loop {
         
-        let actual_height = 0.7; // TODO Later we'll get that from a sensor
+        let actual_height = 0.7; // TODOLater we'll get that from a sensor
         
         let dt = (Instant::now().as_micros() as f32) - time_start;
 
@@ -59,7 +59,7 @@ async fn main(_spawner: Spawner) {
 
         let target_current = (actual_height + output_height_pid).min(MAX_CURRENT);
 
-        let actual_current = 1.0; // TODO Later we'll get that from a sensor
+        let actual_current = 1.0; // TODOLater we'll get that from a sensor
 
         let output_current_pid = pid_current.update(target_current, actual_current, dt);
 
