@@ -3,7 +3,7 @@ use heapless::Vec;
 #[derive(PartialEq, Debug)]
 pub enum SensorChecks {
     Acceptable,
-    Unnaceptable,
+    Unacceptable,
 }
 
 /// Checks if the two Keyence sensors are in agreement.
@@ -27,7 +27,7 @@ impl KeyenceAgrees {
 
     pub fn check_keyence_agrees(&mut self, keyence_data: Vec<bool, 2>) -> SensorChecks {
         if keyence_data[0] != keyence_data[1] && !self.previous_keyence_agreement {
-            return SensorChecks::Unnaceptable;
+            return SensorChecks::Unacceptable;
         } else {
             self.previous_keyence_agreement = keyence_data[0] == keyence_data[1];
         }
@@ -88,7 +88,7 @@ mod tests {
         let second_keyence_data: Vec<bool, 2> = Vec::from_slice(&[true, false]).unwrap();
         let mut keyence_agrees = KeyenceAgrees::new();
         let first_outcome = SensorChecks::Acceptable;
-        let second_outcome = SensorChecks::Unnaceptable;
+        let second_outcome = SensorChecks::Unacceptable;
         let initial_try = keyence_agrees.check_keyence_agrees(first_keyence_data);
         let result = keyence_agrees.check_keyence_agrees(second_keyence_data);
         assert_eq!(initial_try, first_outcome);

@@ -107,10 +107,10 @@ impl Localizer {
         let processed_optical_data = process_optical_data(optical_data);
 
         let keyence_status = self.keyence_checker.check_keyence_agrees(keyence_data.clone());
-        //if keyence_status == SensorChecks::Unacceptable {
+        if keyence_status == SensorChecks::Unacceptable {
             //TODOLater: Change state
-        //    return;
-        //}
+           return;
+        }
 
 
 
