@@ -1,10 +1,12 @@
 [workspace]
 members = [
   "config",
-  "lib/*",
+  "lib/*"
 ]
 exclude = [
   "boards/stm32l476rg",
+  "boards/stm32h743zi",
   "boards/stm32f767zi",
+  "boards/stm32l432kc",
 ]
 resolver = "2"
