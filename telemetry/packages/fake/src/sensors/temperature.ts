@@ -23,12 +23,12 @@ export class Temperature extends Motion {
 
 	getData(): Readings {
 		this.temp += // Air drag and internal heat generation
-			Math.pow(this.velocity, 3) * this.params.drag +
+			this.velocity ** 3 * this.params.drag +
 			this.velocity * this.params.heatGen;
 		this.temp += // On the track, temperature increases with work done
 			this.velocity < this.liftoffSpeed
-				? Math.pow(this.displacement, 2) * this.params.friction
-				: Math.pow(this.displacement, 2) *
+				? this.displacement ** 2 * this.params.friction
+				: this.displacement ** 2 *
 					(this.liftoffSpeed / this.velocity) *
 					this.displacement *
 					this.params.friction;

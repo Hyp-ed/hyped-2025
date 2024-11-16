@@ -3,8 +3,8 @@ export class Utilities {
 	 * Greatest common divisor
 	 */
 	public static gcd(nums: number[]): number {
-		nums = nums.sort((a, b) => b - a);
-		return nums.reduce((acc, c) => {
+		const sortedNums = nums.sort((a, b) => b - a);
+		return sortedNums.reduce((acc, c) => {
 			return c === 0 ? acc : Utilities.gcd([c, acc % c]);
 		});
 	}
@@ -43,9 +43,13 @@ export class Utilities {
 		rms_noise: number,
 		format: 'float' | 'integer',
 	): number {
-		return format == 'float'
-			? Number.parseFloat(this.gaussianRandom(rms_noise, prevValue).toFixed(2))
-			: Number.parseInt(this.gaussianRandom(rms_noise, prevValue).toFixed(2));
+		return format === 'float'
+			? Number.parseFloat(
+					Utilities.gaussianRandom(rms_noise, prevValue).toFixed(2),
+				)
+			: Number.parseInt(
+					Utilities.gaussianRandom(rms_noise, prevValue).toFixed(2),
+				);
 	}
 
 	/**
@@ -107,9 +111,9 @@ export class Utilities {
 		}
 		let sum = 0;
 		vals.forEach((v, i) => {
-			const weight = Math.pow(alpha, vals.length - 1 - i);
+			const weight = alpha ** (vals.length - 1 - i);
 			sum += v * weight;
 		});
-		return sum / (1 - Math.pow(alpha, vals.length));
+		return sum / (1 - alpha ** vals.length);
 	}
 }

@@ -21,28 +21,28 @@ export class Pressure extends Temperature {
 	constructor(data: LiveReading) {
 		super(data);
 		// this.prevVals = Array<number>(10).fill(0);
-		this.pResBrakes0 = data.readings['pressure_brakes_reservoir'];
-		this.pResSusp0 = data.readings['pressure_active_suspension_reservoir'];
+		this.pResBrakes0 = data.readings.pressure_brakes_reservoir;
+		this.pResSusp0 = data.readings.pressure_active_suspension_reservoir;
 	}
 
 	getData(): Readings {
 		const newData = { ...Sensor.lastReadings.pressure };
 		// Pneumatic pressure gauges
-		newData['pressure_front_pull'] = this.bernoulli('stagnation');
-		newData['pressure_front_push'] =
-			(1 - this.coefficients.lossFactor) * newData['pressure_front_pull'];
-		newData['pressure_back_pull'] = this.bernoulli('wake');
-		newData['pressure_back_push'] =
-			(1 - this.coefficients.lossFactor) * newData['pressure_back_pull'];
+		newData.pressure_front_pull = this.bernoulli('stagnation');
+		newData.pressure_front_push =
+			(1 - this.coefficients.lossFactor) * newData.pressure_front_pull;
+		newData.pressure_back_pull = this.bernoulli('wake');
+		newData.pressure_back_push =
+			(1 - this.coefficients.lossFactor) * newData.pressure_back_pull;
 
 		// Reservoir pressure
-		newData['pressure_brakes_reservoir'] = this.idealGasLaw('brakes');
-		newData['pressure_active_suspension_reservoir'] =
+		newData.pressure_brakes_reservoir = this.idealGasLaw('brakes');
+		newData.pressure_active_suspension_reservoir =
 			this.idealGasLaw('suspension');
 
 		// Brake pressure
-		newData['pressure_front_brake'] = this.brakePressure();
-		newData['pressure_back_brake'] = newData['pressure_front_brake'];
+		newData.pressure_front_brake = this.brakePressure();
+		newData.pressure_back_brake = newData.pressure_front_brake;
 
 		return Object.fromEntries(
 			Object.entries(newData).map(([key, value]) => {
@@ -58,31 +58,31 @@ export class Pressure extends Temperature {
 
 	private bernoulli(loc: 'stagnation' | 'wake'): number {
 		const { rho, atm } = this.airProps;
-		return atm + this.coefficients[loc] * (rho * Math.pow(this.velocity, 2));
+		return atm + this.coefficients[loc] * (rho * this.velocity ** 2);
 	}
 
 	private idealGasLaw(loc: 'brakes' | 'suspension'): number {
 		this.temp +=
-			this.acceleration < 0 && loc == 'brakes'
+			this.acceleration < 0 && loc === 'brakes'
 				? Math.abs(this.acceleration) * this.coefficients.brakingFactor
 				: 0;
-		return loc == 'brakes'
+		return loc === 'brakes'
 			? this.pResBrakes0 * (this.cToK(this.temp) / this.cToK(this.temp0))
 			: this.pResSusp0 * (this.cToK(this.temp) / this.cToK(this.temp0));
 	}
 
 	private brakePressure(): number {
 		const { atm } = this.airProps;
-		const p = Sensor.lastReadings.pressure['pressure_front_brake'];
+		const p = Sensor.lastReadings.pressure.pressure_front_brake;
 		if (this.acceleration > 0 && p > atm) {
 			return p - 100; // arbitrary value for pressure drop
-		} else if (this.acceleration > 0) {
-			return atm;
-		} else {
-			this.temp +=
-				Math.abs(this.acceleration) * 5 * this.coefficients.brakingFactor;
-			return atm * (this.cToK(this.temp) / this.cToK(this.temp0));
 		}
+		if (this.acceleration > 0) {
+			return atm;
+		}
+		this.temp +=
+			Math.abs(this.acceleration) * 5 * this.coefficients.brakingFactor;
+		return atm * (this.cToK(this.temp) / this.cToK(this.temp0));
 	}
 
 	private cToK(temp: number): number {

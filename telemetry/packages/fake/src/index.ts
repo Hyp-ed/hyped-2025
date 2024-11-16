@@ -10,7 +10,7 @@ import { sensorData } from './config';
 import { SensorManager } from './sensorManager';
 
 const args = process.argv.slice(2);
-const shouldRandomise = args.includes('--random') ? true : false;
+const shouldRandomise = !!args.includes('--random');
 
 // Filter for user-defined specific sensors, otherwise simulate all
 Object.keys(sensorData).filter((sensor) => args.includes(sensor));

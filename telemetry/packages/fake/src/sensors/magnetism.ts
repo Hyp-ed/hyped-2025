@@ -6,14 +6,10 @@ import { Motion } from './motion';
 export class Magnetism extends Motion {
 	protected magSetpoint = 250; // A
 
-	constructor(data: LiveReading) {
-		super(data);
-	}
-
 	getData(t: number): Readings {
-		if (!Sensor.isSampled['motion']) {
+		if (!Sensor.isSampled.motion) {
 			this.velocity = super.getData(t).velocity;
-			Sensor.isSampled['motion'] = true;
+			Sensor.isSampled.motion = true;
 		} else {
 			this.velocity = Sensor.lastReadings.motion.velocity;
 		}

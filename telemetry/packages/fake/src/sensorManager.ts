@@ -43,9 +43,9 @@ export class SensorManager {
 		// Create sensor instances
 		this.instantiateSensors(this.sensorsToRun);
 		// Record fixed sampling time periods
-		this.sensorsToRun.forEach((s: string) => {
+		for (const s of this.sensorsToRun) {
 			this.samplingTimes[s] = sensorData[s].sampling_time;
-		});
+		}
 		// Initialize MQTT connection
 		this.client = MQTT.connect('MQTT://mosquitto:1883');
 	}
@@ -63,9 +63,9 @@ export class SensorManager {
 		const simulationInterval = setInterval(() => {
 			// Reset all 'sampled' flags to false
 			this.resetSampledState();
-			this.sensors.forEach((sensor) => {
+			for (const sensor of this.sensors) {
 				// Generate data if current time corresponds to sensor's sampling time
-				if ((this.globalTime / 1000) % sensor.delta_t == 0) {
+				if ((this.globalTime / 1000) % sensor.delta_t === 0) {
 					// Get the sensors' output data
 					const readings: Readings = !random
 						? sensor.getData(this.globalTime / 1000) // convert time to seconds for calculations
@@ -76,11 +76,11 @@ export class SensorManager {
 
 					// Publish sensor readings under the topic of
 					//   each and for each measurement key to the data broker
-					Object.entries(readings).forEach(([measurement, value]) => {
+					for (const [measurement, value] of Object.entries(readings)) {
 						this.publishData(measurement, value.toString());
-					});
+					}
 				}
-			});
+			}
 
 			// Implement exit condition
 			if (Sensor.lastReadings.motion.displacement >= trackLength) {
@@ -109,22 +109,24 @@ export class SensorManager {
 			return;
 		};
 		// Populate set
-		sensorsToRun.forEach((s) => getActiveSensors(s));
+		for (const s of sensorsToRun) {
+			getActiveSensors(s);
+		}
 		// Define sensor instances
 		// Correct sorting is automatic as recursion forces all parent class sensors to be
 		//   added before their inheriting classes
-		activeSensors.forEach((s) =>
-			this.sensors.push(new sensors[s](sensorData[s])),
-		);
+		for (const s of Array.from(activeSensors)) {
+			this.sensors.push(new sensors[s](sensorData[s]));
+		}
 	}
 
 	/**
 	 * Reset all sensors' isSampled flags to false on each iteration
 	 */
 	private resetSampledState(): void {
-		Object.keys(Sensor.isSampled).forEach(
-			(sensor) => (Sensor.isSampled[sensor] = false),
-		);
+		for (const sensor of Object.keys(Sensor.isSampled)) {
+			Sensor.isSampled[sensor] = false;
+		}
 	}
 
 	/**

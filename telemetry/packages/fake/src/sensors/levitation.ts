@@ -104,7 +104,7 @@ export class Levitation extends Magnetism {
 			// Monitor EM field during steady state
 			if (this.isFieldOn()) return this.updateReadings(this.prevVals);
 			// Reset time for decline stage
-			else this.initiate(t);
+			this.initiate(t);
 		}
 
 		// Code below reachable once pod decline begins
@@ -127,10 +127,9 @@ export class Levitation extends Magnetism {
 			);
 
 			return this.updateReadings(this.prevVals);
-		} else {
-			// Once touched down, reset sensor readings to zero
-			return this.updateReadings([], true);
 		}
+		// Once touched down, reset sensor readings to zero
+		return this.updateReadings([], true);
 	}
 
 	private updateReadings(prevVals: number[], onTrack = false): Readings {

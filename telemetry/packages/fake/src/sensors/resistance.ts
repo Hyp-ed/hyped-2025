@@ -20,9 +20,9 @@ export class Resistance extends Temperature {
 	 *   is as expected during operation.
 	 */
 	getData(): Readings {
-		if (!Sensor.isSampled['temperature']) {
+		if (!Sensor.isSampled.temperature) {
 			this.temp = utils.average(Object.values(super.getData()));
-			Sensor.isSampled['temperature'] = true;
+			Sensor.isSampled.temperature = true;
 		}
 
 		const readings = Object.keys(Sensor.lastReadings.resistance).map((key) => {

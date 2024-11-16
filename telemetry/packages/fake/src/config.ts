@@ -11,12 +11,12 @@ const filterMeasurements = (id: podID) => {
 	const pod = Object.values(pods).find((pod: Pod) => pod.id === id) as Pod;
 	const filteredData = {} as Record<string, RangeMeasurement>;
 	//
-	Object.entries(pod.measurements).forEach(([key, meas]) => {
+	for (const [key, meas] of Object.entries(pod.measurements)) {
 		if (meas.format !== 'enum') {
 			filteredData[key] = meas;
 			filteredData[key].name = key.replace(/_[^_]*\d$/, '');
 		}
-	});
+	}
 	return filteredData;
 };
 
@@ -47,14 +47,14 @@ const getInitialValue = (data: RangeMeasurement): number => {
 	// Set initial value based on sensor types defined above
 	if (Object.prototype.hasOwnProperty.call(initialVals, data.name)) {
 		return initialVals[data.name];
-	} else if (data.name.startsWith('pressure')) {
+	}
+	if (data.name.startsWith('pressure')) {
 		// Pressure gauges are subdivided into push, pull, brake and reservoir with different initial values
 		return initialVals.pressure;
-	} else {
-		// If the sensor is not recognised, return a random value within the critical limits
-		const { low, high } = data.limits.critical;
-		return Math.floor(Math.random() * (high - low)) + low;
 	}
+	// If the sensor is not recognised, return a random value within the critical limits
+	const { low, high } = data.limits.critical;
+	return Math.floor(Math.random() * (high - low)) + low;
 };
 
 /**
@@ -64,6 +64,7 @@ const getInitialValue = (data: RangeMeasurement): number => {
 export const sensorData: SensorData = Object.fromEntries(
 	Object.values(measurements)
 		.reduce(
+			// biome-ignore lint/suspicious/noExplicitAny:
 			(acc, sensor): any => {
 				if (!acc.seen) acc.seen = new Set();
 				// Check if the sensor key has already been processed
@@ -87,7 +88,7 @@ export const sensorData: SensorData = Object.fromEntries(
 					Object.keys(measurements)
 						.filter(
 							(name) =>
-								!name.endsWith('avg') && measurements[name].type == data.type,
+								!name.endsWith('avg') && measurements[name].type === data.type,
 						)
 						.map((el) => [el, getInitialValue(measurements[el])]),
 				),

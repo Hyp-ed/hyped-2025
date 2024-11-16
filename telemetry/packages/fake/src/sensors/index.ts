@@ -17,6 +17,7 @@ type SensorType =
 	| typeof Levitation;
 
 // Instance type for sensor classes
+// biome-ignore lint/suspicious/noExplicitAny:
 export type SensorInstance<T extends new (...args: any[]) => any> =
 	InstanceType<T>;
 

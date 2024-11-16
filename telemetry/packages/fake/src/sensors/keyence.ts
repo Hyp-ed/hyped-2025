@@ -11,10 +11,6 @@ import { Motion } from './motion';
 export class Keyence extends Motion {
 	private podLength = 2.5;
 
-	constructor(data: LiveReading) {
-		super(data);
-	}
-
 	getData(t: number): Readings {
 		// Keyence sensors are evenly distributed along the pod
 		// Displacement is measured at the nose of the pod
@@ -22,9 +18,9 @@ export class Keyence extends Motion {
 			this.podLength / (Object.keys(Sensor.lastReadings.keyence).length - 1);
 		const noPoles = this.limits.critical.high;
 
-		if (!Sensor.isSampled['motion']) {
+		if (!Sensor.isSampled.motion) {
 			this.displacement = super.getData(t).displacement;
-			Sensor.isSampled['motion'] = true;
+			Sensor.isSampled.motion = true;
 		} else {
 			this.displacement = Sensor.lastReadings.motion.displacement;
 		}
