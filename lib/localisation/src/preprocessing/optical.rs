@@ -2,7 +2,7 @@ use heapless::Vec;
 use libm::sqrtf;
 
 /// Processes the raw optical data to get the magnitude and added to the optical data for each sensor
-pub fn process_data(raw_optical_data: Vec<Vec<f64, 2>, 2>) -> Vec<f32, 2> {
+pub fn process_optical_data(raw_optical_data: Vec<Vec<f64, 2>, 2>) -> Vec<f32, 2> {
     let mut optical_data: Vec<f32, 2> = Vec::from_slice(&[0.0, 0.0]).unwrap();
 
     for i in 0..2 {
@@ -30,7 +30,7 @@ mod tests {
         ])
         .unwrap();
         let desired_outcome: Vec<f32, 2> = Vec::from_slice(&[sqrtf(2.0), 5.0]).unwrap();
-        let result = process_data(raw_optical_data);
+        let result = process_optical_data(raw_optical_data);
         assert_eq!(result, desired_outcome);
     }
 
@@ -42,7 +42,7 @@ mod tests {
         ])
         .unwrap();
         let desired_outcome: Vec<f32, 2> = Vec::from_slice(&[7.2111025, 3.1622777]).unwrap();
-        let result = process_data(raw_optical_data);
+        let result = process_optical_data(raw_optical_data);
         assert_eq!(result, desired_outcome);
     }
 
@@ -54,7 +54,7 @@ mod tests {
         ])
         .unwrap();
         let desired_outcome: Vec<f32, 2> = Vec::from_slice(&[0.0, 0.0]).unwrap();
-        let result = process_data(raw_optical_data);
+        let result = process_optical_data(raw_optical_data);
         assert_eq!(result, desired_outcome);
     }
 }

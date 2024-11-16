@@ -2,10 +2,11 @@ use crate::{
     filtering::kalman_filter::KalmanFilter,
     preprocessing::{
         accelerometer::AccelerometerPreprocessor, keyence::KeyenceAgrees,
-        optical::process_data as process_optical_data,
+        optical::process_optical_data,
     },
 };
 
+use heapless::Vec;
 use libm::pow;
 use nalgebra::{Matrix2, Vector2};
 
@@ -16,6 +17,9 @@ pub struct Localizer {
     velocity: f64,
     acceleration: f64,
     kalman_filter: KalmanFilter,
+    current_optical_reading: Option<Vec<Vec<f64, 2>, 2>>,
+    current_keyence_reading: Option<Vec<bool, 2>>,
+    current_accelerometer_reading: Option<Vec<f64, 4>>,
 }
 
 impl Localizer {
@@ -91,4 +95,11 @@ impl Localizer {
     pub fn get_acceleration(&self) -> f64 {
         self.acceleration
     }
+
+    //pub fn preproccesor(
+    //    &mut self,
+    //    optical_data: Vec<Vec<f64, 2>, 2>,
+    //    keyence_data: Vec<bool, 2>,
+    //   accelerometer_data: Vec<f64, 4>,
+    //)
 }
