@@ -1,6 +1,7 @@
-use crate::types::{AccelerometerData, RawAccelerometerData, SensorChecks};
-
-use super::super::types::{K_NUM_ACCELEROMETERS, K_NUM_ALLOWED_ACCELEROMETER_OUTLIERS, K_NUM_AXIS};
+use crate::types::{
+    AccelerometerData, RawAccelerometerData, SensorChecks, K_NUM_ACCELEROMETERS,
+    K_NUM_ALLOWED_ACCELEROMETER_OUTLIERS, K_NUM_AXIS,
+};
 use heapless::Vec;
 
 /// Stores the quartiles of the data and the bounds for outliers
