@@ -9,7 +9,7 @@ function ThemeSwitch() {
 		document.body.classList.add(theme);
 	}, [theme]);
 
-	const [enabled, setEnabled] = useState(theme == 'dark');
+	const [enabled, setEnabled] = useState(theme === 'dark');
 
 	const handleThemeChange = (enabled: boolean) => {
 		setTheme(enabled ? 'dark' : 'light');

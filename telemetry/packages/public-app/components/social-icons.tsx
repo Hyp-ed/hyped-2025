@@ -40,12 +40,12 @@ const SOCIAL_ICONS = {
  * @returns The social media icons.
  */
 export const SocialIcons = () => {
-	const socialIcons = Object.values(SOCIAL_ICONS);
+	const socialIcons = Object.entries(SOCIAL_ICONS);
 
 	return (
 		<div className="flex flex-row justify-between w-1/2 sm:max-w-sm">
-			{socialIcons.map(({ link, component }, index) => (
-				<Link href={link} key={index}>
+			{socialIcons.map(([key, { link, component }]) => (
+				<Link href={link} key={key}>
 					{component}
 				</Link>
 			))}

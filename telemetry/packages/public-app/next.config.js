@@ -2,7 +2,7 @@
 const nextConfig = {
 	webpack: (config, context) => {
 		// Enable polling based on env variable being set
-		if (true) {
+		if (process.env.NEXT_WATCH) {
 			config.watchOptions = {
 				poll: 500,
 				aggregateTimeout: 300,

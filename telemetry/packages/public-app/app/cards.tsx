@@ -1,12 +1,12 @@
-import { DisplacementChart } from '@/components/displacement-chart';
-import { LaunchTime } from '@/components/launch-time';
-import LevitationHeight from '@/components/levitation-height';
-import { SocialIcons } from '@/components/social-icons';
-import ThemeSwitch from '@/components/theme-switch';
-import { VelocityGraph } from '@/components/velocity-graph';
-import { Card, Grid, Text, Title } from '@tremor/react';
-import Image from 'next/image';
-import { useState } from 'react';
+import { DisplacementChart } from "@/components/displacement-chart";
+import { LaunchTime } from "@/components/launch-time";
+import LevitationHeight from "@/components/levitation-height";
+import { SocialIcons } from "@/components/social-icons";
+import ThemeSwitch from "@/components/theme-switch";
+import { VelocityGraph } from "@/components/velocity-graph";
+import { Card, Grid, Text, Title } from "@tremor/react";
+import Image from "next/image";
+import { useState } from "react";
 
 /**
  * The cards that are displayed on the dashboard.
@@ -17,13 +17,13 @@ const CARDS = {
 	LEVITATION: <LevitationHeight />,
 };
 
-type Card = keyof typeof CARDS;
+type CardType = keyof typeof CARDS;
 
 export default function Cards() {
-	const [selected, setSelected] = useState<Card>('VELOCITY');
+	const [selected, setSelected] = useState<CardType>("VELOCITY");
 
 	const selectedCardComponent = CARDS[selected];
-	const otherCards = (Object.keys(CARDS) as Card[]).filter(
+	const otherCards = (Object.keys(CARDS) as CardType[]).filter(
 		(c) => c !== selected,
 	);
 
@@ -40,7 +40,7 @@ export default function Cards() {
 			{selectedCardComponent}
 			<Grid numItemsMd={2} className="gap-4 w-full">
 				{otherCards.map((c) => (
-					<button key={c} onClick={() => setSelected(c)}>
+					<button key={c} onClick={() => setSelected(c)} type="button">
 						<div className="h-0" />
 						{CARDS[c]}
 					</button>
@@ -63,7 +63,7 @@ export default function Cards() {
  */
 const HypedImage = () => {
 	const common = {
-		alt: 'HYPED Logo, with a red E resembling 3 stacked hyperloop pods',
+		alt: "HYPED Logo, with a red E resembling 3 stacked hyperloop pods",
 		width: 200,
 		height: 50,
 	};
