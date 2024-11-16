@@ -57,11 +57,11 @@ export class HistoricalFaultDataService {
 			const data =
 				await this.influxService.query.collectRows<InfluxFaultRow>(query);
 			return data.map((row) => ({
-				faultId: row['faultId'],
-				timestamp: new Date(row['_time']).getTime(),
-				openMctFault: JSON.parse(row['_value']) as OpenMctFault,
-				podId: row['podId'],
-				measurementKey: row['measurementKey'],
+				faultId: row.faultId,
+				timestamp: new Date(row._time).getTime(),
+				openMctFault: JSON.parse(row._value) as OpenMctFault,
+				podId: row.podId,
+				measurementKey: row.measurementKey,
 			}));
 		} catch (e: unknown) {
 			this.logger.error(

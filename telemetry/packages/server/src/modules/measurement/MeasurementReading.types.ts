@@ -12,7 +12,7 @@ export const MeasurementReadingSchema = z
 	// Validate measurement exists and enum value is valid (if applicable)
 	.refine(
 		({ podId, measurementKey, value }) => {
-			const measurement = pods[podId]['measurements'][measurementKey];
+			const measurement = pods[podId].measurements[measurementKey];
 
 			if (!measurement) {
 				return false;
@@ -31,7 +31,7 @@ export const MeasurementReadingSchema = z
 
 			// Validate integers and floats
 			if (
-				(measurement.format === 'float' && isNaN(value)) ||
+				(measurement.format === 'float' && Number.isNaN(value)) ||
 				(measurement.format === 'integer' && !Number.isInteger(value))
 			) {
 				return false;

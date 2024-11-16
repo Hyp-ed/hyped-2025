@@ -12,8 +12,8 @@ import { LiveLogsTransport } from '../live-logs/LiveLogsTransport';
 const LOGGING_DIRECTORY = '../../logs';
 
 const unhandledErrorFormat = format((info) => {
-	if (info[Symbol.for('level')] === 'error' && info['error']) {
-		const error = info['error'] as {
+	if (info[Symbol.for('level')] === 'error' && info.error) {
+		const error = info.error as {
 			name: string;
 			message: string;
 			stack: string;

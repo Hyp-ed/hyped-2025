@@ -46,16 +46,16 @@ export class PublicDataService {
 			return {
 				currentState: data[0]
 					? {
-							state: data[0]['_value'],
-							timestamp: new Date(data[0]['_time']).getTime(),
-							stateType: data[0]['stateType'],
+							state: data[0]._value,
+							timestamp: new Date(data[0]._time).getTime(),
+							stateType: data[0].stateType,
 						}
 					: null,
 				previousState: data[1]
 					? {
-							state: data[1]['_value'],
-							timestamp: new Date(data[1]['_time']).getTime(),
-							stateType: data[1]['stateType'],
+							state: data[1]._value,
+							timestamp: new Date(data[1]._time).getTime(),
+							stateType: data[1].stateType,
 						}
 					: null,
 			};
@@ -106,7 +106,7 @@ export class PublicDataService {
 		try {
 			const data =
 				await this.influxService.query.collectRows<InfluxStateRow>(query);
-			const launchTime = new Date(data[0]['_time']).getTime();
+			const launchTime = new Date(data[0]._time).getTime();
 
 			return {
 				launchTime,

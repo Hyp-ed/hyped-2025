@@ -42,9 +42,9 @@ export class HistoricalTelemetryDataService {
 				await this.influxService.query.collectRows<InfluxHistoricalRow>(query);
 
 			return data.map((row) => ({
-				id: row['measurementKey'],
-				timestamp: new Date(row['_time']).getTime(),
-				value: row['_value'],
+				id: row.measurementKey,
+				timestamp: new Date(row._time).getTime(),
+				value: row._value,
 			}));
 		} catch (e: unknown) {
 			this.logger.error(

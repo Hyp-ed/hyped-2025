@@ -92,7 +92,7 @@ export class MeasurementService {
 
 		return {
 			reading: result.data,
-			measurement: pods[podId]['measurements'][measurementKey],
+			measurement: pods[podId].measurements[measurementKey],
 		};
 	}
 }
