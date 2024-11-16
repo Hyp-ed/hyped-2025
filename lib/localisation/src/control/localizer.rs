@@ -1,7 +1,7 @@
 use crate::{
     filtering::kalman_filter::KalmanFilter,
     preprocessing::{
-        accelerometer::AccelerometerPreprocessor, keyence::KeyenceAgrees,
+        accelerometer::AccelerometerPreprocessor, keyence::{KeyenceAgrees, SensorChecks},
         optical::process_optical_data,
     },
 };
@@ -17,9 +17,8 @@ pub struct Localizer {
     velocity: f64,
     acceleration: f64,
     kalman_filter: KalmanFilter,
-    current_optical_reading: Option<Vec<Vec<f64, 2>, 2>>,
-    current_keyence_reading: Option<Vec<bool, 2>>,
-    current_accelerometer_reading: Option<Vec<f64, 4>>,
+    accelerometer_preprocessor: AccelerometerPreprocessor,
+    keyence_checker: KeyenceAgrees,
 }
 
 impl Localizer {
@@ -65,6 +64,8 @@ impl Localizer {
             velocity: 0.0,
             acceleration: 0.0,
             kalman_filter,
+            accelerometer_preprocessor: AccelerometerPreprocessor::new(),
+            keyence_checker: KeyenceAgrees::new(),
         }
     }
 
@@ -96,10 +97,26 @@ impl Localizer {
         self.acceleration
     }
 
-    //pub fn preproccesor(
-    //    &mut self,
-    //    optical_data: Vec<Vec<f64, 2>, 2>,
-    //    keyence_data: Vec<bool, 2>,
-    //   accelerometer_data: Vec<f64, 4>,
-    //)
+    pub fn preprocessor(
+        &mut self,
+        optical_data: Vec<Vec<f64, 2>, 2>,
+        keyence_data: Vec<bool, 2>,
+        accelerometer_data: Vec<f64, 4>,
+    ) {
+
+        let processed_optical_data = process_optical_data(optical_data);
+
+        let keyence_status = self.keyence_checker.check_keyence_agrees(keyence_data.clone());
+        //if keyence_status == SensorChecks::Unacceptable {
+            //TODOLater: Change state
+        //    return;
+        //}
+
+
+
+
+        
+    
+    }
+
 }
