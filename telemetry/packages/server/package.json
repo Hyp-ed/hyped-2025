@@ -10,7 +10,8 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"src/**/*.ts\" --max-warnings 0 --report-unused-disable-directives",
-    "lint:fix": "eslint \"src/**/*.ts\" --fix"
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "drizzle-kit": "drizzle-kit"
   },
   "dependencies": {
     "@hyped/telemetry-constants": "workspace:*",
@@ -23,6 +24,7 @@
     "@nestjs/platform-socket.io": "^9.4.2",
     "@nestjs/websockets": "^9.4.2",
     "dotenv": "^16.0.3",
+    "drizzle-kit": "^0.28.1",
     "drizzle-orm": "^0.36.2",
     "env-var": "^7.3.0",
     "mqtt": "^4.3.7",

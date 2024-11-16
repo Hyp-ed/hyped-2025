@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import * as schema from './schema';
 import { DrizzlePGModule } from '@knaadh/nestjs-drizzle-pg';
 import { POSTGRES_CONNECTION_STRING } from '../core/config';
+import { PostgresService } from './Postgres.service';
 
 export const TAG = 'DB';
 
@@ -18,6 +19,7 @@ const drizzleClient = DrizzlePGModule.register({
 
 @Module({
   imports: [drizzleClient],
-  exports: [drizzleClient]
+  exports: [drizzleClient],
+  providers: [PostgresService]
 })
 export class PostgresModule {}

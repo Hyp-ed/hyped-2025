@@ -22,7 +22,6 @@ COPY pnpm-workspace.yaml ./
 COPY patches ./patches
 COPY turbo.json ./
 RUN pnpm install --frozen-lockfile
-RUN pnpm --filter=e2e-tests exec playwright install --with-deps
 
 # Expose ports
 EXPOSE 5173
