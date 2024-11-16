@@ -29,6 +29,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
                 PRIVATE_REGISTERS[i],
                 PRIVATE_REGISTER_DATA[i],
             ) {
+                panic!("Error writing private registers");
                 return Err(ToFError::I2cError(e));
             }
         }
@@ -36,11 +37,13 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         if let Err(e) =
             i2c.write_byte_to_register(device_address, SYS_MODE_GPIO1, SYS_MODE_GPIO_VAL)
         {
+            panic!("Error writing SYS_MODE_GPIO_1 register");
             return Err(ToFError::I2cError(e));
         }
         if let Err(e) =
             i2c.write_byte_to_register_16(device_address, AVG_SAMPLE_PERIOD, AVG_SAMPLE_PERIOD_VAL)
         {
+            panic!("Error writing AVG_SAMPLE_PERIOD REGISTER");
             return Err(ToFError::I2cError(e));
         }
         if let Err(e) = i2c.write_byte_to_register(
@@ -48,6 +51,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
             SYSRANGE_VHV_REPEAT_RATE,
             SYSRANGE_VHV_REPEAT_RATE_VAL,
         ) {
+            panic!("Error writing SYSRANGE_VHV_REPEAT_RATE REGISTER");
             return Err(ToFError::I2cError(e));
         }
         if let Err(e) = i2c.write_byte_to_register(
@@ -55,6 +59,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
             SYSRANGE_VHV_RECALIBRATE,
             SYSRANGE_VHV_RECALIBRATE_VAL,
         ) {
+            panic!("Error writing SYSRANGE_VHV_RECALIBRATE REGISTER");
             return Err(ToFError::I2cError(e));
         }
         if let Err(e) = i2c.write_byte_to_register(
@@ -62,6 +67,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
             SYSRANGE_INTERMEASURE_PERIOD,
             SYSRANGE_INTERMEASURE_PERIOD_VAL,
         ) {
+            panic!("Error writing SYSRANGE_INTERMEASURE_PERIOD REGISTER");
             return Err(ToFError::I2cError(e));
         }
         if let Err(e) = i2c.write_byte_to_register(
@@ -69,6 +75,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
             SYS_INTERRUPT_CONFIG_GPIO,
             SYS_INTERRUPT_CONFIG_GPIO_VAL,
         ) {
+            panic!("Error writing SYS_INTERRUPT_CONFIG_GPIO REGISTER");
             return Err(ToFError::I2cError(e));
         }
         Ok(Self {
