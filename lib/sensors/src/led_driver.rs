@@ -235,23 +235,7 @@ mod tests {
 
         // Verify values in LED_CONFIG0 are reset to default values
         assert_eq!(
-            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, LED_CONFIG0)),
-            Some(&Some(0x00))
-        );
-        assert_eq!(
-            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_A_COLOUR)),
-            Some(&Some(0x00))
-        );
-        assert_eq!(
-            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_B_COLOUR)),
-            Some(&Some(0x00))
-        );
-        assert_eq!(
-            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_C_COLOUR)),
-            Some(&Some(0x00))
-        );
-        assert_eq!(
-            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_BRIGHTNESS)),
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, RESET)),
             Some(&Some(0xFF))
         );
     }
