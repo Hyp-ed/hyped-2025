@@ -1,12 +1,15 @@
 use crate::{
     filtering::kalman_filter::KalmanFilter,
     preprocessing::{
-        accelerometer::AccelerometerPreprocessor, keyence::{KeyenceAgrees, SensorChecks},
+        accelerometer::AccelerometerPreprocessor,
+        keyence::{KeyenceAgrees, SensorChecks},
         optical::process_optical_data,
     },
+    types::{RawAccelerometerData, K_NUM_ACCELEROMETERS, K_NUM_AXIS},
 };
 
 use heapless::Vec;
+
 use libm::pow;
 use nalgebra::{Matrix2, Vector2};
 
@@ -69,54 +72,37 @@ impl Localizer {
         }
     }
 
-    //Setters
-
-    pub fn set_displacement(&mut self, displacement: f64) {
-        self.displacement = displacement;
-    }
-
-    pub fn set_velocity(&mut self, velocity: f64) {
-        self.velocity = velocity;
-    }
-
-    pub fn set_acceleration(&mut self, acceleration: f64) {
-        self.acceleration = acceleration;
-    }
-
-    //Getters
-
-    pub fn get_displacement(&self) -> f64 {
-        self.displacement
-    }
-
-    pub fn get_velocity(&self) -> f64 {
-        self.velocity
-    }
-
-    pub fn get_acceleration(&self) -> f64 {
-        self.acceleration
-    }
-
     pub fn preprocessor(
         &mut self,
         optical_data: Vec<Vec<f64, 2>, 2>,
         keyence_data: Vec<bool, 2>,
-        accelerometer_data: Vec<f64, 4>,
+        accelerometer_data: RawAccelerometerData<K_NUM_ACCELEROMETERS, K_NUM_AXIS>,
     ) {
-
         let processed_optical_data = process_optical_data(optical_data);
 
-        let keyence_status = self.keyence_checker.check_keyence_agrees(keyence_data.clone());
+        let keyence_status = self
+            .keyence_checker
+            .check_keyence_agrees(keyence_data.clone());
+
         if keyence_status == SensorChecks::Unacceptable {
             //TODOLater: Change state
-           return;
+            return;
         }
 
+        let mut accelerometer_preprocessor = AccelerometerPreprocessor::new();
+        let processed_accelerometer_data =
+            accelerometer_preprocessor.process_data(accelerometer_data);
+        if processed_accelerometer_data.is_none() {
+            // TODOLater: Change state if accelerometer data is unacceptable
+            return;
+        }
 
+        let processed_accelerometer_data = processed_accelerometer_data.unwrap();
 
+    }
 
-        
-    
+    pub fn update(&mut self) {
+        // TODOLater: Implement filtrer + update function
     }
 
 }
