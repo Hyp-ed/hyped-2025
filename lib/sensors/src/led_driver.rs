@@ -29,8 +29,9 @@ impl<'a, T: HypedI2c> LedDriver<'a, T> {
         }
     }
 
+    /// Device reset LED driver
     pub fn reset(
-        self: &mut Self,
+        &mut self,
     ) -> Result<(), LedDriverError>{
         match self
             .i2c
@@ -43,16 +44,18 @@ impl<'a, T: HypedI2c> LedDriver<'a, T> {
         Ok(())
     }
 
-    /// set LED to bank control mode
-    pub fn set_led_to_bank(
-        self: &mut Self,
+    /// set bank colour and brightness
+    pub fn set_led_colour(
+        &mut self,
         led_configx: u8,
         ledx_bank_en: u8,
-        ) -> Result<(), LedDriverError>{
-            let led_configx= led_configx as u8;
+        a_colour: u8,
+        b_colour: u8,
+        c_colour: u8, brightness: u8
+    ) -> Result<(), LedDriverError>{
 
-            // toggle LEDx_Bank_EN to bank control mode
-            match self
+        // enable LEDs, x, to bank control mode - can be multiple (see documentation at top)
+        match self
             .i2c
             .write_byte_to_register(self.device_address, led_configx, ledx_bank_en)
             {
@@ -60,16 +63,6 @@ impl<'a, T: HypedI2c> LedDriver<'a, T> {
                 Err(e) => return Err(LedDriverError::I2cError(e)),
             }
 
-            Ok(())
-        }
-
-    /// set bank colour and brightness
-    pub fn set_bank_colour(
-        self: &mut Self,
-        a_colour: u8,
-        b_colour: u8,
-        c_colour: u8, brightness: u8
-    ) -> Result<(), LedDriverError>{
         // change bank A colour value
         match self
             .i2c
@@ -111,20 +104,20 @@ impl<'a, T: HypedI2c> LedDriver<'a, T> {
     }
 }
 
-
+#[derive(Debug)]
 pub enum LedDriverError{
     I2cError(I2cError),
 }
 
 pub enum LedDriverAddresses{
     // independent addresses
-    Address30 = 0x30,
-    Address31 = 0x31,
-    Address32 = 0x32,
-    Address33 = 0x33,
+    Address30 = 0x30,   // 011 0000 - ADDR1 and ADDR0 both GND
+    Address31 = 0x31,   // 011 0001
+    Address32 = 0x32,   // 011 0010
+    Address33 = 0x33,   // 011 0011
 
     // broadcast address
-    AddressBroadcast = 0x1c
+    AddressBroadcast = 0x1c // 001 1100
 }
 
 // device registers
@@ -169,7 +162,109 @@ mod tests {
     use heapless::FnvIndexMap;
     use hyped_io::i2c::mock_i2c::MockI2c;
 
+    #[test]
     fn test_config(){
+        let i2c_values = FnvIndexMap::new();
+        let mut i2c = MockI2c::new(i2c_values);
+        let _ = LedDriver::new(&mut i2c, LedDriverAddresses::Address30);
 
+        // Verify values are written to required registers
+        assert_eq!(
+            i2c.get_writes()
+                .get(&(LedDriverAddresses::Address30 as u8, DEVICE_CONFIG0)),
+            Some(&Some(CHIP_EN))
+        );
     }
+
+    #[test]
+    fn test_all_led_config0(){
+        let i2c_values = FnvIndexMap::new();
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut led_driver = LedDriver::new(&mut i2c, LedDriverAddresses::Address30).expect("could not create led_driver");
+        let _ = led_driver.set_led_colour(LED_CONFIG0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+
+        // Verify values are written to required registers
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, LED_CONFIG0)),
+            Some(&Some(0xFF))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_A_COLOUR)),
+            Some(&Some(0xFF))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_B_COLOUR)),
+            Some(&Some(0xFF))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_C_COLOUR)),
+            Some(&Some(0xFF))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_BRIGHTNESS)),
+            Some(&Some(0xFF))
+        );
+    }
+
+    #[test]
+    fn test_all_led_config1(){
+        let i2c_values = FnvIndexMap::new();
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut led_driver = LedDriver::new(&mut i2c, LedDriverAddresses::Address30).expect("could not create led_driver");
+        let _ = led_driver.set_led_colour(LED_CONFIG1, 0x03, 0xFF, 0xFF, 0xFF, 0xFF);
+
+        // Verify values are written to required registers
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, LED_CONFIG1)),
+            Some(&Some(0x03))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_A_COLOUR)),
+            Some(&Some(0xFF))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_B_COLOUR)),
+            Some(&Some(0xFF))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_C_COLOUR)),
+            Some(&Some(0xFF))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_BRIGHTNESS)),
+            Some(&Some(0xFF))
+        );
+    }
+
+    #[test]
+    fn test_reset(){
+        let i2c_values = FnvIndexMap::new();
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut led_driver = LedDriver::new(&mut i2c, LedDriverAddresses::Address30).expect("could not create led_driver");
+        let _pre = led_driver.set_led_colour(LED_CONFIG0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        let _ = led_driver.reset();
+
+        // Verify values in LED_CONFIG0 are reset to default value (0x00)
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, LED_CONFIG0)),
+            Some(&Some(0x00))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_A_COLOUR)),
+            Some(&Some(0x00))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_B_COLOUR)),
+            Some(&Some(0x00))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_C_COLOUR)),
+            Some(&Some(0x00))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(LedDriverAddresses::Address30 as u8, BANK_BRIGHTNESS)),
+            Some(&Some(0x00))
+        );
+    }
+
 }
