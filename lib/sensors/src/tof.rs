@@ -24,62 +24,54 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         let device_address = device_address as u8;
         for (reg, val) in PRIVATE_REGISTERS_U8 {
             // writing to private registers
-            if let Err(e) = i2c.write_byte_to_register(
-                device_address,
-                reg,
-                val,
-            ) {
-                panic!("Error writing private registers u8s REG: {:?}", reg);
+            if let Err(e) = i2c.write_byte_to_register(device_address, reg, val) {
+                return Err(ToFError::I2cError(e));
             }
         }
-        for (reg,val) in PRIVATE_REGISTERS_U16 {
+        for (reg, val) in PRIVATE_REGISTERS_U16 {
             // writing to private registers u16
-            if let Err(e) = i2c.write_byte_to_register_16(
-                device_address,
-                reg,
-                val,
-            ) {
-                panic!("Error writing private registers u16s REG: {:?}", reg);
+            if let Err(e) = i2c.write_byte_to_register_16(device_address, reg, val) {
+                return Err(ToFError::I2cError(e));
             }
         }
         // Recommended Public Registers now (see Application Sheet)
         if let Err(e) =
             i2c.write_byte_to_register(device_address, SYS_MODE_GPIO1, SYS_MODE_GPIO_VAL)
         {
-            panic!("Error writing SYS_MODE_GPIO_1 register");
+            return Err(ToFError::I2cError(e));
         }
         if let Err(e) =
             i2c.write_byte_to_register_16(device_address, AVG_SAMPLE_PERIOD, AVG_SAMPLE_PERIOD_VAL)
         {
-            panic!("Error writing AVG_SAMPLE_PERIOD REGISTER");
+            return Err(ToFError::I2cError(e));
         }
         if let Err(e) = i2c.write_byte_to_register(
             device_address,
             SYSRANGE_VHV_REPEAT_RATE,
             SYSRANGE_VHV_REPEAT_RATE_VAL,
         ) {
-            panic!("Error writing SYSRANGE_VHV_REPEAT_RATE REGISTER");
+            return Err(ToFError::I2cError(e));
         }
         if let Err(e) = i2c.write_byte_to_register(
             device_address,
             SYSRANGE_VHV_RECALIBRATE,
             SYSRANGE_VHV_RECALIBRATE_VAL,
         ) {
-            panic!("Error writing SYSRANGE_VHV_RECALIBRATE REGISTER");
+            return Err(ToFError::I2cError(e));
         }
         if let Err(e) = i2c.write_byte_to_register(
             device_address,
             SYSRANGE_INTERMEASURE_PERIOD,
             SYSRANGE_INTERMEASURE_PERIOD_VAL,
         ) {
-            panic!("Error writing SYSRANGE_INTERMEASURE_PERIOD REGISTER");
+            return Err(ToFError::I2cError(e));
         }
         if let Err(e) = i2c.write_byte_to_register(
             device_address,
             SYS_INTERRUPT_CONFIG_GPIO,
             SYS_INTERRUPT_CONFIG_GPIO_VAL,
         ) {
-            panic!("Error writing SYS_INTERRUPT_CONFIG_GPIO REGISTER");
+            return Err(ToFError::I2cError(e));
         }
         Ok(Self {
             i2c,
@@ -196,41 +188,40 @@ const CLEAR_INTERRUPTS_VAL: u8 = 0x07;
 
 // private registers tuples
 
-
-const PRIVATE_REGISTERS_U8: [(u8,u8); 20] = [
-    (0x0096,0x00),
-    (0x0097,0xfd),
-    (0x00e3,0x01),
-    (0x00e4,0x03),
-    (0x00e5,0x02),
-    (0x00e6,0x01),
-    (0x00e7,0x03),
-    (0x00f5,0x02),
-    (0x00d9,0x05),
-    (0x00db,0xce),
-    (0x00dc,0x03),
-    (0x00dd,0xf8),
-    (0x009f,0x00),
-    (0x00a3,0x3c),
-    (0x00b7,0x00),
-    (0x00bb,0x3c),
-    (0x00b2,0x09),
-    (0x00ca,0x09),
-    (0x00ff,0x05),
-    (0x0030,0x00),
+const PRIVATE_REGISTERS_U8: [(u8, u8); 20] = [
+    (0x0096, 0x00),
+    (0x0097, 0xfd),
+    (0x00e3, 0x01),
+    (0x00e4, 0x03),
+    (0x00e5, 0x02),
+    (0x00e6, 0x01),
+    (0x00e7, 0x03),
+    (0x00f5, 0x02),
+    (0x00d9, 0x05),
+    (0x00db, 0xce),
+    (0x00dc, 0x03),
+    (0x00dd, 0xf8),
+    (0x009f, 0x00),
+    (0x00a3, 0x3c),
+    (0x00b7, 0x00),
+    (0x00bb, 0x3c),
+    (0x00b2, 0x09),
+    (0x00ca, 0x09),
+    (0x00ff, 0x05),
+    (0x0030, 0x00),
 ];
 
-const PRIVATE_REGISTERS_U16: [(u16,u8); 10] = [
-    (0x0207,0x01),
-    (0x0208,0x01),
-    (0x0198,0x01),
-    (0x01b0,0x17),
-    (0x01ad,0x00),
-    (0x0100,0x05),
-    (0x0199,0x05),
-    (0x01a6,0x1b),
-    (0x01ac,0x3e),
-    (0x01a7,0x1f)
+const PRIVATE_REGISTERS_U16: [(u16, u8); 10] = [
+    (0x0207, 0x01),
+    (0x0208, 0x01),
+    (0x0198, 0x01),
+    (0x01b0, 0x17),
+    (0x01ad, 0x00),
+    (0x0100, 0x05),
+    (0x0199, 0x05),
+    (0x01a6, 0x1b),
+    (0x01ac, 0x3e),
+    (0x01a7, 0x1f),
 ];
 
 #[cfg(test)]
@@ -244,14 +235,14 @@ mod tests {
         let i2c_values = FnvIndexMap::new();
         let mut i2c = MockI2c::new(i2c_values);
         let _ = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29);
-        for (reg,val) in PRIVATE_REGISTERS_U8 {
+        for (reg, val) in PRIVATE_REGISTERS_U8 {
             assert_eq!(
                 i2c.get_writes()
                     .get(&(ToFAddresses::Address29 as u8, reg.into())),
                 Some(&Some(val))
             )
         }
-        for (reg,val) in PRIVATE_REGISTERS_U16 {
+        for (reg, val) in PRIVATE_REGISTERS_U16 {
             assert_eq!(
                 i2c.get_writes()
                     .get(&(ToFAddresses::Address29 as u8, reg.into())),
@@ -328,9 +319,8 @@ mod tests {
         assert_eq!(
             i2c.get_writes()
                 .get(&(ToFAddresses::Address29 as u8, SYS_INTERRUPT_CLEAR.into())),
-             Some(&Some(CLEAR_INTERRUPTS_VAL))
+            Some(&Some(CLEAR_INTERRUPTS_VAL))
         );
-
     }
 
     #[test]
