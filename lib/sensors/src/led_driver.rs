@@ -39,7 +39,7 @@ impl<'a, T: HypedI2c> LedDriver<'a, T> {
     ) -> Result<(), LedDriverError>{
         match self
             .i2c
-            .write_byte_to_register(self.device_address, RESET, 0x00)
+            .write_byte_to_register(self.device_address, RESET, 0xFF)
             {
                 Ok(_) => (),
                 Err(e) => return Err(LedDriverError::I2cError(e))
