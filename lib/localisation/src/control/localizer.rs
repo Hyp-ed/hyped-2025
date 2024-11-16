@@ -2,16 +2,16 @@ use crate::filtering::kalman_filter::KalmanFilter;
 
 
 
-pub struct Navigator {
+pub struct Localizer {
     displacement: f64,
     velocity: f64,
     acceleration: f64,
     kalman_filter: KalmanFilter,
 }
 
-impl Navigator {
-    pub fn new(kalman_filter: KalmanFilter) -> Navigator {
-        Navigator {
+impl Localizer {
+    pub fn new(kalman_filter: KalmanFilter) -> Localizer {
+        Localizer {
             displacement: 0.0,
             velocity: 0.0,
             acceleration: 0.0,
