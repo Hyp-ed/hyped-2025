@@ -18,9 +18,9 @@ pub async fn read_tof_range() -> ! {
 
     loop {
 
-        tof_sensor.start_ss_measure();
+        TimeOfFlight::<'_, Stm32l476rgI2c<'_>>::start_ss_measure();
 
-        tof_sensor.poll_range();
+        TimeOfFlight::<'_, Stm32l476rgI2c<'_>>::poll_range();
 
         match tof_sensor.read_range() {
             Some(range) => {
