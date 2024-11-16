@@ -1,127 +1,76 @@
-use crate::spi::HypedSpi;
-use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
-use byteorder::{LittleEndian, ReadBytesExt};
-use std::thread::sleep;
-use serde::{Serialize, Deserialize};
-use serde_json::json;
+use hyped_io::spi::Word::{self, U8};
+use hyped_io::spi::{HypedSpi, SpiError};
 
+/// Optical flow implements the logic to interact with the PMW3901MB-TXQT: Optical Motion Tracking Chip
+///
+/// This implementation is directly coming from https://github.com/pimoroni/pmw3901-python/blob/main/pmw3901/__init__.py
+/// Data Sheet: https://www.codico.com/de/mpattachment/file/download/id/952/
 
-// implement get_motion function first
-// add readByteFromRegister (?) function to HypedSPI trait which takes register address and gives data
+// Register Addresses:
+const REG_PRODUCT_ID: Word = U8(0x00);
+const REG_REVISION_ID: Word = U8(0x01);
+const REG_DATA_READY: Word = U8(0x02);
+const REG_POWER_UP_RESET: Word = U8(0x3A);
+const REG_MOTION_BURST: Word = U8(0x16);
+const REG_ORIENTATION: Word = U8(0x5B);
+const REG_RESOLUTION: Word = U8(0x4E);
+const REG_RAWDATA_GRAB: Word = U8(0x58);
+const REG_RAWDATA_GRAB_STATUS: Word = U8(0x59);
 
-const REG_MOTION_BURST: u8 = 0x16;
-const TIMEOUT: Duration = Duration::from_secs(5);
+// Register Configurations:
+const POWER_UP_RESET_INSTR: Word = U8(0x5A);
+const PMW3901_PRODUCT_ID: u8 = 0x49;
+const VALID_PMW3901_REVISIONS: [u8; 2] = [0x01, 0x00];
 
+// Sensor Constants:
+const NUM_UNIQUE_DATA_VALUES: u8 = 5;
 
-pub struct PMW3901<SPI> {
-    spi: SPI,
-
+/// Represents the possible errors that can occur when reading the optical flow sensor
+#[derive(Debug)]
+pub enum OpticalFlowError {
+    SpiError(SpiError),
+    InvalidProductId,
+    InvalidRevisionId,
 }
 
-impl<SPI> PMW3901<SPI>
-where
-    SPI: HypedSpi,
-{
+pub struct OpticalFlow<'a, T: HypedSpi + 'a> {
+    spi: &'a mut T,
+}
 
-    
-    pub fn new(spi: SPI) -> Self {
-        PMW3901 { spi }
-    }
-
-    // **ATTEMPTED PYTHON IMPLEMENTATION OF get_motion**
-    pub fn get_motion(&mut self) -> Result<(i16, i16), &'static str>{
-        let start = Instant::now();
-
-
-        while start.elapsed() < TIMEOUT {
-            // Send burst read command and read 12 bytes
-            let mut data = [0u8; 13]; // Includes the command byte
-            data[0] = REG_MOTION_BURST; // first element in data is the register
-            self.spi.read(&mut data).map_err(|_| "SPI read failed")?; //read data using HypedSpi trait
-
-            // Parse the response data
-            let mut cursor = &data[1..]; //slice data and use cursor to go through the data
-            let _ = cursor.read_u8().unwrap(); // read each byte from cursor and assign it to variables
-            let dr = cursor.read_u8().unwrap();
-            let obs = cursor.read_u8().unwrap();
-            let x = cursor.read_i16::<LittleEndian>().unwrap(); // x and y value is what we need and little endian is used to make sure bytes are ordered ith LSB first
-            let y = cursor.read_i16::<LittleEndian>().unwrap(); // LittleEndian takes (advances) 2 bytes from cursor
-            let quality = cursor.read_u8().unwrap();
-            let raw_sum = cursor.read_u8().unwrap();
-            let raw_max = cursor.read_u8().unwrap();
-            let raw_min = cursor.read_u8().unwrap();
-            let shutter_upper = cursor.read_u8().unwrap();
-            let shutter_lower = cursor.read_u8().unwrap();
-
-            if (dr & 0b1000_0000) != 0 && (quality >= 0x19 || shutter_upper != 0x1F) {
-                return Ok((x, y)); // Return delta x and y if valid
+impl<'a, T: HypedSpi> OpticalFlow<'a, T> {
+    /// Note: ensure SPI instance is configured properly being passed in
+    pub fn new(spi: &'a mut T) -> Result<Self, OpticalFlowError> {
+        fn perform_transfer<'b, T: HypedSpi>(
+            spi: &'b mut T,
+            data: &mut [Word],
+        ) -> Result<(), OpticalFlowError> {
+            match spi.transfer_in_place(data) {
+                Ok(_) => Ok(()),
+                Err(e) => Err(OpticalFlowError::SpiError(e)),
             }
-
-            // Delay before retrying
-            sleep(Duration::from_millis(10));
-
         }
-
-        Err("Timed out waiting for motion data")
+        // perform secret_sauce_ (yes you read that right...)
+        let power_up_reset_instr = &mut [REG_POWER_UP_RESET, POWER_UP_RESET_INSTR];
+        perform_transfer(spi, power_up_reset_instr)?;
+        // TODO(ishmis): test whether the below reads are even necessary (multiple implementations have this)
+        for offset in 0..NUM_UNIQUE_DATA_VALUES {
+            let data = &mut [REG_DATA_READY + Word::U8(offset)];
+            perform_transfer(spi, data)?;
+        }
+        // TODO: do secret sauce!!
+        // ensure device identifies itself correctly
+        let product_id_data = &mut [REG_PRODUCT_ID];
+        perform_transfer(spi, product_id_data)?;
+        match product_id_data.get(0) {
+            Some(U8(x)) if *x == PMW3901_PRODUCT_ID => (),
+            _ => return Err(OpticalFlowError::InvalidProductId),
+        }
+        let revision_id_data = &mut [REG_REVISION_ID];
+        perform_transfer(spi, revision_id_data)?;
+        match revision_id_data.get(0) {
+            Some(U8(x)) if VALID_PMW3901_REVISIONS.contains(x) => (),
+            _ => return Err(OpticalFlowError::InvalidRevisionId),
+        }
+        Ok(Self { spi })
     }
-
 }
-
-
-// the # implements the Serialize trait from the serde crate for the strcuts. this is apparently needed to convert strcut to json
-#[derive(Serialize)]
-struct Measurement {
-    header: Header,
-    payload: Payload,
-}
-
-#[derive(Serialize)]
-struct Header {
-    timestamp: u64,
-    priority: u8,
-}
-
-#[derive(Serialize)]
-struct Payload {
-    x: i16,
-    y: i16,
-}
-
-
-// Make main function with flexible error handling
-pub fn main() -> Result<(), Box<dyn std::error::Error>> {
-
-
-    let spi = HypedSPI::new() // spi implementation?
-    let mut sensor = PMW3901::new(spi);
-
-
-    // While loop implementation from python code
-    loop {
-
-        // Get motion data
-        let (x, y) = sensor.get_motion()?;
-
-        // Prepare measurement data
-        let measurement = Measurement {
-            header: Header {
-                timestamp: SystemTime::now()
-                    .duration_since(UNIX_EPOCH)? // Get time in secs from epoch as in the python code
-                    .as_secs(),
-                priority: 1,
-            },
-            payload: Payload { x, y },
-        };
-
-        // Serialize measurement data to JSON
-        let measurement_data = serde_json::to_string(&measurement)?;
-
-        // Print payload 
-        //println!("{}", measurement_data);
-
-
-        // delay
-        sleep(Duration::from_millis(50));
-
-    }
-}    
