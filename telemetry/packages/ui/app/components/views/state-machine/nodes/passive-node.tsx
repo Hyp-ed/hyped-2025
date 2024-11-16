@@ -11,10 +11,9 @@ const PassiveNode = memo(
 		data: NodeDataType;
 	}) => (
 		<>
-			{data.targetPositions &&
-				data.targetPositions.map(({ position, id }) => (
-					<Handle key={id} type="target" position={position} id={id} />
-				))}
+			{data.targetPositions?.map(({ position, id }) => (
+				<Handle key={id} type="target" position={position} id={id} />
+			))}
 			<div
 				className={cn(
 					BASE_NODE_STYLES,
@@ -25,10 +24,9 @@ const PassiveNode = memo(
 			>
 				{data.label}
 			</div>
-			{data.sourcePositions &&
-				data.sourcePositions.map(({ position, id }) => (
-					<Handle key={id} type="source" position={position} id={id} />
-				))}
+			{data.sourcePositions?.map(({ position, id }) => (
+				<Handle key={id} type="source" position={position} id={id} />
+			))}
 		</>
 	),
 );

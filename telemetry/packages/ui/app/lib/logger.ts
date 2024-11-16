@@ -16,7 +16,7 @@ export const log = (message: string, podId?: string) => {
 		});
 	} else {
 		console.log(`[LOG] ${message}`);
-		void http.post(`logs`, {
+		void http.post('logs', {
 			body: JSON.stringify({ message }),
 			headers: {
 				'content-type': 'application/json',

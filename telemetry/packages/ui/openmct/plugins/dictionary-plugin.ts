@@ -95,7 +95,7 @@ export function DictionaryPlugin() {
 				ids.forEach((podId) => {
 					openmct.objects.addRoot(
 						{
-							namespace: `hyped.taxonomy`,
+							namespace: 'hyped.taxonomy',
 							key: podId,
 						},
 						openmct.priority.HIGH,
@@ -106,7 +106,7 @@ export function DictionaryPlugin() {
 					);
 				});
 
-				openmct.objects.addProvider(`hyped.taxonomy`, podObjectProvider);
+				openmct.objects.addProvider('hyped.taxonomy', podObjectProvider);
 			})
 			.catch(() => {
 				throw new Error('Failed to load dictionary');

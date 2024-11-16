@@ -32,7 +32,7 @@ const result = envSchema.safeParse({
 
 if (!result.success) {
 	throw new Error(
-		'Missing or invalid environment variables!' + JSON.stringify(result.error),
+		`Missing or invalid environment variables!${JSON.stringify(result.error)}`,
 	);
 }
 

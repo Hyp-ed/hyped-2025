@@ -233,9 +233,7 @@ export const PodsProvider = ({ children }: { children: React.ReactNode }) => {
 					// calculate the latency
 					const latency =
 						new Date().getTime() -
-						Number.parseInt(
-							JSON.parse(message.toString())['latency'] as string,
-						);
+						Number.parseInt(JSON.parse(message.toString()).latency as string);
 
 					// send warning to the server if the latency is too high
 					if (latency > POD_WARNING_LATENCY) {

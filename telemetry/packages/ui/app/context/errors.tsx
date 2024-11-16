@@ -66,7 +66,7 @@ export const ErrorProvider = ({ children }: ErrorProviderProps) => {
 			acknowledge: () => {
 				// Remove the error from the list of errors (by id and podId)
 				setErrors((errors) =>
-					errors.filter((e) => !(id == e.id && podId == e.podId)),
+					errors.filter((e) => !(id === e.id && podId === e.podId)),
 				);
 				log(`Acknowledged error dialog for: ${title}`);
 			},

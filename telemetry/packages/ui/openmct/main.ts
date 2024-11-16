@@ -25,7 +25,7 @@ openmct.install(openmct.plugins.UTCTimeSystem());
 openmct.install(ConductorPlugin());
 
 // Theme
-openmct.install(openmct.plugins['Espresso']());
+openmct.install(openmct.plugins.Espresso());
 
 // Views
 openmct.install(openmct.plugins.MyItems());
@@ -61,7 +61,7 @@ openmct.install(FaultsPlugin());
 // Server connection indicator
 openmct.install(
 	openmct.plugins.URLIndicator({
-		url: SERVER_ENDPOINT + '/ping',
+		url: `${SERVER_ENDPOINT}/ping`,
 		iconClass: 'icon-check',
 		interval: 1000,
 		label: 'Telemetry Server',

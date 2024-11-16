@@ -163,7 +163,7 @@ export function StateMachine() {
 					active: currentState === ALL_POD_STATES.BEGIN_LEVITATION,
 				},
 				position:
-					currentMode == 'LEVITATION_ONLY'
+					currentMode === 'LEVITATION_ONLY'
 						? {
 								x: 500,
 								y: 100,
@@ -183,7 +183,7 @@ export function StateMachine() {
 							position: Position.Right,
 							id: 'right',
 						},
-						...(currentMode == 'LIM_ONLY'
+						...(currentMode === 'LIM_ONLY'
 							? [{ position: Position.Top, id: 'top' }]
 							: []),
 					],
@@ -196,7 +196,7 @@ export function StateMachine() {
 					active: currentState === ALL_POD_STATES.READY_FOR_LAUNCH,
 				},
 				position:
-					currentMode == 'LIM_ONLY'
+					currentMode === 'LIM_ONLY'
 						? {
 								x: 200,
 								y: 100,
@@ -235,7 +235,7 @@ export function StateMachine() {
 					active: currentState === ALL_POD_STATES.ACCELERATE,
 				},
 				position:
-					currentMode == 'LIM_ONLY'
+					currentMode === 'LIM_ONLY'
 						? {
 								x: 500,
 								y: 100,
@@ -269,7 +269,7 @@ export function StateMachine() {
 					active: currentState === ALL_POD_STATES.LIM_BRAKE,
 				},
 				position:
-					currentMode == 'LIM_ONLY'
+					currentMode === 'LIM_ONLY'
 						? {
 								x: 500,
 								y: 200,
@@ -303,7 +303,7 @@ export function StateMachine() {
 					active: currentState === ALL_POD_STATES.FRICTION_BRAKE,
 				},
 				position:
-					currentMode == 'LIM_ONLY'
+					currentMode === 'LIM_ONLY'
 						? {
 								x: 500,
 								y: 300,
@@ -338,7 +338,7 @@ export function StateMachine() {
 					active: currentState === ALL_POD_STATES.FAILURE_BRAKING,
 				},
 				position:
-					currentMode != 'LIM_ONLY'
+					currentMode !== 'LIM_ONLY'
 						? {
 								x: 500,
 								y: 300,
@@ -374,7 +374,7 @@ export function StateMachine() {
 				},
 				position: {
 					x: 800,
-					y: currentMode == 'LEVITATION_ONLY' ? 100 : 0,
+					y: currentMode === 'LEVITATION_ONLY' ? 100 : 0,
 				},
 				type: getNodeType(ALL_POD_STATES.STOP_LEVITATION),
 			},
@@ -393,7 +393,7 @@ export function StateMachine() {
 						},
 					],
 					targetPositions: [
-						...(currentMode != 'LIM_ONLY'
+						...(currentMode !== 'LIM_ONLY'
 							? [{ position: Position.Top, id: 'top' }]
 							: []),
 						{
@@ -405,7 +405,7 @@ export function StateMachine() {
 				},
 				position: {
 					x: 800,
-					y: currentMode == 'LEVITATION_ONLY' ? 200 : 100,
+					y: currentMode === 'LEVITATION_ONLY' ? 200 : 100,
 				},
 				type: getNodeType(ALL_POD_STATES.STOPPED),
 			},

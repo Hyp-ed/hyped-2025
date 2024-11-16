@@ -203,7 +203,7 @@ export const writeEdges = (mode: ModeType): CustomEdgeType[] => {
 			}
 			return {
 				...edge,
-				...(edge.sourceHandle.includes('-') && mode != MODES.ALL_SYSTEMS_ON
+				...(edge.sourceHandle.includes('-') && mode !== MODES.ALL_SYSTEMS_ON
 					? {
 							sourceHandle: edge.sourceHandle.split('-')[1],
 							targetHandle: edge.targetHandle.split('-')[1],

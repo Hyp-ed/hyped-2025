@@ -1,7 +1,7 @@
-import { POD_IDS, type PodId, pods } from "@hyped/telemetry-constants";
-import type { OpenMctDictionary, OpenMctPod } from "@hyped/telemetry-types";
-import { Injectable } from "@nestjs/common";
-import { mapMeasurementToOpenMct } from "./utils/mapMeasurementToOpenMct";
+import { POD_IDS, type PodId, pods } from '@hyped/telemetry-constants';
+import type { OpenMctDictionary, OpenMctPod } from '@hyped/telemetry-types';
+import { Injectable } from '@nestjs/common';
+import { mapMeasurementToOpenMct } from './utils/mapMeasurementToOpenMct';
 
 @Injectable()
 export class DictionaryService {

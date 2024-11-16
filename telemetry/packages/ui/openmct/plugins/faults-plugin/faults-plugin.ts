@@ -40,7 +40,7 @@ async function acknowledgeFault(
 	fault: OpenMctFault['fault'],
 	{ comment }: { comment: string },
 ) {
-	const url = `openmct/faults/acknowledge`;
+	const url = 'openmct/faults/acknowledge';
 	await http.post(url, {
 		body: JSON.stringify({
 			faultId: fault.id,
@@ -74,7 +74,7 @@ async function shelveFault(
 		shelved: boolean;
 	},
 ) {
-	const url = `openmct/faults/shelve`;
+	const url = 'openmct/faults/shelve';
 	await http.post(url, {
 		body: JSON.stringify({
 			faultId: fault.id,

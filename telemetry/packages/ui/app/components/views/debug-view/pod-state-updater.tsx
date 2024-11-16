@@ -25,7 +25,7 @@ export const PodStateUpdater = ({ podId }: { podId: string }) => {
 	 * Publishes the pod state to the MQTT broker.
 	 */
 	const publishPodState = () => {
-		publish(`state`, podState, podId);
+		publish('state', podState, podId);
 	};
 
 	return (
