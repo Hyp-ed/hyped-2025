@@ -1,9 +1,9 @@
-import { flux, fluxDateTime } from '@influxdata/influxdb-client';
-import { HttpException, Injectable, LoggerService } from '@nestjs/common';
 import { INFLUX_TELEMETRY_BUCKET } from '@/core/config';
-import { InfluxService } from '@/modules/influx/Influx.service';
+import type { InfluxRow } from '@/modules/common/types/InfluxRow';
+import type { InfluxService } from '@/modules/influx/Influx.service';
 import { Logger } from '@/modules/logger/Logger.decorator';
-import { InfluxRow } from '@/modules/common/types/InfluxRow';
+import { flux, fluxDateTime } from '@influxdata/influxdb-client';
+import { HttpException, Injectable, type LoggerService } from '@nestjs/common';
 
 interface InfluxHistoricalRow extends InfluxRow {
   measurementKey: string;
@@ -25,10 +25,10 @@ export class HistoricalTelemetryDataService {
     endTimestamp: string,
   ) {
     const fluxStart = fluxDateTime(
-      new Date(parseInt(startTimestamp)).toISOString(),
+      new Date(Number.parseInt(startTimestamp)).toISOString(),
     );
     const fluxEnd = fluxDateTime(
-      new Date(parseInt(endTimestamp)).toISOString(),
+      new Date(Number.parseInt(endTimestamp)).toISOString(),
     );
 
     const query = flux`

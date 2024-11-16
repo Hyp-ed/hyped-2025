@@ -1,15 +1,15 @@
-import { InfluxService } from '@/modules/influx/Influx.service';
+import type { InfluxService } from '@/modules/influx/Influx.service';
 import { Logger } from '@/modules/logger/Logger.decorator';
-import { MeasurementReading } from '@/modules/measurement/MeasurementReading.types';
-import { FaultLevel } from '@hyped/telemetry-constants';
-import { OpenMctFault, Unpacked } from '@hyped/telemetry-types';
-import { RangeMeasurement } from '@hyped/telemetry-types/dist/pods/pods.types';
+import type { MeasurementReading } from '@/modules/measurement/MeasurementReading.types';
+import type { FaultLevel } from '@hyped/telemetry-constants';
+import type { OpenMctFault, Unpacked } from '@hyped/telemetry-types';
+import type { HistoricalFaults } from '@hyped/telemetry-types/dist/openmct/openmct-fault.types';
+import type { RangeMeasurement } from '@hyped/telemetry-types/dist/pods/pods.types';
 import { Point } from '@influxdata/influxdb-client';
-import { Injectable, LoggerService } from '@nestjs/common';
-import { HistoricalFaultDataService } from './data/historical/HistoricalFaultData.service';
-import { RealtimeFaultDataGateway } from './data/realtime/RealtimeFaultData.gateway';
+import { Injectable, type LoggerService } from '@nestjs/common';
+import type { HistoricalFaultDataService } from './data/historical/HistoricalFaultData.service';
+import type { RealtimeFaultDataGateway } from './data/realtime/RealtimeFaultData.gateway';
 import { convertToOpenMctFault } from './utils/convertToOpenMctFault';
-import { HistoricalFaults } from '@hyped/telemetry-types/dist/openmct/openmct-fault.types';
 
 export type Fault = {
   level: FaultLevel;

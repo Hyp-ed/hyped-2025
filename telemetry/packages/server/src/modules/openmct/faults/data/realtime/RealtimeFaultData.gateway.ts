@@ -1,14 +1,14 @@
 import { Logger } from '@/modules/logger/Logger.decorator';
 import { socket as socketConstants } from '@hyped/telemetry-constants';
-import { OpenMctFault } from '@hyped/telemetry-types';
-import { LoggerService } from '@nestjs/common';
+import type { OpenMctFault } from '@hyped/telemetry-types';
+import type { LoggerService } from '@nestjs/common';
 import {
   ConnectedSocket,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import type { Server, Socket } from 'socket.io';
 
 const FAULT_ROOM = 'faults';
 

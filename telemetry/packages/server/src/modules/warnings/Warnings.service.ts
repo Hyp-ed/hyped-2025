@@ -1,5 +1,5 @@
-import { Injectable, LoggerService } from '@nestjs/common';
 import { Logger } from '@/modules/logger/Logger.decorator';
+import { Injectable, type LoggerService } from '@nestjs/common';
 
 @Injectable()
 export class WarningsService {

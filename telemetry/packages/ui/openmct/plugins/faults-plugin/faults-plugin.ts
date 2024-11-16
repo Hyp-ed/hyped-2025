@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 
-import { OpenMCT } from 'openmct/dist/openmct';
+import { log } from '@/lib/logger';
+import type { OpenMctFault } from '@hyped/telemetry-types';
+import { http } from 'openmct/core/http';
+import type { OpenMCT } from 'openmct/dist/openmct';
 import { HistoricalFaultsProvider } from './historical-faults-provider';
 import { RealtimeFaultsProvider } from './realtime-faults-provider';
-import { http } from 'openmct/core/http';
-import { OpenMctFault } from '@hyped/telemetry-types';
-import { log } from '@/lib/logger';
 
 /**
  * The Faults plugin for Open MCT.
@@ -13,23 +13,23 @@ import { log } from '@/lib/logger';
  * @returns The faults plugin function.
  */
 export function FaultsPlugin() {
-  return function install(openmct: OpenMCT) {
-    // Add the (built-in) Fault Management plugin to Open MCT
-    openmct.install(openmct.plugins.FaultManagement());
+	return function install(openmct: OpenMCT) {
+		// Add the (built-in) Fault Management plugin to Open MCT
+		openmct.install(openmct.plugins.FaultManagement());
 
-    const realtimeProvider = RealtimeFaultsProvider();
-    const historicalProvider = HistoricalFaultsProvider();
+		const realtimeProvider = RealtimeFaultsProvider();
+		const historicalProvider = HistoricalFaultsProvider();
 
-    // Add our fault providers to Open MCT
-    openmct.faults.addProvider({
-      supportsRequest: historicalProvider.supportsRequest,
-      supportsSubscribe: realtimeProvider.supportsSubscribe,
-      subscribe: realtimeProvider.subscribe,
-      request: historicalProvider.request,
-      acknowledgeFault,
-      shelveFault,
-    });
-  };
+		// Add our fault providers to Open MCT
+		openmct.faults.addProvider({
+			supportsRequest: historicalProvider.supportsRequest,
+			supportsSubscribe: realtimeProvider.supportsSubscribe,
+			subscribe: realtimeProvider.subscribe,
+			request: historicalProvider.request,
+			acknowledgeFault,
+			shelveFault,
+		});
+	};
 }
 
 /**
@@ -39,22 +39,22 @@ export function FaultsPlugin() {
  * In the future we could also do something with the comments, but for now we will just log them.
  */
 async function acknowledgeFault(
-  fault: OpenMctFault['fault'],
-  { comment }: { comment: string },
+	fault: OpenMctFault['fault'],
+	{ comment }: { comment: string },
 ) {
-  const url = `openmct/faults/acknowledge`;
-  await http.post(url, {
-    body: JSON.stringify({
-      faultId: fault.id,
-      comment,
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  log(
-    `Acknowledged fault with id ${fault.id}.${comment ? ` Comment: ${comment}` : ''}`,
-  );
+	const url = `openmct/faults/acknowledge`;
+	await http.post(url, {
+		body: JSON.stringify({
+			faultId: fault.id,
+			comment,
+		}),
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+	log(
+		`Acknowledged fault with id ${fault.id}.${comment ? ` Comment: ${comment}` : ''}`,
+	);
 }
 
 /**
@@ -65,30 +65,30 @@ async function acknowledgeFault(
  * In the future we could also do something with the comments, but for now we will just log them.
  */
 async function shelveFault(
-  fault: OpenMctFault['fault'],
-  {
-    shelveDuration,
-    comment,
-    shelved = false,
-  }: {
-    shelveDuration: number;
-    comment: string;
-    shelved: boolean;
-  },
+	fault: OpenMctFault['fault'],
+	{
+		shelveDuration,
+		comment,
+		shelved = false,
+	}: {
+		shelveDuration: number;
+		comment: string;
+		shelved: boolean;
+	},
 ) {
-  const url = `openmct/faults/shelve`;
-  await http.post(url, {
-    body: JSON.stringify({
-      faultId: fault.id,
-      shelved,
-      shelveDuration,
-      comment,
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  log(
-    `${shelved ? 'Shelving' : 'Unshelving'} fault with id ${fault.id} for ${shelveDuration} seconds.${comment ? ` Comment: ${comment}` : ''}`,
-  );
+	const url = `openmct/faults/shelve`;
+	await http.post(url, {
+		body: JSON.stringify({
+			faultId: fault.id,
+			shelved,
+			shelveDuration,
+			comment,
+		}),
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+	log(
+		`${shelved ? 'Shelving' : 'Unshelving'} fault with id ${fault.id} for ${shelveDuration} seconds.${comment ? ` Comment: ${comment}` : ''}`,
+	);
 }

@@ -1,17 +1,17 @@
-import { Controller, Get, HttpException, Param, Query } from '@nestjs/common';
-import { PublicDataService } from './PublicData.service';
-import { HistoricalTelemetryDataService } from '@/modules/openmct/data/historical/HistoricalTelemetryData.service';
-import {
+import type { HistoricalTelemetryDataService } from '@/modules/openmct/data/historical/HistoricalTelemetryData.service';
+import { POD_IDS, type PodId } from '@hyped/telemetry-constants';
+import type {
   LevitationHeightResponse,
   RawLevitationHeight,
 } from '@hyped/telemetry-types';
-import {
+import type {
   HistoricalValueResponse,
   LaunchTimeResponse,
   LevitationHeight,
   StateResponse,
 } from '@hyped/telemetry-types/dist/server/responses';
-import { POD_IDS, PodId } from '@hyped/telemetry-constants';
+import { Controller, Get, HttpException, Param, Query } from '@nestjs/common';
+import type { PublicDataService } from './PublicData.service';
 
 @Controller('pods/:podId/public-data')
 export class PublicDataController {
@@ -163,7 +163,7 @@ export class PublicDataController {
     return {
       id: levitationHeights.id,
       timestamp: levitationHeights.timestamp,
-      value: parseInt(levitationHeights.value),
+      value: Number.parseInt(levitationHeights.value),
     };
   }
 

@@ -1,6 +1,6 @@
-import { Injectable, LoggerService, Inject } from '@nestjs/common';
-import { MqttService } from 'nest-mqtt';
 import { Logger } from '@/modules/logger/Logger.decorator';
+import { Inject, Injectable, type LoggerService } from '@nestjs/common';
+import { MqttService } from 'nest-mqtt';
 
 @Injectable()
 export class PodControlsService {

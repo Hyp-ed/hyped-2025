@@ -1,10 +1,10 @@
+import type { MeasurementService } from '@/modules/measurement/Measurement.service';
+import type { StateService } from '@/modules/state/State.service';
+import { POD_IDS, type PodId, type PodStateType } from '@hyped/telemetry-constants';
+import { currentTime } from '@influxdata/influxdb-client';
 import { Injectable } from '@nestjs/common';
 import { Params, Payload, Subscribe } from 'nest-mqtt';
-import { MeasurementService } from '@/modules/measurement/Measurement.service';
-import { currentTime } from '@influxdata/influxdb-client';
-import { StateService } from '@/modules/state/State.service';
 import { MqttIngestionError } from './errors/MqttIngestionError';
-import { POD_IDS, PodId, PodStateType } from '@hyped/telemetry-constants';
 
 @Injectable()
 export class MqttIngestionService {

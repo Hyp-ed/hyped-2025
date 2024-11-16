@@ -1,23 +1,23 @@
 {
-  "name": "@hyped/telemetry-fake",
-  "private": true,
-  "version": "0.0.1",
-  "scripts": {
-    "dev:test": "node dist/index.js",
-    "build": "tsdx build",
-    "build:fake": "tsdx build",
-    "lint": "eslint \"src/**/*.ts\" --max-warnings 0 --report-unused-disable-directives",
-    "lint:fix": "eslint \"src/**/*.ts\" --fix"
-  },
-  "dependencies": {
-    "@hyped/telemetry-constants": "workspace:*",
-    "mqtt": "^5.3.6",
-    "tslib": "^2.5.3"
-  },
-  "devDependencies": {
-    "@hyped/telemetry-types": "workspace:*",
-    "@hyped/tsconfig": "workspace:*",
-    "tsdx": "^0.14.1",
-    "typescript": "^5.3.3"
-  }
+	"name": "@hyped/telemetry-fake",
+	"private": true,
+	"version": "0.0.1",
+	"scripts": {
+		"dev:test": "node dist/index.js",
+		"build": "tsdx build",
+		"build:fake": "tsdx build",
+		"lint": "eslint \"src/**/*.ts\" --max-warnings 0 --report-unused-disable-directives",
+		"lint:fix": "eslint \"src/**/*.ts\" --fix"
+	},
+	"dependencies": {
+		"@hyped/telemetry-constants": "workspace:*",
+		"mqtt": "^5.3.6",
+		"tslib": "^2.5.3"
+	},
+	"devDependencies": {
+		"@hyped/telemetry-types": "workspace:*",
+		"@hyped/tsconfig": "workspace:*",
+		"tsdx": "^0.14.1",
+		"typescript": "^5.3.3"
+	}
 }

@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { HistoricalTelemetryDataService } from './HistoricalTelemetryData.service';
+import type { HistoricalTelemetryDataService } from './HistoricalTelemetryData.service';
 
 @Controller('openmct/data/historical')
 export class HistoricalTelemetryDataController {

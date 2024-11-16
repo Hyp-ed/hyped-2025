@@ -1,35 +1,35 @@
 {
-  "name": "@hyped/telemetry",
-  "private": true,
-  "scripts": {
-    "preinstall": "npx only-allow pnpm",
-    "start": "turbo run start",
-    "dev": "turbo run dev",
-    "dev:test": "turbo run dev:test",
-    "ci": "turbo run build lint e2e:test",
-    "lint": "turbo run lint --parallel",
-    "lint:fix": "turbo run lint:fix --parallel",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "e2e:test": "turbo run e2e:test",
-    "format:check": "prettier --check \"**/*.{ts,tsx,md}\"",
-    "build": "turbo run build"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "@types/node": "^18.11.18",
-    "prettier": "3.2.4",
-    "turbo": "^1.11.3",
-    "typescript": "^5.3.3"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "@nestjs/common@9.4.2": "patches/@nestjs__common@9.4.2.patch",
-      "nest-mqtt@0.2.0": "patches/nest-mqtt@0.2.0.patch",
-      "openmct@3.2.0": "patches/openmct@3.2.0.patch"
-    }
-  },
-  "engines": {
-    "node": ">=18",
-    "pnpm": ">=9"
-  }
+	"name": "@hyped/telemetry",
+	"private": true,
+	"scripts": {
+		"preinstall": "npx only-allow pnpm",
+		"start": "turbo run start",
+		"dev": "turbo run dev",
+		"dev:test": "turbo run dev:test",
+		"ci": "turbo run build lint e2e:test",
+		"lint": "turbo run lint --parallel",
+		"lint:fix": "turbo run lint:fix --parallel",
+		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
+		"e2e:test": "turbo run e2e:test",
+		"format:check": "prettier --check \"**/*.{ts,tsx,md}\"",
+		"build": "turbo run build"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@types/node": "^18.11.18",
+		"prettier": "3.2.4",
+		"turbo": "^1.11.3",
+		"typescript": "^5.3.3"
+	},
+	"pnpm": {
+		"patchedDependencies": {
+			"@nestjs/common@9.4.2": "patches/@nestjs__common@9.4.2.patch",
+			"nest-mqtt@0.2.0": "patches/nest-mqtt@0.2.0.patch",
+			"openmct@3.2.0": "patches/openmct@3.2.0.patch"
+		}
+	},
+	"engines": {
+		"node": ">=18",
+		"pnpm": ">=9"
+	}
 }

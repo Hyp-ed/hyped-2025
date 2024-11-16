@@ -1,5 +1,5 @@
 import { Controller, Param, Post, Query } from '@nestjs/common';
-import { PodControlsService } from './PodControls.service';
+import type { PodControlsService } from './PodControls.service';
 
 @Controller('pods/:podId/controls')
 export class PodControlsController {

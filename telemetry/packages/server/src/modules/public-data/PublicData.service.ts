@@ -1,14 +1,14 @@
-import { HttpException, Injectable, LoggerService } from '@nestjs/common';
+import type { InfluxRow } from '@/modules/common/types/InfluxRow';
+import type { InfluxService } from '@/modules/influx/Influx.service';
 import { Logger } from '@/modules/logger/Logger.decorator';
-import { INFLUX_TELEMETRY_BUCKET } from '../core/config';
-import { flux } from '@influxdata/influxdb-client';
-import { InfluxService } from '@/modules/influx/Influx.service';
 import { ACTIVE_STATES } from '@hyped/telemetry-constants';
-import { InfluxRow } from '@/modules/common/types/InfluxRow';
-import {
+import type {
   LaunchTimeResponse,
   StateResponse,
 } from '@hyped/telemetry-types/dist/server/responses';
+import { flux } from '@influxdata/influxdb-client';
+import { HttpException, Injectable, type LoggerService } from '@nestjs/common';
+import { INFLUX_TELEMETRY_BUCKET } from '../core/config';
 
 interface InfluxStateRow extends InfluxRow {
   stateType: string;

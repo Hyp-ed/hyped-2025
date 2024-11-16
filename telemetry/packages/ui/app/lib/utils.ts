@@ -1,8 +1,8 @@
-import { clsx, type ClassValue } from 'clsx';
+import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 export const cn = (...inputs: ClassValue[]) => {
-  return twMerge(clsx(inputs));
+	return twMerge(clsx(inputs));
 };
 
 /**
@@ -12,4 +12,4 @@ export const cn = (...inputs: ClassValue[]) => {
  * @returns
  */
 export const getTopic = (topic: string, podId: string) =>
-  `hyped/${podId}/${topic}`;
+	`hyped/${podId}/${topic}`;
