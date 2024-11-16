@@ -18,3 +18,8 @@ export const MQTT_BROKER_HOST = env
   .get('MQTT_BROKER_HOST')
   .required()
   .asString();
+
+export const POSTGRES_CONNECTION_STRING = env
+.get('POSTGRES_CONNECTION_STRING')
+.required()
+.asString();

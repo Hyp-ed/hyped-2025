@@ -49,6 +49,17 @@ services:
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=edinburgh
     networks:
       - telemetry
+  postgres:
+    container_name: postgres
+    image: postgres:17
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=edinburgh
+      - POSTGRES_DB=hyped
+    ports:
+      - 5432:5432
+    networks:
+      - telemetry
 
 volumes:
   influxdb:
