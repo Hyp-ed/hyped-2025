@@ -64,7 +64,7 @@ async fn main(_spawner: Spawner) {
 
         let mut required_voltage = actual_current + output_current_pid;
 
-        if required_voltage >= MAX_VOLTAGE {required_voltage = 0.0};
+        if required_voltage >= MAX_VOLTAGE {required_voltage = MAX_VOLTAGE};
 
         let duty_cycle = max_duty * (required_voltage / MAX_VOLTAGE);
 
@@ -74,7 +74,5 @@ async fn main(_spawner: Spawner) {
 
         info!("height = {}", actual_height);
         info!("v_out = {}", required_voltage);
-
-
     }
 }
