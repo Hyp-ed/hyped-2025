@@ -49,9 +49,11 @@ impl<'d> HypedI2c for Stm32f767ziI2c<'d> {
             register_address: u16,
             data: u8,
         ) -> Result<(), I2cError> {
+            let register_addr_hi = (register_address >> 8) as u8;
+            let register_addr_lo = register_address as u8;
             let result = self
                 .i2c
-                .blocking_write(device_address, [register_address, data].as_ref());
+                .blocking_write(device_address, [register_addr_hi, register_addr_lo, data].as_ref());
             match result {
                 Ok(_) => Ok(()),
                 Err(e) => Err(match e {

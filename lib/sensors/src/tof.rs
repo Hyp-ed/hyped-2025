@@ -77,22 +77,13 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         })
     }
 
-    pub fn start_ss_measure(
-        i2c: &'a mut T,
-        device_address: ToFAddresses,
-    ) -> Result<Self, ToFError> {
+    pub fn start_ss_measure(&mut self)  {
         // start single shot measurement
-        let device_address = device_address as u8;
         if let Err(e) =
-            i2c.write_byte_to_register(device_address, SYSRANGE_START, SYSRANGE_START_SS_VAL)
+            self.i2c.write_byte_to_register(self.device_address, SYSRANGE_START, SYSRANGE_START_SS_VAL)
         {
-            return Err(ToFError::I2cError(e));
+            panic!("Failed to write byte to Singleshot Measurement register {:?}", e);
         }
-
-        Ok(Self {
-            i2c,
-            device_address,
-        })
     }
 
     pub fn poll_range(&mut self) {
@@ -120,22 +111,13 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         Some(range_byte)
     }
 
-    pub fn start_cts_measure(
-        i2c: &'a mut T,
-        device_address: ToFAddresses,
-    ) -> Result<Self, ToFError> {
+    pub fn start_cts_measure(&mut self) {
         // start continuous measurement
-        let device_address = device_address as u8;
         if let Err(e) =
-            i2c.write_byte_to_register(device_address, SYSRANGE_START, SYSRANGE_START_CTS_VAL)
+            self.i2c.write_byte_to_register(self.device_address, SYSRANGE_START, SYSRANGE_START_CTS_VAL)
         {
-            return Err(ToFError::I2cError(e));
+            panic!("Failed to write byte to Continuous Measurement Register {:?}", e);
         }
-
-        Ok(Self {
-            i2c,
-            device_address,
-        })
     }
 
     pub fn check_reset(&mut self) -> bool {
@@ -146,22 +128,13 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         reset_value == 1
     }
 
-    pub fn clear_interrupts(
-        i2c: &'a mut T,
-        device_address: ToFAddresses,
-    ) -> Result<Self, ToFError> {
+    pub fn clear_interrupts(&mut self) {
         // at the end clear interrupts
-        let device_address = device_address as u8;
         if let Err(e) =
-            i2c.write_byte_to_register(device_address, SYS_INTERRUPT_CLEAR, CLEAR_INTERRUPTS_VAL)
+            self.i2c.write_byte_to_register(self.device_address, SYS_INTERRUPT_CLEAR, CLEAR_INTERRUPTS_VAL)
         {
-            return Err(ToFError::I2cError(e));
+            panic!("Failed to write byte to Clear Interrupt {:?}", e);
         }
-
-        Ok(Self {
-            i2c,
-            device_address,
-        })
     }
 }
 
