@@ -25,7 +25,7 @@ async fn main(_spawner: Spawner) -> ! {
 
     let mut adc = Adc::new(p.ADC1);
     adc.set_resolution(Resolution::BITS12);
-    let mut channel = p.PC0;
+    let mut channel = p.PA0;
 
     loop {
         let v = adc.blocking_read(&mut channel);
