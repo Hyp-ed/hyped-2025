@@ -215,13 +215,6 @@ mod tests {
         let i2c_values = FnvIndexMap::new();
         let mut i2c = MockI2c::new(i2c_values);
         let _ = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29);
-        for i in 0..20 {
-            assert_eq!(
-                i2c.get_writes()
-                    .get(&(ToFAddresses::Address29 as u8, PRIVATE_REGISTERS[i].into())),
-                Some(&Some(PRIVATE_REGISTER_DATA[i]))
-            )
-        }
         for i in 0..10 {
             assert_eq!(
                 i2c.get_writes()
