@@ -70,22 +70,15 @@ impl KalmanFilter {
                 + self.measurement_noise;
 
         // Calculate the inverse of the innovation covariance
-
-        let inv = innovation_covariance.try_inverse().unwrap();
-
+        // The innovationn covariance is always full rank, so the inverse always exists
         let a = innovation_covariance[0];
         let b = innovation_covariance[1];
         let c = innovation_covariance[2];
         let d = innovation_covariance[3];
 
-        let mut det = a * d - b * c;
-
-        if det == 0.0 {
-            det = 1e-10;
-        }
-
+        let det = a * d - b * c
         let innovation_covariance_inv = Matrix2::new(d, -b, -c, a) / det;
-
+        
         // K = P_k * H^T * S^-1
         let kalman_gain =
             self.covariance * self.observation_matrix.transpose() * innovation_covariance_inv;
