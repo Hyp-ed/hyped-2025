@@ -244,8 +244,7 @@ mod tests {
         }
         for (reg, val) in PRIVATE_REGISTERS_U16 {
             assert_eq!(
-                i2c.get_writes()
-                    .get(&(ToFAddresses::Address29 as u8, reg)),
+                i2c.get_writes().get(&(ToFAddresses::Address29 as u8, reg)),
                 Some(&Some(val))
             )
         }
