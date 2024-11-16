@@ -22,7 +22,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
     pub fn new(i2c: &'a mut T, device_address: ToFAddresses) -> Result<Self, ToFError> {
         // SR03 Settings as seen in Application Sheet
         let device_address = device_address as u8;
-        for (reg, val) in PRIVATE_REGISTERS_u8 {
+        for (reg, val) in PRIVATE_REGISTERS_U8 {
             // writing to private registers
             if let Err(e) = i2c.write_byte_to_register(
                 device_address,
@@ -32,7 +32,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
                 panic!("Error writing private registers u8s REG: {:?}", reg);
             }
         }
-        for (reg,val) in PRIVATE_REGISTERS_u16 {
+        for (reg,val) in PRIVATE_REGISTERS_U16 {
             // writing to private registers u16
             if let Err(e) = i2c.write_byte_to_register_16(
                 device_address,
@@ -197,7 +197,7 @@ const CLEAR_INTERRUPTS_VAL: u8 = 0x07;
 // private registers tuples
 
 
-const PRIVATE_REGISTERS_u8: [(u8,u8); 20] = [
+const PRIVATE_REGISTERS_U8: [(u8,u8); 20] = [
     (0x0096,0x00),
     (0x0097,0xfd),
     (0x00e3,0x01),
@@ -220,7 +220,7 @@ const PRIVATE_REGISTERS_u8: [(u8,u8); 20] = [
     (0x0030,0x00),
 ];
 
-const PRIVATE_REGISTERS_u16: [(u16,u8); 10] = [
+const PRIVATE_REGISTERS_U16: [(u16,u8); 10] = [
     (0x0207,0x01),
     (0x0208,0x01),
     (0x0198,0x01),
@@ -244,14 +244,14 @@ mod tests {
         let i2c_values = FnvIndexMap::new();
         let mut i2c = MockI2c::new(i2c_values);
         let _ = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29);
-        for (reg,val) in PRIVATE_REGISTERS_u8 {
+        for (reg,val) in PRIVATE_REGISTERS_U8 {
             assert_eq!(
                 i2c.get_writes()
                     .get(&(ToFAddresses::Address29 as u8, reg.into())),
                 Some(&Some(val))
             )
         }
-        for (reg,val) in PRIVATE_REGISTERS_u16 {
+        for (reg,val) in PRIVATE_REGISTERS_U16 {
             assert_eq!(
                 i2c.get_writes()
                     .get(&(ToFAddresses::Address29 as u8, reg.into())),
@@ -297,7 +297,8 @@ mod tests {
     fn test_start_ss() {
         let i2c_values = FnvIndexMap::new();
         let mut i2c = MockI2c::new(i2c_values);
-        let _ = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29);
+        let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
+        tof.start_ss_measure().unwrap();
         assert_eq!(
             i2c.get_writes()
                 .get(&(ToFAddresses::Address29 as u8, SYSRANGE_START.into())),
@@ -309,7 +310,8 @@ mod tests {
     fn test_start_cts() {
         let i2c_values = FnvIndexMap::new();
         let mut i2c = MockI2c::new(i2c_values);
-        let _ = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29);
+        let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
+        tof.start_cts_measure().unwrap();
         assert_eq!(
             i2c.get_writes()
                 .get(&(ToFAddresses::Address29 as u8, SYSRANGE_START.into())),
@@ -321,12 +323,14 @@ mod tests {
     fn test_clear_interr() {
         let i2c_values = FnvIndexMap::new();
         let mut i2c = MockI2c::new(i2c_values);
-        let _ = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29);
+        let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
+        tof.clear_interrupts().unwrap();
         assert_eq!(
             i2c.get_writes()
                 .get(&(ToFAddresses::Address29 as u8, SYS_INTERRUPT_CLEAR.into())),
-            Some(&Some(CLEAR_INTERRUPTS_VAL))
+             Some(&Some(CLEAR_INTERRUPTS_VAL))
         );
+
     }
 
     #[test]
@@ -349,15 +353,8 @@ mod tests {
             Some(200),
         );
         let mut i2c = MockI2c::new(i2c_values);
-        let tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29);
-        match tof {
-            Ok(mut tof) => {
-                assert_eq!(tof.read_range(), Some(200))
-            }
-            Err(e) => {
-                panic!("Failed to create a Time of Flight object {:?}", e);
-            }
-        }
+        let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
+        assert_eq!(tof.read_range(), Some(200));
     }
 
     #[test]
