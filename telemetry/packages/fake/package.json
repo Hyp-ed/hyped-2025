@@ -15,7 +15,6 @@
     "tslib": "^2.5.3"
   },
   "devDependencies": {
-    "@hyped/eslint-config": "workspace:*",
     "@hyped/telemetry-types": "workspace:*",
     "@hyped/tsconfig": "workspace:*",
     "tsdx": "^0.14.1",

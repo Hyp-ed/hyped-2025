@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 // Here we validate the environment variables and cast them to the correct types using zod
 
 import { z } from 'zod';

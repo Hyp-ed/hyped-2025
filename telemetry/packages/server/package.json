@@ -38,7 +38,6 @@
   },
   "devDependencies": {
     "@hyped/telemetry-types": "workspace:*",
-    "@hyped/eslint-config": "workspace:*",
     "@hyped/tsconfig": "workspace:*",
     "@nestjs/cli": "^9.1.8",
     "@nestjs/schematics": "^9.0.4",
