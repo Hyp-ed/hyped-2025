@@ -22,7 +22,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
     pub fn new(i2c: &'a mut T, device_address: ToFAddresses) -> Result<Self, ToFError> {
         // SR03 Settings as seen in Application Sheet
         let device_address = device_address as u8;
-        for i in 0..20 {
+        for i in 0..21 {
             // writing to private registers
             if let Err(e) = i2c.write_byte_to_register(
                 device_address,
@@ -32,7 +32,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
                 panic!("Error writing private registers u8s");
             }
         }
-        for i in 0..10 {
+        for i in 0..11 {
             // writing to private registers
             if let Err(e) = i2c.write_byte_to_register_16(
                 device_address,
