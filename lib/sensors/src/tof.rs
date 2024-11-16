@@ -39,7 +39,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
                 reg,
                 val,
             ) {
-                panic!("Error writing private registers u8s REG: {:?}", reg);
+                panic!("Error writing private registers u16s REG: {:?}", reg);
             }
         }
         // Recommended Public Registers now (see Application Sheet)
