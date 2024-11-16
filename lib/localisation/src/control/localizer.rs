@@ -98,11 +98,9 @@ impl Localizer {
         }
 
         let processed_accelerometer_data = processed_accelerometer_data.unwrap();
-
     }
 
     pub fn update(&mut self) {
         // TODOLater: Implement filtrer + update function
     }
-
 }
