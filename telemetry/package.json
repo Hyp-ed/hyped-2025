@@ -15,6 +15,7 @@
     "build": "turbo run build"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@types/node": "^18.11.18",
     "prettier": "3.2.4",
     "turbo": "^1.11.3",
@@ -26,5 +27,9 @@
       "nest-mqtt@0.2.0": "patches/nest-mqtt@0.2.0.patch",
       "openmct@3.2.0": "patches/openmct@3.2.0.patch"
     }
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=9"
   }
 }
