@@ -196,7 +196,7 @@ const CLEAR_INTERRUPTS_VAL: u8 = 0x07;
 
 // private registers tuples
 
-const PRIVATE_REGISTERS_u8: [(u8,u8); 19] = [
+const PRIVATE_REGISTERS_u8: [(u8,u8); 18] = [
     (0x0096,0x00),
     (0x0097,0xfd),
     (0x00e3,0x01),
@@ -213,7 +213,6 @@ const PRIVATE_REGISTERS_u8: [(u8,u8); 19] = [
     (0x00a3,0x3c),
     (0x00b7,0x00),
     (0x00bb,0x3c),
-    (0x00ca,0x09),
     (0x00ff,0x05),
     (0x0030,0x00),
 ];
