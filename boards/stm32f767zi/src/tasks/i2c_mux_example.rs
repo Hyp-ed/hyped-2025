@@ -22,17 +22,17 @@ pub async fn example() -> ! {
         .expect("Failed to create temperature sensor.");
 
     let i2c_mux_2 =
-        I2cMux::new(&hyped_i2c, 0, DEFAULT_MUX_ADDRESS).expect("Failed to create I2C multiplexer.");
+        I2cMux::new(&hyped_i2c, 1, DEFAULT_MUX_ADDRESS).expect("Failed to create I2C multiplexer.");
     let mut temp_2 = Temperature::new(i2c_mux_2, TemperatureAddresses::Address3c)
         .expect("Failed to create temperature sensor.");
 
     let i2c_mux_3 =
-        I2cMux::new(&hyped_i2c, 0, DEFAULT_MUX_ADDRESS).expect("Failed to create I2C multiplexer.");
+        I2cMux::new(&hyped_i2c, 2, DEFAULT_MUX_ADDRESS).expect("Failed to create I2C multiplexer.");
     let mut temp_3 = Temperature::new(i2c_mux_3, TemperatureAddresses::Address3c)
         .expect("Failed to create temperature sensor.");
 
     let i2c_mux_4 =
-        I2cMux::new(&hyped_i2c, 0, DEFAULT_MUX_ADDRESS).expect("Failed to create I2C multiplexer.");
+        I2cMux::new(&hyped_i2c, 3, DEFAULT_MUX_ADDRESS).expect("Failed to create I2C multiplexer.");
     let mut temp_4 = Temperature::new(i2c_mux_4, TemperatureAddresses::Address3c)
         .expect("Failed to create temperature sensor.");
 
