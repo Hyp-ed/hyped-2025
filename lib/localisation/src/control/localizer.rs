@@ -14,6 +14,7 @@ use libm::pow;
 use nalgebra::{Matrix2, Vector2};
 
 const DELTA_T: f64 = 0.01;
+const STRIPE_WIDTH: f64 = 1;
 
 pub struct Localizer {
     displacement: f64,
@@ -22,6 +23,10 @@ pub struct Localizer {
     kalman_filter: KalmanFilter,
     accelerometer_preprocessor: AccelerometerPreprocessor,
     keyence_checker: KeyenceAgrees,
+    keyence_val: f64,
+    optical_val: f64,
+    accelerometer_val: f64,
+
 }
 
 impl Localizer {
@@ -69,13 +74,16 @@ impl Localizer {
             kalman_filter,
             accelerometer_preprocessor: AccelerometerPreprocessor::new(),
             keyence_checker: KeyenceAgrees::new(),
+            keyence_val: 0.0,
+            optical_val: 0.0,
+            accelerometer_val: 0.0,
         }
     }
 
     pub fn preprocessor(
         &mut self,
         optical_data: Vec<Vec<f64, 2>, 2>,
-        keyence_data: Vec<bool, 2>,
+        keyence_data: Vec<u32, 2>,
         accelerometer_data: RawAccelerometerData<K_NUM_ACCELEROMETERS, K_NUM_AXIS>,
     ) {
         let processed_optical_data = process_optical_data(optical_data);
@@ -88,6 +96,11 @@ impl Localizer {
             //TODOLater: Change state
             return;
         }
+        else {
+            self.keyence_val = keyence_data[0] as f64;
+        }
+
+        
 
         let mut accelerometer_preprocessor = AccelerometerPreprocessor::new();
         let processed_accelerometer_data =
@@ -101,6 +114,8 @@ impl Localizer {
     }
 
     pub fn update(&mut self) {
+
+
         // TODOLater: Implement filtrer + update function
     }
 }

@@ -25,7 +25,7 @@ impl KeyenceAgrees {
         }
     }
 
-    pub fn check_keyence_agrees(&mut self, keyence_data: Vec<bool, 2>) -> SensorChecks {
+    pub fn check_keyence_agrees(&mut self, keyence_data: Vec<u32, 2>) -> SensorChecks {
         if keyence_data[0] != keyence_data[1] && !self.previous_keyence_agreement {
             return SensorChecks::Unacceptable;
         } else {
@@ -42,7 +42,7 @@ mod tests {
 
     #[test]
     fn test_acceptable_success() {
-        let keyence_data: Vec<bool, 2> = Vec::from_slice(&[true, true]).unwrap();
+        let keyence_data: Vec<u32, 2> = Vec::from_slice(&[0, 1]).unwrap();
         let mut keyence_agrees = KeyenceAgrees::new();
         let desired_outcome = SensorChecks::Acceptable;
         let result = keyence_agrees.check_keyence_agrees(keyence_data);
@@ -51,7 +51,7 @@ mod tests {
 
     #[test]
     fn test_acceptable_false_success() {
-        let keyence_data: Vec<bool, 2> = Vec::from_slice(&[true, false]).unwrap();
+        let keyence_data: Vec<u32, 2> = Vec::from_slice(&[0, 1]).unwrap();
         let mut keyence_agrees = KeyenceAgrees::new();
         let desired_outcome = SensorChecks::Acceptable;
         let result = keyence_agrees.check_keyence_agrees(keyence_data);
@@ -60,8 +60,8 @@ mod tests {
 
     #[test]
     fn test_acceptable_second_false_success() {
-        let first_keyence_data: Vec<bool, 2> = Vec::from_slice(&[true, true]).unwrap();
-        let second_keyence_data: Vec<bool, 2> = Vec::from_slice(&[true, false]).unwrap();
+        let first_keyence_data: Vec<u32, 2> = Vec::from_slice(&[1, 1]).unwrap();
+        let second_keyence_data: Vec<u32, 2> = Vec::from_slice(&[1, 1]).unwrap();
         let mut keyence_agrees = KeyenceAgrees::new();
         let desired_outcome = SensorChecks::Acceptable;
         let initial_try = keyence_agrees.check_keyence_agrees(first_keyence_data);
@@ -72,8 +72,8 @@ mod tests {
 
     #[test]
     fn test_acceptable_prev_false_success() {
-        let first_keyence_data: Vec<bool, 2> = Vec::from_slice(&[true, false]).unwrap();
-        let second_keyence_data: Vec<bool, 2> = Vec::from_slice(&[true, true]).unwrap();
+        let first_keyence_data: Vec<u32, 2> = Vec::from_slice(&[1, 2]).unwrap();
+        let second_keyence_data: Vec<u32, 2> = Vec::from_slice(&[1, 1]).unwrap();
         let mut keyence_agrees = KeyenceAgrees::new();
         let desired_outcome = SensorChecks::Acceptable;
         let initial_try = keyence_agrees.check_keyence_agrees(first_keyence_data);
@@ -84,8 +84,8 @@ mod tests {
 
     #[test]
     fn test_unnacceptable_prev_false_success() {
-        let first_keyence_data: Vec<bool, 2> = Vec::from_slice(&[true, false]).unwrap();
-        let second_keyence_data: Vec<bool, 2> = Vec::from_slice(&[true, false]).unwrap();
+        let first_keyence_data: Vec<u32, 2> = Vec::from_slice(&[1, 2]).unwrap();
+        let second_keyence_data: Vec<y32, 2> = Vec::from_slice(&[2, 3]).unwrap();
         let mut keyence_agrees = KeyenceAgrees::new();
         let first_outcome = SensorChecks::Acceptable;
         let second_outcome = SensorChecks::Unacceptable;
