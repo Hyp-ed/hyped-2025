@@ -85,7 +85,7 @@ mod tests {
     #[test]
     fn test_unnacceptable_prev_false_success() {
         let first_keyence_data: Vec<u32, 2> = Vec::from_slice(&[1, 2]).unwrap();
-        let second_keyence_data: Vec<y32, 2> = Vec::from_slice(&[2, 3]).unwrap();
+        let second_keyence_data: Vec<u32, 2> = Vec::from_slice(&[2, 3]).unwrap();
         let mut keyence_agrees = KeyenceAgrees::new();
         let first_outcome = SensorChecks::Acceptable;
         let second_outcome = SensorChecks::Unacceptable;
