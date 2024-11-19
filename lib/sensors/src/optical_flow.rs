@@ -1,5 +1,8 @@
+extern crate std;
 use hyped_io::spi::Word::{self, U8};
 use hyped_io::spi::{HypedSpi, SpiError};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+use std::thread::sleep;
 
 /// Optical flow implements the logic to interact with the PMW3901MB-TXQT: Optical Motion Tracking Chip
 ///
@@ -16,6 +19,9 @@ const REG_ORIENTATION: Word = U8(0x5B);
 const REG_RESOLUTION: Word = U8(0x4E);
 const REG_RAWDATA_GRAB: Word = U8(0x58);
 const REG_RAWDATA_GRAB_STATUS: Word = U8(0x59);
+
+const TIMEOUT: Duration = Duration::from_secs(5);
+
 
 // Register Configurations:
 const POWER_UP_RESET_INSTR: Word = U8(0x5A);
@@ -72,5 +78,93 @@ impl<'a, T: HypedSpi> OpticalFlow<'a, T> {
             _ => return Err(OpticalFlowError::InvalidRevisionId),
         }
         Ok(Self { spi })
+    }
+
+
+    pub fn get_motion(&mut self) -> Result<(i16, i16), &'static str>{
+        // Get motion data from PMW3901 using burst read.    
+
+        let start = Instant::now();
+
+        while start.elapsed() < TIMEOUT {
+            let mut data = [
+                REG_MOTION_BURST,        // Command byte to initiate burst read
+                Word::U8(0x00),          // Placeholder for the rest of the 12 bytes
+                Word::U8(0x00),          // Definitely a better way of doing this but for some reason i was getting syntaz errors
+                Word::U8(0x00),         
+                Word::U8(0x00),          
+                Word::U8(0x00),
+                Word::U8(0x00), 
+                Word::U8(0x00), 
+                Word::U8(0x00), 
+                Word::U8(0x00), 
+                Word::U8(0x00), 
+                Word::U8(0x00), 
+                Word::U8(0x00),       
+            ];         
+                
+            
+            // Perform the SPI transfer
+            self.spi.transfer_in_place(&mut data).map_err(|_| "SPI read failed")?;
+    
+            // Parse the response data
+            let response = &data[1..]; // Ignore the command byte
+            let mut cursor = response.iter(); // Iterator to parse data sequentially
+    
+            let dr = match cursor.next() {
+                Some(Word::U8(x)) => *x,
+                _ => return Err("Failed to parse dr"),
+            };
+            let _obs = match cursor.next() {
+                Some(Word::U8(x)) => *x,
+                _ => return Err("Failed to parse obs"),
+            };
+            let x = match (cursor.next(), cursor.next()) {
+                (Some(Word::U8(lsb)), Some(Word::U8(msb))) => {
+                    i16::from_le_bytes([*lsb, *msb])
+                }
+                _ => return Err("Failed to parse x"),
+            };
+            let y = match (cursor.next(), cursor.next()) {
+                (Some(Word::U8(lsb)), Some(Word::U8(msb))) => {
+                    i16::from_le_bytes([*lsb, *msb])
+                }
+                _ => return Err("Failed to parse y"),
+            };
+            let quality = match cursor.next() {
+                Some(Word::U8(x)) => *x,
+                _ => return Err("Failed to parse quality"),
+            };
+            let _raw_sum = match cursor.next() {
+                Some(Word::U8(x)) => *x,
+                _ => return Err("Failed to parse raw_sum"),
+            };
+            let _raw_max = match cursor.next() {
+                Some(Word::U8(x)) => *x,
+                _ => return Err("Failed to parse raw_max"),
+            };
+            let _raw_min = match cursor.next() {
+                Some(Word::U8(x)) => *x,
+                _ => return Err("Failed to parse raw_min"),
+            };
+            let shutter_upper = match cursor.next() {
+                Some(Word::U8(x)) => *x,
+                _ => return Err("Failed to parse shutter_upper"),
+            };
+            let _shutter_lower = match cursor.next() {
+                Some(Word::U8(x)) => *x,
+                _ => return Err("Failed to parse shutter_lower"),
+            };
+    
+            // Validate the data
+            if (dr & 0b1000_0000) != 0 && !(quality < 0x19 && shutter_upper == 0x1F) {
+                return Ok((x, y)); // Return delta x and delta y if valid
+            }
+    
+            // Wait before retrying
+            sleep(Duration::from_millis(10));
+        }
+    
+        Err("Timed out waiting for motion data")
     }
 }
