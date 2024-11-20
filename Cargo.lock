@@ -299,6 +299,7 @@ dependencies = [
 name = "hyped_io"
 version = "0.1.0"
 dependencies = [
+ "embassy-sync",
  "heapless",
 ]
 

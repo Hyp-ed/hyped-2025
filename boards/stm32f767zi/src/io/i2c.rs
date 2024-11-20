@@ -1,17 +1,24 @@
+use core::cell::RefCell;
+
 use embassy_stm32::{i2c::I2c, mode::Blocking};
+use embassy_sync::blocking_mutex::{raw::CriticalSectionRawMutex, Mutex};
 use hyped_io::i2c::{HypedI2c, I2cError};
 
 pub struct Stm32f767ziI2c<'d> {
-    i2c: I2c<'d, Blocking>,
+    i2c: Mutex<CriticalSectionRawMutex, RefCell<I2c<'d, Blocking>>>,
 }
 
 impl<'d> HypedI2c for Stm32f767ziI2c<'d> {
     /// Read a byte from a register on a device
     fn read_byte(&mut self, device_address: u8, register_address: u8) -> Option<u8> {
         let mut read = [0];
-        let result =
-            self.i2c
-                .blocking_write_read(device_address, [register_address].as_ref(), &mut read);
+        let result = self.i2c.lock(|i2c| {
+            i2c.borrow_mut().blocking_write_read(
+                device_address,
+                [register_address].as_ref(),
+                &mut read,
+            )
+        });
         match result {
             Ok(_) => Some(read[0]),
             Err(_) => None,
@@ -25,9 +32,10 @@ impl<'d> HypedI2c for Stm32f767ziI2c<'d> {
         register_address: u8,
         data: u8,
     ) -> Result<(), I2cError> {
-        let result = self
-            .i2c
-            .blocking_write(device_address, [register_address, data].as_ref());
+        let result = self.i2c.lock(|i2c| {
+            i2c.borrow_mut()
+                .blocking_write(device_address, [register_address, data].as_ref())
+        });
         match result {
             Ok(_) => Ok(()),
             Err(e) => Err(match e {
@@ -45,7 +53,7 @@ impl<'d> HypedI2c for Stm32f767ziI2c<'d> {
 
 impl<'d> Stm32f767ziI2c<'d> {
     /// Create a new instance of our I2C implementation for the STM32L476RG
-    pub fn new(i2c: I2c<'d, Blocking>) -> Self {
+    pub fn new(i2c: Mutex<CriticalSectionRawMutex, RefCell<I2c<'d, Blocking>>>) -> Self {
         Self { i2c }
     }
 }

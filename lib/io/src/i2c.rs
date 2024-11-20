@@ -24,24 +24,29 @@ pub trait HypedI2c {
 }
 
 pub mod mock_i2c {
+    use core::cell::RefCell;
+    use embassy_sync::blocking_mutex::{raw::CriticalSectionRawMutex, Mutex};
     use heapless::FnvIndexMap;
 
     /// A fixed-size map of I2C values, indexed by device address and register address
     type I2cValues = FnvIndexMap<(u8, u8), Option<u8>, 16>;
 
     /// A mock I2C instance which can be used for testing
-    pub struct MockI2c {
-        values: I2cValues,
+    pub struct MockI2c<'a> {
+        values: &'a Mutex<CriticalSectionRawMutex, RefCell<I2cValues>>,
         writes: I2cValues,
     }
 
-    impl crate::i2c::HypedI2c for MockI2c {
+    impl crate::i2c::HypedI2c for MockI2c<'_> {
         /// Reads a byte by looking up the device address and register address in the map
         fn read_byte(&mut self, device_address: u8, register_address: u8) -> Option<u8> {
-            self.values
-                .get(&(device_address, register_address))
-                .copied()
-                .unwrap()
+            self.values.lock(|values| {
+                values
+                    .borrow()
+                    .get(&(device_address, register_address))
+                    .copied()
+                    .unwrap()
+            })
         }
 
         /// Writes a byte to the map so that it can be read later to check the value
@@ -61,8 +66,8 @@ pub mod mock_i2c {
         }
     }
 
-    impl MockI2c {
-        pub fn new(values: I2cValues) -> MockI2c {
+    impl MockI2c<'_> {
+        pub fn new<'a>(values: &'a Mutex<CriticalSectionRawMutex, RefCell<I2cValues>>) -> MockI2c {
             MockI2c {
                 values,
                 writes: I2cValues::new(),

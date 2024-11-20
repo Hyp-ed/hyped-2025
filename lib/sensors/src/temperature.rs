@@ -1,5 +1,3 @@
-use core::cell::RefCell;
-use embassy_sync::blocking_mutex::{raw::CriticalSectionRawMutex, Mutex};
 use hyped_io::i2c::{HypedI2c, I2cError};
 
 /// Temperature implements the logic to read the temperature from the STTS22H temperature sensor
@@ -10,25 +8,19 @@ use hyped_io::i2c::{HypedI2c, I2cError};
 ///
 /// Data sheet: https://www.st.com/resource/en/datasheet/stts22h.pdf
 pub struct Temperature<'a, T: HypedI2c> {
-    i2c: &'a Mutex<CriticalSectionRawMutex, RefCell<T>>,
+    i2c: &'a mut T,
     device_address: u8,
 }
 
 impl<'a, T: HypedI2c> Temperature<'a, T> {
     /// Create a new instance of the temperature sensor and attempt to configure it
     pub fn new(
-        i2c: &'a Mutex<CriticalSectionRawMutex, RefCell<T>>,
+        i2c: &'a mut T,
         device_address: TemperatureAddresses,
     ) -> Result<Self, TemperatureError> {
         // Set up the temperature sensor by sending the configuration settings to the STTS22H_CTRL register
         let device_address = device_address as u8;
-        match i2c.lock(|i2c| {
-            i2c.borrow_mut().write_byte_to_register(
-                device_address,
-                STTS22H_CTRL,
-                STTS22H_CONFIG_SETTINGS,
-            )
-        }) {
+        match i2c.write_byte_to_register(device_address, STTS22H_CTRL, STTS22H_CONFIG_SETTINGS) {
             Ok(_) => Ok(Self {
                 i2c,
                 device_address,
@@ -40,25 +32,21 @@ impl<'a, T: HypedI2c> Temperature<'a, T> {
     /// Read the temperature from the sensor and return it as a floating point value in degrees Celsius
     pub fn read(&mut self) -> Option<f32> {
         // Read the high and low bytes of the temperature and combine them to get the temperature
-        let temperature_high_byte = match self.i2c.lock(|i2c| {
-            i2c.borrow_mut()
-                .read_byte(self.device_address, STTS22H_DATA_TEMP_H)
-        }) {
-            Some(byte) => byte,
-            None => {
-                return None;
-            }
-        };
+        let temperature_high_byte =
+            match self.i2c.read_byte(self.device_address, STTS22H_DATA_TEMP_H) {
+                Some(byte) => byte,
+                None => {
+                    return None;
+                }
+            };
 
-        let temperature_low_byte = match self.i2c.lock(|i2c: &RefCell<T>| {
-            i2c.borrow_mut()
-                .read_byte(self.device_address, STTS22H_DATA_TEMP_L)
-        }) {
-            Some(byte) => byte,
-            None => {
-                return None;
-            }
-        };
+        let temperature_low_byte =
+            match self.i2c.read_byte(self.device_address, STTS22H_DATA_TEMP_L) {
+                Some(byte) => byte,
+                None => {
+                    return None;
+                }
+            };
         let combined: f32 =
             ((temperature_high_byte as u16) << 8 | temperature_low_byte as u16) as f32;
 
@@ -72,10 +60,7 @@ impl<'a, T: HypedI2c> Temperature<'a, T> {
 
     /// Check the status of the temperature sensor
     pub fn check_status(&mut self) -> Status {
-        match self.i2c.lock(|i2c| {
-            i2c.borrow_mut()
-                .read_byte(self.device_address, STTS22H_STATUS)
-        }) {
+        match self.i2c.read_byte(self.device_address, STTS22H_STATUS) {
             Some(byte) => Status::from_byte(byte),
             None => Status::Unknown,
         }
@@ -142,21 +127,22 @@ const TWO_POWER_16: f32 = 65536.0;
 
 #[cfg(test)]
 mod tests {
+    use core::cell::RefCell;
+
     use super::*;
+    use embassy_sync::blocking_mutex::Mutex;
     use heapless::FnvIndexMap;
     use hyped_io::i2c::mock_i2c::MockI2c;
 
     #[test]
     fn test_write_config() {
-        let i2c_values = FnvIndexMap::new();
-        let i2c = Mutex::new(RefCell::new(MockI2c::new(i2c_values)));
-        let _ = Temperature::new(&i2c, TemperatureAddresses::Address3f).unwrap();
-        let i2c_value = i2c.lock(|i2c| {
-            i2c.borrow()
-                .get_writes()
-                .get(&(TemperatureAddresses::Address3f as u8, STTS22H_CTRL))
-                .cloned()
-        });
+        let i2c_values = Mutex::new(RefCell::new(FnvIndexMap::new()));
+        let mut i2c = MockI2c::new(&i2c_values);
+        let _ = Temperature::new(&mut i2c, TemperatureAddresses::Address3f).unwrap();
+        let i2c_value = i2c
+            .get_writes()
+            .get(&(TemperatureAddresses::Address3f as u8, STTS22H_CTRL))
+            .cloned();
         assert_eq!(i2c_value, Some(Some(STTS22H_CONFIG_SETTINGS)));
     }
 
@@ -171,8 +157,9 @@ mod tests {
             (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
             Some(0x00),
         );
-        let i2c = Mutex::new(RefCell::new(MockI2c::new(i2c_values)));
-        let mut temperature = Temperature::new(&i2c, TemperatureAddresses::Address3f).unwrap();
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
+        let mut temperature = Temperature::new(&mut i2c, TemperatureAddresses::Address3f).unwrap();
         assert_eq!(temperature.read(), Some(0.0));
     }
 
@@ -187,8 +174,9 @@ mod tests {
             (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
             Some(0xc4),
         );
-        let i2c = Mutex::new(RefCell::new(MockI2c::new(i2c_values)));
-        let mut temperature = Temperature::new(&i2c, TemperatureAddresses::Address3f).unwrap();
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
+        let mut temperature = Temperature::new(&mut i2c, TemperatureAddresses::Address3f).unwrap();
         assert_eq!(temperature.read(), Some(25.0));
     }
 
@@ -203,8 +191,9 @@ mod tests {
             (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
             Some(0x18),
         );
-        let i2c = Mutex::new(RefCell::new(MockI2c::new(i2c_values)));
-        let mut temperature = Temperature::new(&i2c, TemperatureAddresses::Address3f).unwrap();
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
+        let mut temperature = Temperature::new(&mut i2c, TemperatureAddresses::Address3f).unwrap();
         assert_eq!(temperature.read(), Some(-10.0));
     }
 
@@ -215,8 +204,9 @@ mod tests {
             (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
             Some(STTS22H_STATUS_BUSY),
         );
-        let i2c = Mutex::new(RefCell::new(MockI2c::new(i2c_values)));
-        let mut temperature = Temperature::new(&i2c, TemperatureAddresses::Address3f).unwrap();
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
+        let mut temperature = Temperature::new(&mut i2c, TemperatureAddresses::Address3f).unwrap();
         assert_eq!(temperature.check_status(), Status::Busy);
     }
 
@@ -227,8 +217,9 @@ mod tests {
             (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
             Some(STTS22H_TEMP_OVER_UPPER_LIMIT),
         );
-        let i2c = Mutex::new(RefCell::new(MockI2c::new(i2c_values)));
-        let mut temperature = Temperature::new(&i2c, TemperatureAddresses::Address3f).unwrap();
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c: MockI2c<'_> = MockI2c::new(&i2c_values);
+        let mut temperature = Temperature::new(&mut i2c, TemperatureAddresses::Address3f).unwrap();
         assert_eq!(temperature.check_status(), Status::TempOverUpperLimit);
     }
 
@@ -239,8 +230,9 @@ mod tests {
             (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
             Some(STTS22H_TEMP_UNDER_LOWER_LIMIT),
         );
-        let i2c = Mutex::new(RefCell::new(MockI2c::new(i2c_values)));
-        let mut temperature = Temperature::new(&i2c, TemperatureAddresses::Address3f).unwrap();
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c: MockI2c<'_> = MockI2c::new(&i2c_values);
+        let mut temperature = Temperature::new(&mut i2c, TemperatureAddresses::Address3f).unwrap();
         assert_eq!(temperature.check_status(), Status::TempUnderLowerLimit);
     }
 }
