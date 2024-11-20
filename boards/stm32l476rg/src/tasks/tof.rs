@@ -16,9 +16,11 @@ pub async fn read_tof_range() -> ! {
     );
 
     loop {
+        defmt::info!("Starting single shot measurement");
         tof_sensor.start_ss_measure();
-
-        tof_sensor.poll_range();
+        defmt::info!("Polling for range");
+        tof_sensor.poll_range().await;
+        defmt::info!("Reading range");
 
         match tof_sensor.read_range() {
             Some(range) => {

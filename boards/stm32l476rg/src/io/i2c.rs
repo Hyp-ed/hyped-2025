@@ -18,6 +18,22 @@ impl<'d> HypedI2c for Stm32l476rgI2c<'d> {
         }
     }
 
+    /// Read a byte from a register with a 16-bit address on a device
+    fn read_byte_16(&mut self, device_address: u8, register_address: u16) -> Option<u8> {
+        let register_addr_hi = (register_address >> 8) as u8 & 0xFF;
+        let register_addr_lo = register_address as u8 & 0xFF;
+        let mut read = [0];
+        let result = self.i2c.blocking_write_read(
+            device_address,
+            [register_addr_hi, register_addr_lo].as_ref(),
+            &mut read,
+        );
+        match result {
+            Ok(_) => Some(read[0]),
+            Err(_) => None,
+        }
+    }
+
     /// Write a byte to a register on a device
     fn write_byte_to_register(
         &mut self,

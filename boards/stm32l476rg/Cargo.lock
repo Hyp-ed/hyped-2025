@@ -578,6 +578,8 @@ dependencies = [
 name = "hyped_sensors"
 version = "0.1.0"
 dependencies = [
+ "defmt",
+ "embassy-time",
  "heapless",
  "hyped_core",
  "hyped_io",

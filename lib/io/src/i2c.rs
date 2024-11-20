@@ -15,6 +15,7 @@ pub enum I2cError {
 /// I2C trait used to abstract the I2C peripheral
 pub trait HypedI2c {
     fn read_byte(&mut self, device_address: u8, register_address: u8) -> Option<u8>;
+    fn read_byte_16(&mut self, device_address: u8, register_address: u16) -> Option<u8>;
     fn write_byte_to_register(
         &mut self,
         device_address: u8,
@@ -50,7 +51,15 @@ pub mod mock_i2c {
                 .unwrap()
         }
 
-        /// Writes a byte to the map so that it can be read later to check the value
+        /// Reads a byte by looking up the device address and register address in the map
+        fn read_byte_16(&mut self, device_address: u8, register_address: u16) -> Option<u8> {
+            self.values
+                .get(&(device_address, register_address))
+                .copied()
+                .unwrap()
+        }
+
+        /// Writes a byte to the map 9with 8-bit register address) so that it can be read later to check the value
         fn write_byte_to_register(
             &mut self,
             device_address: u8,
@@ -66,6 +75,7 @@ pub mod mock_i2c {
             }
         }
 
+        /// Writes a byte to the map (with 16-bit register address) so that it can be read later to check the value
         fn write_byte_to_register_16(
             &mut self,
             device_address: u8,
