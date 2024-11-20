@@ -1,7 +1,9 @@
 use crate::io::i2c::Stm32l476rgI2c;
+use core::cell::RefCell;
 use defmt_rtt as _;
 use embassy_stm32::i2c::I2c;
 use embassy_stm32::time::Hertz;
+use embassy_sync::blocking_mutex::Mutex;
 use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 
 /// Test task that just reads the temperature from the sensor and prints it to the console
@@ -9,9 +11,9 @@ use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 pub async fn read_temp() -> ! {
     let p = embassy_stm32::init(Default::default());
     let i2c = I2c::new_blocking(p.I2C1, p.PB8, p.PB9, Hertz(100_000), Default::default());
-    let mut hyped_i2c = Stm32l476rgI2c::new(i2c);
+    let hyped_i2c = Mutex::new(RefCell::new(Stm32l476rgI2c::new(i2c)));
 
-    let mut temperature_sensor = Temperature::new(&mut hyped_i2c, TemperatureAddresses::Address3f)
+    let mut temperature_sensor = Temperature::new(&hyped_i2c, TemperatureAddresses::Address3f)
         .expect(
         "Failed to create temperature sensor. Check the wiring and the I2C address of the sensor.",
     );

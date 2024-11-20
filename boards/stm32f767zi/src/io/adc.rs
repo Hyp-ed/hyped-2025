@@ -15,7 +15,7 @@ impl<'d, T: Instance> HypedAdc for Stm32f767ziAdc<'d, T> {
 
 impl<'d, T: Instance> Stm32f767ziAdc<'d, T> {
     /// Create a new instance of our ADC implementation for the STM32F767ZI
-    pub fn new(mut adc: Adc<'d, T>, channel: AnyAdcChannel<T>) -> Self {
+    pub fn new(adc: Adc<'d, T>, channel: AnyAdcChannel<T>) -> Self {
         Self { adc, channel }
     }
 }
