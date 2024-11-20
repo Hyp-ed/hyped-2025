@@ -67,7 +67,7 @@ pub mod mock_i2c {
     }
 
     impl MockI2c<'_> {
-        pub fn new<'a>(values: &'a Mutex<CriticalSectionRawMutex, RefCell<I2cValues>>) -> MockI2c {
+        pub fn new(values: &Mutex<CriticalSectionRawMutex, RefCell<I2cValues>>) -> MockI2c {
             MockI2c {
                 values,
                 writes: I2cValues::new(),
