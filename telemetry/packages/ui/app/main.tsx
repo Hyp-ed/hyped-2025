@@ -6,7 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import 'victormono';
 import { App } from './App';
 import './globals.css';
-import { Error } from './components/error';
+import { Errors } from './components/errors';
 import { Providers } from './providers';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
@@ -20,7 +20,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 					className: 'bg-gray-100 text-gray-900 shadow-xl',
 				}}
 			/>
-			<Error />
+			<Errors />
 		</Providers>
 	</React.StrictMode>,
 );

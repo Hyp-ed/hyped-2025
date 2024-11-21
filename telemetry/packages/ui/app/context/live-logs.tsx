@@ -22,6 +22,7 @@ export type LogLevel = (typeof LOG_LEVELS)[keyof typeof LOG_LEVELS];
 
 export type Log = {
 	context: string;
+	// biome-ignore lint/suspicious/noExplicitAny:
 	stack?: any;
 	level: LogLevel;
 	message: string;

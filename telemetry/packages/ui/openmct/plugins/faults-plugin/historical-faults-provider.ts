@@ -21,6 +21,7 @@ export function HistoricalFaultsProvider() {
 		request: async () => {
 			const url = 'openmct/faults/historical';
 			const data = await http.get(url).json<HistoricalFaults>();
+			// biome-ignore lint/suspicious/noExplicitAny:
 			return data.map((fault: any) => fault.fault);
 		},
 	};

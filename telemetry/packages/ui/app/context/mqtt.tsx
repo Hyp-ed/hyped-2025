@@ -61,6 +61,7 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
 	};
 
 	// Connect to MQTT broker on mount
+	// biome-ignore lint/correctness/useExhaustiveDependencies:
 	useEffect(
 		function connectToMqttBrokerOnMount() {
 			mqttConnect(broker);
@@ -69,6 +70,7 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
 	);
 
 	// Handle client changes
+	// biome-ignore lint/correctness/useExhaustiveDependencies:
 	useEffect(
 		function handleClientChanges() {
 			if (client) {
@@ -76,6 +78,7 @@ export const MQTTProvider = ({ broker, qos, children }: MQTTProviderProps) => {
 					log('MQTT client connected to broker');
 					setConnectionStatus(MQTT_CONNECTION_STATUS.CONNECTED);
 				});
+				// biome-ignore lint/suspicious/noExplicitAny:
 				client.on('error', (err: any) => {
 					log(`MQTT connection error: ${JSON.stringify(err)}`);
 					setConnectionStatus(MQTT_CONNECTION_STATUS.ERROR);

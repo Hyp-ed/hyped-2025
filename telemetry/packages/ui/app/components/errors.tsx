@@ -17,7 +17,7 @@ import { DialogHeader } from './ui/dialog';
 /**
  * Dialog to display error messages from the error context.
  */
-export const Error = () => {
+export const Errors = () => {
 	const { errors } = useErrors();
 	const [index, setIndex] = useState(0);
 
@@ -46,6 +46,7 @@ export const Error = () => {
 							{/* Arrows for navigating between errors */}
 							<div className="flex gap-2 items-center">
 								<button
+									type="button"
 									onClick={() => setIndex((i) => i - 1)}
 									disabled={index === 0}
 									className="disabled:opacity-50"
@@ -56,6 +57,7 @@ export const Error = () => {
 									{index + 1} / {errors.length}
 								</p>
 								<button
+									type="button"
 									onClick={() => setIndex((i) => i + 1)}
 									disabled={index === errors.length - 1}
 									className="disabled:opacity-50"

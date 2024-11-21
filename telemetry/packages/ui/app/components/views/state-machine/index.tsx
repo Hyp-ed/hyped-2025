@@ -24,8 +24,10 @@ export function StateMachine() {
 		pod: { podState: currentState, operationMode: currentMode },
 	} = useCurrentPod();
 
+	// biome-ignore lint/suspicious/noExplicitAny:
 	const [displayNodes, setDisplayNodes]: [CustomNodeType[], any] = useState([]);
 	const [edges, setEdges] = useState(writeEdges(currentMode));
+	// biome-ignore lint/suspicious/noExplicitAny:
 	const [failNode, setFailNode]: [CustomEdgeType, any] = useState(edges[0]);
 
 	const nodes: CustomNodeType[] = useMemo(

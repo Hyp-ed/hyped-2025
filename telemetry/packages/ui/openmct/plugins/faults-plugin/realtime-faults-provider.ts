@@ -16,6 +16,7 @@ import {
 export function RealtimeFaultsProvider() {
 	const socket = io(SERVER_ENDPOINT, { path: '/openmct/faults/realtime' });
 
+	// biome-ignore lint/suspicious/noExplicitAny:
 	let faultCallback: any = null;
 
 	// When we get a new fault, call the callback
@@ -42,6 +43,7 @@ export function RealtimeFaultsProvider() {
 		 */
 		subscribe: (
 			_domainObject: AugmentedDomainObject,
+			// biome-ignore lint/suspicious/noExplicitAny:
 			callback: (args: any) => void,
 		) => {
 			socket.emit(socketConstants.EVENTS.SUBSCRIBE_TO_FAULTS);

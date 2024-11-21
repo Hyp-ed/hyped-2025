@@ -32,6 +32,7 @@ export const LogViewer = () => {
 		useState<LogLevel[]>(defaultLogLevel);
 
 	// Scroll to bottom on new log
+	// biome-ignore lint/correctness/useExhaustiveDependencies:
 	useEffect(() => {
 		const element = document.getElementById('log-viewer');
 		if (element) {
@@ -74,6 +75,7 @@ export const LogViewer = () => {
 					className="h-[90%] overflow-y-scroll scrollbar-track-transparent scrollbar-thumb-openmct-dark-gray scrollbar-thin scrollbar-thumb-rounded-full"
 				>
 					{displayLogs.map((log, index) => (
+						// biome-ignore lint/suspicious/noArrayIndexKey: no other option
 						<SingleLog log={log} key={index} />
 					))}
 				</div>

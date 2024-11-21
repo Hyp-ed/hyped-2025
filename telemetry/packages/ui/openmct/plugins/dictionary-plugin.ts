@@ -92,7 +92,7 @@ export function DictionaryPlugin() {
 	return async function install(openmct: OpenMCT) {
 		fetchPodIds()
 			.then(({ ids }) => {
-				ids.forEach((podId) => {
+				for (const podId of ids) {
 					openmct.objects.addRoot(
 						{
 							namespace: 'hyped.taxonomy',
@@ -104,7 +104,7 @@ export function DictionaryPlugin() {
 						`hyped.${podId}`,
 						measurementsObjectProvider,
 					);
-				});
+				}
 
 				openmct.objects.addProvider('hyped.taxonomy', podObjectProvider);
 			})
@@ -112,17 +112,16 @@ export function DictionaryPlugin() {
 				throw new Error('Failed to load dictionary');
 			});
 
-		await fetchObjectTypes().then((objectTypes) => {
-			objectTypes.forEach((objectType) => {
-				openmct.types.addType(`hyped.${objectType.id}`, {
-					name: objectType.name,
-					cssClass: objectType.icon,
-					...(objectType.description && {
-						description: objectType.description,
-					}),
-				});
+		const objectTypes = await fetchObjectTypes();
+		for (const objectType of objectTypes) {
+			openmct.types.addType(`hyped.${objectType.id}`, {
+				name: objectType.name,
+				cssClass: objectType.icon,
+				...(objectType.description && {
+					description: objectType.description,
+				}),
 			});
-		});
+		}
 
 		openmct.composition.addProvider(compositionProvider as CompositionProvider);
 	};
