@@ -116,7 +116,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         })
     }
 
-    pub fn start_ss_measure(&mut self) -> Result<i32, ToFError> {
+    pub fn start_ss_measure(&mut self) -> Result<(), ToFError> {
         // start single shot measurement
         if let Err(e) = self.i2c.write_byte_to_register_16(
             self.device_address,
@@ -125,7 +125,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         ) {
             return Err(ToFError::I2cError(e));
         }
-        Ok(1)
+        Ok(())
     }
 
     pub async fn poll_range(&mut self) {
@@ -155,7 +155,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         Some(range_byte)
     }
 
-    pub fn start_cts_measure(&mut self) -> Result<i32, ToFError> {
+    pub fn start_cts_measure(&mut self) -> Result<(), ToFError> {
         // start continuous measurement
         if let Err(e) = self.i2c.write_byte_to_register_16(
             self.device_address,
@@ -164,7 +164,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         ) {
             return Err(ToFError::I2cError(e));
         }
-        Ok(1)
+        Ok(())
     }
 
     pub fn check_reset(&mut self) -> bool {
@@ -175,7 +175,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         reset_value == 1
     }
 
-    pub fn clear_interrupts(&mut self) -> Result<i32, ToFError> {
+    pub fn clear_interrupts(&mut self) -> Result<(), ToFError> {
         // at the end clear interrupts
         if let Err(e) = self.i2c.write_byte_to_register_16(
             self.device_address,
@@ -184,7 +184,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         ) {
             return Err(ToFError::I2cError(e));
         }
-        Ok(1)
+        Ok(())
     }
 }
 
@@ -366,6 +366,10 @@ mod tests {
     #[test]
     fn test_range_read_255() {
         let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (ToFAddresses::Address29 as u8, SYS_FRESH_OUT_RESET),
+            Some(1),
+        );
         let _ = i2c_values.insert((ToFAddresses::Address29 as u8, RESULT_RANGE_VAL), Some(255));
         let mut i2c = MockI2c::new(i2c_values);
         let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();

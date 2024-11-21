@@ -24,7 +24,7 @@ pub async fn read_tof_range() -> ! {
 
         match tof_sensor.read_range() {
             Some(range) => {
-                defmt::info!("Range: {:?}", range)
+                defmt::info!("Range: {:?} mm", range)
             }
             None => {
                 defmt::info!("Failed to read range")
