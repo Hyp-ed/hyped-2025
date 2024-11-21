@@ -22,7 +22,6 @@ pub struct Localizer {
     previous_velocity: f64,
     acceleration: f64,
     kalman_filter: KalmanFilter,
-    accelerometer_preprocessor: AccelerometerPreprocessor,
     keyence_checker: KeyenceAgrees,
     keyence_val: f64,
     optical_val: f64,
@@ -30,7 +29,7 @@ pub struct Localizer {
 }
 
 impl Localizer {
-    pub fn new(_kalman_filter: KalmanFilter) -> Localizer {
+    pub fn new() -> Localizer {
         let initial_state = Vector2::new(0.0, 0.0);
         let initial_covariance = Matrix2::new(1.0, 0.0, 0.0, 1.0);
         let transition_matrix = Matrix2::new(1.0, DELTA_T, 0.0, 1.0);
@@ -73,7 +72,6 @@ impl Localizer {
             previous_velocity: 0.0,
             acceleration: 0.0,
             kalman_filter,
-            accelerometer_preprocessor: AccelerometerPreprocessor::new(),
             keyence_checker: KeyenceAgrees::new(),
             keyence_val: 0.0,
             optical_val: 0.0,
@@ -151,6 +149,5 @@ impl Localizer {
         self.velocity = state[1];
         self.acceleration = (self.velocity - self.previous_velocity) / DELTA_T; //TODOLater: is this good enough?
         self.previous_velocity = self.velocity;
-
     }
 }
