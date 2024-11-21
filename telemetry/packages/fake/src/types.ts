@@ -11,13 +11,13 @@ export type SensorData = Record<string, LiveReading>;
  * Sensor property containing values for each of its measured quantities
  */
 export type Readings = {
-  [measurement: string]: number;
+	[measurement: string]: number;
 };
 
 /**
  * Return type for sensor class instantiation
  */
 export type BaseSensor = {
-  getData: (t: number) => Readings;
-  getRandomData: (prevValue: number, readings: Readings) => Readings;
+	getData: (t: number) => Readings;
+	getRandomData: (prevValue: number, readings: Readings) => Readings;
 };
