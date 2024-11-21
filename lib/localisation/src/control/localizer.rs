@@ -19,9 +19,9 @@ const STRIPE_WIDTH: f64 = 1.0;
 pub struct Localizer {
     displacement: f64,
     velocity: f64,
+    previous_velocity: f64,
     acceleration: f64,
     kalman_filter: KalmanFilter,
-    accelerometer_preprocessor: AccelerometerPreprocessor,
     keyence_checker: KeyenceAgrees,
     keyence_val: f64,
     optical_val: f64,
@@ -69,9 +69,10 @@ impl Localizer {
         Localizer {
             displacement: 0.0,
             velocity: 0.0,
+            previous_velocity: 0.0,
             acceleration: 0.0,
             kalman_filter,
-            accelerometer_preprocessor: AccelerometerPreprocessor::new(),
+            //accelerometer_preprocessor: AccelerometerPreprocessor::new(),
             keyence_checker: KeyenceAgrees::new(),
             keyence_val: 0.0,
             optical_val: 0.0,
@@ -116,7 +117,7 @@ impl Localizer {
         let processed_accelerometer_data = processed_accelerometer_data.unwrap();
         self.accelerometer_val = 0.0;
         for i in 0..K_NUM_ACCELEROMETERS {
-            for j in 0..K_NUM_AXIS {
+            for _ in 0..K_NUM_AXIS {
                 self.accelerometer_val += processed_accelerometer_data[i] as f64;
             }
         }
@@ -147,6 +148,8 @@ impl Localizer {
 
         self.displacement = state[0];
         self.velocity = state[1];
-        //TODOLater: Acceleration!
+        self.acceleration = (self.velocity - self.previous_velocity) / DELTA_T; //TODOLater: is this good enough?
+        self.previous_velocity = self.velocity;
+
     }
 }
