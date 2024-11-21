@@ -269,7 +269,11 @@ mod tests {
 
     #[test]
     fn test_tof_config() {
-        let i2c_values = FnvIndexMap::new();
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (ToFAddresses::Address29 as u8, SYS_FRESH_OUT_RESET),
+            Some(1),
+        );
         let mut i2c = MockI2c::new(i2c_values);
         let _ = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29);
 
@@ -308,7 +312,11 @@ mod tests {
 
     #[test]
     fn test_start_ss() {
-        let i2c_values = FnvIndexMap::new();
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (ToFAddresses::Address29 as u8, SYS_FRESH_OUT_RESET),
+            Some(1),
+        );
         let mut i2c = MockI2c::new(i2c_values);
         let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
         tof.start_ss_measure().unwrap();
@@ -321,7 +329,11 @@ mod tests {
 
     #[test]
     fn test_start_cts() {
-        let i2c_values = FnvIndexMap::new();
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (ToFAddresses::Address29 as u8, SYS_FRESH_OUT_RESET),
+            Some(1),
+        );
         let mut i2c = MockI2c::new(i2c_values);
         let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
         tof.start_cts_measure().unwrap();
@@ -334,7 +346,11 @@ mod tests {
 
     #[test]
     fn test_clear_interr() {
-        let i2c_values = FnvIndexMap::new();
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (ToFAddresses::Address29 as u8, SYS_FRESH_OUT_RESET),
+            Some(1),
+        );
         let mut i2c = MockI2c::new(i2c_values);
         let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
         tof.clear_interrupts().unwrap();
@@ -348,6 +364,10 @@ mod tests {
     #[test]
     fn test_range_read_0() {
         let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (ToFAddresses::Address29 as u8, SYS_FRESH_OUT_RESET),
+            Some(1),
+        );
         let _ = i2c_values.insert((ToFAddresses::Address29 as u8, RESULT_RANGE_VAL), Some(0));
         let mut i2c = MockI2c::new(i2c_values);
         let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
@@ -357,6 +377,10 @@ mod tests {
     #[test]
     fn test_range_read_200() {
         let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (ToFAddresses::Address29 as u8, SYS_FRESH_OUT_RESET),
+            Some(1),
+        );
         let _ = i2c_values.insert((ToFAddresses::Address29 as u8, RESULT_RANGE_VAL), Some(200));
         let mut i2c = MockI2c::new(i2c_values);
         let mut tof = TimeOfFlight::new(&mut i2c, ToFAddresses::Address29).unwrap();
