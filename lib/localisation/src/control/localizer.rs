@@ -78,7 +78,15 @@ impl Localizer {
             accelerometer_val: 0.0,
         }
     }
+}
 
+impl Default for Localizer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Localizer {
     pub fn preprocessor(
         &mut self,
         optical_data: Vec<Vec<f64, 2>, 2>,
