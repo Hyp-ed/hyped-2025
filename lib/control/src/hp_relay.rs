@@ -5,18 +5,18 @@ use hyped_io::gpio::HypedGpioPin;
 
 pub struct HighPowerRelay<T: HypedGpioPin> {
     gpio: T,
-};
+}
 
-impl<T> HighPowerRelay<T: HypedGpioPin> {
-    pub fn new() {
-        todo!()
+impl<T: HypedGpioPin> HighPowerRelay<T> {
+    pub fn new(gpio: T) -> HighPowerRelay<T> {
+        HighPowerRelay { gpio }
     }
 
     pub fn switch_on(&mut self) {
-        todo!()
+        self.gpio.switch_on();
     }
 
     pub fn switch_off(&mut self) {
-        todo!()
+        self.gpio.switch_off();
     }
 }
