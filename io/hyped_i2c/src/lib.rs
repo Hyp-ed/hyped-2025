@@ -1,3 +1,5 @@
+#![no_std]
+
 /// I2C errors that can occur
 /// From: https://docs.embassy.dev/embassy-stm32/git/stm32g031c8/i2c/enum.Error.html
 #[derive(Debug)]
@@ -35,7 +37,7 @@ pub mod mock_i2c {
         writes: I2cValues,
     }
 
-    impl crate::i2c::HypedI2c for MockI2c {
+    impl crate::HypedI2c for MockI2c {
         /// Reads a byte by looking up the device address and register address in the map
         fn read_byte(&mut self, device_address: u8, register_address: u8) -> Option<u8> {
             self.values

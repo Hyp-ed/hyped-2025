@@ -1,9 +1,12 @@
+#![no_std]
+
 /// ADC trait used to abstract the ADC peripheral
 pub trait HypedAdc {
     fn read_value(&mut self) -> u16;
 }
 
 pub mod mock_adc {
+    use core::clone::Clone;
     use heapless::Vec;
 
     /// A mock ADC instance which can be used for testing
@@ -12,7 +15,7 @@ pub mod mock_adc {
         next_values: Vec<u16, 10>,
     }
 
-    impl crate::adc::HypedAdc for MockAdc {
+    impl crate::HypedAdc for MockAdc {
         /// Reads a value from the ADC
         fn read_value(&mut self) -> u16 {
             let next_value: u16 = self.next_values.pop().unwrap_or(self.current_value);

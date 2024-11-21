@@ -1,4 +1,4 @@
-use hyped_io::i2c::{HypedI2c, I2cError};
+use hyped_i2c::{HypedI2c, I2cError};
 
 /// Temperature implements the logic to read the temperature from the STTS22H temperature sensor
 /// using the I2C peripheral provided by the HypedI2c trait.
@@ -128,7 +128,7 @@ const TWO_POWER_16: f32 = 65536.0;
 mod tests {
     use super::*;
     use heapless::FnvIndexMap;
-    use hyped_io::i2c::mock_i2c::MockI2c;
+    use hyped_i2c::mock_i2c::MockI2c;
 
     #[test]
     fn test_write_config() {

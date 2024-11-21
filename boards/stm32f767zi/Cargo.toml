@@ -23,5 +23,11 @@ critical-section = "1.1"
 embedded-storage = "0.3.1"
 static_cell = "2"
 
-hyped_io = { path = "../../lib/io" }
 hyped_sensors = { path = "../../lib/sensors" }
+
+hyped_adc = { path = "../../io/hyped_adc" }
+hyped_adc_derive = { path = "../../io/hyped_adc/hyped_adc_derive" }
+hyped_i2c = { path = "../../io/hyped_i2c" }
+hyped_i2c_derive = { path = "../../io/hyped_i2c/hyped_i2c_derive" }
+hyped_gpio_input = { path = "../../io/hyped_gpio_input" }
+hyped_gpio_input_derive = { path = "../../io/hyped_gpio_input/hyped_gpio_input_derive" }
