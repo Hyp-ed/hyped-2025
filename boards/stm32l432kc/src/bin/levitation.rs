@@ -63,7 +63,7 @@ async fn main(_spawner: Spawner) {
 
         let output_current_pid = pid_current.update(target_current, actual_current, dt);
 
-        let required_voltage = (actual_height + output_height_pid).min(MAX_VOLTAGE);
+        let required_voltage = (actual_current + output_height_pid).min(MAX_VOLTAGE);
 
         let duty_cycle = max_duty * (required_voltage / MAX_VOLTAGE);
 
