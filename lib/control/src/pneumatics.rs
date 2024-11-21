@@ -151,20 +151,23 @@ enum LateralSuspensionState {
     Retracted,
 }
 
-struct Pneumatics {
+struct Pneumatics<P: GpioOutputPin> {
     brakes: BrakeState,
     lateral_suspension: LateralSuspensionState,
-    brake_pin: GpioOutputPinStruct, //TODOLater Replace with GpioOutputPinStruct with an impl of GpioOutputPin
-    lateral_suspension_pin: GpioOutputPinStruct
+    brake_pin: P,
+    lateral_suspension_pin: P
 }
 
-impl Pneumatics {
-    fn new() -> Self {
+impl<P: GpioOutputPin> Pneumatics<P> {
+    fn new(mut brake_pin: P, mut lateral_suspension_pin: P) -> Self {
+        brake_pin.set_high();
+        lateral_suspension_pin.set_low();
+        
         Pneumatics {
             brakes: BrakeState::Engaged,
             lateral_suspension: LateralSuspensionState::Retracted,
-            brake_pin: 1,   // TODOLater replace with initial values once implemented
-            lateral_suspension_pin: 0
+            brake_pin: brake_pin,   
+            lateral_suspension_pin: lateral_suspension_pin
         }
     }
 
