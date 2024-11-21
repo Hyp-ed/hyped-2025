@@ -1,6 +1,11 @@
 /// Abstraction for a GPIO pin so that sensors can be tested with a mock GPIO pin
-pub trait GpioPin {
+pub trait GpioInputPin {
     fn is_high(&mut self) -> bool;
+}
+
+pub trait GpioOutputPin {
+  fn set_high(&mut self);
+  fn set_low(&mut self);
 }
 
 pub mod mock_gpio {
@@ -12,7 +17,7 @@ pub mod mock_gpio {
         next_values: Vec<bool, 10>,
     }
 
-    impl crate::gpio::GpioPin for MockGpio {
+    impl crate::gpio::GpioInputPin for MockGpio {
         fn is_high(&mut self) -> bool {
             let next_value = self.next_values.pop().unwrap_or(self.current_value);
             self.current_value = next_value;

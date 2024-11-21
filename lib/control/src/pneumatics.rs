@@ -1,4 +1,5 @@
 use hyped_core::types::DigitalSignal;
+use hyped_io::gpio::GpioOutputPin;
 
 /// A solenoid is either on or off
 #[derive(Debug, PartialEq)]
@@ -153,6 +154,8 @@ enum LateralSuspensionState {
 struct Pneumatics {
     brakes: BrakeState,
     lateral_suspension: LateralSuspensionState,
+    brake_pin: GpioOutputPinStruct, //TODOLater Replace with GpioOutputPinStruct with an impl of GpioOutputPin
+    lateral_suspension_pin: GpioOutputPinStruct
 }
 
 impl Pneumatics {
@@ -160,22 +163,28 @@ impl Pneumatics {
         Pneumatics {
             brakes: BrakeState::Engaged,
             lateral_suspension: LateralSuspensionState::Retracted,
+            brake_pin: 1,   // TODOLater replace with initial values once implemented
+            lateral_suspension_pin: 0
         }
     }
 
     fn engage_brakes(&mut self) {
         self.brakes = BrakeState::Engaged;
+        self.brake_pin.set_high();
     }
 
     fn disengage_brakes(&mut self) {
         self.brakes = BrakeState::Disengaged;
+        self.brake_pin.set_low();
     }
 
     fn deploy_lateral_suspension(&mut self) {
         self.lateral_suspension = LateralSuspensionState::Deployed;
+        self.lateral_suspension_pin.set_high();
     }
 
     fn retract_lateral_suspension(&mut self) {
         self.lateral_suspension = LateralSuspensionState::Retracted;
+        self.lateral_suspension_pin.set_low();
     }
 }
