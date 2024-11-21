@@ -11,7 +11,7 @@ use crate::{
 use heapless::Vec;
 
 use libm::pow;
-use nalgebra::{Matrix2, Vector2};
+use nalgebra::{Matrix2, Vector1, Vector2};
 
 const DELTA_T: f64 = 0.01;
 const STRIPE_WIDTH: f64 = 1.0;
@@ -87,6 +87,12 @@ impl Localizer {
     ) {
         let processed_optical_data = process_optical_data(optical_data);
 
+        //TODOLater: Make sure this is correct way get velocity
+        for i in 0..2 {
+            self.optical_val += processed_optical_data[i] as f64;
+        }
+        self.optical_val /= 2.0;
+
         let keyence_status = self
             .keyence_checker
             .check_keyence_agrees(keyence_data.clone());
@@ -103,15 +109,44 @@ impl Localizer {
         let processed_accelerometer_data =
             accelerometer_preprocessor.process_data(accelerometer_data);
         if processed_accelerometer_data.is_none() {
-            // TODOLater: Change state if accelerometer data is unacceptable
+            // TODOLater: Change state
             return;
         }
 
         let processed_accelerometer_data = processed_accelerometer_data.unwrap();
+        self.accelerometer_val = 0.0;
+        for i in 0..K_NUM_ACCELEROMETERS {
+            for j in 0..K_NUM_AXIS {
+                self.accelerometer_val += processed_accelerometer_data[i] as f64;
+            }
+        }
+        self.accelerometer_val /= (K_NUM_ACCELEROMETERS * K_NUM_AXIS) as f64;
     }
 
-    pub fn update(&mut self) {
+    pub fn iteration(
+        &mut self,
+        optical_data: Vec<Vec<f64, 2>, 2>,
+        keyence_data: Vec<u32, 2>,
+        accelerometer_data: RawAccelerometerData<K_NUM_ACCELEROMETERS, K_NUM_AXIS>,
+    ) {
+        self.preprocessor(
+            optical_data.clone(),
+            keyence_data.clone(),
+            accelerometer_data.clone(),
+        );
 
-        // TODOLater: Implement filtrer + update function
+        let control_input = Vector1::new(self.accelerometer_val);
+
+        self.kalman_filter.predict(&control_input);
+
+        let measurement = Vector2::new(self.keyence_val * STRIPE_WIDTH, self.optical_val);
+
+        self.kalman_filter.update(&measurement);
+
+        let state = self.kalman_filter.get_state();
+
+        self.displacement = state[0];
+        self.velocity = state[1];
+        //TODOLater: Acceleration!
     }
 }
