@@ -11,15 +11,15 @@ use hyped_io::i2c::{HypedI2c, I2cError};
 ///
 /// Data sheet: https://www.st.com/resource/en/datasheet/lis2ds12.pdf
 /// Application notes: https://www.st.com/resource/en/application_note/an4748-lis2ds12-alwayson-3axis-accelerometer-stmicroelectronics.pdf
-pub struct Accelerometer<T: HypedI2c> {
-    i2c: T,
+pub struct Accelerometer<'a, T: HypedI2c + 'a> {
+    i2c: &'a mut T,
     device_address: u8,
 }
 
-impl<T: HypedI2c> Accelerometer<T> {
+impl<'a, T: HypedI2c> Accelerometer<'a, T> {
     /// Create a new instance of the accelerometer and attempt to configure it
     pub fn new(
-        mut i2c: T,
+        i2c: &'a mut T,
         device_address: AccelerometerAddresses,
     ) -> Result<Self, AccelerometerError> {
         let device_address = device_address as u8;
@@ -76,7 +76,7 @@ impl<T: HypedI2c> Accelerometer<T> {
     }
 }
 
-#[allow(dead_code)]
+#[derive(Debug, PartialEq)]
 pub struct AccelerationValues {
     x: f32,
     y: f32,
@@ -88,6 +88,7 @@ pub enum AccelerometerAddresses {
     Address1e = 0x1E,
 }
 
+#[derive(Debug)]
 pub enum AccelerometerError {
     I2cError(I2cError),
 }
@@ -130,3 +131,374 @@ const LIS2DS12_DATA_NOT_READY: u8 = 0x00;
 const LIS2DS12_CTRL1_VALUE: u8 = 0x54; // 200Hz, high performance, continuous, +-16g
 const LIS2DS12_CTRL2_VALUE: u8 = 0x0;
 const LIS2DS12_FIFO_CTRL_VALUE: u8 = 0x30;
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use heapless::FnvIndexMap;
+    use hyped_io::i2c::mock_i2c::MockI2c;
+
+    #[test]
+    fn test_write_config() {
+        let i2c_values = FnvIndexMap::new();
+        let mut i2c = MockI2c::new(i2c_values);
+        let _ = Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d);
+        assert_eq!(
+            i2c.get_writes().get(&(
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_CTRL1_ADDRESS
+            )),
+            Some(&Some(LIS2DS12_CTRL1_VALUE))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_CTRL2_ADDRESS
+            )),
+            Some(&Some(LIS2DS12_CTRL2_VALUE))
+        );
+        assert_eq!(
+            i2c.get_writes().get(&(
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_FIFO_CTRL_ADDRESS
+            )),
+            Some(&Some(LIS2DS12_FIFO_CTRL_VALUE))
+        );
+    }
+
+    #[test]
+    fn test_accel_read_zero() {
+        let mut i2c_values = FnvIndexMap::new();
+
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            Some(0x00),
+        );
+
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut accelerometer =
+            Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
+        assert_eq!(
+            accelerometer.read(),
+            Some(AccelerationValues {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0
+            })
+        );
+    }
+
+    #[test]
+    fn test_accel_read_x() {
+        let mut i2c_values = FnvIndexMap::new();
+
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            Some(0x09),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            Some(0xc4),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            Some(0x00),
+        );
+
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut accelerometer =
+            Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
+        assert_eq!(
+            accelerometer.read(),
+            Some(AccelerationValues {
+                x: 1220.0,
+                y: 0.0,
+                z: 0.0
+            })
+        );
+    }
+
+    #[test]
+    fn test_accel_read_minus_x() {
+        let mut i2c_values = FnvIndexMap::new();
+
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            Some(0xf6),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            Some(0x3c),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            Some(0x00),
+        );
+
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut accelerometer =
+            Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
+        assert_eq!(
+            accelerometer.read(),
+            Some(AccelerationValues {
+                x: -1220.0,
+                y: 0.0,
+                z: 0.0
+            })
+        );
+    }
+
+    #[test]
+    fn test_accel_read_y() {
+        let mut i2c_values = FnvIndexMap::new();
+
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            Some(0x09),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            Some(0xc4),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            Some(0x00),
+        );
+
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut accelerometer =
+            Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
+        assert_eq!(
+            accelerometer.read(),
+            Some(AccelerationValues {
+                x: 0.0,
+                y: 1220.0,
+                z: 0.0
+            })
+        );
+    }
+
+    #[test]
+    fn test_accel_read_minus_y() {
+        let mut i2c_values = FnvIndexMap::new();
+
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            Some(0xf6),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            Some(0x3c),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            Some(0x00),
+        );
+
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut accelerometer =
+            Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
+        assert_eq!(
+            accelerometer.read(),
+            Some(AccelerationValues {
+                x: 0.0,
+                y: -1220.0,
+                z: 0.0
+            })
+        );
+    }
+
+    #[test]
+    fn test_accel_read_z() {
+        let mut i2c_values = FnvIndexMap::new();
+
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            Some(0x09),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            Some(0xc4),
+        );
+
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut accelerometer =
+            Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
+        assert_eq!(
+            accelerometer.read(),
+            Some(AccelerationValues {
+                x: 0.0,
+                y: 0.0,
+                z: 1220.0
+            })
+        );
+    }
+
+    #[test]
+    fn test_accel_read_minus_z() {
+        let mut i2c_values = FnvIndexMap::new();
+
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            Some(0xf6),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            Some(0x3c),
+        );
+
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut accelerometer =
+            Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
+        assert_eq!(
+            accelerometer.read(),
+            Some(AccelerationValues {
+                x: 0.0,
+                y: 0.0,
+                z: -1220.0
+            })
+        );
+    }
+
+    #[test]
+    fn test_accel_read_combined() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            Some(0xfa),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            Some(0x00),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            Some(0xfc),
+        );
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            Some(0x18),
+        );
+
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut accelerometer =
+            Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
+        assert_eq!(
+            accelerometer.read(),
+            Some(AccelerationValues {
+                x: 122.0,
+                y: 244.0,
+                z: -488.0
+            })
+        );
+    }
+}
