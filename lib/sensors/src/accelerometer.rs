@@ -103,6 +103,7 @@ pub enum AccelerometerError {
     I2cError(I2cError),
 }
 
+#[derive(Debug, PartialEq)]
 pub enum Status {
     Ok,
     DataNotReady,
@@ -148,7 +149,6 @@ const LIS2DS12_FIFO_CTRL_VALUE: u8 = 0x30;
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
     use heapless::FnvIndexMap;
     use hyped_io::i2c::mock_i2c::MockI2c;
@@ -514,5 +514,18 @@ mod tests {
                 z: -488.0
             })
         );
+    }
+
+    #[test]
+    fn test_accel_status_data_not_ready() {
+        let mut i2c_values = FnvIndexMap::new();
+        let _ = i2c_values.insert(
+            (AccelerometerAddresses::Address1d as u8, LIS2DS12_STATUS),
+            Some(LIS2DS12_DATA_NOT_READY),
+        );
+        let mut i2c = MockI2c::new(i2c_values);
+        let mut accelerometer =
+            Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
+        assert_eq!(accelerometer.check_status(), Status::DataNotReady);
     }
 }
