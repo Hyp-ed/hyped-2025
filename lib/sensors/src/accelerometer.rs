@@ -57,10 +57,20 @@ impl<'a, T: HypedI2c> Accelerometer<'a, T> {
         let z_low_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Z_L)?;
         let z_high_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Z_H)?;
 
-        let x_combined = ((x_high_byte as u16) << 8 | x_low_byte as u16) as f32;
-        let y_combined = ((y_high_byte as u16) << 8 | y_low_byte as u16) as f32;
-        let z_combined = ((z_high_byte as u16) << 8 | z_low_byte as u16) as f32;
+        let mut x_combined = ((x_high_byte as u16) << 8 | x_low_byte as u16) as f32;
+        let mut y_combined = ((y_high_byte as u16) << 8 | y_low_byte as u16) as f32;
+        let mut z_combined = ((z_high_byte as u16) << 8 | z_low_byte as u16) as f32;
 
+        // Convert accelerations to to negative values if necessary.
+        if x_combined >= TWO_POWER_15 {
+            x_combined -= TWO_POWER_16;
+        }
+        if y_combined >= TWO_POWER_15 {
+            y_combined -= TWO_POWER_16;
+        }
+        if z_combined >= TWO_POWER_15 {
+            z_combined -= TWO_POWER_16;
+        }
         let x = x_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
         let y = y_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
         let z = z_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
@@ -122,6 +132,10 @@ const LIS2DS12_OUT_Z_H: u8 = 0x2D;
 
 // Scaling factor to convert accelerations into gs
 const LIS2DS12_ACCEL_SCALING_FACTOR: f32 = 0.488;
+
+// For handling 2's complement values
+const TWO_POWER_15: f32 = 32768.0;
+const TWO_POWER_16: f32 = 65536.0;
 
 const LIS2DS12_STATUS: u8 = 0x27;
 // Values to check the status of the accelerometer
