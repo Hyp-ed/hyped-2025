@@ -40,9 +40,9 @@ async fn main(_spawner: Spawner) {
 
     let p = embassy_stm32::init(Default::default());
 
-    let green_light = PwmPin::new_ch2(p.PB3, OutputType::PushPull);
+    let green_light = PwmPin::new_ch2(p.PB3, OutputType::PushPull); // TODOLater change to actual pin (this is just for testing)
 
-    let mut pwm = SimplePwm::new(p.TIM2, None, Some(green_light), None, None, hz(2000), CountingMode::EdgeAlignedUp);
+    let mut pwm = SimplePwm::new(p.TIM2, None, Some(green_light), None, None, hz(2000), CountingMode::EdgeAlignedUp); // TODOLater change to actual pin (this is just for testing)
     pwm.enable(Channel::Ch2);
 
     let max_duty = pwm.get_max_duty() as f32;
@@ -53,17 +53,18 @@ async fn main(_spawner: Spawner) {
         
         let actual_height = 0.7; // TODOLater we'll get that from a sensor
         
-        let dt = (Instant::now().as_micros() as f32) - time_start;
+        let dt = (Instant::now().as_micros() as f32) - time_start; // this gets the timeframe between the last change in the pwm signal for the PID
 
-        let target_curent = (pid_height.update(TARGET_HEIGHT, actual_height, dt)).min(MAX_CURRENT); // check if it is err or the actual target
+        let target_curent = (pid_height.update(TARGET_HEIGHT, actual_height, dt)).min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries)
 
         let actual_current = 1.0; // TODOLater we'll get that from a sensor
 
-        let required_voltage = (pid_current.update(target_current, actual_current, dt)).min(MAX_VOLTAGE);
+        let required_voltage = (pid_current.update(target_current, actual_current, dt)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries)
 
-        let duty_cycle = max_duty * (required_voltage / MAX_VOLTAGE);
+        let duty_cycle = max_duty * (required_voltage / MAX_VOLTAGE); // the duty cycle ranges from 0 to max_duty, so what fraction of that do we need
+                                                                      // probably TODOLater update how this is calculated
 
-        pwm.set_duty(Channel::Ch2, duty_cycle as u32);    
+        pwm.set_duty(Channel::Ch2, duty_cycle as u32);
 
         time_start = Instant::now().as_micros() as f32;
 
