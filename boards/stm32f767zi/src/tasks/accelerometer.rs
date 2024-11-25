@@ -2,7 +2,9 @@ use crate::io::i2c::Stm32f767ziI2c;
 use defmt_rtt as _;
 use embassy_stm32::i2c::I2c;
 use embassy_stm32::time::Hertz;
-use hyped_sensors::accelerometer::{AccelerationValues, Accelerometer, AccelerometerAddresses, Status};
+use hyped_sensors::accelerometer::{
+    AccelerationValues, Accelerometer, AccelerometerAddresses, Status,
+};
 
 /// Test task that reads the acceleration from the sensor and prints it to the console.
 #[embassy_executor::task]
@@ -13,7 +15,8 @@ pub async fn read_acceleration() -> ! {
 
     let mut accelerometer = Accelerometer::new(&mut hyped_i2c, AccelerometerAddresses::Address1d)
         .expect(
-            "Failed to create accelerometer. Check the wiring and the I2C address of the sensor.");
+            "Failed to create accelerometer. Check the wiring and the I2C address of the sensor.",
+        );
 
     loop {
         match accelerometer.check_status() {
@@ -28,7 +31,12 @@ pub async fn read_acceleration() -> ! {
 
         match accelerometer.read() {
             Some(accel_values) => {
-                defmt::info!("Acceleration: x={:?}mg, y={:?}mg, z={:?}mg", accel_values.x, accel_values.y, accel_values.z);
+                defmt::info!(
+                    "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg",
+                    accel_values.x,
+                    accel_values.y,
+                    accel_values.z
+                );
             }
             None => {
                 defmt::info!("Failed to read acceleration values.")
@@ -36,4 +44,3 @@ pub async fn read_acceleration() -> ! {
         }
     }
 }
-
