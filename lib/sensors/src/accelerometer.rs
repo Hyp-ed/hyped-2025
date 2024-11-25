@@ -488,11 +488,11 @@ mod tests {
         );
         let _ = i2c_values.insert(
             (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
-            Some(0x00),
+            Some(0x01),
         );
         let _ = i2c_values.insert(
             (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
-            Some(0x00),
+            Some(0xf4),
         );
         let _ = i2c_values.insert(
             (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
