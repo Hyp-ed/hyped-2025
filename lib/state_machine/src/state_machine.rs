@@ -5,8 +5,8 @@ use hyped_core::mqtt::HypedMqttClient;
 use rust_mqtt::utils::rng_generator::CountingRng;
 
 pub struct StateMachine<'a> {
-    pub(crate) current_state: State,
-    pub(crate) mqtt_client: HypedMqttClient<'a, TcpSocket<'a>, CountingRng>,
+    pub current_state: State,
+    pub mqtt_client: HypedMqttClient<'a, TcpSocket<'a>, CountingRng>,
 }
 
 impl<'a> StateMachine<'a> {
@@ -34,26 +34,5 @@ impl<'a> StateMachine<'a> {
                 );
             }
         }
-    }
-
-    pub async fn run(&mut self) {
-        self.mqtt_client.subscribe("stm").await;
-
-        while self.current_state != State::Shutdown {
-            let state = self.current_state.to_string();
-            self.publish_state("stm", state.as_bytes()).await;
-
-            let new_state = self.consume_state().await;
-            self.handle_transition(&new_state);
-        }
-    }
-
-    pub async fn publish_state(&mut self, topic: &str, payload: &[u8]) {
-        self.mqtt_client.send_message(topic, payload, true).await;
-    }
-
-    pub async fn consume_state(&mut self) -> State {
-        let new_state = self.mqtt_client.receive_message().await.unwrap();
-        State::from_string(new_state.1).unwrap()
     }
 }

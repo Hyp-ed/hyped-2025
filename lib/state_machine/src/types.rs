@@ -63,9 +63,7 @@ impl State {
     }
 
     pub fn transition(current_state: &State, to_state: &State) -> Option<State> {
-        let to_from_state = (current_state, to_state);
-
-        match to_from_state {
+        match (current_state, to_state) {
             (State::Idle, State::Calibrate) => Some(State::Calibrate),
             (State::Calibrate, State::Precharge) => Some(State::Precharge),
             (State::Precharge, State::ReadyForLevitation) => Some(State::ReadyForLevitation),
