@@ -1,12 +1,17 @@
-/// LED Driver
+use hyped_io::i2c::{HypedI2c, I2cError};
 
+/// LedDriver implements logic and required registers and addresses from the LP503x LED driver
+/// 
+/// LED driver is set to colour bank control mode, LED colour and brightness can only be set
+/// for those in bank control mode.
+/// All LEDs in bank control mode share the same colour and brightness changes unless set
+/// off bank control mode
+/// 
 /// When setting colours and brightness of LEDs, use the set_led_colours() function.
 ///     LEDs needing to be set are controlled by the addresses in either LED_CONFIG0 or LED_CONFIG1 registers
 ///     These addresses can be toggled with hexadecimal (E.G: registers 11101000 are set by the hex value E8)
-
-/// link to data sheet (https://www.ti.com/lit/ds/symlink/lp5036.pdf?HQS=dis-mous-null-mousermode-dsf-pf-null-wwe&ts=1698441544495&ref_url=https%253A%252F%252Fwww.mouser.co.uk%252F)
 ///
-use hyped_io::i2c::{HypedI2c, I2cError};
+/// link to data sheet (https://www.ti.com/lit/ds/symlink/lp5036.pdf?HQS=dis-mous-null-mousermode-dsf-pf-null-wwe&ts=1698441544495&ref_url=https%253A%252F%252Fwww.mouser.co.uk%252F)
 
 pub struct LedDriver<'a, T: HypedI2c + 'a> {
     i2c: &'a mut T,
@@ -198,7 +203,7 @@ mod tests {
         let mut i2c = MockI2c::new(i2c_values);
         let mut led_driver = LedDriver::new(&mut i2c, LedDriverAddresses::Address30)
             .expect("could not create led_driver");
-        let _ = led_driver.set_led_colour(LED_CONFIG1, 0x03, 0xFF, 0xFF, 0xFF, 0xFF);
+        let _ = led_driver.set_led_colour(LED_CONFIG1, 0xF, 0xFF, 0xFF, 0xFF, 0xFF);
 
         // Verify values are written to required registers
         assert_eq!(
