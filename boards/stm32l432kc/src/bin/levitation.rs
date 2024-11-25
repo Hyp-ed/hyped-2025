@@ -55,15 +55,11 @@ async fn main(_spawner: Spawner) {
         
         let dt = (Instant::now().as_micros() as f32) - time_start;
 
-        let output_height_pid = pid_height.update(TARGET_HEIGHT, actual_height, dt);
-
-        let target_current = (actual_height + output_height_pid).min(MAX_CURRENT);
+        let target_curent = (pid_height.update(TARGET_HEIGHT, actual_height, dt)).min(MAX_CURRENT); // check if it is err or the actual target
 
         let actual_current = 1.0; // TODOLater we'll get that from a sensor
 
-        let output_current_pid = pid_current.update(target_current, actual_current, dt);
-
-        let required_voltage = (actual_current + output_current_pid).min(MAX_VOLTAGE);
+        let required_voltage = (pid_current.update(target_current, actual_current, dt)).min(MAX_VOLTAGE);
 
         let duty_cycle = max_duty * (required_voltage / MAX_VOLTAGE);
 
