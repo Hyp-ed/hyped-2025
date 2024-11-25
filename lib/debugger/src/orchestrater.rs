@@ -1,4 +1,8 @@
-use std::{env, path::{Path, PathBuf}, process::Command};
+use std::{
+    env,
+    path::{Path, PathBuf},
+    process::Command,
+};
 
 pub type OrchestrationResult<T> = Result<T, OrchestrationError>;
 pub type OrchestrationError = Box<dyn std::error::Error>;
@@ -14,8 +18,16 @@ pub fn flash_with_flags(project: &Path, flags: &[&str]) -> OrchestrationResult<(
     let res = build_in_wd(flags);
 
     println!("[i] Moving current working directory back to original");
-    change_dir(&cwd).expect("Unable to recover to old CWD");    
-    Ok(())
+    change_dir(&cwd).expect("Unable to recover to old CWD");
+    match res {
+        Ok(exec) => {
+            println!("[i] Flashing board");
+            flash_board(&exec)?;
+            println!("[+] Board flashed successfully");
+            Ok(())
+        }
+        Err(e) => Err(e),
+    }
 }
 
 fn change_dir(pth: &Path) -> OrchestrationResult<()> {
@@ -61,13 +73,13 @@ fn build_in_wd(flags: &[&str]) -> OrchestrationResult<PathBuf> {
     Ok(PathBuf::from(exec))
 }
 
-fn build_board(flags: &[&str]) -> OrchestrationResult<String> { 
+fn build_board(flags: &[&str]) -> OrchestrationResult<String> {
     // Do not atempt to use the Cargo create to build the board as it will result in
-    // nothing but pain, corte-x has issues with running the cargo build command 
-    // because it failes to find the correct target board platform 
+    // nothing but pain, corte-x has issues with running the cargo build command
+    // because it failes to find the correct target board platform
     // Hence we need to change ot CWD into the correct location and build from there
     // This forces our hand to use --message-format=json to get the output of the build
-    // and then use the archain chants that are in  
+    // and then use the archain chants that are in
     let mut cargo = Command::new("cargo");
     let mut command = cargo
         .arg("build")
@@ -113,4 +125,9 @@ fn extract_bin_path_from_logs(log: &String) -> OrchestrationResult<PathBuf> {
         .find('"')
         .ok_or_else(|| OrchestrationError::from("Failed to find end of executable in build log"))?;
     Ok(PathBuf::from(&log[exec_start..exec_start + exec_end]))
+}
+
+
+fn flash_board(pth: &Path) -> OrchestrationResult<()>{
+    Ok(())
 }
