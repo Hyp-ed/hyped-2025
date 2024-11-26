@@ -1,5 +1,5 @@
-use core::cell::RefCell;
 use crate::io::Stm32l476rgI2c;
+use core::cell::RefCell;
 use defmt_rtt as _;
 use embassy_stm32::i2c::I2c;
 use embassy_stm32::time::Hertz;
