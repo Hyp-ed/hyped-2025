@@ -19,9 +19,13 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
             /// Read a byte from a register on a device
             fn read_byte(&mut self, device_address: u8, register_address: u8) -> Option<u8> {
                 let mut read = [0];
-                let result =
-                    self.i2c
-                        .blocking_write_read(device_address, [register_address].as_ref(), &mut read);
+                let result = self.i2c.lock(|i2c| {
+                    i2c.borrow_mut().blocking_write_read(
+                        device_address,
+                        [register_address].as_ref(),
+                        &mut read,
+                    )
+                });
                 match result {
                     Ok(_) => Some(read[0]),
                     Err(_) => None,
@@ -35,9 +39,10 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
                 register_address: u8,
                 data: u8,
             ) -> Result<(), I2cError> {
-                let result = self
-                    .i2c
-                    .blocking_write(device_address, [register_address, data].as_ref());
+                let result = self.i2c.lock(|i2c| {
+                    i2c.borrow_mut()
+                        .blocking_write(device_address, [register_address, data].as_ref())
+                });
                 match result {
                     Ok(_) => Ok(()),
                     Err(e) => Err(match e {
@@ -55,7 +60,7 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
 
         impl #impl_generics #name #ty_generics {
             /// Create a new instance of our I2C implementation for the STM32L476RG
-            pub fn new(i2c: I2c<'d, Blocking>) -> Self {
+            pub fn new(i2c: Mutex<CriticalSectionRawMutex, RefCell<I2c<'d, Blocking>>>) -> Self {
                 Self { i2c }
             }
         }
