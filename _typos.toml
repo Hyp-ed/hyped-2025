@@ -2,4 +2,4 @@
 mosquitto = "mosquitto"
 
 [files]
-extend-exclude = ["./telemetry/pnpm-lock.yaml"]
+extend-exclude = ["telemetry/pnpm-lock.yaml"]
