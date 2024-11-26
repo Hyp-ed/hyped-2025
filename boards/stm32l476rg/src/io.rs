@@ -1,3 +1,26 @@
-pub mod adc;
-pub mod gpio;
-pub mod i2c;
+use embassy_stm32::adc::{Adc, AnyAdcChannel, Instance};
+use embassy_stm32::gpio::Input;
+use embassy_stm32::{i2c::I2c, mode::Blocking};
+
+use hyped_adc::HypedAdc;
+use hyped_adc_derive::HypedAdc;
+use hyped_gpio_input::HypedGpioInput;
+use hyped_gpio_input_derive::HypedGpioInput;
+use hyped_i2c::{HypedI2c, I2cError};
+use hyped_i2c_derive::HypedI2c;
+
+#[derive(HypedAdc)]
+pub struct Stm32l476rgAdc<'d, T: Instance> {
+    adc: Adc<'d, T>,
+    channel: AnyAdcChannel<T>,
+}
+
+#[derive(HypedGpioInput)]
+pub struct Stm32l476rgGpioInput {
+    pin: Input<'static>,
+}
+
+#[derive(HypedI2c)]
+pub struct Stm32l476rgI2c<'d> {
+    i2c: I2c<'d, Blocking>,
+}

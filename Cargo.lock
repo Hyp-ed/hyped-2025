@@ -275,6 +275,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_adc"
+version = "0.1.0"
+dependencies = [
+ "heapless",
+]
+
+[[package]]
 name = "hyped_config"
 version = "0.1.0"
 dependencies = [
@@ -296,7 +303,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "hyped_io"
+name = "hyped_gpio_input"
+version = "0.1.0"
+dependencies = [
+ "heapless",
+]
+
+[[package]]
+name = "hyped_i2c"
 version = "0.1.0"
 dependencies = [
  "embassy-sync",
@@ -319,7 +333,26 @@ dependencies = [
  "embassy-sync",
  "heapless",
  "hyped_core",
- "hyped_io",
+ "hyped_gpio_input",
+ "hyped_i2c",
+]
+
+[[package]]
+name = "hyped_spi"
+version = "0.1.0"
+dependencies = [
+ "heapless",
+]
+
+[[package]]
+name = "hyped_state_machine"
+version = "0.1.0"
+dependencies = [
+ "defmt",
+ "embassy-net",
+ "heapless",
+ "hyped_core",
+ "rust-mqtt",
 ]
 
 [[package]]
