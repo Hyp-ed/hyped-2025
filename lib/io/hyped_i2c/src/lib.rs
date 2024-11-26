@@ -39,7 +39,7 @@ pub mod mock_i2c {
         writes: I2cValues,
     }
 
-    impl crate::HypedI2c for MockI2c {
+    impl crate::HypedI2c for MockI2c<'_> {
         /// Reads a byte by looking up the device address and register address in the map
         fn read_byte(&mut self, device_address: u8, register_address: u8) -> Option<u8> {
             self.values.lock(|values| {
