@@ -1,4 +1,4 @@
-use crate::io::i2c::Stm32l476rgI2c;
+use crate::io::Stm32l476rgI2c;
 use defmt_rtt as _;
 use embassy_stm32::i2c::I2c;
 use embassy_stm32::time::Hertz;

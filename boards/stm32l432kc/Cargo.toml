@@ -23,6 +23,5 @@ critical-section = "1.1"
 embedded-storage = "0.3.1"
 static_cell = "2"
 
-hyped_io = { path = "../../lib/io" }
 hyped_sensors = { path = "../../lib/sensors" }
 advanced-pid = { version = "0.2.2", default-features = false }

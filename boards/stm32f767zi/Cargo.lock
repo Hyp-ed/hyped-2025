@@ -531,6 +531,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_adc"
+version = "0.1.0"
+dependencies = [
+ "heapless",
+]
+
+[[package]]
+name = "hyped_adc_derive"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn 2.0.79",
+]
+
+[[package]]
 name = "hyped_boards_stm32f767zi"
 version = "0.1.0"
 dependencies = [
@@ -547,7 +562,12 @@ dependencies = [
  "embassy-time",
  "embedded-hal 0.2.7",
  "embedded-storage",
- "hyped_io",
+ "hyped_adc",
+ "hyped_adc_derive",
+ "hyped_gpio_input",
+ "hyped_gpio_input_derive",
+ "hyped_i2c",
+ "hyped_i2c_derive",
  "hyped_sensors",
  "panic-probe",
  "rand_core",
@@ -568,10 +588,33 @@ dependencies = [
 ]
 
 [[package]]
-name = "hyped_io"
+name = "hyped_gpio_input"
 version = "0.1.0"
 dependencies = [
  "heapless",
+]
+
+[[package]]
+name = "hyped_gpio_input_derive"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn 2.0.79",
+]
+
+[[package]]
+name = "hyped_i2c"
+version = "0.1.0"
+dependencies = [
+ "heapless",
+]
+
+[[package]]
+name = "hyped_i2c_derive"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn 2.0.79",
 ]
 
 [[package]]
@@ -580,7 +623,8 @@ version = "0.1.0"
 dependencies = [
  "heapless",
  "hyped_core",
- "hyped_io",
+ "hyped_gpio_input",
+ "hyped_i2c",
 ]
 
 [[package]]

@@ -1,3 +1,5 @@
+#![no_std]
+
 /// SPI errors that can occur
 /// From: https://docs.embassy.dev/embassy-stm32/git/stm32f103c8/spi/enum.Error.html
 pub enum SpiError {

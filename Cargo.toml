@@ -1,7 +1,10 @@
 [workspace]
 members = [
   "config",
-  "lib/*"
+  "lib/core",
+  "lib/io/*",
+  "lib/localisation",
+  "lib/sensors"
 ]
 exclude = [
   "boards/stm32l476rg",
