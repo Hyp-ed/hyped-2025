@@ -27,7 +27,6 @@ services:
       - /usr/src/app/packages/public-app/node_modules
       - /usr/src/app/packages/public-app/.next
       - /usr/src/app/packages/fake/node_modules
-      - /usr/src/app/packages/eslint-config/node_modules
       - /usr/src/app/packages/e2e-tests/node_modules
     networks:
       - telemetry
