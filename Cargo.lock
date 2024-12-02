@@ -298,6 +298,7 @@ dependencies = [
 name = "hyped_adc"
 version = "0.1.0"
 dependencies = [
+ "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy)",
  "heapless",
 ]
 
@@ -326,7 +327,6 @@ dependencies = [
 name = "hyped_gpio_input"
 version = "0.1.0"
 dependencies = [
- "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy)",
  "heapless",
 ]
 
@@ -334,7 +334,7 @@ dependencies = [
 name = "hyped_i2c"
 version = "0.1.0"
 dependencies = [
- "embassy-sync",
+ "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f706318cc0870a459550b7)",
  "heapless",
 ]
 
@@ -351,7 +351,7 @@ dependencies = [
 name = "hyped_sensors"
 version = "0.1.0"
 dependencies = [
- "embassy-sync",
+ "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f706318cc0870a459550b7)",
  "heapless",
  "hyped_core",
  "hyped_gpio_input",
@@ -362,7 +362,7 @@ dependencies = [
 name = "hyped_spi"
 version = "0.1.0"
 dependencies = [
- "embassy-sync",
+ "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f706318cc0870a459550b7)",
  "heapless",
 ]
 

@@ -1,5 +1,7 @@
 #![no_std]
 
+pub mod i2c_mux;
+
 /// I2C errors that can occur
 /// From: https://docs.embassy.dev/embassy-stm32/git/stm32g031c8/i2c/enum.Error.html
 #[derive(Debug)]

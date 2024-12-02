@@ -1,4 +1,4 @@
-use crate::i2c::{HypedI2c, I2cError};
+use crate::{HypedI2c, I2cError};
 use core::cell::RefCell;
 use embassy_sync::blocking_mutex::{raw::CriticalSectionRawMutex, Mutex};
 
