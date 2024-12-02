@@ -10,7 +10,7 @@ rust-mqtt = { version = "0.3.0", default-features = false, features = ["defmt"] 
 embedded-io-async = { version = "0.6.1" }
 rand_core = "0.6.3"
 serde = { version = "1.0", default-features = false, features = ["derive"] }
-embassy-net = { version = "0.4.0", default-features = false, features = ["defmt", "tcp", "proto-ipv4", "medium-ip"],  git = "https://github.com/embassy-rs/embassy", rev = "1c466b81e6af6b34b1f706318cc0870a459550b7"}
+embassy-net = { version = "0.4.0", default-features = false, features = ["defmt", "tcp", "proto-ipv4", "medium-ip"], git = "https://github.com/embassy-rs/embassy", rev = "1c466b81e6af6b34b1f706318cc0870a459550b7"}
 
 [features]
 std = []

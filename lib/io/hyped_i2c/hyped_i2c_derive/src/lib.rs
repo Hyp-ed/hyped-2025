@@ -56,6 +56,25 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
                     }),
                 }
             }
+
+            /// Write a byte to a device
+            fn write_byte(&mut self, device_address: u8, data: u8) -> Result<(), I2cError> {
+                let result = self.i2c.lock(|i2c| {
+                    i2c.borrow_mut().blocking_write(device_address, [data].as_ref())
+                });
+                match result {
+                    Ok(_) => Ok(()),
+                    Err(e) => Err(match e {
+                        embassy_stm32::i2c::Error::Bus => I2cError::Bus,
+                        embassy_stm32::i2c::Error::Arbitration => I2cError::Arbitration,
+                        embassy_stm32::i2c::Error::Nack => I2cError::Nack,
+                        embassy_stm32::i2c::Error::Timeout => I2cError::Timeout,
+                        embassy_stm32::i2c::Error::Crc => I2cError::Crc,
+                        embassy_stm32::i2c::Error::Overrun => I2cError::Overrun,
+                        embassy_stm32::i2c::Error::ZeroLengthTransfer => I2cError::ZeroLengthTransfer,
+                    }),
+                }
+            }
         }
 
         impl #impl_generics #name #ty_generics {

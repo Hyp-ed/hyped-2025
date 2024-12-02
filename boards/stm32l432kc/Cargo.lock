@@ -591,6 +591,7 @@ dependencies = [
 name = "hyped_i2c"
 version = "0.1.0"
 dependencies = [
+ "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy)",
  "heapless",
 ]
 
