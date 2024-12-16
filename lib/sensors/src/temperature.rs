@@ -192,7 +192,7 @@ mod tests {
         let mut i2c = MockI2c::new(&i2c_values);
         let mut temperature =
             Temperature::new(&mut i2c, TemperatureAddresses::Address3f, None).unwrap();
-        assert_eq!(temperature.read(), Some(SensorValueRange::Warning(0.0)));
+        assert_eq!(temperature.read(), Some(SensorValueRange::Critical(0.0)));
     }
 
     #[test]
