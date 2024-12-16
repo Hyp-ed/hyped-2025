@@ -128,9 +128,9 @@ impl Status {
 /// - Warning: 0.0 to 20.0 and 80.0 to 100.0 degrees Celsius
 /// - Critical: Below 0.0 and above 100.0 degrees Celsius
 pub fn default_calculate_bounds(value: f32) -> SensorValueRange<f32> {
-    if value < 0.0 || value > 100.0 {
+    if value <= 0.0 || value >= 100.0 {
         SensorValueRange::Critical(value)
-    } else if value < 20.0 || value > 80.0 {
+    } else if value <= 20.0 || value >= 80.0 {
         SensorValueRange::Warning(value)
     } else {
         SensorValueRange::Safe(value)
