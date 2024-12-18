@@ -21,23 +21,14 @@ impl<'a, T: HypedI2c> Temperature<'a, T> {
         i2c: &'a mut T,
         device_address: TemperatureAddresses,
     ) -> Result<Self, TemperatureError> {
-        // Set up the temperature sensor by sending the configuration settings to the STTS22H_CTRL register
-        let device_address = device_address as u8;
-        match i2c.write_byte_to_register(device_address, STTS22H_CTRL, STTS22H_CONFIG_SETTINGS) {
-            Ok(_) => Ok(Self {
-                i2c,
-                device_address,
-                calculate_bounds: default_calculate_bounds,
-            }),
-            Err(e) => Err(TemperatureError::I2cError(e)),
-        }
+        Self::new_with_bounds(i2c, device_address, default_calculate_bounds)
     }
 
     /// Create a new instance of the temperature sensor with the specified bounds and attempt to configure it
     pub fn new_with_bounds(
         i2c: &'a mut T,
         device_address: TemperatureAddresses,
-        calculate_bounds: Option<fn(f32) -> SensorValueRange<f32>>,
+        calculate_bounds: fn(f32) -> SensorValueRange<f32>,
     ) -> Result<Self, TemperatureError> {
         // Set up the temperature sensor by sending the configuration settings to the STTS22H_CTRL register
         let device_address = device_address as u8;
@@ -45,7 +36,7 @@ impl<'a, T: HypedI2c> Temperature<'a, T> {
             Ok(_) => Ok(Self {
                 i2c,
                 device_address,
-                calculate_bounds: calculate_bounds.unwrap_or(default_calculate_bounds),
+                calculate_bounds,
             }),
             Err(e) => Err(TemperatureError::I2cError(e)),
         }
