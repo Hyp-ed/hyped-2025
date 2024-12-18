@@ -22,12 +22,8 @@ pub async fn read_temp() -> ! {
     )));
     let mut hyped_i2c = Stm32l476rgI2c::new(i2c);
 
-    let mut temperature_sensor = Temperature::new(
-        &mut hyped_i2c,
-        TemperatureAddresses::Address3f,
-        None,
-    )
-    .expect(
+    let mut temperature_sensor = Temperature::new(&mut hyped_i2c, TemperatureAddresses::Address3f)
+        .expect(
         "Failed to create temperature sensor. Check the wiring and the I2C address of the sensor.",
     );
 

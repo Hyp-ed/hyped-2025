@@ -3,6 +3,7 @@
 pub mod keyence;
 pub mod temperature;
 
+#[must_use]
 #[derive(PartialEq, Debug)]
 pub enum SensorValueRange<T: PartialEq> {
     /// This is the normal range of values for the sensor.
