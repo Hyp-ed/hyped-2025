@@ -4,7 +4,10 @@ use defmt_rtt as _;
 use embassy_stm32::i2c::I2c;
 use embassy_stm32::time::Hertz;
 use embassy_sync::blocking_mutex::Mutex;
-use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
+use hyped_sensors::{
+    temperature::{Status, Temperature, TemperatureAddresses},
+    SensorValueRange::*,
+};
 
 /// Test task that just reads the temperature from the sensor and prints it to the console
 #[embassy_executor::task]
@@ -42,9 +45,17 @@ pub async fn read_temp() -> ! {
         }
 
         match temperature_sensor.read() {
-            Some(temperature) => {
-                defmt::info!("Temperature: {:?}", temperature);
-            }
+            Some(temperature) => match temperature {
+                Safe(temp) => {
+                    defmt::info!("Temperature: {}°C (safe)", temp);
+                }
+                Warning(temp) => {
+                    defmt::warn!("Temperature: {}°C (unsafe)", temp);
+                }
+                Critical(temp) => {
+                    defmt::error!("Temperature: {}°C (critical)", temp);
+                }
+            },
             None => {
                 defmt::info!("Failed to read temperature.");
             }
