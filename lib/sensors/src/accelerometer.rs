@@ -1,4 +1,4 @@
-use hyped_io::i2c::{HypedI2c, I2cError};
+use hyped_i2c::{i2c_write_or_err, HypedI2c, I2cError};
 
 /// Accelerometer implements the logic to read the temperature from the LIS2DS12 accelerometer
 /// using the peripheral provided by the HypedI2c trait.
@@ -23,23 +23,27 @@ impl<'a, T: HypedI2c> Accelerometer<'a, T> {
         device_address: AccelerometerAddresses,
     ) -> Result<Self, AccelerometerError> {
         let device_address = device_address as u8;
-        if let Err(e) =
-            i2c.write_byte_to_register(device_address, LIS2DS12_CTRL1_ADDRESS, LIS2DS12_CTRL1_VALUE)
-        {
-            return Err(AccelerometerError::I2cError(e));
-        }
-        if let Err(e) =
-            i2c.write_byte_to_register(device_address, LIS2DS12_CTRL2_ADDRESS, LIS2DS12_CTRL2_VALUE)
-        {
-            return Err(AccelerometerError::I2cError(e));
-        }
-        if let Err(e) = i2c.write_byte_to_register(
+        i2c_write_or_err!(
+            i2c,
+            device_address,
+            LIS2DS12_CTRL1_ADDRESS,
+            LIS2DS12_CTRL1_VALUE,
+            AccelerometerError
+        );
+        i2c_write_or_err!(
+            i2c,
+            device_address,
+            LIS2DS12_CTRL2_ADDRESS,
+            LIS2DS12_CTRL2_VALUE,
+            AccelerometerError
+        );
+        i2c_write_or_err!(
+            i2c,
             device_address,
             LIS2DS12_FIFO_CTRL_ADDRESS,
             LIS2DS12_FIFO_CTRL_VALUE,
-        ) {
-            return Err(AccelerometerError::I2cError(e));
-        }
+            AccelerometerError
+        );
         // Return Self only if all values are written successfully
         Ok(Self {
             i2c,
@@ -149,14 +153,17 @@ const LIS2DS12_FIFO_CTRL_VALUE: u8 = 0x30;
 
 #[cfg(test)]
 mod tests {
+    use core::cell::RefCell;
+
     use super::*;
+    use embassy_sync::blocking_mutex::Mutex;
     use heapless::FnvIndexMap;
-    use hyped_io::i2c::mock_i2c::MockI2c;
+    use hyped_i2c::mock_i2c::MockI2c;
 
     #[test]
     fn test_write_config() {
-        let i2c_values = FnvIndexMap::new();
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(FnvIndexMap::new()));
+        let mut i2c = MockI2c::new(&i2c_values);
         let _ = Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d);
         assert_eq!(
             i2c.get_writes().get(&(
@@ -210,7 +217,8 @@ mod tests {
             Some(0x00),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
@@ -252,7 +260,8 @@ mod tests {
             Some(0x00),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
@@ -294,7 +303,8 @@ mod tests {
             Some(0x00),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
@@ -336,7 +346,8 @@ mod tests {
             Some(0x00),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
@@ -378,7 +389,8 @@ mod tests {
             Some(0x00),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
@@ -420,7 +432,8 @@ mod tests {
             Some(0xc4),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
@@ -462,7 +475,8 @@ mod tests {
             Some(0x3c),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
@@ -503,7 +517,8 @@ mod tests {
             Some(0x18),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
@@ -523,7 +538,8 @@ mod tests {
             (AccelerometerAddresses::Address1d as u8, LIS2DS12_STATUS),
             Some(LIS2DS12_DATA_NOT_READY),
         );
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(accelerometer.check_status(), Status::DataNotReady);
