@@ -78,7 +78,6 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
         }
 
         impl #impl_generics #name #ty_generics {
-            /// Create a new instance of our I2C implementation for the STM32L476RG
             pub fn new(i2c: &'static Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>) -> Self {
                 Self { i2c }
             }
