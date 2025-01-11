@@ -59,7 +59,7 @@ pub mod mock_i2c {
                 .unwrap()
         }
 
-        /// Writes a byte to the map 9with 8-bit register address) so that it can be read later to check the value
+        /// Writes a byte to the map (with 8-bit register address) so that it can be read later to check the value
         fn write_byte_to_register(
             &mut self,
             device_address: u8,
