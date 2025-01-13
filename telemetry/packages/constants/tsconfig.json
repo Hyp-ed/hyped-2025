@@ -1,12 +1,12 @@
 {
-  "extends": "@hyped/tsconfig/base.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "lib": ["esnext"],
-    "importHelpers": true,
-    "sourceMap": true,
-    "rootDir": "./src"
-  },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+	"extends": "@hyped/tsconfig/base.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"lib": ["esnext"],
+		"importHelpers": true,
+		"sourceMap": true,
+		"rootDir": "./src"
+	},
+	"include": ["src"],
+	"exclude": ["node_modules"]
 }

@@ -1,11 +1,11 @@
 use hyped_core::types::DigitalSignal;
-use hyped_io::gpio::GpioInputPin;
+use hyped_gpio_input::HypedGpioInput;
 
 /// Keyence represents a Keyence sensor which keeps track of the number of stripes that have passed
 /// by the sensor. The Keyence sensor is connected to a GPIO pin which reads a high signal when a
 /// stripe is detected and a low signal when no stripe is detected. The stripe count is updated
 /// whenever the signal changes from low to high (positive edge).
-pub struct Keyence<T: GpioInputPin> {
+pub struct Keyence<T: HypedGpioInput> {
     /// The number of stripes that have passed by the sensor.
     stripe_count: u32,
     /// The last signal that was read from the sensor.
@@ -13,7 +13,7 @@ pub struct Keyence<T: GpioInputPin> {
     gpio: T,
 }
 
-impl<T: GpioInputPin> Keyence<T> {
+impl<T: HypedGpioInput> Keyence<T> {
     /// Creates a new Keyence sensor with an initial stripe count of 0 and a last signal of low.
     pub fn new(gpio: T) -> Keyence<T> {
         Keyence {
@@ -42,18 +42,18 @@ impl<T: GpioInputPin> Keyence<T> {
 mod tests {
     use super::*;
     use heapless::Vec;
-    use hyped_io::gpio::mock_gpio::MockGpio;
+    use hyped_gpio_input::mock_gpio::MockGpioInput;
 
     #[test]
     fn test_keyence_new() {
-        let gpio = MockGpio::new(Vec::from_slice(&[false]).unwrap());
+        let gpio = MockGpioInput::new(Vec::from_slice(&[false]).unwrap());
         let keyence = Keyence::new(gpio);
         assert_eq!(keyence.get_stripe_count(), 0);
     }
 
     #[test]
     fn test_keyence_update_stripe_count_low_to_high() {
-        let gpio = MockGpio::new(Vec::from_slice(&[false, true]).unwrap());
+        let gpio = MockGpioInput::new(Vec::from_slice(&[false, true]).unwrap());
         let mut keyence = Keyence::new(gpio);
 
         keyence.update_stripe_count();
@@ -64,7 +64,7 @@ mod tests {
 
     #[test]
     fn test_keyence_update_stripe_count_high_to_low() {
-        let gpio = MockGpio::new(Vec::from_slice(&[true, false]).unwrap());
+        let gpio = MockGpioInput::new(Vec::from_slice(&[true, false]).unwrap());
         let mut keyence = Keyence::new(gpio);
 
         keyence.update_stripe_count();
@@ -75,7 +75,7 @@ mod tests {
 
     #[test]
     fn test_keyence_update_stripe_count_high_to_high() {
-        let gpio = MockGpio::new(Vec::from_slice(&[true, true]).unwrap());
+        let gpio = MockGpioInput::new(Vec::from_slice(&[true, true]).unwrap());
         let mut keyence = Keyence::new(gpio);
 
         keyence.update_stripe_count();
@@ -86,7 +86,7 @@ mod tests {
 
     #[test]
     fn test_keyence_update_stripe_count_low_to_low() {
-        let gpio = MockGpio::new(Vec::from_slice(&[false, false]).unwrap());
+        let gpio = MockGpioInput::new(Vec::from_slice(&[false, false]).unwrap());
         let mut keyence = Keyence::new(gpio);
 
         keyence.update_stripe_count();

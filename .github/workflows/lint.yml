@@ -16,8 +16,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run rustfmt
-        run: cargo fmt --all -- --check
+      - run: cargo fmt --all -- --check
+
+  rust-fmt-boards:
+    name: Run rustfmt (boards)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        board:
+          - stm32l476rg
+          - stm32h743zi
+          - stm32f767zi
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo fmt --manifest-path boards/${{ matrix.board }}/Cargo.toml -- --check
 
   typos:
     name: Spell check with typos

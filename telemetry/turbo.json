@@ -1,37 +1,37 @@
 {
-  "$schema": "https://turborepo.org/schema.json",
-  "pipeline": {
-    "start": {
-      "cache": false,
-      "persistent": true
-    },
-    "dev": {
-      "dependsOn": ["^build"],
-      "cache": false,
-      "persistent": true
-    },
-    "dev:test": {
-      "dependsOn": ["^build"],
-      "cache": false,
-      "persistent": true
-    },
-    "e2e:test": {
-      "dependsOn": ["^build"],
-      "cache": false,
-      "persistent": true
-    },
-    "lint": {
-      "dependsOn": ["^build"]
-    },
-    "lint:fix": {
-      "dependsOn": ["^build"]
-    },
-    "build": {
-      "outputs": ["dist/**"],
-      "dependsOn": ["^build"]
-    },
-    "build:fake": {
-      "dependsOn": ["^build"]
-    }
-  }
+	"$schema": "https://turborepo.org/schema.json",
+	"pipeline": {
+		"start": {
+			"cache": false,
+			"persistent": true
+		},
+		"dev": {
+			"dependsOn": ["^build"],
+			"cache": false,
+			"persistent": true
+		},
+		"dev:test": {
+			"dependsOn": ["^build"],
+			"cache": false,
+			"persistent": true
+		},
+		"e2e:test": {
+			"dependsOn": ["^build"],
+			"cache": false,
+			"persistent": true
+		},
+		"lint": {
+			"dependsOn": ["^build"]
+		},
+		"lint:fix": {
+			"dependsOn": ["^build"]
+		},
+		"build": {
+			"outputs": ["dist/**"],
+			"dependsOn": ["^build"]
+		},
+		"build:fake": {
+			"dependsOn": ["^build"]
+		}
+	}
 }
