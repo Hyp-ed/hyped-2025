@@ -4,10 +4,20 @@ use std::{
     process::Command,
 };
 
+use probe_rs::{flashing::{self, BinOptions}, Permissions, Session};
+
 pub type OrchestrationResult<T> = Result<T, OrchestrationError>;
 pub type OrchestrationError = Box<dyn std::error::Error>;
 
-pub fn flash_with_flags(project: &Path, flags: &[&str]) -> OrchestrationResult<()> {
+pub fn flash_proj_with_flags(project: &Path, board_str: &String, flags: &[&str]) -> OrchestrationResult<()> {
+    let exec = build_board_binary(project, flags)?;
+    println!("[i] Flashing board");
+    flash_board_with_bianry(&exec, board_str)?;
+    println!("[+] Board flashed successfully");
+    Ok(())
+}
+
+pub fn build_board_binary(project: &Path, flags: &[&str]) -> OrchestrationResult<PathBuf> {
     println!("[i] Getting CWD");
     let cwd = env::current_dir().map_err(|e| {
         OrchestrationError::from(format!("Failed to get current working directory: {}", e))
@@ -19,16 +29,15 @@ pub fn flash_with_flags(project: &Path, flags: &[&str]) -> OrchestrationResult<(
 
     println!("[i] Moving current working directory back to original");
     change_dir(&cwd).expect("Unable to recover to old CWD");
-    match res {
-        Ok(exec) => {
-            println!("[i] Flashing board");
-            flash_board(&exec)?;
-            println!("[+] Board flashed successfully");
-            Ok(())
-        }
-        Err(e) => Err(e),
-    }
+    return res;
 }
+
+pub fn flash_board_with_bianry(bin_pth: &Path, board_str: &String) -> OrchestrationResult<()>{
+    let mut board = Session::auto_attach(board_str, Permissions::default())?;
+    flashing::download_file(&mut board, bin_pth, flashing::Format::Bin(BinOptions {base_address: None, skip: 0x00 }))?;
+    Ok(())
+}
+    
 
 fn change_dir(pth: &Path) -> OrchestrationResult<()> {
     env::set_current_dir(pth)
@@ -61,13 +70,14 @@ fn build_in_wd(flags: &[&str]) -> OrchestrationResult<PathBuf> {
 
     add_board_as_build_target()?;
     println!("[+] Board is now a build target");
+    println!("[i] Building Board, this may take a while please wait ..");
 
-    println!("[i] Building Board");
     let log = build_board(flags)?;
+    println!("[+] Board built");
+    println!("[i] Extracting executable from build logs");
 
     let exec = extract_bin_path_from_logs(&log)?;
     println!("[+] Found executable");
-
     println!("[+] Board built successfully");
 
     Ok(PathBuf::from(exec))
@@ -76,15 +86,17 @@ fn build_in_wd(flags: &[&str]) -> OrchestrationResult<PathBuf> {
 fn build_board(flags: &[&str]) -> OrchestrationResult<String> {
     // Do not atempt to use the Cargo create to build the board as it will result in
     // nothing but pain, corte-x has issues with running the cargo build command
-    // because it failes to find the correct target board platform
-    // Hence we need to change ot CWD into the correct location and build from there
-    // This forces our hand to use --message-format=json to get the output of the build
-    // and then use the archain chants that are in
+    // because it fails to find the correct target board platform
+    // Hence we need to change the CWD into the correct location and build from there
+    // This forces our hand in using --message-format=json to get the output of the build
+    // as we need explicit debug logs to find the executable that was built
     let mut cargo = Command::new("cargo");
     let mut command = cargo
         .arg("build")
         .arg("--release")
-        .arg("--message-format=json"); // format with json so we can find the output bin
+        // format with json so we can find the output bin 
+        // as this enables "debug" information
+        .arg("--message-format=json"); 
 
     if !flags.is_empty() {
         command = command.arg("--features").args(flags);
@@ -125,9 +137,4 @@ fn extract_bin_path_from_logs(log: &String) -> OrchestrationResult<PathBuf> {
         .find('"')
         .ok_or_else(|| OrchestrationError::from("Failed to find end of executable in build log"))?;
     Ok(PathBuf::from(&log[exec_start..exec_start + exec_end]))
-}
-
-
-fn flash_board(pth: &Path) -> OrchestrationResult<()>{
-    Ok(())
 }

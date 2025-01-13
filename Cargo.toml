@@ -4,7 +4,8 @@ members = [
   "lib/core",
   "lib/io/*",
   "lib/localisation",
-  "lib/sensors"
+  "lib/sensors",
+  "lib/debugger"
 ]
 exclude = [
   "boards/stm32l476rg",
