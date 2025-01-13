@@ -1,16 +1,16 @@
 use hyped_io::gpio::GpioOutputPin;
 
-enum BrakeState {
+pub enum BrakeState {
     Engaged,
     Disengaged,
 }
 
-enum LateralSuspensionState {
+pub enum LateralSuspensionState {
     Deployed,
     Retracted,
 }
 
-struct Pneumatics<P: GpioOutputPin> {
+pub struct Pneumatics<P: GpioOutputPin> {
     brakes: BrakeState,
     lateral_suspension: LateralSuspensionState,
     brake_pin: P,
@@ -18,7 +18,7 @@ struct Pneumatics<P: GpioOutputPin> {
 }
 
 impl<P: GpioOutputPin> Pneumatics<P> {
-    fn new(brake_pin: P, lateral_suspension_pin: P) -> Self {
+    pub fn new(brake_pin: P, lateral_suspension_pin: P) -> Self {
         let mut pneumatics = Pneumatics {
             brakes: BrakeState::Engaged,
             lateral_suspension: LateralSuspensionState::Retracted,
@@ -31,7 +31,7 @@ impl<P: GpioOutputPin> Pneumatics<P> {
         pneumatics
     }
 
-    fn engage_brakes(&mut self) {
+    pub fn engage_brakes(&mut self) {
         self.brakes = BrakeState::Engaged;
 
         // Brake pin is set to low, as brakes clamp with no power,
@@ -39,7 +39,7 @@ impl<P: GpioOutputPin> Pneumatics<P> {
         self.brake_pin.set_low();
     }
 
-    fn disengage_brakes(&mut self) {
+    pub fn disengage_brakes(&mut self) {
         self.brakes = BrakeState::Disengaged;
 
         // Brake pin is set to high, as brakes retract when powered,
@@ -47,21 +47,21 @@ impl<P: GpioOutputPin> Pneumatics<P> {
         self.brake_pin.set_high();
     }
 
-    fn deploy_lateral_suspension(&mut self) {
+    pub fn deploy_lateral_suspension(&mut self) {
         self.lateral_suspension = LateralSuspensionState::Deployed;
         self.lateral_suspension_pin.set_high();
     }
 
-    fn retract_lateral_suspension(&mut self) {
+    pub fn retract_lateral_suspension(&mut self) {
         self.lateral_suspension = LateralSuspensionState::Retracted;
         self.lateral_suspension_pin.set_low();
     }
 
-    fn get_brake_state(self) -> BrakeState {
+    pub fn get_brake_state(self) -> BrakeState {
         self.brakes
     }
 
-    fn get_lateral_suspension_state(self) -> LateralSuspensionState {
+    pub fn get_lateral_suspension_state(self) -> LateralSuspensionState {
         self.lateral_suspension
     }
 }
