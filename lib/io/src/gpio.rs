@@ -4,8 +4,8 @@ pub trait GpioInputPin {
 }
 
 pub trait GpioOutputPin {
-  fn set_high(&mut self);
-  fn set_low(&mut self);
+    fn set_high(&mut self);
+    fn set_low(&mut self);
 }
 
 pub mod mock_gpio {
