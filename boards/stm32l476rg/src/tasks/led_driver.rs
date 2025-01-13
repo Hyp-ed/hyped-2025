@@ -19,15 +19,15 @@ pub async fn write_led() -> ! {
     let mut index = 0;
 
     loop {
-        if (index == 7){
+        if index == 8 {
             match led_driver_sensor.reset(){
-                OK(_) => (),
-                Err(e) => "Failed to reset LED driver"
+                Ok(_) => (),
+                Err(f) => "Failed reset"
             };
         }
         match led_driver_sensor.set_led_colour(LED_CONFIG0, DRIVER_ADDRESSES[index], 0xFF, 0xFF, 0xFF, 0xFF){
             OK(_) => (),
-            Err(e) => "Failed to set colour of LED " + String::from(DRIVER_ADDRESSES[index])
+            Err(e) => "Failed to set colour of LED "
         };
         index += 1;
     }
