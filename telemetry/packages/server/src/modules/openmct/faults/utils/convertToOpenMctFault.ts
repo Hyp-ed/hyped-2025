@@ -1,6 +1,6 @@
-import { OpenMctFault } from '@hyped/telemetry-types';
+import type { OpenMctFault } from '@hyped/telemetry-types';
 import { nanoid } from 'nanoid';
-import { Fault } from '../Fault.service';
+import type { Fault } from '../Fault.service';
 
 /**
  * Converts a fault to an Open MCT fault object.
@@ -8,32 +8,32 @@ import { Fault } from '../Fault.service';
  * @returns The Open MCT fault object
  */
 export function convertToOpenMctFault(fault: Fault): OpenMctFault {
-  const { measurement, tripReading, level } = fault;
+	const { measurement, tripReading, level } = fault;
 
-  const namespace = `/${tripReading.podId}/${measurement.key}`;
+	const namespace = `/${tripReading.podId}/${measurement.key}`;
 
-  return {
-    type: 'global-alarm-status',
-    fault: {
-      id: `${namespace}-${nanoid()}`,
-      name: `${measurement.name} is out of range`,
-      namespace,
-      seqNum: 0,
-      severity: level,
-      shortDescription: '',
-      shelved: false,
-      acknowledged: false,
-      triggerTime: tripReading.timestamp.toString(),
-      triggerValueInfo: {
-        value: tripReading.value,
-        rangeCondition: level,
-        monitoringResult: level,
-      },
-      currentValueInfo: {
-        value: tripReading.value,
-        rangeCondition: level,
-        monitoringResult: level,
-      },
-    },
-  };
+	return {
+		type: 'global-alarm-status',
+		fault: {
+			id: `${namespace}-${nanoid()}`,
+			name: `${measurement.name} is out of range`,
+			namespace,
+			seqNum: 0,
+			severity: level,
+			shortDescription: '',
+			shelved: false,
+			acknowledged: false,
+			triggerTime: tripReading.timestamp.toString(),
+			triggerValueInfo: {
+				value: tripReading.value,
+				rangeCondition: level,
+				monitoringResult: level,
+			},
+			currentValueInfo: {
+				value: tripReading.value,
+				rangeCondition: level,
+				monitoringResult: level,
+			},
+		},
+	};
 }

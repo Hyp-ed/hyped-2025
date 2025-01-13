@@ -1,4 +1,4 @@
 export type ObjectIdentitifer = {
-  namespace: string;
-  key: string;
+	namespace: string;
+	key: string;
 };

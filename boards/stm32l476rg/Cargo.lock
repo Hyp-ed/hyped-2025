@@ -185,7 +185,7 @@ source = "git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f70631
 dependencies = [
  "defmt",
  "embassy-futures",
- "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f706318cc0870a459550b7)",
+ "embassy-sync",
  "embassy-time",
  "embedded-hal 0.2.7",
  "embedded-hal 1.0.0",
@@ -244,7 +244,7 @@ dependencies = [
  "defmt",
  "document-features",
  "embassy-net-driver",
- "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f706318cc0870a459550b7)",
+ "embassy-sync",
  "embassy-time",
  "embedded-io-async",
  "embedded-nal-async",
@@ -278,7 +278,7 @@ dependencies = [
  "embassy-futures",
  "embassy-hal-internal",
  "embassy-net-driver",
- "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f706318cc0870a459550b7)",
+ "embassy-sync",
  "embassy-time",
  "embassy-time-driver",
  "embassy-usb-driver",
@@ -309,19 +309,6 @@ dependencies = [
 name = "embassy-sync"
 version = "0.6.0"
 source = "git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f706318cc0870a459550b7#1c466b81e6af6b34b1f706318cc0870a459550b7"
-dependencies = [
- "cfg-if",
- "critical-section",
- "defmt",
- "embedded-io-async",
- "futures-util",
- "heapless",
-]
-
-[[package]]
-name = "embassy-sync"
-version = "0.6.0"
-source = "git+https://github.com/embassy-rs/embassy#9555259c57a07338792cfe0fdd363a59616a8062"
 dependencies = [
  "cfg-if",
  "critical-section",
@@ -376,7 +363,7 @@ version = "0.1.0"
 source = "git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f706318cc0870a459550b7#1c466b81e6af6b34b1f706318cc0870a459550b7"
 dependencies = [
  "critical-section",
- "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f706318cc0870a459550b7)",
+ "embassy-sync",
  "embassy-usb-driver",
 ]
 
@@ -531,6 +518,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_adc"
+version = "0.1.0"
+dependencies = [
+ "heapless",
+]
+
+[[package]]
+name = "hyped_adc_derive"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn 2.0.79",
+]
+
+[[package]]
 name = "hyped_boards_stm32l476rg"
 version = "0.1.0"
 dependencies = [
@@ -543,11 +545,16 @@ dependencies = [
  "embassy-futures",
  "embassy-net",
  "embassy-stm32",
- "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy)",
+ "embassy-sync",
  "embassy-time",
  "embedded-hal 0.2.7",
  "embedded-storage",
- "hyped_io",
+ "hyped_adc",
+ "hyped_adc_derive",
+ "hyped_gpio_input",
+ "hyped_gpio_input_derive",
+ "hyped_i2c",
+ "hyped_i2c_derive",
  "hyped_sensors",
  "panic-probe",
  "rand_core",
@@ -568,19 +575,45 @@ dependencies = [
 ]
 
 [[package]]
-name = "hyped_io"
+name = "hyped_gpio_input"
 version = "0.1.0"
 dependencies = [
  "heapless",
 ]
 
 [[package]]
+name = "hyped_gpio_input_derive"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn 2.0.79",
+]
+
+[[package]]
+name = "hyped_i2c"
+version = "0.1.0"
+dependencies = [
+ "embassy-sync",
+ "heapless",
+]
+
+[[package]]
+name = "hyped_i2c_derive"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn 2.0.79",
+]
+
+[[package]]
 name = "hyped_sensors"
 version = "0.1.0"
 dependencies = [
+ "embassy-sync",
  "heapless",
  "hyped_core",
- "hyped_io",
+ "hyped_gpio_input",
+ "hyped_i2c",
 ]
 
 [[package]]

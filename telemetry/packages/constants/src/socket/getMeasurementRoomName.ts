@@ -1,6 +1,6 @@
 export function getMeasurementRoomName(
-  podId: string,
-  measurementKey: string,
+	podId: string,
+	measurementKey: string,
 ): string {
-  return `${podId}/measurement/${measurementKey}`;
+	return `${podId}/measurement/${measurementKey}`;
 }
