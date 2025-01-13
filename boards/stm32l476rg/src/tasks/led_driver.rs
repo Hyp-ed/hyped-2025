@@ -30,9 +30,9 @@ pub async fn write_led() -> ! {
         match led_driver_sensor.set_led_colour(
             LED_CONFIG0,
             DRIVER_ADDRESSES[index],
-            0xFF, 
-            0xFF, 
-            0xFF, 
+            0xFF,
+            0xFF,
+            0xFF,
             0xFF
         ) {
             Ok(_) => (),
