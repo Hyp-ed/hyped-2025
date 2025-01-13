@@ -21,12 +21,16 @@ pub async fn write_led() -> ! {
         if index == 8 { // reset LED Driver after flashing 8th test LED
             match led_driver_sensor.reset(){
                 Ok(_) => (),
-                Err(_) => "Failed to reset LED Driver",
+                Err(_) => {
+                    defmtt::error!("Failed to reset LED Driver");
+                }
             };
         }
         match led_driver_sensor.set_led_colour(LED_CONFIG0, DRIVER_ADDRESSES[index], 0xFF, 0xFF, 0xFF, 0xFF){
-            OK(_) => (),
-            Err(_) => "Failed to set colour of LED.",
+            Ok(_) => (),
+            Err(_) => {
+                defmtt::error!("Failed to set colour of LED.");
+            }
         };
         index += 1;
     }
