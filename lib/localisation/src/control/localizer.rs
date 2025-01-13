@@ -146,6 +146,7 @@ impl Localizer {
 
         self.kalman_filter.predict(&control_input);
 
+        //TODOLater: Check unit of keyence data
         let measurement = Vector2::new(self.keyence_val * STRIPE_WIDTH, self.optical_val);
 
         self.kalman_filter.update(&measurement);
