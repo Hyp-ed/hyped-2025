@@ -54,7 +54,7 @@ impl<'a, T: HypedI2c> LedDriver<'a, T> {
         a_colour: u8,
         b_colour: u8,
         c_colour: u8,
-        brightness: u8,
+        brightness: u8
     ) -> Result<(), LedDriverError> {
         // enable LEDs, x, to bank control mode - can be multiple (see documentation at top)
         match self
