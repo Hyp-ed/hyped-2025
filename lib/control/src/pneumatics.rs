@@ -22,8 +22,8 @@ impl<P: GpioOutputPin> Pneumatics<P> {
         let mut pneumatics = Pneumatics {
             brakes: BrakeState::Engaged,
             lateral_suspension: LateralSuspensionState::Retracted,
-            brake_pin: brake_pin,
-            lateral_suspension_pin: lateral_suspension_pin,
+            brake_pin,
+            lateral_suspension_pin,
         };
 
         pneumatics.engage_brakes();
