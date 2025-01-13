@@ -179,10 +179,10 @@ mod tests {
 
         let raw_accelerometer_data: RawAccelerometerData<K_NUM_ACCELEROMETERS, K_NUM_AXIS> =
             RawAccelerometerData::from_slice(&[
-                Vec::from_slice(&[0.0, 0.0, 0.0]).unwrap(), 
-                Vec::from_slice(&[0.0, 0.0, 0.0]).unwrap(), 
-                Vec::from_slice(&[0.0, 0.0, 0.0]).unwrap(), 
-                Vec::from_slice(&[0.0, 0.0, 0.0]).unwrap(), 
+                Vec::from_slice(&[0.0, 0.0, 0.0]).unwrap(),
+                Vec::from_slice(&[0.0, 0.0, 0.0]).unwrap(),
+                Vec::from_slice(&[0.0, 0.0, 0.0]).unwrap(),
+                Vec::from_slice(&[0.0, 0.0, 0.0]).unwrap(),
             ])
             .unwrap();
 
