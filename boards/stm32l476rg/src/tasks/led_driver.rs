@@ -11,9 +11,7 @@ pub async fn write_led() -> ! {
     let mut hyped_i2c = Stm32l476rgI2c::new(i2c);
 
     let mut led_driver_sensor = LedDriver::new(&mut hyped_i2c, LedDriverAddresses::Address30)
-        .expect(
-            "Failed to create LED driver instance. Check wiring and I2C address of component.",
-    );
+        .expect("Failed to create LED driver instance. Check wiring and I2C address of component.",);
 
     const DRIVER_ADDRESSES: [u8; 8] = [0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x7F, 0xFF];
     let mut index = 0;
@@ -23,12 +21,12 @@ pub async fn write_led() -> ! {
         if index == 8 { // reset LED Driver after flashing 8th test LED
             match led_driver_sensor.reset(){
                 Ok(_) => (),
-                Err(_) => "Failed to reset LED Driver"
+                Err(_) => "Failed to reset LED Driver",
             };
         }
         match led_driver_sensor.set_led_colour(LED_CONFIG0, DRIVER_ADDRESSES[index], 0xFF, 0xFF, 0xFF, 0xFF){
             OK(_) => (),
-            Err(_) => "Failed to set colour of LED."
+            Err(_) => "Failed to set colour of LED.",
         };
         index += 1;
     }
