@@ -33,7 +33,7 @@ pub async fn write_led() -> ! {
             0xFF,
             0xFF,
             0xFF,
-            0xFF
+            0xFF,
         ) {
             Ok(_) => (),
             Err(_) => {
