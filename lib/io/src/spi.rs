@@ -13,6 +13,7 @@ pub enum SpiError {
 /// Keeping this generic over either size for compatibility
 /// For example: some sensors may need to a byte written to them
 /// and return two bytes in a single transaction
+#[derive(PartialEq)] // Derive PartialEq for Word
 pub enum Word {
     U8(u8),
     U16(u16),
