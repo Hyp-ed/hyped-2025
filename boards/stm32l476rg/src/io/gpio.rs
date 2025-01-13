@@ -6,7 +6,7 @@ pub struct Stm32l476rgGpio {
     pin: Input<'static>,
 }
 
-impl GpioPin for Stm32l476rgGpio {
+impl GpioInputPinPin for Stm32l476rgGpio {
     fn is_high(&mut self) -> bool {
         self.pin.is_high()
     }
