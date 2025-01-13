@@ -20,14 +20,14 @@ pub async fn write_led() -> ! {
         // flash each LED in sequence
         if index == 8 {
             // reset LED Driver after flashing 8th test LED
-            match led_driver_sensor.reset(){
+            match led_driver_sensor.reset() {
                 Ok(_) => (),
                 Err(_) => {
                     defmtt::error!("Failed to reset LED Driver");
                 }
             };
         }
-        match led_driver_sensor.set_led_colour(
+        match led_driver_sensor.set_led_colour (
             LED_CONFIG0,
             DRIVER_ADDRESSES[index],
             0xFF, 
