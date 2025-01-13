@@ -95,7 +95,6 @@ impl Localizer {
     ) {
         let processed_optical_data = process_optical_data(optical_data);
 
-        //TODOLater: Make sure this is correct way get velocity
         for i in 0..2 {
             self.optical_val += processed_optical_data[i] as f64;
         }
@@ -109,7 +108,7 @@ impl Localizer {
             //TODOLater: Change state
             return;
         } else {
-            //TODOLater: Make sure it doesnt take incorrect value
+            //TODOLater: Check unit of keyence data
             self.keyence_val = keyence_data[0] as f64;
         }
 
@@ -155,7 +154,7 @@ impl Localizer {
 
         self.displacement = state[0];
         self.velocity = state[1];
-        self.acceleration = (self.velocity - self.previous_velocity) / DELTA_T; //TODOLater: is this good enough?
+        self.acceleration = (self.velocity - self.previous_velocity) / DELTA_T; //TODOLater: is this accurate enough?
         self.previous_velocity = self.velocity;
     }
 }
