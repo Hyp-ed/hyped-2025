@@ -142,11 +142,17 @@ mod tests {
     fn test_temperature_read_0() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H),
+            (
+                TemperatureAddresses::Address3f as u8,
+                STTS22H_DATA_TEMP_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
+            (
+                TemperatureAddresses::Address3f as u8,
+                STTS22H_DATA_TEMP_L as u16,
+            ),
             Some(0x00),
         );
         let i2c_values = Mutex::new(RefCell::new(i2c_values));
@@ -159,11 +165,17 @@ mod tests {
     fn test_temperature_read_25() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H),
+            (
+                TemperatureAddresses::Address3f as u8,
+                STTS22H_DATA_TEMP_H as u16,
+            ),
             Some(0x09),
         );
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
+            (
+                TemperatureAddresses::Address3f as u8,
+                STTS22H_DATA_TEMP_L as u16,
+            ),
             Some(0xc4),
         );
         let i2c_values = Mutex::new(RefCell::new(i2c_values));
@@ -176,11 +188,17 @@ mod tests {
     fn test_temperature_read_minus_10() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_H),
+            (
+                TemperatureAddresses::Address3f as u8,
+                STTS22H_DATA_TEMP_H as u16,
+            ),
             Some(0xfc),
         );
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_DATA_TEMP_L),
+            (
+                TemperatureAddresses::Address3f as u8,
+                STTS22H_DATA_TEMP_L as u16,
+            ),
             Some(0x18),
         );
         let i2c_values = Mutex::new(RefCell::new(i2c_values));
@@ -193,7 +211,7 @@ mod tests {
     fn test_temperature_status_busy() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
+            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS.into()),
             Some(STTS22H_STATUS_BUSY),
         );
         let i2c_values = Mutex::new(RefCell::new(i2c_values));
@@ -206,7 +224,7 @@ mod tests {
     fn test_temperature_status_temp_over_upper_limit() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
+            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS.into()),
             Some(STTS22H_TEMP_OVER_UPPER_LIMIT),
         );
         let i2c_values = Mutex::new(RefCell::new(i2c_values));
@@ -219,7 +237,7 @@ mod tests {
     fn test_temperature_status_temp_under_lower_limit() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS),
+            (TemperatureAddresses::Address3f as u8, STTS22H_STATUS.into()),
             Some(STTS22H_TEMP_UNDER_LOWER_LIMIT),
         );
         let i2c_values = Mutex::new(RefCell::new(i2c_values));
