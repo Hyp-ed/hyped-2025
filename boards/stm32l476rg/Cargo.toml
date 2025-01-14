@@ -30,5 +30,5 @@ hyped_adc = { path = "../../lib/io/hyped_adc" }
 hyped_adc_derive = { path = "../../lib/io/hyped_adc/hyped_adc_derive" }
 hyped_i2c = { path = "../../lib/io/hyped_i2c" }
 hyped_i2c_derive = { path = "../../lib/io/hyped_i2c/hyped_i2c_derive" }
-hyped_gpio_input = { path = "../../lib/io/hyped_gpio_input" }
-hyped_gpio_input_derive = { path = "../../lib/io/hyped_gpio_input/hyped_gpio_input_derive" }
+hyped_gpio = { path = "../../lib/io/hyped_gpio" }
+hyped_gpio_derive = { path = "../../lib/io/hyped_gpio/hyped_gpio_derive" }
