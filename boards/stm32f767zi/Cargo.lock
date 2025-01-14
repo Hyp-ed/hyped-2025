@@ -572,6 +572,7 @@ dependencies = [
  "embedded-storage",
  "hyped_adc",
  "hyped_adc_derive",
+ "hyped_core",
  "hyped_gpio_input",
  "hyped_gpio_input_derive",
  "hyped_i2c",

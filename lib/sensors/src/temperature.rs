@@ -1,5 +1,7 @@
 use hyped_i2c::{HypedI2c, I2cError};
 
+use crate::SensorValueRange;
+
 /// Temperature implements the logic to read the temperature from the STTS22H temperature sensor
 /// using the I2C peripheral provided by the HypedI2c trait.
 ///
@@ -10,6 +12,7 @@ use hyped_i2c::{HypedI2c, I2cError};
 pub struct Temperature<'a, T: HypedI2c> {
     i2c: &'a mut T,
     device_address: u8,
+    calculate_bounds: fn(f32) -> SensorValueRange<f32>,
 }
 
 impl<'a, T: HypedI2c> Temperature<'a, T> {
@@ -18,19 +21,31 @@ impl<'a, T: HypedI2c> Temperature<'a, T> {
         i2c: &'a mut T,
         device_address: TemperatureAddresses,
     ) -> Result<Self, TemperatureError> {
+        Self::new_with_bounds(i2c, device_address, default_calculate_bounds)
+    }
+
+    /// Create a new instance of the temperature sensor with the specified bounds and attempt to configure it
+    pub fn new_with_bounds(
+        i2c: &'a mut T,
+        device_address: TemperatureAddresses,
+        calculate_bounds: fn(f32) -> SensorValueRange<f32>,
+    ) -> Result<Self, TemperatureError> {
         // Set up the temperature sensor by sending the configuration settings to the STTS22H_CTRL register
         let device_address = device_address as u8;
         match i2c.write_byte_to_register(device_address, STTS22H_CTRL, STTS22H_CONFIG_SETTINGS) {
             Ok(_) => Ok(Self {
                 i2c,
                 device_address,
+                calculate_bounds,
             }),
             Err(e) => Err(TemperatureError::I2cError(e)),
         }
     }
 
-    /// Read the temperature from the sensor and return it as a floating point value in degrees Celsius
-    pub fn read(&mut self) -> Option<f32> {
+    /// Read the temperature from the sensor and return it as a floating point value in degrees Celsius.
+    /// Returns None if there was an error reading the temperature, otherwise returns the temperature
+    /// wrapped in a SensorValueRange enum to indicate if the temperature is safe, warning, or critical.
+    pub fn read(&mut self) -> Option<SensorValueRange<f32>> {
         // Read the high and low bytes of the temperature and combine them to get the temperature
         let temperature_high_byte = self
             .i2c
@@ -42,12 +57,17 @@ impl<'a, T: HypedI2c> Temperature<'a, T> {
         let combined: f32 =
             ((temperature_high_byte as u16) << 8 | temperature_low_byte as u16) as f32;
 
+        // Check if the temperature is negative
         if combined >= TWO_POWER_15 {
             // Convert the temperature to a negative value
-            return Some((combined - TWO_POWER_16) * STTS22H_TEMP_SCALING_FACTOR);
+            return Some((self.calculate_bounds)(
+                (combined - TWO_POWER_16) * STTS22H_TEMP_SCALING_FACTOR,
+            ));
         }
 
-        Some(combined * STTS22H_TEMP_SCALING_FACTOR)
+        Some((self.calculate_bounds)(
+            combined * STTS22H_TEMP_SCALING_FACTOR,
+        ))
     }
 
     /// Check the status of the temperature sensor
@@ -95,6 +115,20 @@ impl Status {
             STTS22H_TEMP_UNDER_LOWER_LIMIT => Self::TempUnderLowerLimit,
             _ => Self::Ok,
         }
+    }
+}
+
+/// Default calculation of the bounds for the temperature sensor. The bounds are set to:
+/// - Safe: 20.0 to 80.0 degrees Celsius
+/// - Warning: 0.0 to 20.0 and 80.0 to 100.0 degrees Celsius
+/// - Critical: Below 0.0 and above 100.0 degrees Celsius
+pub fn default_calculate_bounds(value: f32) -> SensorValueRange<f32> {
+    if value <= 0.0 || value >= 100.0 {
+        SensorValueRange::Critical(value)
+    } else if value <= 20.0 || value >= 80.0 {
+        SensorValueRange::Warning(value)
+    } else {
+        SensorValueRange::Safe(value)
     }
 }
 
@@ -152,7 +186,7 @@ mod tests {
         let i2c_values = Mutex::new(RefCell::new(i2c_values));
         let mut i2c = MockI2c::new(&i2c_values);
         let mut temperature = Temperature::new(&mut i2c, TemperatureAddresses::Address3f).unwrap();
-        assert_eq!(temperature.read(), Some(0.0));
+        assert_eq!(temperature.read(), Some(SensorValueRange::Critical(0.0)));
     }
 
     #[test]
@@ -169,7 +203,7 @@ mod tests {
         let i2c_values = Mutex::new(RefCell::new(i2c_values));
         let mut i2c = MockI2c::new(&i2c_values);
         let mut temperature = Temperature::new(&mut i2c, TemperatureAddresses::Address3f).unwrap();
-        assert_eq!(temperature.read(), Some(25.0));
+        assert_eq!(temperature.read(), Some(SensorValueRange::Safe(25.0)));
     }
 
     #[test]
@@ -186,7 +220,7 @@ mod tests {
         let i2c_values = Mutex::new(RefCell::new(i2c_values));
         let mut i2c = MockI2c::new(&i2c_values);
         let mut temperature = Temperature::new(&mut i2c, TemperatureAddresses::Address3f).unwrap();
-        assert_eq!(temperature.read(), Some(-10.0));
+        assert_eq!(temperature.read(), Some(SensorValueRange::Critical(-10.0)));
     }
 
     #[test]
