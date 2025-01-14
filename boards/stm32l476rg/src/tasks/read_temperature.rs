@@ -1,6 +1,7 @@
 use crate::io::Stm32l476rgI2c;
 use core::cell::RefCell;
 use defmt_rtt as _;
+use embassy_stm32::{i2c::I2c, mode::Blocking};
 use embassy_sync::{
     blocking_mutex::{
         raw::{CriticalSectionRawMutex, NoopRawMutex},
@@ -8,14 +9,12 @@ use embassy_sync::{
     },
     watch::Sender,
 };
-use embassy_stm32::{{i2c::I2c, mode::Blocking}};
 use hyped_sensors::{
     temperature::{Status, Temperature, TemperatureAddresses},
     SensorValueRange,
 };
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
-
 
 /// Test task that just reads the temperature from the sensor and prints it to the console
 #[embassy_executor::task]

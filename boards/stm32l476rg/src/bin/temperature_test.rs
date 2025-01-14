@@ -14,14 +14,15 @@ use embassy_sync::{
 };
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32l476rg::tasks::read_temperature::read_temperature;
+use hyped_sensors::SensorValueRange::{self, *};
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
-use hyped_sensors::SensorValueRange::{self, *};
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
 /// Used to keep the latest temperature sensor value.
-static TEMP_READING: Watch<CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1> = Watch::new();
+static TEMP_READING: Watch<CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1> =
+    Watch::new();
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
