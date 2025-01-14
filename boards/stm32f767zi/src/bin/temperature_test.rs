@@ -16,11 +16,12 @@ use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::read_temperature::read_temperature;
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
+use hyped_sensors::SensorValueRange::{self, *};
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
 /// Used to keep the latest temperature sensor value.
-static TEMP_READING: Watch<CriticalSectionRawMutex, Option<f32>, 1> = Watch::new();
+static TEMP_READING: Watch<CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1> = Watch::new();
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -43,7 +44,17 @@ async fn main(spawner: Spawner) -> ! {
     loop {
         match temp_reading_receiver.try_changed() {
             Some(reading) => match reading {
-                Some(reading) => defmt::info!("Temperature: {}", reading),
+                Some(reading) => match reading {
+                    Safe(temp) => {
+                        defmt::info!("Temperature: {}°C (safe)", temp);
+                    }
+                    Warning(temp) => {
+                        defmt::warn!("Temperature: {}°C (warning)", temp);
+                    }
+                    Critical(temp) => {
+                        defmt::error!("Temperature: {}°C (critical)", temp);
+                    }
+                },
                 None => defmt::warn!("No temperature reading available."),
             },
             None => (),
