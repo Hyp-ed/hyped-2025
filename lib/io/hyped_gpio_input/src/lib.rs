@@ -13,7 +13,7 @@ pub trait GpioOutputPin {
 pub mod mock_gpio {
     use heapless::Vec;
 
-    /// A mock GPIO pin that can be used for testing
+    /// A mock GPIO input pin that can be used for testing
     pub struct MockGpioInput {
         current_value: bool,
         next_values: Vec<bool, 10>,
@@ -35,6 +35,39 @@ pub mod mock_gpio {
                 current_value: false,
                 next_values,
             }
+        }
+    }
+
+    /// A mock GPIO output pin that can be used for testing
+    pub struct MockGpioOutputPin {
+        pub current_value: bool,
+    }
+
+    impl crate::GpioOutputPin for MockGpioOutputPin {
+        fn set_high(&mut self) {
+            self.current_value = true;
+        }
+
+        fn set_low(&mut self) {
+            self.current_value = false;
+        }
+    }
+
+    impl MockGpioOutputPin {
+        pub fn new() -> MockGpioOutputPin {
+            MockGpioOutputPin {
+                current_value: false,
+            }
+        }
+
+        pub fn new_with_value(value: bool) -> MockGpioOutputPin {
+            MockGpioOutputPin {
+                current_value: value,
+            }
+        }
+
+        pub fn get_value(&self) -> bool {
+            self.current_value
         }
     }
 }
