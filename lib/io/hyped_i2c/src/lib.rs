@@ -1,5 +1,7 @@
 #![no_std]
 
+pub mod i2c_mux;
+
 /// I2C errors that can occur
 /// From: https://docs.embassy.dev/embassy-stm32/git/stm32g031c8/i2c/enum.Error.html
 #[derive(Debug)]
@@ -23,6 +25,7 @@ pub trait HypedI2c {
         register_address: u8,
         data: u8,
     ) -> Result<(), I2cError>;
+    fn write_byte(&mut self, device_address: u8, data: u8) -> Result<(), I2cError>;
 }
 
 #[macro_export]
@@ -74,6 +77,14 @@ pub mod mock_i2c {
                 .writes
                 .insert((device_address, register_address), Some(data))
             {
+                Ok(_) => Ok(()),
+                Err(_) => Err(super::I2cError::Unknown),
+            }
+        }
+
+        /// Writes a byte to the map so that it can be read later to check the value
+        fn write_byte(&mut self, device_address: u8, data: u8) -> Result<(), super::I2cError> {
+            match self.writes.insert((device_address, 0), Some(data)) {
                 Ok(_) => Ok(()),
                 Err(_) => Err(super::I2cError::Unknown),
             }
