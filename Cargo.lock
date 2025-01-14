@@ -295,7 +295,7 @@ version = "0.1.0"
 dependencies = [
  "heapless",
  "hyped_core",
- "hyped_gpio_input",
+ "hyped_gpio",
 ]
 
 [[package]]
@@ -312,7 +312,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "hyped_gpio_input"
+name = "hyped_gpio"
 version = "0.1.0"
 dependencies = [
  "heapless",
@@ -342,7 +342,7 @@ dependencies = [
  "embassy-sync",
  "heapless",
  "hyped_core",
- "hyped_gpio_input",
+ "hyped_gpio",
  "hyped_i2c",
 ]
 

@@ -1,4 +1,4 @@
-use hyped_gpio_input::GpioOutputPin;
+use hyped_gpio::GpioOutputPin;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum BrakeState {
@@ -78,7 +78,7 @@ impl<P: GpioOutputPin> Pneumatics<P> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use hyped_gpio_input::mock_gpio::MockGpioOutputPin;
+    use hyped_gpio::mock_gpio::MockGpioOutputPin;
 
     #[test]
     fn test_pneumatics() {

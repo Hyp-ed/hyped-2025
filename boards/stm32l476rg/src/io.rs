@@ -7,8 +7,8 @@ use embassy_sync::blocking_mutex::{raw::CriticalSectionRawMutex, Mutex};
 
 use hyped_adc::HypedAdc;
 use hyped_adc_derive::HypedAdc;
-use hyped_gpio_input::HypedGpioInput;
-use hyped_gpio_input_derive::HypedGpioInput;
+use hyped_gpio::HypedGpioInput;
+use hyped_gpio_derive::HypedGpioInput;
 use hyped_i2c::{HypedI2c, I2cError};
 use hyped_i2c_derive::HypedI2c;
 
