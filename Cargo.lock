@@ -290,6 +290,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_control"
+version = "0.1.0"
+dependencies = [
+ "heapless",
+ "hyped_core",
+ "hyped_gpio_input",
+]
+
+[[package]]
 name = "hyped_core"
 version = "0.1.0"
 dependencies = [
