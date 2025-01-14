@@ -321,6 +321,20 @@ dependencies = [
 [[package]]
 name = "embassy-sync"
 version = "0.6.1"
+source = "git+https://github.com/embassy-rs/embassy?rev=92326f10b5be1d6fdc6bd414eb0656e3890bd825#92326f10b5be1d6fdc6bd414eb0656e3890bd825"
+dependencies = [
+ "cfg-if",
+ "critical-section",
+ "defmt",
+ "embedded-io-async",
+ "futures-sink",
+ "futures-util",
+ "heapless",
+]
+
+[[package]]
+name = "embassy-sync"
+version = "0.6.1"
 source = "git+https://github.com/embassy-rs/embassy#ad2f7c329bbbefc0e3be38b36627705a5f42427b"
 dependencies = [
  "cfg-if",
@@ -541,7 +555,7 @@ dependencies = [
 name = "hyped_adc"
 version = "0.1.0"
 dependencies = [
- "embassy-sync 0.6.1",
+ "embassy-sync 0.6.1 (git+https://github.com/embassy-rs/embassy)",
  "heapless",
 ]
 
@@ -566,7 +580,7 @@ dependencies = [
  "embassy-futures",
  "embassy-net",
  "embassy-stm32",
- "embassy-sync 0.6.0",
+ "embassy-sync 0.6.1 (git+https://github.com/embassy-rs/embassy?rev=92326f10b5be1d6fdc6bd414eb0656e3890bd825)",
  "embassy-time",
  "embedded-hal 0.2.7",
  "embedded-storage",

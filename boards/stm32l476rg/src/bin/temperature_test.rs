@@ -13,7 +13,7 @@ use embassy_sync::{
     watch::Watch,
 };
 use embassy_time::{Duration, Timer};
-use hyped_boards_stm32l476rg::tasks::read_temp::read_temp;
+use hyped_boards_stm32l476rg::tasks::read_temperature::read_temperature;
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
 
@@ -36,7 +36,7 @@ async fn main(spawner: Spawner) -> ! {
     let mut temp_reading_receiver = TEMP_READING.receiver().unwrap();
 
     spawner
-        .spawn(read_temp(i2c_bus, temp_reading_sender))
+        .spawn(read_temperature(i2c_bus, temp_reading_sender))
         .unwrap();
 
     // Every 100ms we read for the latest value from the temperature sensor.
