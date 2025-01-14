@@ -53,6 +53,12 @@ pub mod mock_gpio {
         }
     }
 
+    impl Default for MockGpioOutputPin {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
     impl MockGpioOutputPin {
         pub fn new() -> MockGpioOutputPin {
             MockGpioOutputPin {
