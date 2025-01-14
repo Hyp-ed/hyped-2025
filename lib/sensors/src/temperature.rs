@@ -47,21 +47,13 @@ impl<'a, T: HypedI2c> Temperature<'a, T> {
     /// wrapped in a SensorValueRange enum to indicate if the temperature is safe, warning, or critical.
     pub fn read(&mut self) -> Option<SensorValueRange<f32>> {
         // Read the high and low bytes of the temperature and combine them to get the temperature
-        let temperature_high_byte =
-            match self.i2c.read_byte(self.device_address, STTS22H_DATA_TEMP_H) {
-                Some(byte) => byte,
-                None => {
-                    return None;
-                }
-            };
+        let temperature_high_byte = self
+            .i2c
+            .read_byte(self.device_address, STTS22H_DATA_TEMP_H)?;
+        let temperature_low_byte = self
+            .i2c
+            .read_byte(self.device_address, STTS22H_DATA_TEMP_L)?;
 
-        let temperature_low_byte =
-            match self.i2c.read_byte(self.device_address, STTS22H_DATA_TEMP_L) {
-                Some(byte) => byte,
-                None => {
-                    return None;
-                }
-            };
         let combined: f32 =
             ((temperature_high_byte as u16) << 8 | temperature_low_byte as u16) as f32;
 

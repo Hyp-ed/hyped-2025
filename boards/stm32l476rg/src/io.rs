@@ -3,7 +3,8 @@ use core::cell::RefCell;
 use embassy_stm32::adc::{Adc, AnyAdcChannel, Instance};
 use embassy_stm32::gpio::Input;
 use embassy_stm32::{i2c::I2c, mode::Blocking};
-use embassy_sync::blocking_mutex::{raw::CriticalSectionRawMutex, Mutex};
+use embassy_sync::blocking_mutex::raw::NoopRawMutex;
+use embassy_sync::blocking_mutex::Mutex;
 
 use hyped_adc::HypedAdc;
 use hyped_adc_derive::HypedAdc;
@@ -25,5 +26,5 @@ pub struct Stm32l476rgGpioInput {
 
 #[derive(HypedI2c)]
 pub struct Stm32l476rgI2c<'d> {
-    i2c: Mutex<CriticalSectionRawMutex, RefCell<I2c<'d, Blocking>>>,
+    i2c: &'d Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>,
 }
