@@ -28,6 +28,18 @@ pub trait HypedI2c {
     fn write_byte(&mut self, device_address: u8, data: u8) -> Result<(), I2cError>;
 }
 
+#[macro_export]
+/// Macro to write a byte to a register on an I2C device or return an error.
+/// Does nothing if the write is successful, otherwise returns the error type specified.
+macro_rules! i2c_write_or_err {
+    ($i2c:expr, $device_address:expr, $register_address:expr, $data:expr, $err_type:ty) => {
+        match $i2c.write_byte_to_register($device_address, $register_address, $data) {
+            Ok(_) => (),
+            Err(e) => return Err(<$err_type>::I2cError(e)),
+        }
+    };
+}
+
 pub mod mock_i2c {
     use core::cell::RefCell;
     use embassy_sync::blocking_mutex::{raw::CriticalSectionRawMutex, Mutex};

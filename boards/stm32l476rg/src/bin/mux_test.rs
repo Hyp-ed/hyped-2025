@@ -10,7 +10,10 @@ use embassy_sync::blocking_mutex::Mutex;
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32l476rg::io::Stm32l476rgI2c;
 use hyped_i2c::i2c_mux::I2cMux;
-use hyped_sensors::temperature::{Temperature, TemperatureAddresses};
+use hyped_sensors::{
+    temperature::{Temperature, TemperatureAddresses},
+    SensorValueRange::*,
+};
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
 
@@ -51,9 +54,17 @@ async fn read_temperature_from_mux(
 
     loop {
         match temperature_sensor.read() {
-            Some(temperature) => {
-                defmt::info!("Temperature ({:?}): {:?}", channel, temperature);
-            }
+            Some(temperature) => match temperature {
+                Safe(temp) => {
+                    defmt::info!("Temperature: {}°C (safe)", temp);
+                }
+                Warning(temp) => {
+                    defmt::warn!("Temperature: {}°C (warning)", temp);
+                }
+                Critical(temp) => {
+                    defmt::error!("Temperature: {}°C (critical)", temp);
+                }
+            },
             None => {
                 defmt::info!("Failed to read temperature.");
             }
