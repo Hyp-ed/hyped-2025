@@ -67,20 +67,24 @@ impl<'a, T: HypedSpi> OpticalFlow<'a, T> {
             perform_transfer(spi, data)?;
         }
         // TODO: do secret sauce!!
+        let mut optical_flow = Self { spi };
+        optical_flow.secret_sauce()?; // Call secret_sauce
+
+
         // ensure device identifies itself correctly
         let product_id_data = &mut [REG_PRODUCT_ID];
-        perform_transfer(spi, product_id_data)?;
+        perform_transfer(optical_flow.spi, product_id_data)?;
         match product_id_data.get(0) {
             Some(U8(x)) if *x == PMW3901_PRODUCT_ID => (),
             _ => return Err(OpticalFlowError::InvalidProductId),
         }
         let revision_id_data = &mut [REG_REVISION_ID];
-        perform_transfer(spi, revision_id_data)?;
+        perform_transfer(optical_flow.spi, revision_id_data)?;
         match revision_id_data.get(0) {
             Some(U8(x)) if VALID_PMW3901_REVISIONS.contains(x) => (),
             _ => return Err(OpticalFlowError::InvalidRevisionId),
         }
-        Ok(Self { spi })
+        Ok(optical_flow)
     }
 
 
