@@ -1,5 +1,7 @@
 #![no_std]
 
+pub mod i2c_mux;
+
 /// I2C errors that can occur
 /// From: https://docs.embassy.dev/embassy-stm32/git/stm32g031c8/i2c/enum.Error.html
 #[derive(Debug)]
@@ -30,6 +32,19 @@ pub trait HypedI2c {
         register_address: u16,
         data: u8,
     ) -> Result<(), I2cError>;
+    fn write_byte(&mut self, device_address: u8, data: u8) -> Result<(), I2cError>;
+}
+
+#[macro_export]
+/// Macro to write a byte to a register on an I2C device or return an error.
+/// Does nothing if the write is successful, otherwise returns the error type specified.
+macro_rules! i2c_write_or_err {
+    ($i2c:expr, $device_address:expr, $register_address:expr, $data:expr, $err_type:ty) => {
+        match $i2c.write_byte_to_register($device_address, $register_address, $data) {
+            Ok(_) => (),
+            Err(e) => return Err(<$err_type>::I2cError(e)),
+        }
+    };
 }
 
 pub mod mock_i2c {
@@ -96,6 +111,14 @@ pub mod mock_i2c {
                 .writes
                 .insert((device_address, register_address), Some(data))
             {
+                Ok(_) => Ok(()),
+                Err(_) => Err(super::I2cError::Unknown),
+            }
+        }
+
+        /// Writes a byte to the map so that it can be read later to check the value
+        fn write_byte(&mut self, device_address: u8, data: u8) -> Result<(), super::I2cError> {
+            match self.writes.insert((device_address, 0), Some(data)) {
                 Ok(_) => Ok(()),
                 Err(_) => Err(super::I2cError::Unknown),
             }
