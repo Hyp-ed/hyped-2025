@@ -127,10 +127,12 @@ const DEVICE_CONFIG0: u8 = 0x00;
 const RESET: u8 = 0x38;
 
 // LED config registers
-#[allow(dead_code)]
-const LED_CONFIG0: u8 = 0x02;
-#[allow(dead_code)]
-const LED_CONFIG1: u8 = 0x03;
+pub enum LedDriverConfigAddresses {
+    LedConfig0 = 0x02,
+    LedConfig1 = 0x03,
+
+
+}
 
 // 6th bit for DEVICE_CONFIG0, enables LP503x
 const CHIP_EN: u8 = 0x20;
@@ -167,12 +169,12 @@ mod tests {
         let mut i2c = MockI2c::new(i2c_values);
         let mut led_driver = LedDriver::new(&mut i2c, LedDriverAddresses::Address30)
             .expect("could not create led_driver");
-        let _ = led_driver.set_led_colour(LED_CONFIG0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        let _ = led_driver.set_led_colour(LedDriverConfigAddresses::LedConfig0 as u8, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
 
         // Verify values are written to required registers
         assert_eq!(
             i2c.get_writes()
-                .get(&(LedDriverAddresses::Address30 as u8, LED_CONFIG0)),
+                .get(&(LedDriverAddresses::Address30 as u8, LedDriverConfigAddresses::LedConfig0 as u8)),
             Some(&Some(0xFF))
         );
         assert_eq!(
@@ -203,12 +205,12 @@ mod tests {
         let mut i2c = MockI2c::new(i2c_values);
         let mut led_driver = LedDriver::new(&mut i2c, LedDriverAddresses::Address30)
             .expect("could not create led_driver");
-        let _ = led_driver.set_led_colour(LED_CONFIG1, 0xF, 0xFF, 0xFF, 0xFF, 0xFF);
+        let _ = led_driver.set_led_colour(LedDriverConfigAddresses::LedConfig1 as u8, 0xF, 0xFF, 0xFF, 0xFF, 0xFF);
 
         // Verify values are written to required registers
         assert_eq!(
             i2c.get_writes()
-                .get(&(LedDriverAddresses::Address30 as u8, LED_CONFIG1)),
+                .get(&(LedDriverAddresses::Address30 as u8, LedDriverConfigAddresses::LedConfig1 as u8)),
             Some(&Some(0xF))
         );
         assert_eq!(
@@ -239,10 +241,10 @@ mod tests {
         let mut i2c = MockI2c::new(i2c_values);
         let mut led_driver = LedDriver::new(&mut i2c, LedDriverAddresses::Address30)
             .expect("could not create led_driver");
-        let _pre = led_driver.set_led_colour(LED_CONFIG0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+        let _pre = led_driver.set_led_colour(LedDriverConfigAddresses::LedConfig0 as u8, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
         let _ = led_driver.reset();
 
-        // Verify values in LED_CONFIG0 are reset to default values
+        // Verify values in LedConfig0 are reset to default values
         assert_eq!(
             i2c.get_writes()
                 .get(&(LedDriverAddresses::Address30 as u8, RESET)),
