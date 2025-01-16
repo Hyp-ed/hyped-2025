@@ -130,8 +130,6 @@ const RESET: u8 = 0x38;
 pub enum LedDriverConfigAddresses {
     LedConfig0 = 0x02,
     LedConfig1 = 0x03,
-
-
 }
 
 // 6th bit for DEVICE_CONFIG0, enables LP503x
