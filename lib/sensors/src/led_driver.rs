@@ -49,17 +49,20 @@ impl<'a, T: HypedI2c> LedDriver<'a, T> {
     /// set bank colour and brightness
     pub fn set_led_colour(
         &mut self,
-        led_configx: u8,
+        led_configx: LedDriverConfigAddresses,
         ledx_bank_en: u8,
         a_colour: u8,
         b_colour: u8,
         c_colour: u8,
         brightness: u8,
     ) -> Result<(), LedDriverError> {
+
+        let led_config: u8 = led_configx as u8;
+
         // enable LEDs, x, to bank control mode - can be multiple (see documentation at top)
         match self
             .i2c
-            .write_byte_to_register(self.device_address, led_configx, ledx_bank_en)
+            .write_byte_to_register(self.device_address, led_config, ledx_bank_en)
         {
             Ok(_) => (),
             Err(e) => return Err(LedDriverError::I2cError(e)),
@@ -168,7 +171,7 @@ mod tests {
         let mut led_driver = LedDriver::new(&mut i2c, LedDriverAddresses::Address30)
             .expect("could not create led_driver");
         let _ = led_driver.set_led_colour(
-            LedDriverConfigAddresses::LedConfig0 as u8,
+            LedDriverConfigAddresses::LedConfig0,
             0xFF,
             0xFF,
             0xFF,
@@ -213,7 +216,7 @@ mod tests {
         let mut led_driver = LedDriver::new(&mut i2c, LedDriverAddresses::Address30)
             .expect("could not create led_driver");
         let _ = led_driver.set_led_colour(
-            LedDriverConfigAddresses::LedConfig1 as u8,
+            LedDriverConfigAddresses::LedConfig1,
             0xF,
             0xFF,
             0xFF,
@@ -258,7 +261,7 @@ mod tests {
         let mut led_driver = LedDriver::new(&mut i2c, LedDriverAddresses::Address30)
             .expect("could not create led_driver");
         let _pre = led_driver.set_led_colour(
-            LedDriverConfigAddresses::LedConfig0 as u8,
+            LedDriverConfigAddresses::LedConfig0,
             0xFF,
             0xFF,
             0xFF,
