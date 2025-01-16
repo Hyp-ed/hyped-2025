@@ -144,11 +144,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
             .i2c
             .read_byte_16(self.device_address, RESULT_RANGE_VAL)
             .ok_or(TimeOfFlightError::I2cError(I2cError::Unknown));
-        return range;
-    }
-
-    /// For good practice, interrupts have to be cleared at the end of the program 'loop' each time. See Application Sheet page 22
-    pub fn clear_interrupts(&mut self) -> Result<(), TimeOfFlightError> {
+        // For good practice, interrupts have to be cleared at the end of the program 'loop' each time. See Application Sheet page 22
         if let Err(e) = self.i2c.write_byte_to_register_16(
             self.device_address,
             SYS_INTERRUPT_CLEAR,
@@ -156,7 +152,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         ) {
             return Err(TimeOfFlightError::I2cError(e));
         }
-        Ok(())
+        return range;
     }
 }
 
