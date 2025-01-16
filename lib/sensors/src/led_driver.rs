@@ -183,7 +183,7 @@ mod tests {
             i2c.get_writes().get(&(
                 LedDriverAddresses::Address30 as u8,
                 LedDriverConfigAddresses::LedConfig0 as u8
-                )),
+            )),
             Some(&Some(0xFF))
         );
         assert_eq!(
@@ -228,7 +228,7 @@ mod tests {
             i2c.get_writes().get(&(
                 LedDriverAddresses::Address30 as u8,
                 LedDriverConfigAddresses::LedConfig1 as u8
-                )),
+            )),
             Some(&Some(0xF))
         );
         assert_eq!(
