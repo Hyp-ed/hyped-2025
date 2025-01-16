@@ -175,13 +175,12 @@ mod tests {
             0xFF,
             0xFF,
             0xFF,
-            0xFF
+            0xFF,
         );
 
         // Verify values are written to required registers
         assert_eq!(
-            i2c.get_writes()
-                .get(&(
+            i2c.get_writes().get(&(
                     LedDriverAddresses::Address30 as u8,
                     LedDriverConfigAddresses::LedConfig0 as u8
                 )),
@@ -221,13 +220,12 @@ mod tests {
             0xFF,
             0xFF,
             0xFF,
-            0xFF
+            0xFF,
         );
 
         // Verify values are written to required registers
         assert_eq!(
-            i2c.get_writes()
-                .get(&(
+            i2c.get_writes().get(&(
                     LedDriverAddresses::Address30 as u8,
                     LedDriverConfigAddresses::LedConfig1 as u8
                 )),
@@ -267,7 +265,7 @@ mod tests {
             0xFF,
             0xFF,
             0xFF,
-            0xFF
+            0xFF,
         );
         let _ = led_driver.reset();
 
