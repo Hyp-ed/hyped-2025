@@ -1,5 +1,5 @@
 use hyped_core::types::DigitalSignal;
-use hyped_gpio_input::HypedGpioInput;
+use hyped_gpio::HypedGpioInput;
 
 /// Keyence represents a Keyence sensor which keeps track of the number of stripes that have passed
 /// by the sensor. The Keyence sensor is connected to a GPIO pin which reads a high signal when a
@@ -42,7 +42,7 @@ impl<T: HypedGpioInput> Keyence<T> {
 mod tests {
     use super::*;
     use heapless::Vec;
-    use hyped_gpio_input::mock_gpio::MockGpioInput;
+    use hyped_gpio::mock_gpio::MockGpioInput;
 
     #[test]
     fn test_keyence_new() {
