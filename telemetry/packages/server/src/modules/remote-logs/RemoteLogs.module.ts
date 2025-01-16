@@ -3,7 +3,7 @@ import { RemoteLogsController } from './RemoteLogs.controller';
 import { RemoteLogsService } from './RemoteLogs.service';
 
 @Module({
-  controllers: [RemoteLogsController],
-  providers: [RemoteLogsService],
+	controllers: [RemoteLogsController],
+	providers: [RemoteLogsService],
 })
 export class RemoteLogsModule {}

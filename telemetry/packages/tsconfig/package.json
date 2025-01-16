@@ -1,5 +1,5 @@
 {
-  "name": "@hyped/tsconfig",
-  "version": "0.0.0",
-  "private": true
+	"name": "@hyped/tsconfig",
+	"version": "0.0.0",
+	"private": true
 }
