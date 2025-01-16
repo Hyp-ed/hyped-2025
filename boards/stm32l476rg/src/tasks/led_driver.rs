@@ -2,7 +2,7 @@ use crate::io::i2c::Stm32l476rgI2c;
 use defmt_rtt as _;
 use embassy_stm32::i2c::I2c;
 use embassy_stm32::time::Hertz;
-use hyped_sensors::led_driver::{LedDriver, LedDriverAddresses};
+use hyped_sensors::led_driver::{LedDriver, LedDriverAddresses, LedDriverConfigAddresses};
 
 #[embassy_executor::task]
 pub async fn write_led() -> ! {
@@ -28,7 +28,7 @@ pub async fn write_led() -> ! {
             };
         }
         match led_driver_sensor.set_led_colour(
-            LED_CONFIG0,
+            LedDriverConfigAddresses::LedConfig0,
             DRIVER_ADDRESSES[index],
             0xFF,
             0xFF,
