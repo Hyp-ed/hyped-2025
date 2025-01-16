@@ -56,9 +56,7 @@ impl<'a, T: HypedI2c> LedDriver<'a, T> {
         c_colour: u8,
         brightness: u8,
     ) -> Result<(), LedDriverError> {
-        
         let led_config: u8 = led_configx as u8;
-
         // enable LEDs, x, to bank control mode - can be multiple (see documentation at top)
         match self
             .i2c
