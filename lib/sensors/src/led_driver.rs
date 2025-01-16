@@ -181,8 +181,8 @@ mod tests {
         // Verify values are written to required registers
         assert_eq!(
             i2c.get_writes().get(&(
-                    LedDriverAddresses::Address30 as u8,
-                    LedDriverConfigAddresses::LedConfig0 as u8
+                LedDriverAddresses::Address30 as u8,
+                LedDriverConfigAddresses::LedConfig0 as u8
                 )),
             Some(&Some(0xFF))
         );
@@ -226,8 +226,8 @@ mod tests {
         // Verify values are written to required registers
         assert_eq!(
             i2c.get_writes().get(&(
-                    LedDriverAddresses::Address30 as u8,
-                    LedDriverConfigAddresses::LedConfig1 as u8
+                LedDriverAddresses::Address30 as u8,
+                LedDriverConfigAddresses::LedConfig1 as u8
                 )),
             Some(&Some(0xF))
         );
