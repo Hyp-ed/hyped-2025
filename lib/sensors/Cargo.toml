@@ -9,6 +9,7 @@ embassy-sync = { version = "0.6.0", features = ["defmt"], git = "https://github.
 hyped_core = { path = "../core" }
 hyped_i2c = { path = "../io/hyped_i2c" }
 hyped_gpio_input = { path = "../io/hyped_gpio_input" }
+defmt = "0.3"
 
 [dev-dependencies]
 # Fix from: https://github.com/embassy-rs/embassy/pull/2727

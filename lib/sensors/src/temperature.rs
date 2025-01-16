@@ -141,7 +141,7 @@ mod tests {
         let _ = Temperature::new(&mut i2c, TemperatureAddresses::Address3f).unwrap();
         let i2c_value = i2c
             .get_writes()
-            .get(&(TemperatureAddresses::Address3f as u8, STTS22H_CTRL))
+            .get(&(TemperatureAddresses::Address3f as u8, STTS22H_CTRL.into()))
             .cloned();
         assert_eq!(i2c_value, Some(Some(STTS22H_CONFIG_SETTINGS)));
     }
