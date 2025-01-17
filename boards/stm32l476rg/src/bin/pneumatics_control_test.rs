@@ -3,7 +3,7 @@
 
 use embassy_executor::Spawner;
 use embassy_stm32::gpio::Output;
-use embassy_stm32::gpio::{Level::Low, Speed::High};
+use embassy_stm32::gpio::{Level, Speed};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32l476rg::io::Stm32l476rgGpioOutput;
 use hyped_control::pneumatics::Pneumatics;
@@ -14,12 +14,10 @@ async fn main(_spawner: Spawner) -> ! {
     let p = embassy_stm32::init(Default::default());
 
     // Create two GPIO output pins for the solenoids
-    let brakes_solenoid_pin = Stm32l476rgGpioOutput::new(
-        Output::new(p.PA1, Low, High), // TODO: check speed
-    );
-    let suspension_solenoid_pin = Stm32l476rgGpioOutput::new(
-        Output::new(p.PA2, Low, High), // TODO: check speed
-    );
+    let brakes_solenoid_pin =
+        Stm32l476rgGpioOutput::new(Output::new(p.PA1, Level::Low, Speed::Low));
+    let suspension_solenoid_pin =
+        Stm32l476rgGpioOutput::new(Output::new(p.PA2, Level::Low, Speed::Low));
 
     // Create pneumatics control object
     let mut pneumatics = Pneumatics::new(brakes_solenoid_pin, suspension_solenoid_pin);
