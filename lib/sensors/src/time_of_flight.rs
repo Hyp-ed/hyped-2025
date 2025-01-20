@@ -13,7 +13,6 @@ use hyped_i2c::{i2c_write_or_err_16, HypedI2c, I2cError};
 /// Application Sheet: https://www.st.com/resource/en/application_note/an4545-vl6180x-basic-ranging-application-note-stmicroelectronics.pdf
 ///
 /// There is a lot of 'If Let' uses in this code, refer to the Rust docs for more details: https://doc.rust-lang.org/rust-by-example/flow_control/if_let.html
-
 pub struct TimeOfFlight<'a, T: HypedI2c> {
     i2c: &'a mut T,
     device_address: u8,
@@ -137,7 +136,6 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
     /// Continuous mode is apparently more suited for averaging range results, so we'll be using single shot at the moment.
     /// You can find details about these modes on page 6 of the Application Note:
     /// https://www.st.com/resource/en/application_note/an4545-vl6180x-basic-ranging-application-note-stmicroelectronics.pdf
-
     pub fn single_shot_measurement(&mut self) -> Result<SensorValueRange<u8>, TimeOfFlightError> {
         i2c_write_or_err_16!(
             self.i2c,
