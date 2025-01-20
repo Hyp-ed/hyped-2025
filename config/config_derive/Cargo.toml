@@ -1,9 +1,15 @@
 [package]
-name = "hyped_config"
+name = "config_derive"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+proc-macro = true
+
 [dependencies]
-heapless = { version = "0.8", features = ["serde"] }
+syn = { version = "2", features = ["full"] }
+quote = "1"
 serde = { version = "1.0.208", features = ["derive"] }
 serde_yml = "0.0.12"
+proc-macro2 = "1"
+ 

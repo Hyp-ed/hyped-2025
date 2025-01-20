@@ -1,7 +1,13 @@
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+#![no_std]
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+use heapless::{String, Vec};
+use serde::{Deserialize, Serialize};
+
+const DEFAULT_STRING_SIZE: usize = 32;
+const NUM_PODS: usize = 1;
+const NUM_MEASUREMENTS: usize = 32;
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub enum MeasurementFormat {
     #[serde(rename = "float")]
     Float,
@@ -9,7 +15,7 @@ pub enum MeasurementFormat {
     Int,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub enum LimitLevel {
     #[serde(rename = "warning")]
     Warning,
@@ -17,61 +23,60 @@ pub enum LimitLevel {
     Critical,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MeasurementLimits {
     min: f64,
     max: f64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Measurement {
-    pub name: String,
-    pub unit: String,
+    pub name: String<DEFAULT_STRING_SIZE>,
+    pub unit: String<DEFAULT_STRING_SIZE>,
     pub format: MeasurementFormat,
-    pub limits: HashMap<LimitLevel, MeasurementLimits>,
+    pub limits: [(LimitLevel, MeasurementLimits); 2],
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Pod {
-    pub name: String,
-    pub measurements: HashMap<String, Measurement>,
+    pub name: String<DEFAULT_STRING_SIZE>,
+    pub measurements: [(String<DEFAULT_STRING_SIZE>, Measurement); NUM_MEASUREMENTS],
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PodConfig {
-    pub pods: HashMap<String, Pod>,
+    pub pods: [(String<DEFAULT_STRING_SIZE>, Pod); NUM_PODS],
     #[serde(skip)]
-    pub pod_ids: Vec<String>,
+    pub pod_ids: Vec<String<DEFAULT_STRING_SIZE>, NUM_PODS>,
 }
 
 impl PodConfig {
-    fn new(raw_config: &str) -> Result<Self, serde_yml::Error> {
+    pub fn new(raw_config: &str) -> Result<Self, serde_yml::Error> {
         let config = match serde_yml::from_str::<PodConfig>(raw_config) {
             Ok(mut config) => {
-                config.pod_ids = config.pods.keys().cloned().collect();
+                config.pod_ids = config.pods.iter().map(|(id, _)| id.clone()).collect();
                 Ok(config)
             }
-            Err(e) => {
-                eprintln!("Error parsing config: {}", e);
-                Err(e)
-            }
+            Err(e) => Err(e),
         };
         config
     }
 }
 
-pub fn get_pod_config() -> Result<PodConfig, serde_yml::Error> {
-    let raw_config = std::fs::read_to_string("pods.yaml").unwrap();
-    PodConfig::new(&raw_config)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    extern crate std;
+
+    fn get_pod_config() -> Result<PodConfig, serde_yml::Error> {
+        let raw_config = std::fs::read_to_string("pods.yaml").unwrap();
+        PodConfig::new(&raw_config)
+    }
 
     #[test]
     fn test_pods_yaml_does_not_error() {
         let config = get_pod_config();
+        std::println!("{:?}", config);
         assert!(config.is_ok());
     }
 
@@ -100,16 +105,20 @@ mod tests {
                                 max: 150
         "#;
         let config = PodConfig::new(raw_config).unwrap();
-        assert_eq!(config.pod_ids, vec!["pod_1"]);
-        let pod = config.pods.get("pod_1").unwrap();
+        assert_eq!(
+            config.pod_ids,
+            // Vec<String<32>, 8>
+            ["pod_1"]
+        );
+        let pod = config.pods.iter().next().unwrap().1.clone();
         assert_eq!(pod.name, "Pod 1");
         assert_eq!(pod.measurements.len(), 2);
-        let keyence = pod.measurements.get("keyence").unwrap();
+        let keyence = pod.measurements.iter().next().unwrap().1.clone();
         assert_eq!(keyence.name, "Keyence");
         assert_eq!(keyence.unit, "number of stripes");
         assert_eq!(keyence.format, MeasurementFormat::Int);
         assert_eq!(keyence.limits.len(), 1);
-        let keyence_limits = keyence.limits.get(&LimitLevel::Critical).unwrap();
+        let keyence_limits = keyence.limits.iter().next().unwrap().1.clone();
         assert_eq!(keyence_limits.min, 0.0);
         assert_eq!(keyence_limits.max, 16.0);
     }
@@ -145,8 +154,8 @@ mod tests {
         assert!(config.pod_ids.len() == 2);
         assert!(config.pod_ids[0] == "pod_1" || config.pod_ids[1] == "pod_1");
         assert!(config.pod_ids[0] == "pod_2" || config.pod_ids[1] == "pod_2");
-        let pod1 = config.pods.get("pod_1").unwrap();
-        let pod2 = config.pods.get("pod_2").unwrap();
+        let pod1 = config.pods.iter().next().unwrap().1.clone();
+        let pod2 = config.pods.iter().nth(1).unwrap().1.clone();
         assert_eq!(pod1.name, "Pod 1");
         assert_eq!(pod1.measurements.len(), 1);
         assert_eq!(pod2.name, "Pod 2");
@@ -189,24 +198,63 @@ mod tests {
                                 max: 80
         "#;
         let config = PodConfig::new(raw_config).unwrap();
-        let pod = config.pods.get("pod_1").unwrap();
-        let keyence = pod.measurements.get("keyence").unwrap();
+        let pod = config.pods.iter().next().unwrap().1.clone();
+        let keyence = pod.measurements.iter().next().unwrap().1.clone();
         assert_eq!(keyence.limits.len(), 1);
-        assert_eq!(keyence.limits.get(&LimitLevel::Warning).unwrap().min, 0.0);
-        let accelerometer = pod.measurements.get("accelerometer_1").unwrap();
+        assert_eq!(
+            keyence
+                .limits
+                .iter()
+                .find(|(level, _)| level == &LimitLevel::Warning)
+                .unwrap()
+                .1
+                .min,
+            0.0
+        );
+        let accelerometer = pod
+            .measurements
+            .iter()
+            .find(|(name, _)| name == "accelerometer_1")
+            .unwrap()
+            .1
+            .clone();
         assert_eq!(accelerometer.limits.len(), 1);
         assert_eq!(
-            accelerometer.limits.get(&LimitLevel::Critical).unwrap().min,
+            accelerometer
+                .limits
+                .iter()
+                .find(|(level, _)| level == &LimitLevel::Critical)
+                .unwrap()
+                .1
+                .min,
             -150.0
         );
-        let temperature = pod.measurements.get("temperature").unwrap();
+        let temperature = pod
+            .measurements
+            .iter()
+            .find(|(name, _)| name == "temperature")
+            .unwrap()
+            .1
+            .clone();
         assert_eq!(temperature.limits.len(), 2);
         assert_eq!(
-            temperature.limits.get(&LimitLevel::Warning).unwrap().max,
+            temperature
+                .limits
+                .iter()
+                .find(|(level, _)| level == &LimitLevel::Warning)
+                .unwrap()
+                .1
+                .min,
             50.0
         );
         assert_eq!(
-            temperature.limits.get(&LimitLevel::Critical).unwrap().max,
+            temperature
+                .limits
+                .iter()
+                .find(|(level, _)| level == &LimitLevel::Critical)
+                .unwrap()
+                .1
+                .min,
             80.0
         );
     }
