@@ -573,8 +573,8 @@ dependencies = [
  "hyped_adc",
  "hyped_adc_derive",
  "hyped_core",
- "hyped_gpio_input",
- "hyped_gpio_input_derive",
+ "hyped_gpio",
+ "hyped_gpio_derive",
  "hyped_i2c",
  "hyped_i2c_derive",
  "hyped_sensors",
@@ -597,14 +597,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "hyped_gpio_input"
+name = "hyped_gpio"
 version = "0.1.0"
 dependencies = [
  "heapless",
 ]
 
 [[package]]
-name = "hyped_gpio_input_derive"
+name = "hyped_gpio_derive"
 version = "0.1.0"
 dependencies = [
  "quote",
@@ -631,10 +631,11 @@ dependencies = [
 name = "hyped_sensors"
 version = "0.1.0"
 dependencies = [
+ "defmt",
  "embassy-sync 0.6.0",
  "heapless",
  "hyped_core",
- "hyped_gpio_input",
+ "hyped_gpio",
  "hyped_i2c",
 ]
 
