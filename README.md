@@ -22,16 +22,14 @@ The pod-side code is responsible for controlling the pod's systems, including th
 
 We use the following microcontrollers on our pod:
 
-- [STM32L476RG](https://www.st.com/en/microcontrollers-microprocessors/stm32l476rg.html)
 - [STM32F767ZI](https://www.st.com/en/microcontrollers-microprocessors/stm32f767zi.html)
-- [STM32H743](https://www.st.com/en/microcontrollers-microprocessors/stm32h743zi.html)
-- [STM23L432](https://www.st.com/en/microcontrollers-microprocessors/stm32l432kc.html)
+- [STM32L432](https://www.st.com/en/microcontrollers-microprocessors/stm32l432kc.html)
 
 | Sub-system         | Microcontroller | Number |
 | ------------------ | --------------- | ------ |
-| Localisation       | STM32H743       | 1      |
-| Telemetry          | STM32H743       | 1      |
-| Levitation control | STM32F767       | TBD    |
+| Localisation       | STM32F767       | 1      |
+| Telemetry          | STM32F767       | 1      |
+| Levitation control | STM32L432       | 6      |
 | Motor control      | TBD             | 1      |
 
 All microcontrollers on our pod will communicate with each other (for sending sensor data, commands, logs, etc.) using [CAN](https://en.wikipedia.org/wiki/CAN_bus) (Controller Area Network).
@@ -71,7 +69,7 @@ For more details on how to set up a development environment for the Telemetry sy
 
 ### Pod-side
 
-To flash some code to an STM32 microcontroller, first navigate to the `boards` directory and then to the board-specific directory. For example, to run code on the `stm32f476rg` board you would first change directory into `boards/stm32f476rg`.
+To flash some code to an STM32 microcontroller, first navigate to the `boards` directory and then to the board-specific directory. For example, to run code on the `stm32f767zi` board you would first change directory into `boards/stm32f767zi`.
 
 Then, to flash some particular code to the microcontroller, `bin/{your_code}.rs`, run the following command:
 
@@ -100,10 +98,9 @@ Our repository is structured as follows:
 - `telemetry/`: Contains the base station code for the Telemetry server and GUI.
 - `lib/`: Contains the shared library code for the pod-side code and the base station.
   - `lib/core/`: Contains the core library code.
-  - `lib/io/`: Contains our abstracted IO implementations.
+  - `lib/io/`: Contains our abstracted IO implementations and procedural macros for creating board-specific implementations.
   - `lib/sensors/`: Contains our sensor implementations.
 - `boards/`: Contains the board-specific code for the pod-side code. These implementations are specific to each of the STM32 microcontrollers we are using due to differences in the peripherals available on each microcontroller. The board-specific code includes hardware implementations of the IO traits defined in `lib/io/`, tasks that can run on the board, as well as binaries that can be flashed to the board.
-  - `boards/{board_name}/src/io`: The hardware implementations of the IO traits.
   - `boards/{board_name}/src/tasks`: The tasks that can run on the board.
   - `boards/{board_name}/src/bin`: The binaries that can be flashed to the board.
 

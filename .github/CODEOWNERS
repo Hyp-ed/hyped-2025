@@ -12,10 +12,11 @@ lib/localisation @misha7b
 # Motors & Levitation Control
 lib/motors @jpfbastos
 lib/levitation @jpfbastos
+lib/control @jpfbastos
 
 # Sensors
-lib/sensors @licornes-fluos @H-Allen
-lib/io @licornes-fluos @H-Allen
+lib/sensors @H-Allen
+lib/io @H-Allen
 
 # Telemetry
 telemetry @arjunnaha

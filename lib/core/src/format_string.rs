@@ -20,7 +20,7 @@ impl<'a> FormatString<'a> {
     }
 }
 
-impl<'a> fmt::Write for FormatString<'a> {
+impl fmt::Write for FormatString<'_> {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         if self.used > self.buffer.len() {
             return Err(fmt::Error);
