@@ -1,11 +1,11 @@
 use hyped_core::types::DigitalSignal;
-use hyped_gpio::HypedGpioInput;
+use hyped_gpio::HypedGpioInputPin;
 
 /// Keyence represents a Keyence sensor which keeps track of the number of stripes that have passed
 /// by the sensor. The Keyence sensor is connected to a GPIO pin which reads a high signal when a
 /// stripe is detected and a low signal when no stripe is detected. The stripe count is updated
 /// whenever the signal changes from low to high (positive edge).
-pub struct Keyence<T: HypedGpioInput> {
+pub struct Keyence<T: HypedGpioInputPin> {
     /// The number of stripes that have passed by the sensor.
     stripe_count: u32,
     /// The last signal that was read from the sensor.
@@ -13,7 +13,7 @@ pub struct Keyence<T: HypedGpioInput> {
     gpio: T,
 }
 
-impl<T: HypedGpioInput> Keyence<T> {
+impl<T: HypedGpioInputPin> Keyence<T> {
     /// Creates a new Keyence sensor with an initial stripe count of 0 and a last signal of low.
     pub fn new(gpio: T) -> Keyence<T> {
         Keyence {
