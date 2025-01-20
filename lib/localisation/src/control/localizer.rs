@@ -89,16 +89,12 @@ impl Default for Localizer {
 impl Localizer {
     pub fn preprocessor(
         &mut self,
-        optical_data: Vec<Vec<f64, 2>, 2>,
+        optical_data: Vec<f64, 2>,
         keyence_data: Vec<u32, 2>,
         accelerometer_data: RawAccelerometerData<K_NUM_ACCELEROMETERS, K_NUM_AXIS>,
     ) {
-        let processed_optical_data = process_optical_data(optical_data);
-
-        for i in 0..2 {
-            self.optical_val += processed_optical_data[i] as f64;
-        }
-        self.optical_val /= 2.0;
+        let processed_optical_data = process_optical_data(optical_data.clone());
+        self.optical_val = processed_optical_data as f64;
 
         let keyence_status = self
             .keyence_checker
@@ -132,7 +128,7 @@ impl Localizer {
 
     pub fn iteration(
         &mut self,
-        optical_data: Vec<Vec<f64, 2>, 2>,
+        optical_data: Vec<f64, 2>,
         keyence_data: Vec<u32, 2>,
         accelerometer_data: RawAccelerometerData<K_NUM_ACCELEROMETERS, K_NUM_AXIS>,
     ) {
@@ -163,17 +159,12 @@ impl Localizer {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use heapless::Vec;
 
     #[test]
     fn test_localizer_with_zeros() {
         let mut localizer = Localizer::default();
 
-        let raw_optical_data: Vec<Vec<f64, 2>, 2> = Vec::from_slice(&[
-            Vec::from_slice(&[0.0, 0.0]).unwrap(),
-            Vec::from_slice(&[0.0, 0.0]).unwrap(),
-        ])
-        .unwrap();
+        let optical_data: Vec<f64, 2> = Vec::from_slice(&[0.0, 0.0]).unwrap();
 
         let raw_keyence_data: Vec<u32, 2> = Vec::from_slice(&[0, 0]).unwrap();
 
@@ -186,7 +177,7 @@ mod tests {
             ])
             .unwrap();
 
-        localizer.iteration(raw_optical_data, raw_keyence_data, raw_accelerometer_data);
+        localizer.iteration(optical_data, raw_keyence_data, raw_accelerometer_data);
 
         assert_eq!(localizer.displacement, 0.0);
         assert_eq!(localizer.velocity, 0.0);
