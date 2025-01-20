@@ -1,4 +1,4 @@
-use hyped_i2c::{HypedI2c, I2cError};
+use hyped_i2c::{i2c_write_or_err, HypedI2c, I2cError};
 
 use crate::SensorValueRange;
 
@@ -34,23 +34,29 @@ impl<'a, T: HypedI2c> Accelerometer<'a, T> {
         calculate_bounds: fn(AccelerationValues) -> SensorValueRange<AccelerationValues>,
     ) -> Result<Self, AccelerometerError> {
         let device_address = device_address as u8;
-        if let Err(e) =
-            i2c.write_byte_to_register(device_address, LIS2DS12_CTRL1_ADDRESS, LIS2DS12_CTRL1_VALUE)
-        {
-            return Err(AccelerometerError::I2cError(e));
-        }
-        if let Err(e) =
-            i2c.write_byte_to_register(device_address, LIS2DS12_CTRL2_ADDRESS, LIS2DS12_CTRL2_VALUE)
-        {
-            return Err(AccelerometerError::I2cError(e));
-        }
-        if let Err(e) = i2c.write_byte_to_register(
+
+        i2c_write_or_err!(
+            i2c,
+            device_address,
+            LIS2DS12_CTRL1_ADDRESS,
+            LIS2DS12_CTRL1_VALUE,
+            AccelerometerError
+        );
+        i2c_write_or_err!(
+            i2c,
+            device_address,
+            LIS2DS12_CTRL2_ADDRESS,
+            LIS2DS12_CTRL2_VALUE,
+            AccelerometerError
+        );
+        i2c_write_or_err!(
+            i2c,
             device_address,
             LIS2DS12_FIFO_CTRL_ADDRESS,
             LIS2DS12_FIFO_CTRL_VALUE,
-        ) {
-            return Err(AccelerometerError::I2cError(e));
-        }
+            AccelerometerError
+        );
+
         // Return Self only if all values are written successfully
         Ok(Self {
             i2c,
