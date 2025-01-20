@@ -7,10 +7,10 @@ use syn;
 #[proc_macro_derive(HypedGpioInput)]
 pub fn hyped_gpio_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();
-    impl_hyped_gpio_input(&ast)
+    impl_hyped_gpio(&ast)
 }
 
-fn impl_hyped_gpio_input(ast: &syn::DeriveInput) -> TokenStream {
+fn impl_hyped_gpio(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let gen = quote! {
         impl HypedGpioInput for #name {
