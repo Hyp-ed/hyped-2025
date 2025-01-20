@@ -3,8 +3,8 @@ use defmt_rtt as _;
 use embassy_stm32::i2c::I2c;
 use embassy_stm32::time::Hertz;
 use hyped_sensors::{
-    accelerometer::{AccelerationValues, Accelerometer, AccelerometerAddresses, Status,},
-    SensorValueRange::*
+    accelerometer::{AccelerationValues, Accelerometer, AccelerometerAddresses, Status},
+    SensorValueRange::*,
 };
 
 /// Test task that reads the acceleration from the sensor and prints it to the console.
@@ -56,7 +56,7 @@ pub async fn read_acceleration() -> ! {
                         accel_values.z
                     );
                 }
-            }
+            },
             None => {
                 defmt::info!("Failed to read acceleration values.")
             }
