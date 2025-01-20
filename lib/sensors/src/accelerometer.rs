@@ -1,4 +1,6 @@
-use hyped_io::i2c::{HypedI2c, I2cError};
+use hyped_i2c::{HypedI2c, I2cError};
+
+use crate::SensorValueRange;
 
 /// Accelerometer implements the logic to read the temperature from the LIS2DS12 accelerometer
 /// using the peripheral provided by the HypedI2c trait.
@@ -14,6 +16,7 @@ use hyped_io::i2c::{HypedI2c, I2cError};
 pub struct Accelerometer<'a, T: HypedI2c + 'a> {
     i2c: &'a mut T,
     device_address: u8,
+    calculate_bounds: fn(AccelerationValues) -> SensorValueRange<AccelerationValues>,
 }
 
 impl<'a, T: HypedI2c> Accelerometer<'a, T> {
@@ -21,6 +24,14 @@ impl<'a, T: HypedI2c> Accelerometer<'a, T> {
     pub fn new(
         i2c: &'a mut T,
         device_address: AccelerometerAddresses,
+    ) -> Result<Self, AccelerometerError> {
+        Self::new_with_bounds(i2c, device_address, default_calculate_bounds)
+    }
+
+    pub fn new_with_bounds(
+        i2c: &'a mut T,
+        device_address: AccelerometerAddresses,
+        calculate_bounds: fn(AccelerationValues) -> SensorValueRange<AccelerationValues>,
     ) -> Result<Self, AccelerometerError> {
         let device_address = device_address as u8;
         if let Err(e) =
@@ -44,11 +55,12 @@ impl<'a, T: HypedI2c> Accelerometer<'a, T> {
         Ok(Self {
             i2c,
             device_address,
+            calculate_bounds,
         })
     }
 
     /// Read the acceleration for each axis and return them as floating point values in gs.
-    pub fn read(&mut self) -> Option<AccelerationValues> {
+    pub fn read(&mut self) -> Option<SensorValueRange<AccelerationValues>> {
         // Read the low and high bytes of the acceleration and combine them to get the acceleration for each axis
         let x_low_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_X_L)?;
         let x_high_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_X_H)?;
@@ -75,7 +87,7 @@ impl<'a, T: HypedI2c> Accelerometer<'a, T> {
         let y = y_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
         let z = z_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
 
-        Some(AccelerationValues { x, y, z })
+        Some((self.calculate_bounds)(AccelerationValues { x, y, z }))
     }
 
     pub fn check_status(&mut self) -> Status {
@@ -119,6 +131,24 @@ impl Status {
     }
 }
 
+/// Default calculation of bounds for the accelerometer, if no bounds function is provided.
+/// The bounds are set to:
+/// Safe: Between -6g and +6g
+/// Warning: -8g to -6g and +6g to +8g
+/// Critical: Below -8g and above +8g
+pub fn default_calculate_bounds(
+    values: AccelerationValues,
+) -> SensorValueRange<AccelerationValues> {
+    let mut values_iter = [values.x, values.y, values.z].into_iter(); // there's probably a better way of doing this
+    if values_iter.any(|i| i.abs() >= 8000.0) {
+        SensorValueRange::Critical(values)
+    } else if values_iter.any(|i| i.abs() >= 6000.0) {
+        SensorValueRange::Warning(values)
+    } else {
+        SensorValueRange::Safe(values)
+    }
+}
+
 // Registers for the LIS2DS12 accelerometer
 const LIS2DS12_CTRL1_ADDRESS: u8 = 0x20;
 const LIS2DS12_CTRL2_ADDRESS: u8 = 0x21;
@@ -149,14 +179,17 @@ const LIS2DS12_FIFO_CTRL_VALUE: u8 = 0x30;
 
 #[cfg(test)]
 mod tests {
+    use core::cell::RefCell;
+
     use super::*;
+    use embassy_sync::blocking_mutex::Mutex;
     use heapless::FnvIndexMap;
-    use hyped_io::i2c::mock_i2c::MockI2c;
+    use hyped_i2c::mock_i2c::MockI2c;
 
     #[test]
     fn test_write_config() {
-        let i2c_values = FnvIndexMap::new();
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(FnvIndexMap::new()));
+        let mut i2c = MockI2c::new(&i2c_values);
         let _ = Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d);
         assert_eq!(
             i2c.get_writes().get(&(
@@ -210,16 +243,17 @@ mod tests {
             Some(0x00),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(AccelerationValues {
+            Some(SensorValueRange::Safe(AccelerationValues {
                 x: 0.0,
                 y: 0.0,
                 z: 0.0
-            })
+            }))
         );
     }
 
@@ -252,16 +286,17 @@ mod tests {
             Some(0x00),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(AccelerationValues {
+            Some(SensorValueRange::Safe(AccelerationValues {
                 x: 1220.0,
                 y: 0.0,
                 z: 0.0
-            })
+            }))
         );
     }
 
@@ -294,16 +329,17 @@ mod tests {
             Some(0x00),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(AccelerationValues {
+            Some(SensorValueRange::Safe(AccelerationValues {
                 x: -1220.0,
                 y: 0.0,
                 z: 0.0
-            })
+            }))
         );
     }
 
@@ -336,16 +372,17 @@ mod tests {
             Some(0x00),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(AccelerationValues {
+            Some(SensorValueRange::Safe(AccelerationValues {
                 x: 0.0,
                 y: 1220.0,
                 z: 0.0
-            })
+            }))
         );
     }
 
@@ -378,16 +415,17 @@ mod tests {
             Some(0x00),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(AccelerationValues {
+            Some(SensorValueRange::Safe(AccelerationValues {
                 x: 0.0,
                 y: -1220.0,
                 z: 0.0
-            })
+            }))
         );
     }
 
@@ -420,16 +458,17 @@ mod tests {
             Some(0xc4),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(AccelerationValues {
+            Some(SensorValueRange::Safe(AccelerationValues {
                 x: 0.0,
                 y: 0.0,
                 z: 1220.0
-            })
+            }))
         );
     }
 
@@ -462,16 +501,17 @@ mod tests {
             Some(0x3c),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(AccelerationValues {
+            Some(SensorValueRange::Safe(AccelerationValues {
                 x: 0.0,
                 y: 0.0,
                 z: -1220.0
-            })
+            }))
         );
     }
 
@@ -503,16 +543,17 @@ mod tests {
             Some(0x18),
         );
 
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(AccelerationValues {
+            Some(SensorValueRange::Safe(AccelerationValues {
                 x: 122.0,
                 y: 244.0,
                 z: -488.0
-            })
+            }))
         );
     }
 
@@ -523,7 +564,8 @@ mod tests {
             (AccelerometerAddresses::Address1d as u8, LIS2DS12_STATUS),
             Some(LIS2DS12_DATA_NOT_READY),
         );
-        let mut i2c = MockI2c::new(i2c_values);
+        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(accelerometer.check_status(), Status::DataNotReady);

@@ -2,8 +2,9 @@ use crate::io::i2c::Stm32f767ziI2c;
 use defmt_rtt as _;
 use embassy_stm32::i2c::I2c;
 use embassy_stm32::time::Hertz;
-use hyped_sensors::accelerometer::{
-    AccelerationValues, Accelerometer, AccelerometerAddresses, Status,
+use hyped_sensors::{
+    accelerometer::{AccelerationValues, Accelerometer, AccelerometerAddresses, Status,},
+    SensorValueRange::*
 };
 
 /// Test task that reads the acceleration from the sensor and prints it to the console.
@@ -30,13 +31,31 @@ pub async fn read_acceleration() -> ! {
         }
 
         match accelerometer.read() {
-            Some(accel_values) => {
-                defmt::info!(
-                    "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg",
-                    accel_values.x,
-                    accel_values.y,
-                    accel_values.z
-                );
+            Some(accel_values) => match accel_values {
+                Safe(accel_values) => {
+                    defmt::info!(
+                        "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (safe)",
+                        accel_values.x,
+                        accel_values.y,
+                        accel_values.z
+                    );
+                }
+                Warning(accel_values) => {
+                    defmt::info!(
+                        "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (unsafe)",
+                        accel_values.x,
+                        accel_values.y,
+                        accel_values.z
+                    );
+                }
+                Critical(accel_values) => {
+                    defmt::info!(
+                        "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (critical)",
+                        accel_values.x,
+                        accel_values.y,
+                        accel_values.z
+                    );
+                }
             }
             None => {
                 defmt::info!("Failed to read acceleration values.")
