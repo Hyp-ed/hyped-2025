@@ -146,7 +146,7 @@ pub fn default_calculate_bounds(
     values: AccelerationValues,
 ) -> SensorValueRange<AccelerationValues> {
     let mut values_iter = [values.x, values.y, values.z].into_iter(); // there's probably a better way of doing this
-    if values_iter.any(|i| i >= 8000.0  || i <= -8000.0) {
+    if values_iter.any(|i| i >= 8000.0 || i <= -8000.0) {
         SensorValueRange::Critical(values)
     } else if values_iter.any(|i| i >= 6000.0 || i <= -6000.0) {
         SensorValueRange::Warning(values)
