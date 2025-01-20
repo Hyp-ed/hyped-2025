@@ -18,7 +18,7 @@ pub async fn read_acceleration() -> ! {
     let i2c = I2c::new_blocking(p.I2C1, p.PB8, p.PB9, Hertz(200_000), Default::default());
     static I2C_BUS: StaticCell<I2c1Bus> = StaticCell::new();
     let i2c_bus = I2C_BUS.init(Mutex::new(RefCell::new(i2c)));
-    let mut hyped_i2c = Stm32f767ziI2c::new(i2c);
+    let mut hyped_i2c = Stm32f767ziI2c::new(i2c_bus);
 
     let mut accelerometer = Accelerometer::new(&mut hyped_i2c, AccelerometerAddresses::Address1d)
         .expect(
