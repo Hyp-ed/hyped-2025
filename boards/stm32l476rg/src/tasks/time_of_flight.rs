@@ -1,11 +1,13 @@
 use crate::io::Stm32l476rgI2c;
 use core::cell::RefCell;
 use defmt_rtt as _;
-use embassy_stm32::{i2c::I2c, mode::Blocking};
 use embassy_stm32::time::Hertz;
+use embassy_stm32::{i2c::I2c, mode::Blocking};
 use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
-use hyped_sensors::{time_of_flight::{TimeOfFlight, TimeOfFlightAddresses},
-SensorValueRange::*};
+use hyped_sensors::{
+    time_of_flight::{TimeOfFlight, TimeOfFlightAddresses},
+    SensorValueRange::*,
+};
 use static_cell::StaticCell;
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
@@ -40,7 +42,7 @@ pub async fn read_time_of_flight_range() -> ! {
                 Critical(range) => {
                     defmt::info!("Range: {}mm", range);
                 }
-            }
+            },
             Err(e) => {
                 panic!("{:?}", e)
             }

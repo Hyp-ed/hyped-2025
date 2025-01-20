@@ -324,11 +324,15 @@ mod tests {
             ),
             Some(0x04),
         );
+        let _ = i2c_values.insert(
+            (TimeOfFlightAddresses::Address29 as u8, RESULT_RANGE_VAL),
+            Some(0),
+        );
         let i2c_values = Mutex::new(RefCell::new(i2c_values));
         let mut i2c = MockI2c::new(&i2c_values);
         let mut time_of_flight =
             TimeOfFlight::new(&mut i2c, TimeOfFlightAddresses::Address29).unwrap();
-        let _ = time_of_flight.single_shot_measurement().unwrap();
+        let _ = time_of_flight.single_shot_measurement();
         assert_eq!(
             i2c.get_writes()
                 .get(&(TimeOfFlightAddresses::Address29 as u8, SYSRANGE_START)),
@@ -370,11 +374,9 @@ mod tests {
         let mut i2c = MockI2c::new(&i2c_values);
         let mut time_of_flight =
             TimeOfFlight::new(&mut i2c, TimeOfFlightAddresses::Address29).unwrap();
-        let _ = time_of_flight.single_shot_measurement().unwrap();
         assert_eq!(
-            i2c.get_writes()
-                .get(&(TimeOfFlightAddresses::Address29 as u8, RESULT_RANGE_VAL)),
-            Some(&Some(255))
+            time_of_flight.single_shot_measurement().unwrap(),
+            SensorValueRange::Safe(255)
         );
     }
 }
