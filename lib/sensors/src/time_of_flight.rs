@@ -1,5 +1,6 @@
+use crate::SensorValueRange;
 use defmt;
-use hyped_i2c::{HypedI2c, I2cError};
+use hyped_i2c::{i2c_write_or_err_16, HypedI2c, I2cError};
 /// time_of_flight implements the logic to read Time of Flight data from the VL6180V1 Time of Flight
 /// sensor using I2C peripheral provided by the Hyped I2c trait.
 ///
@@ -16,6 +17,7 @@ use hyped_i2c::{HypedI2c, I2cError};
 pub struct TimeOfFlight<'a, T: HypedI2c> {
     i2c: &'a mut T,
     device_address: u8,
+    calculate_bounds: fn(u8) -> SensorValueRange<u8>,
 }
 
 impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
@@ -27,6 +29,14 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         i2c: &'a mut T,
         device_address: TimeOfFlightAddresses,
     ) -> Result<Self, TimeOfFlightError> {
+        Self::new_with_bounds(i2c, device_address, default_calculate_bounds)
+    }
+    /// Create a new instance of the time of flight sensor and configure it with bounds involved.
+    pub fn new_with_bounds(
+        i2c: &'a mut T,
+        device_address: TimeOfFlightAddresses,
+        calculate_bounds: fn(u8) -> SensorValueRange<u8>,
+    ) -> Result<Self, TimeOfFlightError> {
         let device_address = device_address as u8;
         // Check that the sensor has powered up
         // Note: the sensor will either need to be power cycled or the SYS_FRESH_OUT_RESET register will need to be written to 0x01 if it has already been configured
@@ -36,6 +46,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         let mut time_of_flight = Self {
             i2c,
             device_address,
+            calculate_bounds,
         };
         // Check boot status; if it's not freshly reset, boot is complete. If it is, load all configs.
         if boot_status == 0 {
@@ -53,62 +64,70 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         // SR03 Settings as seen in Application Sheet on page 24
         // Write to private registers
         for (reg, val) in PRIVATE_REGISTERS {
-            if let Err(e) = i2c.write_byte_to_register_16(device_address, reg, val) {
-                return Err(TimeOfFlightError::I2cError(e));
-            }
+            i2c_write_or_err_16!(i2c, device_address, reg, val, TimeOfFlightError)
         }
 
         // Recommended Public Registers (see Application Sheet)
-        if let Err(e) =
-            i2c.write_byte_to_register_16(device_address, SYS_MODE_GPIO1, SYS_MODE_GPIO_VAL)
-        {
-            return Err(TimeOfFlightError::I2cError(e));
-        }
-
-        if let Err(e) =
-            i2c.write_byte_to_register_16(device_address, AVG_SAMPLE_PERIOD, AVG_SAMPLE_PERIOD_VAL)
-        {
-            return Err(TimeOfFlightError::I2cError(e));
-        }
-
-        if let Err(e) = i2c.write_byte_to_register_16(
+        i2c_write_or_err_16!(
+            i2c,
+            device_address,
+            SYS_MODE_GPIO1,
+            SYS_MODE_GPIO_VAL,
+            TimeOfFlightError
+        );
+        i2c_write_or_err_16!(
+            i2c,
+            device_address,
+            AVG_SAMPLE_PERIOD,
+            AVG_SAMPLE_PERIOD_VAL,
+            TimeOfFlightError
+        );
+        i2c_write_or_err_16!(
+            i2c,
+            device_address,
+            SYS_MODE_GPIO1,
+            SYS_MODE_GPIO_VAL,
+            TimeOfFlightError
+        );
+        i2c_write_or_err_16!(
+            i2c,
             device_address,
             SYSRANGE_VHV_REPEAT_RATE,
             SYSRANGE_VHV_REPEAT_RATE_VAL,
-        ) {
-            return Err(TimeOfFlightError::I2cError(e));
-        }
-
-        if let Err(e) = i2c.write_byte_to_register_16(
+            TimeOfFlightError
+        );
+        i2c_write_or_err_16!(
+            i2c,
             device_address,
             SYSRANGE_VHV_RECALIBRATE,
             SYSRANGE_VHV_RECALIBRATE_VAL,
-        ) {
-            return Err(TimeOfFlightError::I2cError(e));
-        }
-
-        if let Err(e) = i2c.write_byte_to_register_16(
+            TimeOfFlightError
+        );
+        i2c_write_or_err_16!(
+            i2c,
             device_address,
             SYSRANGE_INTERMEASURE_PERIOD,
             SYSRANGE_INTERMEASURE_PERIOD_VAL,
-        ) {
-            return Err(TimeOfFlightError::I2cError(e));
-        }
-
-        if let Err(e) = i2c.write_byte_to_register_16(
+            TimeOfFlightError
+        );
+        i2c_write_or_err_16!(
+            i2c,
             device_address,
             SYS_INTERRUPT_CONFIG_GPIO,
             SYS_INTERRUPT_CONFIG_GPIO_VAL,
-        ) {
-            return Err(TimeOfFlightError::I2cError(e));
-        }
+            TimeOfFlightError
+        );
         defmt::info!("Time Of Flight sensor configured");
 
         // Write 0x00 to SYS_FRESH_OUT_RESET to indicate that the sensor has been configured
         // Note: as above, this means that the sensor will need to be power cycled or this register will need to be written to 0x01 to reconfigure the sensor
-        if let Err(e) = i2c.write_byte_to_register_16(device_address, SYS_FRESH_OUT_RESET, 0x00) {
-            return Err(TimeOfFlightError::I2cError(e));
-        };
+        i2c_write_or_err_16!(
+            i2c,
+            device_address,
+            SYS_FRESH_OUT_RESET,
+            0x00,
+            TimeOfFlightError
+        );
         Ok(())
     }
 
@@ -119,14 +138,14 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
     /// You can find details about these modes on page 6 of the Application Note:
     /// https://www.st.com/resource/en/application_note/an4545-vl6180x-basic-ranging-application-note-stmicroelectronics.pdf
 
-    pub fn single_shot_measurement(&mut self) -> Result<u8, TimeOfFlightError> {
-        if let Err(e) = self.i2c.write_byte_to_register_16(
+    pub fn single_shot_measurement(&mut self) -> Result<SensorValueRange<u8>, TimeOfFlightError> {
+        i2c_write_or_err_16!(
+            self.i2c,
             self.device_address,
             SYSRANGE_START,
             SYSRANGE_START_SS_VAL,
-        ) {
-            return Err(TimeOfFlightError::I2cError(e));
-        }
+            TimeOfFlightError
+        );
         let status_byte = self
             .i2c
             .read_byte_16(self.device_address, RESULT_INTERR_STATUS_GPIO)
@@ -140,20 +159,26 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
                 & 0x07;
         }
         // Read range from the RESULT_RANGE_VAL register and return it
-        let range = self
-            .i2c
-            .read_byte_16(self.device_address, RESULT_RANGE_VAL)
-            .ok_or(TimeOfFlightError::I2cError(I2cError::Unknown));
+        let range = match self.i2c.read_byte_16(self.device_address, RESULT_RANGE_VAL) {
+            Some(range) => range,
+            None => return Err(TimeOfFlightError::I2cError(I2cError::Unknown)),
+        };
         // For good practice, interrupts have to be cleared at the end of the program 'loop' each time. See Application Sheet page 22
-        if let Err(e) = self.i2c.write_byte_to_register_16(
+        i2c_write_or_err_16!(
+            self.i2c,
             self.device_address,
             SYS_INTERRUPT_CLEAR,
             CLEAR_INTERRUPTS_VAL,
-        ) {
-            return Err(TimeOfFlightError::I2cError(e));
-        }
-        return range;
+            TimeOfFlightError
+        );
+        Some((self.calculate_bounds)(range)).ok_or(TimeOfFlightError::I2cError(I2cError::Unknown))
     }
+}
+
+/// Default calculation of the bounds for the Time Of Flight sensor. The bounds are set to:
+/// Safe: ALL (as far as we know, time of flight sensor has no bounds so this is just satisfying the new bounds features)
+pub fn default_calculate_bounds(value: u8) -> SensorValueRange<u8> {
+    SensorValueRange::Safe(value)
 }
 
 pub enum TimeOfFlightAddresses {
@@ -286,7 +311,7 @@ mod tests {
     }
 
     #[test]
-    fn test_single_shot() {
+    fn test_single_shot_and_clear() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
             (TimeOfFlightAddresses::Address29 as u8, SYS_FRESH_OUT_RESET),
@@ -303,26 +328,12 @@ mod tests {
         let mut i2c = MockI2c::new(&i2c_values);
         let mut time_of_flight =
             TimeOfFlight::new(&mut i2c, TimeOfFlightAddresses::Address29).unwrap();
-        time_of_flight.single_shot_measurement().unwrap();
+        let _ = time_of_flight.single_shot_measurement().unwrap();
         assert_eq!(
             i2c.get_writes()
                 .get(&(TimeOfFlightAddresses::Address29 as u8, SYSRANGE_START)),
             Some(&Some(SYSRANGE_START_SS_VAL))
         );
-    }
-
-    #[test]
-    fn test_clear_interr() {
-        let mut i2c_values = FnvIndexMap::new();
-        let _ = i2c_values.insert(
-            (TimeOfFlightAddresses::Address29 as u8, SYS_FRESH_OUT_RESET),
-            Some(1),
-        );
-        let i2c_values = Mutex::new(RefCell::new(i2c_values));
-        let mut i2c = MockI2c::new(&i2c_values);
-        let mut time_of_flight =
-            TimeOfFlight::new(&mut i2c, TimeOfFlightAddresses::Address29).unwrap();
-        time_of_flight.clear_interrupts().unwrap();
         assert_eq!(
             i2c.get_writes()
                 .get(&(TimeOfFlightAddresses::Address29 as u8, SYS_INTERRUPT_CLEAR)),
@@ -338,6 +349,20 @@ mod tests {
             Some(1),
         );
         let _ = i2c_values.insert(
+            (
+                TimeOfFlightAddresses::Address29 as u8,
+                RESULT_INTERR_STATUS_GPIO,
+            ),
+            Some(0x04),
+        );
+        let _ = i2c_values.insert(
+            (
+                TimeOfFlightAddresses::Address29 as u8,
+                RESULT_INTERR_STATUS_GPIO,
+            ),
+            Some(0x04),
+        );
+        let _ = i2c_values.insert(
             (TimeOfFlightAddresses::Address29 as u8, RESULT_RANGE_VAL),
             Some(255),
         );
@@ -345,6 +370,11 @@ mod tests {
         let mut i2c = MockI2c::new(&i2c_values);
         let mut time_of_flight =
             TimeOfFlight::new(&mut i2c, TimeOfFlightAddresses::Address29).unwrap();
-        // assert_eq!(time_of_flight.read_range(), Some(255));
+        let _ = time_of_flight.single_shot_measurement().unwrap();
+        assert_eq!(
+            i2c.get_writes()
+                .get(&(TimeOfFlightAddresses::Address29 as u8, RESULT_RANGE_VAL)),
+            Some(&Some(255))
+        );
     }
 }

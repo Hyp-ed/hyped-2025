@@ -46,6 +46,17 @@ macro_rules! i2c_write_or_err {
         }
     };
 }
+#[macro_export]
+/// Macro to write a byte to a 16-bit register on an I2C device or return an error.
+/// Does nothing if the write is successful, otherwise returns the error type specified.
+macro_rules! i2c_write_or_err_16 {
+    ($i2c:expr, $device_address:expr, $register_address:expr, $data:expr, $err_type:ty) => {
+        match $i2c.write_byte_to_register_16($device_address, $register_address, $data) {
+            Ok(_) => (),
+            Err(e) => return Err(<$err_type>::I2cError(e)),
+        }
+    };
+}
 
 pub mod mock_i2c {
     use core::cell::RefCell;

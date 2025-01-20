@@ -631,6 +631,7 @@ dependencies = [
 name = "hyped_sensors"
 version = "0.1.0"
 dependencies = [
+ "defmt",
  "embassy-sync 0.6.0",
  "heapless",
  "hyped_core",
