@@ -41,7 +41,7 @@ async fn main(_spawner: Spawner) {
     let mut counter = 0;
     loop {
         println!("Counter: {}", counter);
-        let frame = Frame::new_data(unwrap!(StandardId::new(1 as _)), &[counter]).unwrap();
+        let frame = Frame::new_data(unwrap!(StandardId::new(0 as _)), &[counter]).unwrap();
         tx.write(&frame).await;
         Timer::after_secs(1).await;
         counter += 1;

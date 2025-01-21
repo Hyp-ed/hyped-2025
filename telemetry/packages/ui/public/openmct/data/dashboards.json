@@ -1,1602 +1,1602 @@
 {
-  "openmct": {
-    "dashboards": {
-      "identifier": { "key": "mine", "namespace": "" },
-      "name": "Dashboards",
-      "type": "folder",
-      "composition": [
-        { "key": "98f9df6c-c1f0-432f-96c1-81e2b7cb6d2f", "namespace": "" },
-        { "key": "df6bcad8-76e1-40bb-b45b-8f836344878b", "namespace": "" },
-        { "key": "cf6b6758-755b-4524-80ac-9ce53fefc775", "namespace": "" },
-        { "key": "ae9f80c5-484b-4733-bd07-84fab323d7bc", "namespace": "" }
-      ],
-      "location": "ROOT",
-      "modified": 1689777779738,
-      "created": 1689723322537,
-      "persisted": 1689777779738
-    },
-    "98f9df6c-c1f0-432f-96c1-81e2b7cb6d2f": {
-      "identifier": {
-        "key": "98f9df6c-c1f0-432f-96c1-81e2b7cb6d2f",
-        "namespace": ""
-      },
-      "name": "MAIN",
-      "type": "layout",
-      "composition": [
-        { "key": "6c0f0ca8-6042-4687-8eb5-4ccef588bfe6", "namespace": "" },
-        { "key": "0208edb3-317e-45b7-9db3-f8f3c2b96506", "namespace": "" },
-        { "key": "c5663753-264e-4468-9e82-b1c652ff7973", "namespace": "" },
-        { "namespace": "hyped.pod_1", "key": "brake_clamp_status" },
-        { "namespace": "hyped.pod_1", "key": "pod_raised_status" }
-      ],
-      "configuration": {
-        "items": [
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 10,
-            "y": 21,
-            "width": 0.2,
-            "height": 10,
-            "type": "box-view",
-            "id": "23658b27-0a36-479d-8679-f679e03576a2"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 110,
-            "y": 20,
-            "width": 29,
-            "height": 4,
-            "type": "box-view",
-            "id": "c77177b6-f9f1-4408-b389-794f45af5ffe"
-          },
-          {
-            "stroke": "transparent",
-            "x": 48,
-            "y": 29,
-            "width": 47,
-            "height": 20,
-            "url": "http://localhost:5173/images/pod.png",
-            "type": "image-view",
-            "id": "9437fe66-9311-439a-821e-d76f19137821"
-          },
-          {
-            "fill": "",
-            "stroke": "",
-            "color": "",
-            "x": 61,
-            "y": 13,
-            "width": 22,
-            "height": 6,
-            "text": "Pod Ness",
-            "fontSize": "42",
-            "font": "monospace-bold",
-            "type": "text-view",
-            "id": "cfd27641-129b-4cce-af64-1656918b7294"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 48,
-            "y": 61,
-            "width": 47,
-            "height": 5,
-            "type": "box-view",
-            "id": "1ffbd2d5-a94d-410f-8a0a-e4af1c5710c5"
-          },
-          {
-            "fill": "",
-            "stroke": "",
-            "color": "",
-            "x": 59,
-            "y": 61,
-            "width": 25,
-            "height": 5,
-            "text": "ALL SYSTEMS HEALTHY",
-            "fontSize": "20",
-            "font": "monospace-bold",
-            "type": "text-view",
-            "id": "99479ef1-2246-400d-bbb9-dea8aa6c460c"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 48,
-            "y": 67,
-            "width": 11,
-            "height": 4,
-            "type": "box-view",
-            "id": "0f627bec-3591-451c-a43d-9be14146ea19"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 60,
-            "y": 67,
-            "width": 21,
-            "height": 4,
-            "type": "box-view",
-            "id": "b41c8c44-5ffd-4eec-ae5a-8670c5e182f6"
-          },
-          {
-            "fill": "",
-            "stroke": "",
-            "color": "",
-            "x": 50,
-            "y": 67,
-            "width": 7,
-            "height": 4,
-            "text": "MOTORS",
-            "fontSize": "16",
-            "font": "monospace",
-            "type": "text-view",
-            "id": "93bfcb11-36e7-4017-9c30-84c58b001e70"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 82,
-            "y": 67,
-            "width": 13,
-            "height": 4,
-            "type": "box-view",
-            "id": "02d8d07d-c3b8-492b-9637-f6706d5410e0"
-          },
-          {
-            "fill": "",
-            "stroke": "",
-            "color": "",
-            "x": 85,
-            "y": 67,
-            "width": 7,
-            "height": 4,
-            "text": "BRAKES",
-            "fontSize": "16",
-            "font": "monospace",
-            "type": "text-view",
-            "id": "3c4bfc77-82ed-42d1-8920-5b8723c2e8b3"
-          },
-          {
-            "fill": "",
-            "stroke": "",
-            "color": "",
-            "x": 62,
-            "y": 67,
-            "width": 17,
-            "height": 4,
-            "text": "MOTOR CONTROLLER",
-            "fontSize": "16",
-            "font": "monospace",
-            "type": "text-view",
-            "id": "a16ef645-2b6f-40d2-b2d1-fcb8292d88f9"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 48,
-            "y": 24,
-            "width": 47,
-            "height": 4,
-            "type": "box-view",
-            "id": "378c9add-0a4c-4a72-be22-a2a2bffa88c0"
-          },
-          {
-            "fill": "",
-            "stroke": "",
-            "color": "",
-            "x": 56,
-            "y": 24,
-            "width": 30,
-            "height": 4,
-            "text": "⚡️ HIGH POWER ACTIVE",
-            "fontSize": "24",
-            "font": "monospace-bold",
-            "type": "text-view",
-            "id": "e8c09162-eadc-43b5-85e6-e5a27055b0ab"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 65,
-            "y": 72,
-            "width": 14,
-            "height": 4,
-            "type": "box-view",
-            "id": "94930f25-e01d-44db-bcf0-df1fe1892dd9"
-          },
-          {
-            "fill": "",
-            "stroke": "",
-            "color": "",
-            "x": 67,
-            "y": 72,
-            "width": 10,
-            "height": 4,
-            "text": "BATTERIES",
-            "fontSize": "16",
-            "font": "monospace",
-            "type": "text-view",
-            "id": "0fffb175-91bc-4de8-bc30-b47b2d325f44"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 48,
-            "y": 72,
-            "width": 16,
-            "height": 4,
-            "type": "box-view",
-            "id": "63a02900-544e-4bba-9634-40135b1cbdbe"
-          },
-          {
-            "fill": "",
-            "stroke": "",
-            "color": "",
-            "x": 50.5,
-            "y": 72,
-            "width": 11,
-            "height": 4,
-            "text": "SUSPENSION",
-            "fontSize": "16",
-            "font": "monospace",
-            "type": "text-view",
-            "id": "dffc9f49-c939-4aef-b435-94470c79e9b5"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 80,
-            "y": 72,
-            "width": 15,
-            "height": 4,
-            "type": "box-view",
-            "id": "3918f377-171d-4e2d-a2fa-d88c5ae828b1"
-          },
-          {
-            "fill": "",
-            "stroke": "",
-            "color": "",
-            "x": 82,
-            "y": 72,
-            "width": 11,
-            "height": 4,
-            "text": "LOW POWER",
-            "fontSize": "16",
-            "font": "monospace",
-            "type": "text-view",
-            "id": "c4310cfe-c94c-4c4a-ab1c-843c8e1ae133"
-          },
-          {
-            "width": 27,
-            "height": 27,
-            "x": 111,
-            "y": 25,
-            "identifier": {
-              "key": "6c0f0ca8-6042-4687-8eb5-4ccef588bfe6",
-              "namespace": ""
-            },
-            "hasFrame": true,
-            "fontSize": "default",
-            "font": "default",
-            "type": "subobject-view",
-            "id": "9e371b20-5ab5-4376-a0bf-ab5d1d37ff57"
-          },
-          {
-            "width": 141,
-            "height": 9,
-            "x": 0,
-            "y": 0,
-            "identifier": {
-              "key": "0208edb3-317e-45b7-9db3-f8f3c2b96506",
-              "namespace": ""
-            },
-            "hasFrame": true,
-            "fontSize": "default",
-            "font": "default",
-            "type": "subobject-view",
-            "id": "49122be9-aad7-4006-9d57-d88cd352d9e8"
-          },
-          {
-            "width": 27,
-            "height": 27,
-            "x": 111,
-            "y": 53,
-            "identifier": {
-              "key": "c5663753-264e-4468-9e82-b1c652ff7973",
-              "namespace": ""
-            },
-            "hasFrame": true,
-            "fontSize": "default",
-            "font": "default",
-            "type": "subobject-view",
-            "id": "89090653-a73a-4722-a8b2-52150584194d"
-          },
-          {
-            "x": 59,
-            "y": 42,
-            "x2": 30,
-            "y2": 23,
-            "stroke": "#666666",
-            "type": "line-view",
-            "id": "bf97c6d8-ea17-4d6d-acab-eae8a0156654"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 10,
-            "y": 21,
-            "width": 21,
-            "height": 4,
-            "type": "box-view",
-            "id": "750e48b3-00ee-404f-8af1-43e737a329ac"
-          },
-          {
-            "fill": "",
-            "stroke": "",
-            "color": "",
-            "x": 11,
-            "y": 22,
-            "width": 9,
-            "height": 2,
-            "text": "BRAKES",
-            "fontSize": "18",
-            "font": "monospace",
-            "type": "text-view",
-            "id": "3ff3272c-59f2-4bbd-9d3a-c36443060232"
-          },
-          {
-            "x": 76,
-            "y": 40,
-            "x2": 111,
-            "y2": 22,
-            "stroke": "#666666",
-            "type": "line-view",
-            "id": "8295c7f7-30b3-4442-b3dc-c94d951bf914"
-          },
-          {
-            "fill": "",
-            "stroke": "",
-            "color": "",
-            "x": 111,
-            "y": 21,
-            "width": 9,
-            "height": 2,
-            "text": "MOTORS",
-            "fontSize": "18",
-            "font": "monospace",
-            "type": "text-view",
-            "id": "c238bed1-8be9-44b3-96d9-bdeadf8ef19a"
-          },
-          {
-            "identifier": {
-              "namespace": "hyped.pod_1",
-              "key": "brake_clamp_status"
-            },
-            "x": 11,
-            "y": 25,
-            "width": 26,
-            "height": 5,
-            "displayMode": "all",
-            "value": "value",
-            "stroke": "",
-            "fill": "",
-            "color": "",
-            "fontSize": "default",
-            "font": "default",
-            "type": "telemetry-view",
-            "id": "8a8442e6-9b32-406e-b304-b4f6d077f32e"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 8,
-            "y": 50,
-            "width": 0.2,
-            "height": 10,
-            "type": "box-view",
-            "id": "552b8c4c-0c1c-4af2-99b7-8ef9b6086ec4"
-          },
-          {
-            "identifier": {
-              "namespace": "hyped.pod_1",
-              "key": "pod_raised_status"
-            },
-            "x": 9,
-            "y": 54,
-            "width": 24,
-            "height": 5,
-            "displayMode": "all",
-            "value": "value",
-            "stroke": "",
-            "fill": "",
-            "color": "",
-            "fontSize": "default",
-            "font": "default",
-            "type": "telemetry-view",
-            "id": "8b171338-14f4-42d2-a3b3-22c6ec7db53d"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 110,
-            "y": 20,
-            "width": 0.2,
-            "height": 61,
-            "type": "box-view",
-            "id": "80f5bbbd-647e-4275-b374-d5c3161064b9"
-          },
-          {
-            "x": 56,
-            "y": 44,
-            "x2": 28,
-            "y2": 52,
-            "stroke": "#666666",
-            "type": "line-view",
-            "id": "9b7672ca-74f3-42ac-90fa-6d5db07cb2c5"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 8,
-            "y": 49,
-            "width": 21,
-            "height": 4,
-            "type": "box-view",
-            "id": "ea8523b1-4f07-4889-b33e-b489a101404b"
-          },
-          {
-            "fill": "",
-            "stroke": "",
-            "color": "",
-            "x": 9,
-            "y": 50,
-            "width": 9,
-            "height": 2,
-            "text": "POD",
-            "fontSize": "18",
-            "font": "monospace",
-            "type": "text-view",
-            "id": "be66f270-5b91-4d1a-b499-d2dc194d49d4"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 58,
-            "y": 41,
-            "width": 1.5,
-            "height": 1.5,
-            "type": "ellipse-view",
-            "id": "6a9da5d0-f7c2-4396-a940-ab7318867ba2"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 55,
-            "y": 43.5,
-            "width": 1.5,
-            "height": 1.5,
-            "type": "ellipse-view",
-            "id": "3785219c-727f-44c1-80c0-1c0ba528e7ca"
-          },
-          {
-            "fill": "#666666",
-            "stroke": "",
-            "x": 75,
-            "y": 39,
-            "width": 1.5,
-            "height": 1.5,
-            "type": "ellipse-view",
-            "id": "49f9fa33-e821-4dd1-8df3-d69cc0e51544"
-          }
-        ],
-        "layoutGrid": [10, 10],
-        "objectStyles": {
-          "1ffbd2d5-a94d-410f-8a0a-e4af1c5710c5": {
-            "staticStyle": {
-              "style": { "backgroundColor": "#6aa84f", "border": "" }
-            },
-            "styles": [
-              {
-                "conditionId": "eca5ef3e-fe3c-4594-ad2b-b44ec7ae10ed",
-                "style": {
-                  "output": "",
-                  "backgroundColor": "#cc0000",
-                  "border": "",
-                  "isStyleInvisible": ""
-                }
-              },
-              {
-                "conditionId": "91069741-36d4-4f49-be37-46885f1668f4",
-                "style": {
-                  "output": "",
-                  "backgroundColor": "#6aa84f",
-                  "border": "",
-                  "isStyleInvisible": ""
-                }
-              }
-            ],
-            "selectedConditionId": "91069741-36d4-4f49-be37-46885f1668f4",
-            "defaultConditionId": "91069741-36d4-4f49-be37-46885f1668f4",
-            "conditionSetIdentifier": {
-              "key": "8bd1c2ee-e796-41fa-a5ca-e26ecffe9b70",
-              "namespace": ""
-            }
-          },
-          "99479ef1-2246-400d-bbb9-dea8aa6c460c": {
-            "staticStyle": { "style": { "color": "#ffffff" } }
-          },
-          "93bfcb11-36e7-4017-9c30-84c58b001e70": {
-            "staticStyle": { "style": { "color": "#ffffff" } }
-          },
-          "a16ef645-2b6f-40d2-b2d1-fcb8292d88f9": {
-            "staticStyle": { "style": { "color": "#ffffff" } }
-          },
-          "3c4bfc77-82ed-42d1-8920-5b8723c2e8b3": {
-            "staticStyle": { "style": { "color": "#ffffff" } }
-          },
-          "0f627bec-3591-451c-a43d-9be14146ea19": {
-            "staticStyle": {
-              "style": { "backgroundColor": "#6aa84f", "border": "" }
-            },
-            "styles": [
-              {
-                "conditionId": "22ca36d7-3a02-4324-be20-b16913bb977f",
-                "style": {
-                  "output": "",
-                  "backgroundColor": "#cc0000",
-                  "border": "",
-                  "isStyleInvisible": ""
-                }
-              },
-              {
-                "conditionId": "923f2132-183c-4065-a27d-5be4aa85c9e8",
-                "style": {
-                  "output": "",
-                  "backgroundColor": "#6aa84f",
-                  "border": "",
-                  "isStyleInvisible": ""
-                }
-              }
-            ],
-            "selectedConditionId": "22ca36d7-3a02-4324-be20-b16913bb977f",
-            "defaultConditionId": "923f2132-183c-4065-a27d-5be4aa85c9e8",
-            "conditionSetIdentifier": {
-              "key": "823b1c3c-ab71-4808-a0c8-a467737d093a",
-              "namespace": ""
-            }
-          },
-          "b41c8c44-5ffd-4eec-ae5a-8670c5e182f6": {
-            "staticStyle": {
-              "style": { "backgroundColor": "#6aa84f", "border": "" }
-            },
-            "styles": [
-              {
-                "conditionId": "2e2dbdd7-ba72-4337-8701-fca2bf847554",
-                "style": {
-                  "output": "",
-                  "backgroundColor": "#cc0000",
-                  "border": "",
-                  "isStyleInvisible": ""
-                }
-              },
-              {
-                "conditionId": "12a55f8a-5ede-47b6-b63f-d61cb4cce755",
-                "style": {
-                  "output": "",
-                  "backgroundColor": "#6aa84f",
-                  "border": "",
-                  "isStyleInvisible": ""
-                }
-              }
-            ],
-            "selectedConditionId": "2e2dbdd7-ba72-4337-8701-fca2bf847554",
-            "defaultConditionId": "12a55f8a-5ede-47b6-b63f-d61cb4cce755",
-            "conditionSetIdentifier": {
-              "key": "67e4caef-a15f-4fb1-b3dd-03815c5e371b",
-              "namespace": ""
-            }
-          },
-          "02d8d07d-c3b8-492b-9637-f6706d5410e0": {
-            "staticStyle": {
-              "style": { "backgroundColor": "#6aa84f", "border": "" }
-            },
-            "styles": [
-              {
-                "conditionId": "28e082d7-444e-4b4e-9c15-6b8af2f11f45",
-                "style": {
-                  "output": "",
-                  "backgroundColor": "#cc0000",
-                  "border": "",
-                  "isStyleInvisible": ""
-                }
-              },
-              {
-                "conditionId": "1cdf8fde-270c-4e39-854a-04b3da872608",
-                "style": {
-                  "output": "",
-                  "backgroundColor": "#6aa84f",
-                  "border": "",
-                  "isStyleInvisible": ""
-                }
-              }
-            ],
-            "selectedConditionId": "28e082d7-444e-4b4e-9c15-6b8af2f11f45",
-            "defaultConditionId": "1cdf8fde-270c-4e39-854a-04b3da872608",
-            "conditionSetIdentifier": {
-              "key": "08f02923-6e84-4be8-9513-c9356d0c2892",
-              "namespace": ""
-            }
-          },
-          "378c9add-0a4c-4a72-be22-a2a2bffa88c0": {
-            "staticStyle": { "style": { "backgroundColor": "#ffff00" } }
-          },
-          "e8c09162-eadc-43b5-85e6-e5a27055b0ab": {
-            "staticStyle": { "style": { "color": "#000000" } }
-          },
-          "94930f25-e01d-44db-bcf0-df1fe1892dd9": {
-            "staticStyle": {
-              "style": { "backgroundColor": "#6aa84f", "border": "" }
-            },
-            "styles": [
-              {
-                "conditionId": "c01d5acc-04e9-4ef1-a83d-b89f5f06aa53",
-                "style": {
-                  "output": "",
-                  "backgroundColor": "#cc0000",
-                  "border": "",
-                  "isStyleInvisible": ""
-                }
-              },
-              {
-                "conditionId": "1cb91aa1-9a99-4295-af5f-e0fc1838c06b",
-                "style": {
-                  "output": "",
-                  "backgroundColor": "#6aa84f",
-                  "border": "",
-                  "isStyleInvisible": ""
-                }
-              }
-            ],
-            "selectedConditionId": "c01d5acc-04e9-4ef1-a83d-b89f5f06aa53",
-            "defaultConditionId": "1cb91aa1-9a99-4295-af5f-e0fc1838c06b",
-            "conditionSetIdentifier": {
-              "key": "23cc356c-98cb-4a32-b1c7-e1ff6b7b8292",
-              "namespace": ""
-            }
-          },
-          "0fffb175-91bc-4de8-bc30-b47b2d325f44": {
-            "staticStyle": { "style": { "color": "#ffffff" } }
-          },
-          "c4310cfe-c94c-4c4a-ab1c-843c8e1ae133": {
-            "staticStyle": { "style": { "color": "#ffffff" } }
-          },
-          "63a02900-544e-4bba-9634-40135b1cbdbe": {
-            "staticStyle": {
-              "style": { "backgroundColor": "#6aa84f", "border": "" }
-            },
-            "styles": [
-              {
-                "conditionId": "19c0a588-51c3-43d8-a04b-26645b8c2853",
-                "style": {
-                  "output": "",
-                  "backgroundColor": "#cc0000",
-                  "border": "",
-                  "isStyleInvisible": ""
-                }
-              },
-              {
-                "conditionId": "fb218276-8044-4a17-8b68-214312247fb6",
-                "style": {
-                  "output": "",
-                  "backgroundColor": "#6aa84f",
-                  "border": "",
-                  "isStyleInvisible": ""
-                }
-              }
-            ],
-            "selectedConditionId": "19c0a588-51c3-43d8-a04b-26645b8c2853",
-            "defaultConditionId": "fb218276-8044-4a17-8b68-214312247fb6",
-            "conditionSetIdentifier": {
-              "key": "84812643-1716-4491-8014-010dea465035",
-              "namespace": ""
-            }
-          },
-          "dffc9f49-c939-4aef-b435-94470c79e9b5": {
-            "staticStyle": { "style": { "color": "#ffffff" } }
-          },
-          "3918f377-171d-4e2d-a2fa-d88c5ae828b1": {
-            "staticStyle": {
-              "style": { "backgroundColor": "#6aa84f", "border": "" }
-            },
-            "styles": [
-              {
-                "conditionId": "dd319ade-383b-462b-8d58-4052eb4781bd",
-                "style": {
-                  "output": "",
-                  "backgroundColor": "#6aa84f",
-                  "border": "__no_value",
-                  "isStyleInvisible": ""
-                }
-              }
-            ],
-            "selectedConditionId": "dd319ade-383b-462b-8d58-4052eb4781bd",
-            "defaultConditionId": "dd319ade-383b-462b-8d58-4052eb4781bd",
-            "conditionSetIdentifier": {
-              "key": "bd3ec89e-4cc8-4655-960e-99dba8095460",
-              "namespace": ""
-            }
-          },
-          "bf97c6d8-ea17-4d6d-acab-eae8a0156654": {
-            "staticStyle": { "style": { "border": "1px solid #e06666" } }
-          },
-          "750e48b3-00ee-404f-8af1-43e737a329ac": {
-            "staticStyle": { "style": { "backgroundColor": "#e06666" } }
-          },
-          "3ff3272c-59f2-4bbd-9d3a-c36443060232": {
-            "staticStyle": { "style": { "color": "#ffffff" } }
-          },
-          "staticStyle": {
-            "style": { "backgroundColor": "", "border": "", "color": "" }
-          },
-          "8295c7f7-30b3-4442-b3dc-c94d951bf914": {
-            "staticStyle": { "style": { "border": "1px solid #6fa8dc" } }
-          },
-          "c238bed1-8be9-44b3-96d9-bdeadf8ef19a": {
-            "staticStyle": { "style": { "color": "#ffffff" } }
-          },
-          "c77177b6-f9f1-4408-b389-794f45af5ffe": {
-            "staticStyle": { "style": { "backgroundColor": "#6fa8dc" } }
-          },
-          "be66f270-5b91-4d1a-b499-d2dc194d49d4": {
-            "staticStyle": { "style": { "color": "#ffffff" } }
-          },
-          "ea8523b1-4f07-4889-b33e-b489a101404b": {
-            "staticStyle": { "style": { "backgroundColor": "#8e7cc3" } }
-          },
-          "9b7672ca-74f3-42ac-90fa-6d5db07cb2c5": {
-            "staticStyle": { "style": { "border": "1px solid #8e7cc3" } }
-          },
-          "23658b27-0a36-479d-8679-f679e03576a2": {
-            "staticStyle": { "style": { "backgroundColor": "#e06666" } }
-          },
-          "552b8c4c-0c1c-4af2-99b7-8ef9b6086ec4": {
-            "staticStyle": { "style": { "backgroundColor": "#8e7cc3" } }
-          },
-          "8b171338-14f4-42d2-a3b3-22c6ec7db53d": { "staticStyle": {} },
-          "80f5bbbd-647e-4275-b374-d5c3161064b9": {
-            "staticStyle": { "style": { "backgroundColor": "#6fa8dc" } }
-          },
-          "6a9da5d0-f7c2-4396-a940-ab7318867ba2": {
-            "staticStyle": { "style": { "backgroundColor": "#e06666" } }
-          },
-          "3785219c-727f-44c1-80c0-1c0ba528e7ca": {
-            "staticStyle": { "style": { "backgroundColor": "#8e7cc3" } }
-          },
-          "49f9fa33-e821-4dd1-8df3-d69cc0e51544": {
-            "staticStyle": { "style": { "backgroundColor": "#6fa8dc" } }
-          }
-        }
-      },
-      "modified": 1689773752234,
-      "location": "mine",
-      "created": 1689723331138,
-      "persisted": 1689773752237,
-      "conditionalLabel": ""
-    },
-    "df6bcad8-76e1-40bb-b45b-8f836344878b": {
-      "identifier": {
-        "key": "df6bcad8-76e1-40bb-b45b-8f836344878b",
-        "namespace": ""
-      },
-      "name": "Components",
-      "type": "folder",
-      "composition": [
-        { "key": "9ec570bb-5e3d-460f-bb01-8dbdc7199fcf", "namespace": "" },
-        { "key": "38682b10-1038-4393-8059-29db15aa5707", "namespace": "" }
-      ],
-      "modified": 1689763228341,
-      "location": "mine",
-      "created": 1689763156548,
-      "persisted": 1689763228341
-    },
-    "cf6b6758-755b-4524-80ac-9ce53fefc775": {
-      "identifier": {
-        "key": "cf6b6758-755b-4524-80ac-9ce53fefc775",
-        "namespace": ""
-      },
-      "name": "All sensors",
-      "type": "flexible-layout",
-      "configuration": {
-        "containers": [
-          {
-            "id": "cd3fe8f4-5a3a-4e3d-965e-c776c70993ec",
-            "frames": [
-              {
-                "id": "db4605ef-6a7c-4fe4-827e-92e91d81a8c4",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "accelerometer_1"
-                },
-                "size": 15,
-                "noFrame": false
-              },
-              {
-                "id": "f97158b1-dea1-4925-a579-6296bd8f33c6",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "accelerometer_2"
-                },
-                "size": 15,
-                "noFrame": false
-              },
-              {
-                "id": "05c5496f-7248-40f8-be35-152d457742bc",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "accelerometer_3"
-                },
-                "size": 14,
-                "noFrame": false
-              },
-              {
-                "id": "04a8a721-d433-4fb3-a2a3-16def135d3a5",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "accelerometer_4"
-                },
-                "size": 15,
-                "noFrame": false
-              },
-              {
-                "id": "c41e2086-a48f-4efe-8e42-82f539e09702",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "accelerometer_avg"
-                },
-                "size": 14,
-                "noFrame": false
-              },
-              {
-                "id": "b8618b9f-dd47-4eb7-b370-a6782423efb2",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "brake_clamp_status"
-                },
-                "size": 13,
-                "noFrame": false
-              },
-              {
-                "id": "3bf980f8-a698-488b-866c-86d43f181e5c",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "pod_raised_status"
-                },
-                "size": 14,
-                "noFrame": false
-              }
-            ],
-            "size": 21
-          },
-          {
-            "id": "c1c16c4e-9931-4393-bca0-19171da38771",
-            "frames": [
-              {
-                "id": "1860856d-dfe1-4a2e-9862-314e55293e87",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "displacement"
-                },
-                "size": 21,
-                "noFrame": false
-              },
-              {
-                "id": "9cea03db-b4d0-4849-b127-9d060de23105",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "velocity"
-                },
-                "size": 20,
-                "noFrame": false
-              },
-              {
-                "id": "9f2b5816-0ed7-4e2b-82b2-bb79e9590383",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "acceleration"
-                },
-                "size": 19,
-                "noFrame": false
-              },
-              {
-                "id": "3a62417a-3fe6-414a-8e78-74f8e7cd4cb3",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "hall_effect_1"
-                },
-                "size": 20,
-                "noFrame": false
-              },
-              {
-                "id": "c1d41fc4-67f2-4479-8782-bdb586211af9",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "hall_effect_2"
-                },
-                "size": 20,
-                "noFrame": false
-              }
-            ],
-            "size": 20
-          },
-          {
-            "id": "5b38e846-eb83-4eff-84fd-40366b243e7c",
-            "frames": [
-              {
-                "id": "cf9c83e4-8818-446e-bf5b-75370f9019dd",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_1"
-                },
-                "size": 13,
-                "noFrame": false
-              },
-              {
-                "id": "f271ebf7-7b52-4eaa-9553-2fb6b187c816",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_2"
-                },
-                "size": 13,
-                "noFrame": false
-              },
-              {
-                "id": "e101640d-26e0-447d-99fb-d8a41be6a7bb",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_3"
-                },
-                "size": 12,
-                "noFrame": false
-              },
-              {
-                "id": "a3503a98-ef50-45c4-8c12-2244d31c54eb",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_4"
-                },
-                "size": 13,
-                "noFrame": false
-              },
-              {
-                "id": "a12e75ed-8c3d-47cc-88ba-cf00ed92e293",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_5"
-                },
-                "size": 12,
-                "noFrame": false
-              },
-              {
-                "id": "7a04d30a-8e9b-4ef2-b34c-eaf8b161c18a",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_6"
-                },
-                "size": 11,
-                "noFrame": false
-              },
-              {
-                "id": "f12495ca-9085-4f08-acb8-4838415b2af9",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_7"
-                },
-                "size": 13,
-                "noFrame": false
-              },
-              {
-                "id": "c073b83a-b759-4786-a49b-5d95e751856c",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_8"
-                },
-                "size": 13,
-                "noFrame": false
-              }
-            ],
-            "size": 20
-          },
-          {
-            "id": "1ceaffe0-3a45-43f0-bcb7-1228666a5104",
-            "frames": [
-              {
-                "id": "6ea5a2a4-0a7d-4a96-9839-4662ee8f627b",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_9"
-                },
-                "size": 13,
-                "noFrame": false
-              },
-              {
-                "id": "150e16a8-6ae8-4af4-a8ac-2f08c156161d",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_10"
-                },
-                "size": 13,
-                "noFrame": false
-              },
-              {
-                "id": "26b6fd91-2a69-4007-aff2-e76ca96616eb",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_11"
-                },
-                "size": 12,
-                "noFrame": false
-              },
-              {
-                "id": "c1b28a08-7044-42b2-8770-6351466f0ab2",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_12"
-                },
-                "size": 13,
-                "noFrame": false
-              },
-              {
-                "id": "a3377dce-57e3-4d1d-8db1-12d5cfb191c5",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_13"
-                },
-                "size": 12,
-                "noFrame": false
-              },
-              {
-                "id": "7e62a2fa-82d5-4b64-b3fb-302bbd4ba943",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_14"
-                },
-                "size": 11,
-                "noFrame": false
-              },
-              {
-                "id": "108778da-a3e5-47cd-ac0d-7bd6ff907ba3",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_15"
-                },
-                "size": 13,
-                "noFrame": false
-              },
-              {
-                "id": "48405043-a64e-47c7-afa7-42653c6dce8d",
-                "domainObjectIdentifier": {
-                  "namespace": "hyped.pod_1",
-                  "key": "thermistor_16"
-                },
-                "size": 13,
-                "noFrame": false
-              }
-            ],
-            "size": 20
-          }
-        ],
-        "rowsLayout": false
-      },
-      "composition": [
-        { "namespace": "hyped.pod_1", "key": "accelerometer_1" },
-        { "namespace": "hyped.pod_1", "key": "accelerometer_2" },
-        { "namespace": "hyped.pod_1", "key": "accelerometer_3" },
-        { "namespace": "hyped.pod_1", "key": "accelerometer_4" },
-        { "namespace": "hyped.pod_1", "key": "accelerometer_avg" },
-        { "namespace": "hyped.pod_1", "key": "displacement" },
-        { "namespace": "hyped.pod_1", "key": "velocity" },
-        { "namespace": "hyped.pod_1", "key": "acceleration" },
-        { "namespace": "hyped.pod_1", "key": "hall_effect_1" },
-        { "namespace": "hyped.pod_1", "key": "hall_effect_2" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_1" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_2" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_3" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_4" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_5" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_6" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_7" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_8" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_9" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_10" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_11" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_12" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_13" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_14" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_15" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_16" },
-        { "namespace": "hyped.pod_1", "key": "brake_clamp_status" },
-        { "namespace": "hyped.pod_1", "key": "pod_raised_status" }
-      ],
-      "modified": 1689768221167,
-      "location": "mine",
-      "created": 1689768097155,
-      "persisted": 1689768221168
-    },
-    "ae9f80c5-484b-4733-bd07-84fab323d7bc": {
-      "identifier": {
-        "key": "ae9f80c5-484b-4733-bd07-84fab323d7bc",
-        "namespace": ""
-      },
-      "name": "Pressure Boundary",
-      "type": "telemetry.plot.overlay",
-      "composition": [],
-      "configuration": { "series": [] },
-      "modified": 1689777779735,
-      "location": "mine",
-      "created": 1689777779735,
-      "persisted": 1689777779735
-    },
-    "9ec570bb-5e3d-460f-bb01-8dbdc7199fcf": {
-      "identifier": {
-        "key": "9ec570bb-5e3d-460f-bb01-8dbdc7199fcf",
-        "namespace": ""
-      },
-      "name": "Measurements",
-      "type": "folder",
-      "composition": [
-        { "key": "6c0f0ca8-6042-4687-8eb5-4ccef588bfe6", "namespace": "" },
-        { "key": "0208edb3-317e-45b7-9db3-f8f3c2b96506", "namespace": "" },
-        { "key": "c5663753-264e-4468-9e82-b1c652ff7973", "namespace": "" }
-      ],
-      "modified": 1689763228344,
-      "location": "df6bcad8-76e1-40bb-b45b-8f836344878b",
-      "created": 1689763169488,
-      "persisted": 1689763228344
-    },
-    "38682b10-1038-4393-8059-29db15aa5707": {
-      "identifier": {
-        "key": "38682b10-1038-4393-8059-29db15aa5707",
-        "namespace": ""
-      },
-      "name": "Condition Sets",
-      "type": "folder",
-      "composition": [
-        { "key": "c242498b-a91d-475f-846e-c8a5848938bc", "namespace": "" }
-      ],
-      "modified": 1689763228355,
-      "location": "df6bcad8-76e1-40bb-b45b-8f836344878b",
-      "created": 1689763200564,
-      "persisted": 1689763228355
-    },
-    "6c0f0ca8-6042-4687-8eb5-4ccef588bfe6": {
-      "identifier": {
-        "key": "6c0f0ca8-6042-4687-8eb5-4ccef588bfe6",
-        "namespace": ""
-      },
-      "name": "Acceleration",
-      "type": "gauge",
-      "composition": [{ "namespace": "hyped.pod_1", "key": "acceleration" }],
-      "configuration": {
-        "gaugeController": {
-          "gaugeType": "dial-needle",
-          "isDisplayMinMax": false,
-          "isDisplayCurVal": true,
-          "isDisplayUnits": true,
-          "isUseTelemetryLimits": true,
-          "limitLow": 10,
-          "limitHigh": 90,
-          "max": 100,
-          "min": 0,
-          "precision": 2
-        }
-      },
-      "modified": 1689772704226,
-      "location": "9ec570bb-5e3d-460f-bb01-8dbdc7199fcf",
-      "created": 1689762291105,
-      "persisted": 1689772704227
-    },
-    "0208edb3-317e-45b7-9db3-f8f3c2b96506": {
-      "identifier": {
-        "key": "0208edb3-317e-45b7-9db3-f8f3c2b96506",
-        "namespace": ""
-      },
-      "name": "Displacement",
-      "type": "gauge",
-      "composition": [{ "namespace": "hyped.pod_1", "key": "displacement" }],
-      "configuration": {
-        "gaugeController": {
-          "gaugeType": "meter-horizontal",
-          "isDisplayMinMax": true,
-          "isDisplayCurVal": false,
-          "isDisplayUnits": true,
-          "isUseTelemetryLimits": true,
-          "limitLow": 10,
-          "limitHigh": 90,
-          "max": 100,
-          "min": 0,
-          "precision": 2
-        }
-      },
-      "modified": 1689763228353,
-      "location": "9ec570bb-5e3d-460f-bb01-8dbdc7199fcf",
-      "created": 1689762329173,
-      "persisted": 1689763228353
-    },
-    "c5663753-264e-4468-9e82-b1c652ff7973": {
-      "identifier": {
-        "key": "c5663753-264e-4468-9e82-b1c652ff7973",
-        "namespace": ""
-      },
-      "name": "Velocity",
-      "type": "gauge",
-      "composition": [{ "namespace": "hyped.pod_1", "key": "velocity" }],
-      "configuration": {
-        "gaugeController": {
-          "gaugeType": "dial-needle",
-          "isDisplayMinMax": false,
-          "isDisplayCurVal": true,
-          "isDisplayUnits": true,
-          "isUseTelemetryLimits": true,
-          "limitLow": 10,
-          "limitHigh": 90,
-          "max": 100,
-          "min": 0,
-          "precision": 2
-        }
-      },
-      "modified": 1689772744615,
-      "location": "9ec570bb-5e3d-460f-bb01-8dbdc7199fcf",
-      "created": 1689762312810,
-      "persisted": 1689772744615
-    },
-    "c242498b-a91d-475f-846e-c8a5848938bc": {
-      "identifier": {
-        "key": "c242498b-a91d-475f-846e-c8a5848938bc",
-        "namespace": ""
-      },
-      "name": "Health",
-      "type": "folder",
-      "composition": [
-        { "key": "23cc356c-98cb-4a32-b1c7-e1ff6b7b8292", "namespace": "" },
-        { "key": "823b1c3c-ab71-4808-a0c8-a467737d093a", "namespace": "" },
-        { "key": "67e4caef-a15f-4fb1-b3dd-03815c5e371b", "namespace": "" },
-        { "key": "08f02923-6e84-4be8-9513-c9356d0c2892", "namespace": "" },
-        { "key": "84812643-1716-4491-8014-010dea465035", "namespace": "" },
-        { "key": "bd3ec89e-4cc8-4655-960e-99dba8095460", "namespace": "" },
-        { "key": "9ddfa86e-3763-4b4a-8fc0-faade5eae18d", "namespace": "" },
-        { "key": "8bd1c2ee-e796-41fa-a5ca-e26ecffe9b70", "namespace": "" }
-      ],
-      "modified": 1689764776439,
-      "location": "38682b10-1038-4393-8059-29db15aa5707",
-      "created": 1689763208561,
-      "persisted": 1689764776440
-    },
-    "23cc356c-98cb-4a32-b1c7-e1ff6b7b8292": {
-      "identifier": {
-        "key": "23cc356c-98cb-4a32-b1c7-e1ff6b7b8292",
-        "namespace": ""
-      },
-      "name": "Batteries",
-      "type": "conditionSet",
-      "configuration": {
-        "conditionTestData": [],
-        "conditionCollection": [
-          {
-            "id": "c01d5acc-04e9-4ef1-a83d-b89f5f06aa53",
-            "configuration": {
-              "name": "Error",
-              "output": "ERROR",
-              "trigger": "any",
-              "criteria": [
-                {
-                  "id": "750b54db-7054-4062-a27e-f415849145ac",
-                  "telemetry": {
-                    "namespace": "hyped.pod_1",
-                    "key": "battery_status"
-                  },
-                  "operation": "enumValueIs",
-                  "input": ["0"],
-                  "metadata": "value"
-                }
-              ]
-            },
-            "summary": "Match if any criteria are met:  Battery Status Value  is UNHEALTHY "
-          },
-          {
-            "isDefault": true,
-            "id": "1cb91aa1-9a99-4295-af5f-e0fc1838c06b",
-            "configuration": {
-              "name": "Default",
-              "output": "OKAY",
-              "trigger": "all",
-              "criteria": []
-            },
-            "summary": ""
-          }
-        ]
-      },
-      "composition": [{ "namespace": "hyped.pod_1", "key": "battery_status" }],
-      "telemetry": {},
-      "modified": 1689772429411,
-      "location": "c242498b-a91d-475f-846e-c8a5848938bc",
-      "created": 1689763223330,
-      "persisted": 1689772429411
-    },
-    "823b1c3c-ab71-4808-a0c8-a467737d093a": {
-      "identifier": {
-        "key": "823b1c3c-ab71-4808-a0c8-a467737d093a",
-        "namespace": ""
-      },
-      "name": "Motors",
-      "type": "conditionSet",
-      "configuration": {
-        "conditionTestData": [],
-        "conditionCollection": [
-          {
-            "id": "22ca36d7-3a02-4324-be20-b16913bb977f",
-            "configuration": {
-              "name": "Error",
-              "output": "ERROR",
-              "trigger": "any",
-              "criteria": [
-                {
-                  "id": "a62615cb-b2aa-4c9e-bde1-b83110feafa0",
-                  "telemetry": "any",
-                  "operation": "isStale",
-                  "input": ["2"],
-                  "metadata": "value"
-                },
-                {
-                  "id": "e6fcb258-cb39-4536-a2a8-d5afd37e5e18",
-                  "telemetry": "any",
-                  "operation": "notBetween",
-                  "input": ["15", "120"],
-                  "metadata": "value"
-                }
-              ]
-            },
-            "summary": "Match if any criteria are met:  any telemetry Value  is older than 2 seconds or any telemetry Value  is not between 15 and 120 "
-          },
-          {
-            "isDefault": true,
-            "id": "923f2132-183c-4065-a27d-5be4aa85c9e8",
-            "configuration": {
-              "name": "Default",
-              "output": "OKAY",
-              "trigger": "all",
-              "criteria": []
-            },
-            "summary": ""
-          }
-        ]
-      },
-      "composition": [
-        { "namespace": "hyped.pod_1", "key": "thermistor_1" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_2" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_3" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_4" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_5" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_6" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_7" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_8" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_9" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_10" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_11" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_12" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_13" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_14" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_15" },
-        { "namespace": "hyped.pod_1", "key": "thermistor_16" }
-      ],
-      "telemetry": {},
-      "modified": 1689772106902,
-      "location": "c242498b-a91d-475f-846e-c8a5848938bc",
-      "created": 1689764494690,
-      "persisted": 1689772106902
-    },
-    "67e4caef-a15f-4fb1-b3dd-03815c5e371b": {
-      "identifier": {
-        "key": "67e4caef-a15f-4fb1-b3dd-03815c5e371b",
-        "namespace": ""
-      },
-      "name": "Motor Controllers",
-      "type": "conditionSet",
-      "configuration": {
-        "conditionTestData": [],
-        "conditionCollection": [
-          {
-            "id": "2e2dbdd7-ba72-4337-8701-fca2bf847554",
-            "configuration": {
-              "name": "Error",
-              "output": "ERROR",
-              "trigger": "any",
-              "criteria": [
-                {
-                  "id": "91375785-f789-4e98-8e59-1f40c0aae920",
-                  "telemetry": {
-                    "namespace": "hyped.pod_1",
-                    "key": "motor_controller_status"
-                  },
-                  "operation": "enumValueIs",
-                  "input": ["0"],
-                  "metadata": "value"
-                }
-              ]
-            },
-            "summary": "Match if any criteria are met:  Motor Controller Status Value  is UNHEALTHY "
-          },
-          {
-            "isDefault": true,
-            "id": "12a55f8a-5ede-47b6-b63f-d61cb4cce755",
-            "configuration": {
-              "name": "Default",
-              "output": "OKAY",
-              "trigger": "all",
-              "criteria": []
-            },
-            "summary": ""
-          }
-        ]
-      },
-      "composition": [
-        { "namespace": "hyped.pod_1", "key": "motor_controller_status" }
-      ],
-      "telemetry": {},
-      "modified": 1689772059860,
-      "location": "c242498b-a91d-475f-846e-c8a5848938bc",
-      "created": 1689764517893,
-      "persisted": 1689772059861
-    },
-    "bd3ec89e-4cc8-4655-960e-99dba8095460": {
-      "identifier": {
-        "key": "bd3ec89e-4cc8-4655-960e-99dba8095460",
-        "namespace": ""
-      },
-      "name": "Low Power",
-      "type": "conditionSet",
-      "configuration": {
-        "conditionTestData": [],
-        "conditionCollection": [
-          {
-            "isDefault": true,
-            "id": "dd319ade-383b-462b-8d58-4052eb4781bd",
-            "configuration": {
-              "name": "Default",
-              "output": "OKAY",
-              "trigger": "all",
-              "criteria": []
-            },
-            "summary": ""
-          }
-        ]
-      },
-      "composition": [],
-      "telemetry": {},
-      "modified": 1689771910291,
-      "location": "c242498b-a91d-475f-846e-c8a5848938bc",
-      "created": 1689764568070,
-      "persisted": 1689771910291
-    },
-    "9ddfa86e-3763-4b4a-8fc0-faade5eae18d": {
-      "identifier": {
-        "key": "9ddfa86e-3763-4b4a-8fc0-faade5eae18d",
-        "namespace": ""
-      },
-      "name": "High Power",
-      "type": "conditionSet",
-      "configuration": {
-        "conditionTestData": [],
-        "conditionCollection": [
-          {
-            "id": "2eaa3cd2-b4a8-483e-beb5-ab09b99141bf",
-            "configuration": {
-              "name": "Error",
-              "output": "ERROR",
-              "trigger": "all",
-              "criteria": [
-                {
-                  "id": "4ed8d035-b92c-4639-bbe4-efc094eb81c1",
-                  "telemetry": {
-                    "namespace": "hyped.pod_1",
-                    "key": "power_line_resistance"
-                  },
-                  "operation": "notBetween",
-                  "input": ["0", "100"],
-                  "metadata": "value"
-                },
-                {
-                  "id": "edda9d77-2485-4791-9b3d-50bf34af2cea",
-                  "telemetry": {
-                    "namespace": "hyped.pod_1",
-                    "key": "power_line_resistance"
-                  },
-                  "operation": "isStale",
-                  "input": ["2"],
-                  "metadata": "value"
-                }
-              ]
-            },
-            "summary": "Match if all criteria are met:  Power Line Resistance Value  is not between 0 and 100 and Power Line Resistance Value  is older than 2 seconds "
-          },
-          {
-            "isDefault": true,
-            "id": "f84b0bf5-9847-456a-9c8b-76501b8dc99b",
-            "configuration": {
-              "name": "Default",
-              "output": "OKAY",
-              "trigger": "all",
-              "criteria": []
-            },
-            "summary": ""
-          }
-        ]
-      },
-      "composition": [
-        { "namespace": "hyped.pod_1", "key": "power_line_resistance" }
-      ],
-      "telemetry": {},
-      "modified": 1689772371724,
-      "location": "c242498b-a91d-475f-846e-c8a5848938bc",
-      "created": 1689764582381,
-      "persisted": 1689772371725
-    },
-    "8bd1c2ee-e796-41fa-a5ca-e26ecffe9b70": {
-      "identifier": {
-        "key": "8bd1c2ee-e796-41fa-a5ca-e26ecffe9b70",
-        "namespace": ""
-      },
-      "name": "Overall",
-      "type": "conditionSet",
-      "configuration": {
-        "conditionTestData": [],
-        "conditionCollection": [
-          {
-            "id": "eca5ef3e-fe3c-4594-ad2b-b44ec7ae10ed",
-            "configuration": {
-              "name": "Error",
-              "output": "ERROR",
-              "trigger": "any",
-              "criteria": [
-                {
-                  "id": "b26fa53b-55ae-4aa9-bbae-302964ab5534",
-                  "telemetry": "any",
-                  "operation": "enumValueIs",
-                  "input": ["0"],
-                  "metadata": "state"
-                }
-              ]
-            },
-            "summary": "Match if any criteria are met:  any telemetry State  is ERROR "
-          },
-          {
-            "isDefault": true,
-            "id": "91069741-36d4-4f49-be37-46885f1668f4",
-            "configuration": {
-              "name": "Default",
-              "output": "Default",
-              "trigger": "all",
-              "criteria": []
-            },
-            "summary": ""
-          }
-        ]
-      },
-      "composition": [
-        { "key": "23cc356c-98cb-4a32-b1c7-e1ff6b7b8292", "namespace": "" },
-        { "key": "08f02923-6e84-4be8-9513-c9356d0c2892", "namespace": "" },
-        { "key": "9ddfa86e-3763-4b4a-8fc0-faade5eae18d", "namespace": "" },
-        { "key": "bd3ec89e-4cc8-4655-960e-99dba8095460", "namespace": "" },
-        { "key": "67e4caef-a15f-4fb1-b3dd-03815c5e371b", "namespace": "" },
-        { "key": "823b1c3c-ab71-4808-a0c8-a467737d093a", "namespace": "" },
-        { "key": "84812643-1716-4491-8014-010dea465035", "namespace": "" }
-      ],
-      "telemetry": {},
-      "modified": 1689772419525,
-      "location": "c242498b-a91d-475f-846e-c8a5848938bc",
-      "created": 1689764776434,
-      "persisted": 1689772419525
-    }
-  },
-  "rootId": "dashboards"
+	"openmct": {
+		"dashboards": {
+			"identifier": { "key": "mine", "namespace": "" },
+			"name": "Dashboards",
+			"type": "folder",
+			"composition": [
+				{ "key": "98f9df6c-c1f0-432f-96c1-81e2b7cb6d2f", "namespace": "" },
+				{ "key": "df6bcad8-76e1-40bb-b45b-8f836344878b", "namespace": "" },
+				{ "key": "cf6b6758-755b-4524-80ac-9ce53fefc775", "namespace": "" },
+				{ "key": "ae9f80c5-484b-4733-bd07-84fab323d7bc", "namespace": "" }
+			],
+			"location": "ROOT",
+			"modified": 1689777779738,
+			"created": 1689723322537,
+			"persisted": 1689777779738
+		},
+		"98f9df6c-c1f0-432f-96c1-81e2b7cb6d2f": {
+			"identifier": {
+				"key": "98f9df6c-c1f0-432f-96c1-81e2b7cb6d2f",
+				"namespace": ""
+			},
+			"name": "MAIN",
+			"type": "layout",
+			"composition": [
+				{ "key": "6c0f0ca8-6042-4687-8eb5-4ccef588bfe6", "namespace": "" },
+				{ "key": "0208edb3-317e-45b7-9db3-f8f3c2b96506", "namespace": "" },
+				{ "key": "c5663753-264e-4468-9e82-b1c652ff7973", "namespace": "" },
+				{ "namespace": "hyped.pod_1", "key": "brake_clamp_status" },
+				{ "namespace": "hyped.pod_1", "key": "pod_raised_status" }
+			],
+			"configuration": {
+				"items": [
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 10,
+						"y": 21,
+						"width": 0.2,
+						"height": 10,
+						"type": "box-view",
+						"id": "23658b27-0a36-479d-8679-f679e03576a2"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 110,
+						"y": 20,
+						"width": 29,
+						"height": 4,
+						"type": "box-view",
+						"id": "c77177b6-f9f1-4408-b389-794f45af5ffe"
+					},
+					{
+						"stroke": "transparent",
+						"x": 48,
+						"y": 29,
+						"width": 47,
+						"height": 20,
+						"url": "http://localhost:5173/images/pod.png",
+						"type": "image-view",
+						"id": "9437fe66-9311-439a-821e-d76f19137821"
+					},
+					{
+						"fill": "",
+						"stroke": "",
+						"color": "",
+						"x": 61,
+						"y": 13,
+						"width": 22,
+						"height": 6,
+						"text": "Pod Ness",
+						"fontSize": "42",
+						"font": "monospace-bold",
+						"type": "text-view",
+						"id": "cfd27641-129b-4cce-af64-1656918b7294"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 48,
+						"y": 61,
+						"width": 47,
+						"height": 5,
+						"type": "box-view",
+						"id": "1ffbd2d5-a94d-410f-8a0a-e4af1c5710c5"
+					},
+					{
+						"fill": "",
+						"stroke": "",
+						"color": "",
+						"x": 59,
+						"y": 61,
+						"width": 25,
+						"height": 5,
+						"text": "ALL SYSTEMS HEALTHY",
+						"fontSize": "20",
+						"font": "monospace-bold",
+						"type": "text-view",
+						"id": "99479ef1-2246-400d-bbb9-dea8aa6c460c"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 48,
+						"y": 67,
+						"width": 11,
+						"height": 4,
+						"type": "box-view",
+						"id": "0f627bec-3591-451c-a43d-9be14146ea19"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 60,
+						"y": 67,
+						"width": 21,
+						"height": 4,
+						"type": "box-view",
+						"id": "b41c8c44-5ffd-4eec-ae5a-8670c5e182f6"
+					},
+					{
+						"fill": "",
+						"stroke": "",
+						"color": "",
+						"x": 50,
+						"y": 67,
+						"width": 7,
+						"height": 4,
+						"text": "MOTORS",
+						"fontSize": "16",
+						"font": "monospace",
+						"type": "text-view",
+						"id": "93bfcb11-36e7-4017-9c30-84c58b001e70"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 82,
+						"y": 67,
+						"width": 13,
+						"height": 4,
+						"type": "box-view",
+						"id": "02d8d07d-c3b8-492b-9637-f6706d5410e0"
+					},
+					{
+						"fill": "",
+						"stroke": "",
+						"color": "",
+						"x": 85,
+						"y": 67,
+						"width": 7,
+						"height": 4,
+						"text": "BRAKES",
+						"fontSize": "16",
+						"font": "monospace",
+						"type": "text-view",
+						"id": "3c4bfc77-82ed-42d1-8920-5b8723c2e8b3"
+					},
+					{
+						"fill": "",
+						"stroke": "",
+						"color": "",
+						"x": 62,
+						"y": 67,
+						"width": 17,
+						"height": 4,
+						"text": "MOTOR CONTROLLER",
+						"fontSize": "16",
+						"font": "monospace",
+						"type": "text-view",
+						"id": "a16ef645-2b6f-40d2-b2d1-fcb8292d88f9"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 48,
+						"y": 24,
+						"width": 47,
+						"height": 4,
+						"type": "box-view",
+						"id": "378c9add-0a4c-4a72-be22-a2a2bffa88c0"
+					},
+					{
+						"fill": "",
+						"stroke": "",
+						"color": "",
+						"x": 56,
+						"y": 24,
+						"width": 30,
+						"height": 4,
+						"text": "⚡️ HIGH POWER ACTIVE",
+						"fontSize": "24",
+						"font": "monospace-bold",
+						"type": "text-view",
+						"id": "e8c09162-eadc-43b5-85e6-e5a27055b0ab"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 65,
+						"y": 72,
+						"width": 14,
+						"height": 4,
+						"type": "box-view",
+						"id": "94930f25-e01d-44db-bcf0-df1fe1892dd9"
+					},
+					{
+						"fill": "",
+						"stroke": "",
+						"color": "",
+						"x": 67,
+						"y": 72,
+						"width": 10,
+						"height": 4,
+						"text": "BATTERIES",
+						"fontSize": "16",
+						"font": "monospace",
+						"type": "text-view",
+						"id": "0fffb175-91bc-4de8-bc30-b47b2d325f44"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 48,
+						"y": 72,
+						"width": 16,
+						"height": 4,
+						"type": "box-view",
+						"id": "63a02900-544e-4bba-9634-40135b1cbdbe"
+					},
+					{
+						"fill": "",
+						"stroke": "",
+						"color": "",
+						"x": 50.5,
+						"y": 72,
+						"width": 11,
+						"height": 4,
+						"text": "SUSPENSION",
+						"fontSize": "16",
+						"font": "monospace",
+						"type": "text-view",
+						"id": "dffc9f49-c939-4aef-b435-94470c79e9b5"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 80,
+						"y": 72,
+						"width": 15,
+						"height": 4,
+						"type": "box-view",
+						"id": "3918f377-171d-4e2d-a2fa-d88c5ae828b1"
+					},
+					{
+						"fill": "",
+						"stroke": "",
+						"color": "",
+						"x": 82,
+						"y": 72,
+						"width": 11,
+						"height": 4,
+						"text": "LOW POWER",
+						"fontSize": "16",
+						"font": "monospace",
+						"type": "text-view",
+						"id": "c4310cfe-c94c-4c4a-ab1c-843c8e1ae133"
+					},
+					{
+						"width": 27,
+						"height": 27,
+						"x": 111,
+						"y": 25,
+						"identifier": {
+							"key": "6c0f0ca8-6042-4687-8eb5-4ccef588bfe6",
+							"namespace": ""
+						},
+						"hasFrame": true,
+						"fontSize": "default",
+						"font": "default",
+						"type": "subobject-view",
+						"id": "9e371b20-5ab5-4376-a0bf-ab5d1d37ff57"
+					},
+					{
+						"width": 141,
+						"height": 9,
+						"x": 0,
+						"y": 0,
+						"identifier": {
+							"key": "0208edb3-317e-45b7-9db3-f8f3c2b96506",
+							"namespace": ""
+						},
+						"hasFrame": true,
+						"fontSize": "default",
+						"font": "default",
+						"type": "subobject-view",
+						"id": "49122be9-aad7-4006-9d57-d88cd352d9e8"
+					},
+					{
+						"width": 27,
+						"height": 27,
+						"x": 111,
+						"y": 53,
+						"identifier": {
+							"key": "c5663753-264e-4468-9e82-b1c652ff7973",
+							"namespace": ""
+						},
+						"hasFrame": true,
+						"fontSize": "default",
+						"font": "default",
+						"type": "subobject-view",
+						"id": "89090653-a73a-4722-a8b2-52150584194d"
+					},
+					{
+						"x": 59,
+						"y": 42,
+						"x2": 30,
+						"y2": 23,
+						"stroke": "#666666",
+						"type": "line-view",
+						"id": "bf97c6d8-ea17-4d6d-acab-eae8a0156654"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 10,
+						"y": 21,
+						"width": 21,
+						"height": 4,
+						"type": "box-view",
+						"id": "750e48b3-00ee-404f-8af1-43e737a329ac"
+					},
+					{
+						"fill": "",
+						"stroke": "",
+						"color": "",
+						"x": 11,
+						"y": 22,
+						"width": 9,
+						"height": 2,
+						"text": "BRAKES",
+						"fontSize": "18",
+						"font": "monospace",
+						"type": "text-view",
+						"id": "3ff3272c-59f2-4bbd-9d3a-c36443060232"
+					},
+					{
+						"x": 76,
+						"y": 40,
+						"x2": 111,
+						"y2": 22,
+						"stroke": "#666666",
+						"type": "line-view",
+						"id": "8295c7f7-30b3-4442-b3dc-c94d951bf914"
+					},
+					{
+						"fill": "",
+						"stroke": "",
+						"color": "",
+						"x": 111,
+						"y": 21,
+						"width": 9,
+						"height": 2,
+						"text": "MOTORS",
+						"fontSize": "18",
+						"font": "monospace",
+						"type": "text-view",
+						"id": "c238bed1-8be9-44b3-96d9-bdeadf8ef19a"
+					},
+					{
+						"identifier": {
+							"namespace": "hyped.pod_1",
+							"key": "brake_clamp_status"
+						},
+						"x": 11,
+						"y": 25,
+						"width": 26,
+						"height": 5,
+						"displayMode": "all",
+						"value": "value",
+						"stroke": "",
+						"fill": "",
+						"color": "",
+						"fontSize": "default",
+						"font": "default",
+						"type": "telemetry-view",
+						"id": "8a8442e6-9b32-406e-b304-b4f6d077f32e"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 8,
+						"y": 50,
+						"width": 0.2,
+						"height": 10,
+						"type": "box-view",
+						"id": "552b8c4c-0c1c-4af2-99b7-8ef9b6086ec4"
+					},
+					{
+						"identifier": {
+							"namespace": "hyped.pod_1",
+							"key": "pod_raised_status"
+						},
+						"x": 9,
+						"y": 54,
+						"width": 24,
+						"height": 5,
+						"displayMode": "all",
+						"value": "value",
+						"stroke": "",
+						"fill": "",
+						"color": "",
+						"fontSize": "default",
+						"font": "default",
+						"type": "telemetry-view",
+						"id": "8b171338-14f4-42d2-a3b3-22c6ec7db53d"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 110,
+						"y": 20,
+						"width": 0.2,
+						"height": 61,
+						"type": "box-view",
+						"id": "80f5bbbd-647e-4275-b374-d5c3161064b9"
+					},
+					{
+						"x": 56,
+						"y": 44,
+						"x2": 28,
+						"y2": 52,
+						"stroke": "#666666",
+						"type": "line-view",
+						"id": "9b7672ca-74f3-42ac-90fa-6d5db07cb2c5"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 8,
+						"y": 49,
+						"width": 21,
+						"height": 4,
+						"type": "box-view",
+						"id": "ea8523b1-4f07-4889-b33e-b489a101404b"
+					},
+					{
+						"fill": "",
+						"stroke": "",
+						"color": "",
+						"x": 9,
+						"y": 50,
+						"width": 9,
+						"height": 2,
+						"text": "POD",
+						"fontSize": "18",
+						"font": "monospace",
+						"type": "text-view",
+						"id": "be66f270-5b91-4d1a-b499-d2dc194d49d4"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 58,
+						"y": 41,
+						"width": 1.5,
+						"height": 1.5,
+						"type": "ellipse-view",
+						"id": "6a9da5d0-f7c2-4396-a940-ab7318867ba2"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 55,
+						"y": 43.5,
+						"width": 1.5,
+						"height": 1.5,
+						"type": "ellipse-view",
+						"id": "3785219c-727f-44c1-80c0-1c0ba528e7ca"
+					},
+					{
+						"fill": "#666666",
+						"stroke": "",
+						"x": 75,
+						"y": 39,
+						"width": 1.5,
+						"height": 1.5,
+						"type": "ellipse-view",
+						"id": "49f9fa33-e821-4dd1-8df3-d69cc0e51544"
+					}
+				],
+				"layoutGrid": [10, 10],
+				"objectStyles": {
+					"1ffbd2d5-a94d-410f-8a0a-e4af1c5710c5": {
+						"staticStyle": {
+							"style": { "backgroundColor": "#6aa84f", "border": "" }
+						},
+						"styles": [
+							{
+								"conditionId": "eca5ef3e-fe3c-4594-ad2b-b44ec7ae10ed",
+								"style": {
+									"output": "",
+									"backgroundColor": "#cc0000",
+									"border": "",
+									"isStyleInvisible": ""
+								}
+							},
+							{
+								"conditionId": "91069741-36d4-4f49-be37-46885f1668f4",
+								"style": {
+									"output": "",
+									"backgroundColor": "#6aa84f",
+									"border": "",
+									"isStyleInvisible": ""
+								}
+							}
+						],
+						"selectedConditionId": "91069741-36d4-4f49-be37-46885f1668f4",
+						"defaultConditionId": "91069741-36d4-4f49-be37-46885f1668f4",
+						"conditionSetIdentifier": {
+							"key": "8bd1c2ee-e796-41fa-a5ca-e26ecffe9b70",
+							"namespace": ""
+						}
+					},
+					"99479ef1-2246-400d-bbb9-dea8aa6c460c": {
+						"staticStyle": { "style": { "color": "#ffffff" } }
+					},
+					"93bfcb11-36e7-4017-9c30-84c58b001e70": {
+						"staticStyle": { "style": { "color": "#ffffff" } }
+					},
+					"a16ef645-2b6f-40d2-b2d1-fcb8292d88f9": {
+						"staticStyle": { "style": { "color": "#ffffff" } }
+					},
+					"3c4bfc77-82ed-42d1-8920-5b8723c2e8b3": {
+						"staticStyle": { "style": { "color": "#ffffff" } }
+					},
+					"0f627bec-3591-451c-a43d-9be14146ea19": {
+						"staticStyle": {
+							"style": { "backgroundColor": "#6aa84f", "border": "" }
+						},
+						"styles": [
+							{
+								"conditionId": "22ca36d7-3a02-4324-be20-b16913bb977f",
+								"style": {
+									"output": "",
+									"backgroundColor": "#cc0000",
+									"border": "",
+									"isStyleInvisible": ""
+								}
+							},
+							{
+								"conditionId": "923f2132-183c-4065-a27d-5be4aa85c9e8",
+								"style": {
+									"output": "",
+									"backgroundColor": "#6aa84f",
+									"border": "",
+									"isStyleInvisible": ""
+								}
+							}
+						],
+						"selectedConditionId": "22ca36d7-3a02-4324-be20-b16913bb977f",
+						"defaultConditionId": "923f2132-183c-4065-a27d-5be4aa85c9e8",
+						"conditionSetIdentifier": {
+							"key": "823b1c3c-ab71-4808-a0c8-a467737d093a",
+							"namespace": ""
+						}
+					},
+					"b41c8c44-5ffd-4eec-ae5a-8670c5e182f6": {
+						"staticStyle": {
+							"style": { "backgroundColor": "#6aa84f", "border": "" }
+						},
+						"styles": [
+							{
+								"conditionId": "2e2dbdd7-ba72-4337-8701-fca2bf847554",
+								"style": {
+									"output": "",
+									"backgroundColor": "#cc0000",
+									"border": "",
+									"isStyleInvisible": ""
+								}
+							},
+							{
+								"conditionId": "12a55f8a-5ede-47b6-b63f-d61cb4cce755",
+								"style": {
+									"output": "",
+									"backgroundColor": "#6aa84f",
+									"border": "",
+									"isStyleInvisible": ""
+								}
+							}
+						],
+						"selectedConditionId": "2e2dbdd7-ba72-4337-8701-fca2bf847554",
+						"defaultConditionId": "12a55f8a-5ede-47b6-b63f-d61cb4cce755",
+						"conditionSetIdentifier": {
+							"key": "67e4caef-a15f-4fb1-b3dd-03815c5e371b",
+							"namespace": ""
+						}
+					},
+					"02d8d07d-c3b8-492b-9637-f6706d5410e0": {
+						"staticStyle": {
+							"style": { "backgroundColor": "#6aa84f", "border": "" }
+						},
+						"styles": [
+							{
+								"conditionId": "28e082d7-444e-4b4e-9c15-6b8af2f11f45",
+								"style": {
+									"output": "",
+									"backgroundColor": "#cc0000",
+									"border": "",
+									"isStyleInvisible": ""
+								}
+							},
+							{
+								"conditionId": "1cdf8fde-270c-4e39-854a-04b3da872608",
+								"style": {
+									"output": "",
+									"backgroundColor": "#6aa84f",
+									"border": "",
+									"isStyleInvisible": ""
+								}
+							}
+						],
+						"selectedConditionId": "28e082d7-444e-4b4e-9c15-6b8af2f11f45",
+						"defaultConditionId": "1cdf8fde-270c-4e39-854a-04b3da872608",
+						"conditionSetIdentifier": {
+							"key": "08f02923-6e84-4be8-9513-c9356d0c2892",
+							"namespace": ""
+						}
+					},
+					"378c9add-0a4c-4a72-be22-a2a2bffa88c0": {
+						"staticStyle": { "style": { "backgroundColor": "#ffff00" } }
+					},
+					"e8c09162-eadc-43b5-85e6-e5a27055b0ab": {
+						"staticStyle": { "style": { "color": "#000000" } }
+					},
+					"94930f25-e01d-44db-bcf0-df1fe1892dd9": {
+						"staticStyle": {
+							"style": { "backgroundColor": "#6aa84f", "border": "" }
+						},
+						"styles": [
+							{
+								"conditionId": "c01d5acc-04e9-4ef1-a83d-b89f5f06aa53",
+								"style": {
+									"output": "",
+									"backgroundColor": "#cc0000",
+									"border": "",
+									"isStyleInvisible": ""
+								}
+							},
+							{
+								"conditionId": "1cb91aa1-9a99-4295-af5f-e0fc1838c06b",
+								"style": {
+									"output": "",
+									"backgroundColor": "#6aa84f",
+									"border": "",
+									"isStyleInvisible": ""
+								}
+							}
+						],
+						"selectedConditionId": "c01d5acc-04e9-4ef1-a83d-b89f5f06aa53",
+						"defaultConditionId": "1cb91aa1-9a99-4295-af5f-e0fc1838c06b",
+						"conditionSetIdentifier": {
+							"key": "23cc356c-98cb-4a32-b1c7-e1ff6b7b8292",
+							"namespace": ""
+						}
+					},
+					"0fffb175-91bc-4de8-bc30-b47b2d325f44": {
+						"staticStyle": { "style": { "color": "#ffffff" } }
+					},
+					"c4310cfe-c94c-4c4a-ab1c-843c8e1ae133": {
+						"staticStyle": { "style": { "color": "#ffffff" } }
+					},
+					"63a02900-544e-4bba-9634-40135b1cbdbe": {
+						"staticStyle": {
+							"style": { "backgroundColor": "#6aa84f", "border": "" }
+						},
+						"styles": [
+							{
+								"conditionId": "19c0a588-51c3-43d8-a04b-26645b8c2853",
+								"style": {
+									"output": "",
+									"backgroundColor": "#cc0000",
+									"border": "",
+									"isStyleInvisible": ""
+								}
+							},
+							{
+								"conditionId": "fb218276-8044-4a17-8b68-214312247fb6",
+								"style": {
+									"output": "",
+									"backgroundColor": "#6aa84f",
+									"border": "",
+									"isStyleInvisible": ""
+								}
+							}
+						],
+						"selectedConditionId": "19c0a588-51c3-43d8-a04b-26645b8c2853",
+						"defaultConditionId": "fb218276-8044-4a17-8b68-214312247fb6",
+						"conditionSetIdentifier": {
+							"key": "84812643-1716-4491-8014-010dea465035",
+							"namespace": ""
+						}
+					},
+					"dffc9f49-c939-4aef-b435-94470c79e9b5": {
+						"staticStyle": { "style": { "color": "#ffffff" } }
+					},
+					"3918f377-171d-4e2d-a2fa-d88c5ae828b1": {
+						"staticStyle": {
+							"style": { "backgroundColor": "#6aa84f", "border": "" }
+						},
+						"styles": [
+							{
+								"conditionId": "dd319ade-383b-462b-8d58-4052eb4781bd",
+								"style": {
+									"output": "",
+									"backgroundColor": "#6aa84f",
+									"border": "__no_value",
+									"isStyleInvisible": ""
+								}
+							}
+						],
+						"selectedConditionId": "dd319ade-383b-462b-8d58-4052eb4781bd",
+						"defaultConditionId": "dd319ade-383b-462b-8d58-4052eb4781bd",
+						"conditionSetIdentifier": {
+							"key": "bd3ec89e-4cc8-4655-960e-99dba8095460",
+							"namespace": ""
+						}
+					},
+					"bf97c6d8-ea17-4d6d-acab-eae8a0156654": {
+						"staticStyle": { "style": { "border": "1px solid #e06666" } }
+					},
+					"750e48b3-00ee-404f-8af1-43e737a329ac": {
+						"staticStyle": { "style": { "backgroundColor": "#e06666" } }
+					},
+					"3ff3272c-59f2-4bbd-9d3a-c36443060232": {
+						"staticStyle": { "style": { "color": "#ffffff" } }
+					},
+					"staticStyle": {
+						"style": { "backgroundColor": "", "border": "", "color": "" }
+					},
+					"8295c7f7-30b3-4442-b3dc-c94d951bf914": {
+						"staticStyle": { "style": { "border": "1px solid #6fa8dc" } }
+					},
+					"c238bed1-8be9-44b3-96d9-bdeadf8ef19a": {
+						"staticStyle": { "style": { "color": "#ffffff" } }
+					},
+					"c77177b6-f9f1-4408-b389-794f45af5ffe": {
+						"staticStyle": { "style": { "backgroundColor": "#6fa8dc" } }
+					},
+					"be66f270-5b91-4d1a-b499-d2dc194d49d4": {
+						"staticStyle": { "style": { "color": "#ffffff" } }
+					},
+					"ea8523b1-4f07-4889-b33e-b489a101404b": {
+						"staticStyle": { "style": { "backgroundColor": "#8e7cc3" } }
+					},
+					"9b7672ca-74f3-42ac-90fa-6d5db07cb2c5": {
+						"staticStyle": { "style": { "border": "1px solid #8e7cc3" } }
+					},
+					"23658b27-0a36-479d-8679-f679e03576a2": {
+						"staticStyle": { "style": { "backgroundColor": "#e06666" } }
+					},
+					"552b8c4c-0c1c-4af2-99b7-8ef9b6086ec4": {
+						"staticStyle": { "style": { "backgroundColor": "#8e7cc3" } }
+					},
+					"8b171338-14f4-42d2-a3b3-22c6ec7db53d": { "staticStyle": {} },
+					"80f5bbbd-647e-4275-b374-d5c3161064b9": {
+						"staticStyle": { "style": { "backgroundColor": "#6fa8dc" } }
+					},
+					"6a9da5d0-f7c2-4396-a940-ab7318867ba2": {
+						"staticStyle": { "style": { "backgroundColor": "#e06666" } }
+					},
+					"3785219c-727f-44c1-80c0-1c0ba528e7ca": {
+						"staticStyle": { "style": { "backgroundColor": "#8e7cc3" } }
+					},
+					"49f9fa33-e821-4dd1-8df3-d69cc0e51544": {
+						"staticStyle": { "style": { "backgroundColor": "#6fa8dc" } }
+					}
+				}
+			},
+			"modified": 1689773752234,
+			"location": "mine",
+			"created": 1689723331138,
+			"persisted": 1689773752237,
+			"conditionalLabel": ""
+		},
+		"df6bcad8-76e1-40bb-b45b-8f836344878b": {
+			"identifier": {
+				"key": "df6bcad8-76e1-40bb-b45b-8f836344878b",
+				"namespace": ""
+			},
+			"name": "Components",
+			"type": "folder",
+			"composition": [
+				{ "key": "9ec570bb-5e3d-460f-bb01-8dbdc7199fcf", "namespace": "" },
+				{ "key": "38682b10-1038-4393-8059-29db15aa5707", "namespace": "" }
+			],
+			"modified": 1689763228341,
+			"location": "mine",
+			"created": 1689763156548,
+			"persisted": 1689763228341
+		},
+		"cf6b6758-755b-4524-80ac-9ce53fefc775": {
+			"identifier": {
+				"key": "cf6b6758-755b-4524-80ac-9ce53fefc775",
+				"namespace": ""
+			},
+			"name": "All sensors",
+			"type": "flexible-layout",
+			"configuration": {
+				"containers": [
+					{
+						"id": "cd3fe8f4-5a3a-4e3d-965e-c776c70993ec",
+						"frames": [
+							{
+								"id": "db4605ef-6a7c-4fe4-827e-92e91d81a8c4",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "accelerometer_1"
+								},
+								"size": 15,
+								"noFrame": false
+							},
+							{
+								"id": "f97158b1-dea1-4925-a579-6296bd8f33c6",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "accelerometer_2"
+								},
+								"size": 15,
+								"noFrame": false
+							},
+							{
+								"id": "05c5496f-7248-40f8-be35-152d457742bc",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "accelerometer_3"
+								},
+								"size": 14,
+								"noFrame": false
+							},
+							{
+								"id": "04a8a721-d433-4fb3-a2a3-16def135d3a5",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "accelerometer_4"
+								},
+								"size": 15,
+								"noFrame": false
+							},
+							{
+								"id": "c41e2086-a48f-4efe-8e42-82f539e09702",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "accelerometer_avg"
+								},
+								"size": 14,
+								"noFrame": false
+							},
+							{
+								"id": "b8618b9f-dd47-4eb7-b370-a6782423efb2",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "brake_clamp_status"
+								},
+								"size": 13,
+								"noFrame": false
+							},
+							{
+								"id": "3bf980f8-a698-488b-866c-86d43f181e5c",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "pod_raised_status"
+								},
+								"size": 14,
+								"noFrame": false
+							}
+						],
+						"size": 21
+					},
+					{
+						"id": "c1c16c4e-9931-4393-bca0-19171da38771",
+						"frames": [
+							{
+								"id": "1860856d-dfe1-4a2e-9862-314e55293e87",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "displacement"
+								},
+								"size": 21,
+								"noFrame": false
+							},
+							{
+								"id": "9cea03db-b4d0-4849-b127-9d060de23105",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "velocity"
+								},
+								"size": 20,
+								"noFrame": false
+							},
+							{
+								"id": "9f2b5816-0ed7-4e2b-82b2-bb79e9590383",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "acceleration"
+								},
+								"size": 19,
+								"noFrame": false
+							},
+							{
+								"id": "3a62417a-3fe6-414a-8e78-74f8e7cd4cb3",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "hall_effect_1"
+								},
+								"size": 20,
+								"noFrame": false
+							},
+							{
+								"id": "c1d41fc4-67f2-4479-8782-bdb586211af9",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "hall_effect_2"
+								},
+								"size": 20,
+								"noFrame": false
+							}
+						],
+						"size": 20
+					},
+					{
+						"id": "5b38e846-eb83-4eff-84fd-40366b243e7c",
+						"frames": [
+							{
+								"id": "cf9c83e4-8818-446e-bf5b-75370f9019dd",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_1"
+								},
+								"size": 13,
+								"noFrame": false
+							},
+							{
+								"id": "f271ebf7-7b52-4eaa-9553-2fb6b187c816",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_2"
+								},
+								"size": 13,
+								"noFrame": false
+							},
+							{
+								"id": "e101640d-26e0-447d-99fb-d8a41be6a7bb",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_3"
+								},
+								"size": 12,
+								"noFrame": false
+							},
+							{
+								"id": "a3503a98-ef50-45c4-8c12-2244d31c54eb",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_4"
+								},
+								"size": 13,
+								"noFrame": false
+							},
+							{
+								"id": "a12e75ed-8c3d-47cc-88ba-cf00ed92e293",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_5"
+								},
+								"size": 12,
+								"noFrame": false
+							},
+							{
+								"id": "7a04d30a-8e9b-4ef2-b34c-eaf8b161c18a",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_6"
+								},
+								"size": 11,
+								"noFrame": false
+							},
+							{
+								"id": "f12495ca-9085-4f08-acb8-4838415b2af9",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_7"
+								},
+								"size": 13,
+								"noFrame": false
+							},
+							{
+								"id": "c073b83a-b759-4786-a49b-5d95e751856c",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_8"
+								},
+								"size": 13,
+								"noFrame": false
+							}
+						],
+						"size": 20
+					},
+					{
+						"id": "1ceaffe0-3a45-43f0-bcb7-1228666a5104",
+						"frames": [
+							{
+								"id": "6ea5a2a4-0a7d-4a96-9839-4662ee8f627b",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_9"
+								},
+								"size": 13,
+								"noFrame": false
+							},
+							{
+								"id": "150e16a8-6ae8-4af4-a8ac-2f08c156161d",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_10"
+								},
+								"size": 13,
+								"noFrame": false
+							},
+							{
+								"id": "26b6fd91-2a69-4007-aff2-e76ca96616eb",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_11"
+								},
+								"size": 12,
+								"noFrame": false
+							},
+							{
+								"id": "c1b28a08-7044-42b2-8770-6351466f0ab2",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_12"
+								},
+								"size": 13,
+								"noFrame": false
+							},
+							{
+								"id": "a3377dce-57e3-4d1d-8db1-12d5cfb191c5",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_13"
+								},
+								"size": 12,
+								"noFrame": false
+							},
+							{
+								"id": "7e62a2fa-82d5-4b64-b3fb-302bbd4ba943",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_14"
+								},
+								"size": 11,
+								"noFrame": false
+							},
+							{
+								"id": "108778da-a3e5-47cd-ac0d-7bd6ff907ba3",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_15"
+								},
+								"size": 13,
+								"noFrame": false
+							},
+							{
+								"id": "48405043-a64e-47c7-afa7-42653c6dce8d",
+								"domainObjectIdentifier": {
+									"namespace": "hyped.pod_1",
+									"key": "thermistor_16"
+								},
+								"size": 13,
+								"noFrame": false
+							}
+						],
+						"size": 20
+					}
+				],
+				"rowsLayout": false
+			},
+			"composition": [
+				{ "namespace": "hyped.pod_1", "key": "accelerometer_1" },
+				{ "namespace": "hyped.pod_1", "key": "accelerometer_2" },
+				{ "namespace": "hyped.pod_1", "key": "accelerometer_3" },
+				{ "namespace": "hyped.pod_1", "key": "accelerometer_4" },
+				{ "namespace": "hyped.pod_1", "key": "accelerometer_avg" },
+				{ "namespace": "hyped.pod_1", "key": "displacement" },
+				{ "namespace": "hyped.pod_1", "key": "velocity" },
+				{ "namespace": "hyped.pod_1", "key": "acceleration" },
+				{ "namespace": "hyped.pod_1", "key": "hall_effect_1" },
+				{ "namespace": "hyped.pod_1", "key": "hall_effect_2" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_1" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_2" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_3" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_4" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_5" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_6" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_7" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_8" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_9" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_10" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_11" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_12" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_13" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_14" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_15" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_16" },
+				{ "namespace": "hyped.pod_1", "key": "brake_clamp_status" },
+				{ "namespace": "hyped.pod_1", "key": "pod_raised_status" }
+			],
+			"modified": 1689768221167,
+			"location": "mine",
+			"created": 1689768097155,
+			"persisted": 1689768221168
+		},
+		"ae9f80c5-484b-4733-bd07-84fab323d7bc": {
+			"identifier": {
+				"key": "ae9f80c5-484b-4733-bd07-84fab323d7bc",
+				"namespace": ""
+			},
+			"name": "Pressure Boundary",
+			"type": "telemetry.plot.overlay",
+			"composition": [],
+			"configuration": { "series": [] },
+			"modified": 1689777779735,
+			"location": "mine",
+			"created": 1689777779735,
+			"persisted": 1689777779735
+		},
+		"9ec570bb-5e3d-460f-bb01-8dbdc7199fcf": {
+			"identifier": {
+				"key": "9ec570bb-5e3d-460f-bb01-8dbdc7199fcf",
+				"namespace": ""
+			},
+			"name": "Measurements",
+			"type": "folder",
+			"composition": [
+				{ "key": "6c0f0ca8-6042-4687-8eb5-4ccef588bfe6", "namespace": "" },
+				{ "key": "0208edb3-317e-45b7-9db3-f8f3c2b96506", "namespace": "" },
+				{ "key": "c5663753-264e-4468-9e82-b1c652ff7973", "namespace": "" }
+			],
+			"modified": 1689763228344,
+			"location": "df6bcad8-76e1-40bb-b45b-8f836344878b",
+			"created": 1689763169488,
+			"persisted": 1689763228344
+		},
+		"38682b10-1038-4393-8059-29db15aa5707": {
+			"identifier": {
+				"key": "38682b10-1038-4393-8059-29db15aa5707",
+				"namespace": ""
+			},
+			"name": "Condition Sets",
+			"type": "folder",
+			"composition": [
+				{ "key": "c242498b-a91d-475f-846e-c8a5848938bc", "namespace": "" }
+			],
+			"modified": 1689763228355,
+			"location": "df6bcad8-76e1-40bb-b45b-8f836344878b",
+			"created": 1689763200564,
+			"persisted": 1689763228355
+		},
+		"6c0f0ca8-6042-4687-8eb5-4ccef588bfe6": {
+			"identifier": {
+				"key": "6c0f0ca8-6042-4687-8eb5-4ccef588bfe6",
+				"namespace": ""
+			},
+			"name": "Acceleration",
+			"type": "gauge",
+			"composition": [{ "namespace": "hyped.pod_1", "key": "acceleration" }],
+			"configuration": {
+				"gaugeController": {
+					"gaugeType": "dial-needle",
+					"isDisplayMinMax": false,
+					"isDisplayCurVal": true,
+					"isDisplayUnits": true,
+					"isUseTelemetryLimits": true,
+					"limitLow": 10,
+					"limitHigh": 90,
+					"max": 100,
+					"min": 0,
+					"precision": 2
+				}
+			},
+			"modified": 1689772704226,
+			"location": "9ec570bb-5e3d-460f-bb01-8dbdc7199fcf",
+			"created": 1689762291105,
+			"persisted": 1689772704227
+		},
+		"0208edb3-317e-45b7-9db3-f8f3c2b96506": {
+			"identifier": {
+				"key": "0208edb3-317e-45b7-9db3-f8f3c2b96506",
+				"namespace": ""
+			},
+			"name": "Displacement",
+			"type": "gauge",
+			"composition": [{ "namespace": "hyped.pod_1", "key": "displacement" }],
+			"configuration": {
+				"gaugeController": {
+					"gaugeType": "meter-horizontal",
+					"isDisplayMinMax": true,
+					"isDisplayCurVal": false,
+					"isDisplayUnits": true,
+					"isUseTelemetryLimits": true,
+					"limitLow": 10,
+					"limitHigh": 90,
+					"max": 100,
+					"min": 0,
+					"precision": 2
+				}
+			},
+			"modified": 1689763228353,
+			"location": "9ec570bb-5e3d-460f-bb01-8dbdc7199fcf",
+			"created": 1689762329173,
+			"persisted": 1689763228353
+		},
+		"c5663753-264e-4468-9e82-b1c652ff7973": {
+			"identifier": {
+				"key": "c5663753-264e-4468-9e82-b1c652ff7973",
+				"namespace": ""
+			},
+			"name": "Velocity",
+			"type": "gauge",
+			"composition": [{ "namespace": "hyped.pod_1", "key": "velocity" }],
+			"configuration": {
+				"gaugeController": {
+					"gaugeType": "dial-needle",
+					"isDisplayMinMax": false,
+					"isDisplayCurVal": true,
+					"isDisplayUnits": true,
+					"isUseTelemetryLimits": true,
+					"limitLow": 10,
+					"limitHigh": 90,
+					"max": 100,
+					"min": 0,
+					"precision": 2
+				}
+			},
+			"modified": 1689772744615,
+			"location": "9ec570bb-5e3d-460f-bb01-8dbdc7199fcf",
+			"created": 1689762312810,
+			"persisted": 1689772744615
+		},
+		"c242498b-a91d-475f-846e-c8a5848938bc": {
+			"identifier": {
+				"key": "c242498b-a91d-475f-846e-c8a5848938bc",
+				"namespace": ""
+			},
+			"name": "Health",
+			"type": "folder",
+			"composition": [
+				{ "key": "23cc356c-98cb-4a32-b1c7-e1ff6b7b8292", "namespace": "" },
+				{ "key": "823b1c3c-ab71-4808-a0c8-a467737d093a", "namespace": "" },
+				{ "key": "67e4caef-a15f-4fb1-b3dd-03815c5e371b", "namespace": "" },
+				{ "key": "08f02923-6e84-4be8-9513-c9356d0c2892", "namespace": "" },
+				{ "key": "84812643-1716-4491-8014-010dea465035", "namespace": "" },
+				{ "key": "bd3ec89e-4cc8-4655-960e-99dba8095460", "namespace": "" },
+				{ "key": "9ddfa86e-3763-4b4a-8fc0-faade5eae18d", "namespace": "" },
+				{ "key": "8bd1c2ee-e796-41fa-a5ca-e26ecffe9b70", "namespace": "" }
+			],
+			"modified": 1689764776439,
+			"location": "38682b10-1038-4393-8059-29db15aa5707",
+			"created": 1689763208561,
+			"persisted": 1689764776440
+		},
+		"23cc356c-98cb-4a32-b1c7-e1ff6b7b8292": {
+			"identifier": {
+				"key": "23cc356c-98cb-4a32-b1c7-e1ff6b7b8292",
+				"namespace": ""
+			},
+			"name": "Batteries",
+			"type": "conditionSet",
+			"configuration": {
+				"conditionTestData": [],
+				"conditionCollection": [
+					{
+						"id": "c01d5acc-04e9-4ef1-a83d-b89f5f06aa53",
+						"configuration": {
+							"name": "Error",
+							"output": "ERROR",
+							"trigger": "any",
+							"criteria": [
+								{
+									"id": "750b54db-7054-4062-a27e-f415849145ac",
+									"telemetry": {
+										"namespace": "hyped.pod_1",
+										"key": "battery_status"
+									},
+									"operation": "enumValueIs",
+									"input": ["0"],
+									"metadata": "value"
+								}
+							]
+						},
+						"summary": "Match if any criteria are met:  Battery Status Value  is UNHEALTHY "
+					},
+					{
+						"isDefault": true,
+						"id": "1cb91aa1-9a99-4295-af5f-e0fc1838c06b",
+						"configuration": {
+							"name": "Default",
+							"output": "OKAY",
+							"trigger": "all",
+							"criteria": []
+						},
+						"summary": ""
+					}
+				]
+			},
+			"composition": [{ "namespace": "hyped.pod_1", "key": "battery_status" }],
+			"telemetry": {},
+			"modified": 1689772429411,
+			"location": "c242498b-a91d-475f-846e-c8a5848938bc",
+			"created": 1689763223330,
+			"persisted": 1689772429411
+		},
+		"823b1c3c-ab71-4808-a0c8-a467737d093a": {
+			"identifier": {
+				"key": "823b1c3c-ab71-4808-a0c8-a467737d093a",
+				"namespace": ""
+			},
+			"name": "Motors",
+			"type": "conditionSet",
+			"configuration": {
+				"conditionTestData": [],
+				"conditionCollection": [
+					{
+						"id": "22ca36d7-3a02-4324-be20-b16913bb977f",
+						"configuration": {
+							"name": "Error",
+							"output": "ERROR",
+							"trigger": "any",
+							"criteria": [
+								{
+									"id": "a62615cb-b2aa-4c9e-bde1-b83110feafa0",
+									"telemetry": "any",
+									"operation": "isStale",
+									"input": ["2"],
+									"metadata": "value"
+								},
+								{
+									"id": "e6fcb258-cb39-4536-a2a8-d5afd37e5e18",
+									"telemetry": "any",
+									"operation": "notBetween",
+									"input": ["15", "120"],
+									"metadata": "value"
+								}
+							]
+						},
+						"summary": "Match if any criteria are met:  any telemetry Value  is older than 2 seconds or any telemetry Value  is not between 15 and 120 "
+					},
+					{
+						"isDefault": true,
+						"id": "923f2132-183c-4065-a27d-5be4aa85c9e8",
+						"configuration": {
+							"name": "Default",
+							"output": "OKAY",
+							"trigger": "all",
+							"criteria": []
+						},
+						"summary": ""
+					}
+				]
+			},
+			"composition": [
+				{ "namespace": "hyped.pod_1", "key": "thermistor_1" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_2" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_3" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_4" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_5" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_6" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_7" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_8" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_9" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_10" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_11" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_12" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_13" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_14" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_15" },
+				{ "namespace": "hyped.pod_1", "key": "thermistor_16" }
+			],
+			"telemetry": {},
+			"modified": 1689772106902,
+			"location": "c242498b-a91d-475f-846e-c8a5848938bc",
+			"created": 1689764494690,
+			"persisted": 1689772106902
+		},
+		"67e4caef-a15f-4fb1-b3dd-03815c5e371b": {
+			"identifier": {
+				"key": "67e4caef-a15f-4fb1-b3dd-03815c5e371b",
+				"namespace": ""
+			},
+			"name": "Motor Controllers",
+			"type": "conditionSet",
+			"configuration": {
+				"conditionTestData": [],
+				"conditionCollection": [
+					{
+						"id": "2e2dbdd7-ba72-4337-8701-fca2bf847554",
+						"configuration": {
+							"name": "Error",
+							"output": "ERROR",
+							"trigger": "any",
+							"criteria": [
+								{
+									"id": "91375785-f789-4e98-8e59-1f40c0aae920",
+									"telemetry": {
+										"namespace": "hyped.pod_1",
+										"key": "motor_controller_status"
+									},
+									"operation": "enumValueIs",
+									"input": ["0"],
+									"metadata": "value"
+								}
+							]
+						},
+						"summary": "Match if any criteria are met:  Motor Controller Status Value  is UNHEALTHY "
+					},
+					{
+						"isDefault": true,
+						"id": "12a55f8a-5ede-47b6-b63f-d61cb4cce755",
+						"configuration": {
+							"name": "Default",
+							"output": "OKAY",
+							"trigger": "all",
+							"criteria": []
+						},
+						"summary": ""
+					}
+				]
+			},
+			"composition": [
+				{ "namespace": "hyped.pod_1", "key": "motor_controller_status" }
+			],
+			"telemetry": {},
+			"modified": 1689772059860,
+			"location": "c242498b-a91d-475f-846e-c8a5848938bc",
+			"created": 1689764517893,
+			"persisted": 1689772059861
+		},
+		"bd3ec89e-4cc8-4655-960e-99dba8095460": {
+			"identifier": {
+				"key": "bd3ec89e-4cc8-4655-960e-99dba8095460",
+				"namespace": ""
+			},
+			"name": "Low Power",
+			"type": "conditionSet",
+			"configuration": {
+				"conditionTestData": [],
+				"conditionCollection": [
+					{
+						"isDefault": true,
+						"id": "dd319ade-383b-462b-8d58-4052eb4781bd",
+						"configuration": {
+							"name": "Default",
+							"output": "OKAY",
+							"trigger": "all",
+							"criteria": []
+						},
+						"summary": ""
+					}
+				]
+			},
+			"composition": [],
+			"telemetry": {},
+			"modified": 1689771910291,
+			"location": "c242498b-a91d-475f-846e-c8a5848938bc",
+			"created": 1689764568070,
+			"persisted": 1689771910291
+		},
+		"9ddfa86e-3763-4b4a-8fc0-faade5eae18d": {
+			"identifier": {
+				"key": "9ddfa86e-3763-4b4a-8fc0-faade5eae18d",
+				"namespace": ""
+			},
+			"name": "High Power",
+			"type": "conditionSet",
+			"configuration": {
+				"conditionTestData": [],
+				"conditionCollection": [
+					{
+						"id": "2eaa3cd2-b4a8-483e-beb5-ab09b99141bf",
+						"configuration": {
+							"name": "Error",
+							"output": "ERROR",
+							"trigger": "all",
+							"criteria": [
+								{
+									"id": "4ed8d035-b92c-4639-bbe4-efc094eb81c1",
+									"telemetry": {
+										"namespace": "hyped.pod_1",
+										"key": "power_line_resistance"
+									},
+									"operation": "notBetween",
+									"input": ["0", "100"],
+									"metadata": "value"
+								},
+								{
+									"id": "edda9d77-2485-4791-9b3d-50bf34af2cea",
+									"telemetry": {
+										"namespace": "hyped.pod_1",
+										"key": "power_line_resistance"
+									},
+									"operation": "isStale",
+									"input": ["2"],
+									"metadata": "value"
+								}
+							]
+						},
+						"summary": "Match if all criteria are met:  Power Line Resistance Value  is not between 0 and 100 and Power Line Resistance Value  is older than 2 seconds "
+					},
+					{
+						"isDefault": true,
+						"id": "f84b0bf5-9847-456a-9c8b-76501b8dc99b",
+						"configuration": {
+							"name": "Default",
+							"output": "OKAY",
+							"trigger": "all",
+							"criteria": []
+						},
+						"summary": ""
+					}
+				]
+			},
+			"composition": [
+				{ "namespace": "hyped.pod_1", "key": "power_line_resistance" }
+			],
+			"telemetry": {},
+			"modified": 1689772371724,
+			"location": "c242498b-a91d-475f-846e-c8a5848938bc",
+			"created": 1689764582381,
+			"persisted": 1689772371725
+		},
+		"8bd1c2ee-e796-41fa-a5ca-e26ecffe9b70": {
+			"identifier": {
+				"key": "8bd1c2ee-e796-41fa-a5ca-e26ecffe9b70",
+				"namespace": ""
+			},
+			"name": "Overall",
+			"type": "conditionSet",
+			"configuration": {
+				"conditionTestData": [],
+				"conditionCollection": [
+					{
+						"id": "eca5ef3e-fe3c-4594-ad2b-b44ec7ae10ed",
+						"configuration": {
+							"name": "Error",
+							"output": "ERROR",
+							"trigger": "any",
+							"criteria": [
+								{
+									"id": "b26fa53b-55ae-4aa9-bbae-302964ab5534",
+									"telemetry": "any",
+									"operation": "enumValueIs",
+									"input": ["0"],
+									"metadata": "state"
+								}
+							]
+						},
+						"summary": "Match if any criteria are met:  any telemetry State  is ERROR "
+					},
+					{
+						"isDefault": true,
+						"id": "91069741-36d4-4f49-be37-46885f1668f4",
+						"configuration": {
+							"name": "Default",
+							"output": "Default",
+							"trigger": "all",
+							"criteria": []
+						},
+						"summary": ""
+					}
+				]
+			},
+			"composition": [
+				{ "key": "23cc356c-98cb-4a32-b1c7-e1ff6b7b8292", "namespace": "" },
+				{ "key": "08f02923-6e84-4be8-9513-c9356d0c2892", "namespace": "" },
+				{ "key": "9ddfa86e-3763-4b4a-8fc0-faade5eae18d", "namespace": "" },
+				{ "key": "bd3ec89e-4cc8-4655-960e-99dba8095460", "namespace": "" },
+				{ "key": "67e4caef-a15f-4fb1-b3dd-03815c5e371b", "namespace": "" },
+				{ "key": "823b1c3c-ab71-4808-a0c8-a467737d093a", "namespace": "" },
+				{ "key": "84812643-1716-4491-8014-010dea465035", "namespace": "" }
+			],
+			"telemetry": {},
+			"modified": 1689772419525,
+			"location": "c242498b-a91d-475f-846e-c8a5848938bc",
+			"created": 1689764776434,
+			"persisted": 1689772419525
+		}
+	},
+	"rootId": "dashboards"
 }
