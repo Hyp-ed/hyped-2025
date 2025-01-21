@@ -1,6 +1,6 @@
 use core::str::FromStr;
 
-use crate::{telemetry_config::MQTT_BROKER_ADDRESS, log::log};
+use crate::{log::log, telemetry_config::MQTT_BROKER_ADDRESS};
 use embassy_net::{tcp::TcpSocket, Stack};
 use embassy_stm32::{
     eth::{generic_smi::GenericSMI, Ethernet},

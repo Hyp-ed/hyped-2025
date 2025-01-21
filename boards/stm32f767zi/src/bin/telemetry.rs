@@ -20,9 +20,9 @@ use embassy_stm32::{
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::can_receiver::can_receiver;
 use hyped_boards_stm32f767zi::{
-    telemetry_config::{BOARD_STATIC_ADDRESS, GATEWAY_IP},
     log::log,
     tasks::{heartbeat::heartbeat, mqtt_recv::mqtt_recv_task, mqtt_send::mqtt_send_task},
+    telemetry_config::{BOARD_STATIC_ADDRESS, GATEWAY_IP},
 };
 use hyped_core::log_types::LogLevel;
 use rand_core::RngCore;
