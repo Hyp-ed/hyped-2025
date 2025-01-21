@@ -4,40 +4,30 @@
 use defmt::*;
 use embassy_executor::Spawner;
 use embassy_net::{Stack, StackResources};
+use embassy_stm32::can::{
+    filter::Mask32, Can, CanRx, Fifo, Rx0InterruptHandler, Rx1InterruptHandler,
+    SceInterruptHandler, TxInterruptHandler,
+};
+use embassy_stm32::peripherals::CAN1;
 use embassy_stm32::{
     bind_interrupts,
     eth::{self, generic_smi::GenericSMI, Ethernet, PacketQueue},
     peripherals::{self, ETH},
-    rcc,
     rng::{self, Rng},
     time::Hertz,
     Config,
 };
 use embassy_time::{Duration, Timer};
+use hyped_boards_stm32f767zi::tasks::can_receiver::can_receiver;
 use hyped_boards_stm32f767zi::{
-    config::{BOARD_STATIC_ADDRESS, GATEWAY_IP},
+    telemetry_config::{BOARD_STATIC_ADDRESS, GATEWAY_IP},
     log::log,
-    tasks::{
-        heartbeat::heartbeat,
-        mqtt::{mqtt_recv_task, mqtt_send_task}, can_receiver::can_receiver,
-    },
+    tasks::{heartbeat::heartbeat, mqtt_recv::mqtt_recv_task, mqtt_send::mqtt_send_task},
 };
 use hyped_core::log_types::LogLevel;
-use hyped_core::mqtt::{MqttMessage};
-use hyped_core::mqtt_topics::MqttTopics;
-use hyped_core::format;
-use hyped_core::format_string::show;
-use heapless::String;
-use embassy_stm32::can::{
-    Can, CanRx, Fifo, Frame, Rx0InterruptHandler, Rx1InterruptHandler, SceInterruptHandler,
-    StandardId, TxInterruptHandler, filter::Mask32,
-};
-use embassy_stm32::peripherals::CAN1;
-use core::str::FromStr;
 use rand_core::RngCore;
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
-use hyped_boards_stm32f767zi::tasks::mqtt::SEND_CHANNEL;
 
 bind_interrupts!(struct Irqs {
     ETH => eth::InterruptHandler;
@@ -127,10 +117,10 @@ async fn main(spawner: Spawner) -> ! {
 
     log(LogLevel::Info, "Network stack initialized").await;
 
-    // Launch MQTT send and receive tasks
+    // Launch MQTT send and receive tasks and heartbeat
     unwrap!(spawner.spawn(mqtt_send_task(stack)));
     unwrap!(spawner.spawn(mqtt_recv_task(stack)));
-    // unwrap!(spawner.spawn(heartbeat()));
+    unwrap!(spawner.spawn(heartbeat()));
 
     static CAN: StaticCell<Can<'static>> = StaticCell::new();
     let can = CAN.init(Can::new(p.CAN1, p.PD0, p.PD1, Irqs));
@@ -140,11 +130,12 @@ async fn main(spawner: Spawner) -> ! {
     can.enable().await;
     println!("CAN enabled");
 
-    let (_tx, mut rx) = can.split();
+    let (_tx, rx) = can.split();
 
     static CAN_RX: StaticCell<CanRx<'static>> = StaticCell::new();
     let rx = CAN_RX.init(rx);
 
+    // Launch CAN receiver task
     unwrap!(spawner.spawn(can_receiver(rx)));
 
     loop {
