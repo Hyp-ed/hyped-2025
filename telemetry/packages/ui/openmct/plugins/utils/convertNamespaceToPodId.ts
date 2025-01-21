@@ -1,9 +1,9 @@
 export function convertNamespaceToPodId(namespace: string) {
-  const possiblePodId = namespace.split('.')[1];
+	const possiblePodId = namespace.split('.')[1];
 
-  if (!possiblePodId) {
-    throw new Error(`Invalid namespace: ${namespace}`);
-  }
+	if (!possiblePodId) {
+		throw new Error(`Invalid namespace: ${namespace}`);
+	}
 
-  return possiblePodId;
+	return possiblePodId;
 }
