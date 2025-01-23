@@ -303,6 +303,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_can"
+version = "0.1.0"
+dependencies = [
+ "embassy-sync 0.6.0 (git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f706318cc0870a459550b7)",
+ "heapless",
+]
+
+[[package]]
 name = "hyped_config"
 version = "0.1.0"
 dependencies = [

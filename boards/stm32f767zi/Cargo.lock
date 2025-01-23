@@ -572,6 +572,8 @@ dependencies = [
  "embedded-storage",
  "hyped_adc",
  "hyped_adc_derive",
+ "hyped_can",
+ "hyped_can_derive",
  "hyped_gpio_input",
  "hyped_gpio_input_derive",
  "hyped_i2c",
@@ -580,6 +582,22 @@ dependencies = [
  "panic-probe",
  "rand_core",
  "static_cell",
+]
+
+[[package]]
+name = "hyped_can"
+version = "0.1.0"
+dependencies = [
+ "embassy-sync 0.6.0",
+ "heapless",
+]
+
+[[package]]
+name = "hyped_can_derive"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn 2.0.79",
 ]
 
 [[package]]
