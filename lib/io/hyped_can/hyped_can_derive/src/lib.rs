@@ -34,7 +34,7 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
 
             /// Write a CAN frame to the CAN bus
             fn write_frame(&mut self, message: &CanFrame) -> Result<(), CanError> {
-                
+
                 let result = self.can.lock(|can| {
                     can.borrow_mut().write()
                 });
@@ -50,14 +50,14 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
                         embassy_stm32::can::enums::BusError::Software => CanError::Software,
                         embassy_stm32::can::enums::BusError::BusOff => CanError::BusOff,
                         embassy_stm32::can::enums::BusError::BusPassive => CanError::BusPassive,
-                        embassy_stm32::can::enums::BusError::BusWarning => CanError::BusWarning,                    
+                        embassy_stm32::can::enums::BusError::BusWarning => CanError::BusWarning,
                     }),
                 }
             }
         }
 
         impl #impl_generics #name #ty_generics {
-            pub fn new(can: &'static Mutex<CriticalSectionRawMutex, RefCell<Can<'static, Blocking>>>) -> Self {
+            pub fn new(can: &'static Mutex<NoopRawMutex, RefCell<Can<'static, Blocking>>>) -> Self {
                 Self { can }
             }
         }
