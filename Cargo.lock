@@ -337,6 +337,7 @@ name = "hyped_gpio"
 version = "0.1.0"
 dependencies = [
  "heapless",
+ "hyped_core",
 ]
 
 [[package]]

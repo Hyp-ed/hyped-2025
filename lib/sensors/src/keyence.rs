@@ -46,14 +46,16 @@ mod tests {
 
     #[test]
     fn test_keyence_new() {
-        let gpio = MockGpioInput::new(Vec::from_slice(&[false]).unwrap());
+        let gpio = MockGpioInput::new(Vec::from_slice(&[DigitalSignal::Low]).unwrap());
         let keyence = Keyence::new(gpio);
         assert_eq!(keyence.get_stripe_count(), 0);
     }
 
     #[test]
     fn test_keyence_update_stripe_count_low_to_high() {
-        let gpio = MockGpioInput::new(Vec::from_slice(&[false, true]).unwrap());
+        let gpio = MockGpioInput::new(
+            Vec::from_slice(&[DigitalSignal::Low, DigitalSignal::High]).unwrap(),
+        );
         let mut keyence = Keyence::new(gpio);
 
         keyence.update_stripe_count();
@@ -64,7 +66,9 @@ mod tests {
 
     #[test]
     fn test_keyence_update_stripe_count_high_to_low() {
-        let gpio = MockGpioInput::new(Vec::from_slice(&[true, false]).unwrap());
+        let gpio = MockGpioInput::new(
+            Vec::from_slice(&[DigitalSignal::High, DigitalSignal::Low]).unwrap(),
+        );
         let mut keyence = Keyence::new(gpio);
 
         keyence.update_stripe_count();
@@ -75,7 +79,9 @@ mod tests {
 
     #[test]
     fn test_keyence_update_stripe_count_high_to_high() {
-        let gpio = MockGpioInput::new(Vec::from_slice(&[true, true]).unwrap());
+        let gpio = MockGpioInput::new(
+            Vec::from_slice(&[DigitalSignal::High, DigitalSignal::High]).unwrap(),
+        );
         let mut keyence = Keyence::new(gpio);
 
         keyence.update_stripe_count();
@@ -86,7 +92,8 @@ mod tests {
 
     #[test]
     fn test_keyence_update_stripe_count_low_to_low() {
-        let gpio = MockGpioInput::new(Vec::from_slice(&[false, false]).unwrap());
+        let gpio =
+            MockGpioInput::new(Vec::from_slice(&[DigitalSignal::Low, DigitalSignal::Low]).unwrap());
         let mut keyence = Keyence::new(gpio);
 
         keyence.update_stripe_count();
