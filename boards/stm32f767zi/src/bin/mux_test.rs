@@ -36,7 +36,7 @@ async fn read_accelerometer_from_mux(
     );
 
     // First, we create a HypedI2c object that wraps the I2C bus.
-    let hyped_i2c = stm32f767ziI2c::new(i2c_bus);
+    let hyped_i2c = Stm32f767ziI2c::new(i2c_bus);
 
     // Then, we create an I2C Mux object that wraps the HypedI2c object. `i2c_mux` can now be used anywhere that
     // `hyped_i2c` could be used, but it will automatically switch to the correct channel before sending any I2C commands.
