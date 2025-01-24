@@ -1,7 +1,6 @@
 [workspace]
 members = [
   "config",
-  "config/config_derive",
   "lib/core",
   "lib/control",
   "lib/io/*",
