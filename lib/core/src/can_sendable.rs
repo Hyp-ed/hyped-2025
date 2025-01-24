@@ -3,11 +3,13 @@ use defmt::error;
 pub const CAN_MSG_TYPE_BOOL: u8 = 0;
 pub const CAN_MSG_TYPE_F32 : u8 = 1;
 pub const CAN_MSG_TYPE_U32 : u8 = 2;
+pub const CAN_MSG_TYPE_POSDELTA : u8 = 3;
 
 pub enum CanMsgType {
     Bool,
     F32,
-    U32,   
+    U32,
+    PosDelta,
 }
 
 pub fn can_msg_type_from_u8(msg_type: &[u8; 8]) -> CanMsgType {
@@ -15,6 +17,7 @@ pub fn can_msg_type_from_u8(msg_type: &[u8; 8]) -> CanMsgType {
         CAN_MSG_TYPE_BOOL => CanMsgType::Bool,
         CAN_MSG_TYPE_F32 => CanMsgType::F32,
         CAN_MSG_TYPE_U32 => CanMsgType::U32,
+        CAN_MSG_TYPE_POSDELTA => CanMsgType::PosDelta,
         _ => {
             error!("Unknown CAN message type: {}", msg_type[0] & 0x0F);
             panic!();
@@ -94,10 +97,16 @@ impl PositionDelta {
     }
 
     pub fn encode_to_can(&self, board_id:u8) -> [[u8; 8]; 3] {
-        [
-            self.x.encode_to_can(board_id),
-            self.y.encode_to_can(board_id),
-            self.z.encode_to_can(board_id),
-        ]
+        let mut x = self.x.encode_to_can(board_id);
+        let mut y = self.y.encode_to_can(board_id);        
+        let mut z = self.z.encode_to_can(board_id);
+        x[0] = build_can_header(board_id, CAN_MSG_TYPE_POSDELTA);
+        y[0] = build_can_header(board_id, CAN_MSG_TYPE_POSDELTA);
+        z[0] = build_can_header(board_id, CAN_MSG_TYPE_POSDELTA);
+        
+        x[5] = 0;
+        y[5] = 1;
+        z[5] = 2;
+        [x, y, z]
     }
 }
