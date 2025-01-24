@@ -115,19 +115,19 @@ mod tests {
 
         let config = PodConfig::new(raw_config).unwrap();
         let expected: Vec<String<DEFAULT_STRING_SIZE>, NUM_PODS> =
-            Vec::from_slice(&[String::from_str(&"pod_1").unwrap()]).unwrap();
+            Vec::from_slice(&[String::from_str("pod_1").unwrap()]).unwrap();
         assert_eq!(config.pod_ids, expected);
 
         let pod = config
             .pods
-            .get(&String::from_str(&"pod_1").unwrap().into())
+            .get(&String::from_str("pod_1").unwrap())
             .unwrap();
         assert_eq!(pod.name, "Pod 1");
         assert_eq!(pod.measurements.len(), 2);
 
         let keyence = pod
             .measurements
-            .get(&String::from_str(&"keyence").unwrap().into())
+            .get(&String::from_str("keyence").unwrap())
             .unwrap();
         assert_eq!(keyence.name, "Keyence");
         assert_eq!(keyence.unit, "number of stripes");
@@ -166,8 +166,8 @@ mod tests {
         let config = PodConfig::new(raw_config).unwrap();
         let pod = config.pods.iter().next().unwrap().1.clone();
         let expected: Vec<String<DEFAULT_STRING_SIZE>, NUM_MEASUREMENTS> = Vec::from_slice(&[
-            String::from_str(&"keyence").unwrap(),
-            String::from_str(&"accelerometer_1").unwrap(),
+            String::from_str("keyence").unwrap(),
+            String::from_str("accelerometer_1").unwrap(),
         ])
         .unwrap();
         assert_eq!(pod.measurement_ids, expected);
@@ -207,14 +207,14 @@ mod tests {
 
         let pod1 = config
             .pods
-            .get(&String::from_str(&"pod_1").unwrap().into())
+            .get(&String::from_str("pod_1").unwrap())
             .unwrap();
         assert_eq!(pod1.name, "Pod 1");
         assert_eq!(pod1.measurements.len(), 1);
 
         let pod2 = config
             .pods
-            .get(&String::from_str(&"pod_2").unwrap().into())
+            .get(&String::from_str("pod_2").unwrap())
             .unwrap();
         assert_eq!(pod2.name, "Pod 2");
         assert_eq!(pod2.measurements.len(), 1);
@@ -265,7 +265,7 @@ mod tests {
 
         let accelerometer = pod
             .measurements
-            .get(&String::from_str(&"accelerometer_1").unwrap().into())
+            .get(&String::from_str("accelerometer_1").unwrap())
             .unwrap();
         assert_eq!(accelerometer.limits.len(), 1);
         assert_eq!(
@@ -279,7 +279,7 @@ mod tests {
 
         let temperature = pod
             .measurements
-            .get(&String::from_str(&"temperature").unwrap().into())
+            .get(&String::from_str("temperature").unwrap())
             .unwrap();
         assert_eq!(temperature.limits.len(), 2);
         assert_eq!(
@@ -316,7 +316,7 @@ mod tests {
         let pod = config.pods.iter().next().unwrap().1.clone();
         let keyence = pod
             .measurements
-            .get(&String::from_str(&"keyence").unwrap().into())
+            .get(&String::from_str("keyence").unwrap())
             .unwrap();
         assert_eq!(keyence.limits.len(), 0);
     }
