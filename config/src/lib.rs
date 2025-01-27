@@ -1,11 +1,13 @@
 #![no_std]
 
-use heapless::{LinearMap, String, Vec};
+use heapless::{LinearMap, String as HeaplessString, Vec};
 use serde::{Deserialize, Serialize};
 
 const DEFAULT_STRING_SIZE: usize = 32;
 const NUM_PODS: usize = 2;
 const NUM_MEASUREMENTS: usize = 32;
+
+type String = HeaplessString<DEFAULT_STRING_SIZE>;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub enum MeasurementFormat {
@@ -13,17 +15,16 @@ pub enum MeasurementFormat {
     Float,
     #[serde(rename = "integer")]
     Int,
+    // TODO: Add more formats
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
-pub enum LimitLevel {
-    #[serde(rename = "warning")]
-    Warning,
-    #[serde(rename = "critical")]
-    Critical,
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+pub struct Limits {
+    warning: Option<MeasurementLimits>,
+    critical: MeasurementLimits,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct MeasurementLimits {
     min: f64,
     max: f64,
@@ -31,26 +32,25 @@ pub struct MeasurementLimits {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Measurement {
-    pub name: String<DEFAULT_STRING_SIZE>,
-    pub unit: String<DEFAULT_STRING_SIZE>,
+    pub name: String,
+    pub unit: String,
     pub format: MeasurementFormat,
-    #[serde(default)]
-    pub limits: LinearMap<LimitLevel, MeasurementLimits, 2>,
+    pub limits: Limits,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Pod {
-    pub name: String<DEFAULT_STRING_SIZE>,
-    pub measurements: LinearMap<String<DEFAULT_STRING_SIZE>, Measurement, NUM_MEASUREMENTS>,
+    pub name: String,
+    pub measurements: LinearMap<String, Measurement, NUM_MEASUREMENTS>,
     #[serde(skip)]
-    pub measurement_ids: Vec<String<DEFAULT_STRING_SIZE>, NUM_MEASUREMENTS>,
+    pub measurement_ids: Vec<String, NUM_MEASUREMENTS>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PodConfig {
-    pub pods: LinearMap<String<DEFAULT_STRING_SIZE>, Pod, NUM_PODS>,
+    pub pods: LinearMap<String, Pod, NUM_PODS>,
     #[serde(skip)]
-    pub pod_ids: Vec<String<DEFAULT_STRING_SIZE>, NUM_PODS>,
+    pub pod_ids: Vec<String, NUM_PODS>,
 }
 
 impl PodConfig {
@@ -103,74 +103,20 @@ mod tests {
                             critical:
                                 min: 0
                                 max: 16
-                    accelerometer_1:
-                        name: 'Accelerometer 1'
-                        unit: 'm/s^2'
-                        format: 'float'
-                        limits:
-                            critical:
-                                min: -150
-                                max: 150
         "#;
 
         let config = PodConfig::new(raw_config).unwrap();
-        let expected: Vec<String<DEFAULT_STRING_SIZE>, NUM_PODS> =
+        let expected: Vec<String, NUM_PODS> =
             Vec::from_slice(&[String::from_str("pod_1").unwrap()]).unwrap();
         assert_eq!(config.pod_ids, expected);
 
+        // Check the pod details
         let pod = config
             .pods
             .get(&String::from_str("pod_1").unwrap())
             .unwrap();
         assert_eq!(pod.name, "Pod 1");
-        assert_eq!(pod.measurements.len(), 2);
-
-        let keyence = pod
-            .measurements
-            .get(&String::from_str("keyence").unwrap())
-            .unwrap();
-        assert_eq!(keyence.name, "Keyence");
-        assert_eq!(keyence.unit, "number of stripes");
-        assert_eq!(keyence.format, MeasurementFormat::Int);
-        assert_eq!(keyence.limits.len(), 1);
-
-        let keyence_limits = keyence.limits.get(&LimitLevel::Critical).unwrap();
-        assert_eq!(keyence_limits.min, 0.0);
-        assert_eq!(keyence_limits.max, 16.0);
-    }
-
-    #[test]
-    fn test_measurement_ids() {
-        let raw_config = r#"
-        pods:
-            pod_1:
-                name: 'Pod 1'
-                measurements:
-                    keyence:
-                        name: 'Keyence'
-                        unit: 'number of stripes'
-                        format: 'integer'
-                        limits:
-                            critical:
-                                min: 0
-                                max: 16
-                    accelerometer_1:
-                        name: 'Accelerometer 1'
-                        unit: 'm/s^2'
-                        format: 'float'
-                        limits:
-                            critical:
-                                min: -150
-                                max: 150
-        "#;
-        let config = PodConfig::new(raw_config).unwrap();
-        let pod = config.pods.iter().next().unwrap().1.clone();
-        let expected: Vec<String<DEFAULT_STRING_SIZE>, NUM_MEASUREMENTS> = Vec::from_slice(&[
-            String::from_str("keyence").unwrap(),
-            String::from_str("accelerometer_1").unwrap(),
-        ])
-        .unwrap();
-        assert_eq!(pod.measurement_ids, expected);
+        assert_eq!(pod.measurements.len(), 1);
     }
 
     #[test]
@@ -202,8 +148,8 @@ mod tests {
         "#;
         let config = PodConfig::new(raw_config).unwrap();
         assert!(config.pod_ids.len() == 2);
-        assert!(config.pod_ids[0] == "pod_1" || config.pod_ids[1] == "pod_1");
-        assert!(config.pod_ids[0] == "pod_2" || config.pod_ids[1] == "pod_2");
+        assert!(config.pod_ids[0] == "pod_1");
+        assert!(config.pod_ids[1] == "pod_2");
 
         let pod1 = config
             .pods
@@ -221,7 +167,7 @@ mod tests {
     }
 
     #[test]
-    fn test_limit_levels() {
+    fn test_measurement_ids() {
         let raw_config = r#"
         pods:
             pod_1:
@@ -232,9 +178,40 @@ mod tests {
                         unit: 'number of stripes'
                         format: 'integer'
                         limits:
-                            warning:
+                            critical:
                                 min: 0
                                 max: 16
+                    accelerometer_1:
+                        name: 'Accelerometer 1'
+                        unit: 'm/s^2'
+                        format: 'float'
+                        limits:
+                            critical:
+                                min: -150
+                                max: 150
+        "#;
+        let config = PodConfig::new(raw_config).unwrap();
+        let pod = config
+            .pods
+            .get(&String::from_str("pod_1").unwrap())
+            .unwrap();
+
+        // Test that the measurement IDs are correctly stored
+        let expected_measurement_ids: Vec<String, NUM_MEASUREMENTS> = Vec::from_slice(&[
+            String::from_str("keyence").unwrap(),
+            String::from_str("accelerometer_1").unwrap(),
+        ])
+        .unwrap();
+        assert_eq!(pod.measurement_ids, expected_measurement_ids);
+    }
+
+    #[test]
+    fn test_limit_levels() {
+        let raw_config = r#"
+        pods:
+            pod_1:
+                name: 'Pod 1'
+                measurements:
                     accelerometer_1:
                         name: 'Accelerometer 1'
                         unit: 'm/s^2'
@@ -258,50 +235,64 @@ mod tests {
         let config = PodConfig::new(raw_config).unwrap();
         let pod = config.pods.iter().next().unwrap().1.clone();
 
-        let keyence = pod.measurements.iter().next().unwrap().1.clone();
-        assert_eq!(keyence.limits.len(), 1);
-        assert_eq!(keyence.limits.get(&LimitLevel::Warning).unwrap().min, 0.0);
-        assert_eq!(keyence.limits.get(&LimitLevel::Warning).unwrap().max, 16.0);
-
+        // Test the case where only critical limits are provided
         let accelerometer = pod
             .measurements
             .get(&String::from_str("accelerometer_1").unwrap())
             .unwrap();
-        assert_eq!(accelerometer.limits.len(), 1);
         assert_eq!(
-            accelerometer.limits.get(&LimitLevel::Critical).unwrap().min,
-            -150.0
-        );
-        assert_eq!(
-            accelerometer.limits.get(&LimitLevel::Critical).unwrap().max,
-            150.0
+            accelerometer.limits,
+            Limits {
+                warning: None,
+                critical: MeasurementLimits {
+                    min: -150.0,
+                    max: 150.0
+                }
+            }
         );
 
+        // Test the case where both warning and critical limits are provided
         let temperature = pod
             .measurements
             .get(&String::from_str("temperature").unwrap())
             .unwrap();
-        assert_eq!(temperature.limits.len(), 2);
         assert_eq!(
-            temperature.limits.get(&LimitLevel::Warning).unwrap().min,
-            0.0
-        );
-        assert_eq!(
-            temperature.limits.get(&LimitLevel::Warning).unwrap().max,
-            50.0
-        );
-        assert_eq!(
-            temperature.limits.get(&LimitLevel::Critical).unwrap().min,
-            -20.0
-        );
-        assert_eq!(
-            temperature.limits.get(&LimitLevel::Critical).unwrap().max,
-            80.0
+            temperature.limits,
+            Limits {
+                warning: Some(MeasurementLimits {
+                    min: 0.0,
+                    max: 50.0
+                }),
+                critical: MeasurementLimits {
+                    min: -20.0,
+                    max: 80.0
+                }
+            }
         );
     }
 
     #[test]
-    fn test_no_limits() {
+    fn test_missing_critical_limits() {
+        let raw_config = r#"
+        pods:
+            pod_1:
+                name: 'Pod 1'
+                measurements:
+                    keyence:
+                        name: 'Keyence'
+                        unit: 'number of stripes'
+                        format: 'integer'
+                        limits:
+                            warning:
+                                min: 0
+                                max: 16
+        "#;
+        let config = PodConfig::new(raw_config);
+        assert!(config.is_err());
+    }
+
+    #[test]
+    fn test_missing_limits() {
         let raw_config = r#"
         pods:
             pod_1:
@@ -312,12 +303,7 @@ mod tests {
                         unit: 'number of stripes'
                         format: 'integer'
         "#;
-        let config = PodConfig::new(raw_config).unwrap();
-        let pod = config.pods.iter().next().unwrap().1.clone();
-        let keyence = pod
-            .measurements
-            .get(&String::from_str("keyence").unwrap())
-            .unwrap();
-        assert_eq!(keyence.limits.len(), 0);
+        let config = PodConfig::new(raw_config);
+        assert!(config.is_err());
     }
 }
