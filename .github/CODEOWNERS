@@ -12,6 +12,7 @@ lib/localisation @misha7b
 # Motors & Levitation Control
 lib/motors @jpfbastos
 lib/levitation @jpfbastos
+lib/control @jpfbastos
 
 # Sensors
 lib/sensors @H-Allen
