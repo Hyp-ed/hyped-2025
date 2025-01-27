@@ -5,7 +5,7 @@ use crate::{
         keyence::{KeyenceAgrees, SensorChecks},
         optical::process_optical_data,
     },
-    types::{RawAccelerometerData, K_NUM_ACCELEROMETERS, K_NUM_AXIS},
+    types::{RawAccelerometerData, NUM_ACCELEROMETERS, NUM_AXIS},
 };
 
 use heapless::Vec;
@@ -91,7 +91,7 @@ impl Localizer {
         &mut self,
         optical_data: Vec<f64, 2>,
         keyence_data: Vec<u32, 2>,
-        accelerometer_data: RawAccelerometerData<K_NUM_ACCELEROMETERS, K_NUM_AXIS>,
+        accelerometer_data: RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS>,
     ) {
         let processed_optical_data = process_optical_data(optical_data.clone());
         self.optical_val = processed_optical_data as f64;
@@ -118,19 +118,19 @@ impl Localizer {
 
         let processed_accelerometer_data = processed_accelerometer_data.unwrap();
         self.accelerometer_val = 0.0;
-        for i in 0..K_NUM_ACCELEROMETERS {
-            for _ in 0..K_NUM_AXIS {
+        for i in 0..NUM_ACCELEROMETERS {
+            for _ in 0..NUM_AXIS {
                 self.accelerometer_val += processed_accelerometer_data[i] as f64;
             }
         }
-        self.accelerometer_val /= (K_NUM_ACCELEROMETERS * K_NUM_AXIS) as f64;
+        self.accelerometer_val /= (NUM_ACCELEROMETERS * NUM_AXIS) as f64;
     }
 
     pub fn iteration(
         &mut self,
         optical_data: Vec<f64, 2>,
         keyence_data: Vec<u32, 2>,
-        accelerometer_data: RawAccelerometerData<K_NUM_ACCELEROMETERS, K_NUM_AXIS>,
+        accelerometer_data: RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS>,
     ) {
         self.preprocessor(
             optical_data.clone(),
@@ -168,7 +168,7 @@ mod tests {
 
         let raw_keyence_data: Vec<u32, 2> = Vec::from_slice(&[0, 0]).unwrap();
 
-        let raw_accelerometer_data: RawAccelerometerData<K_NUM_ACCELEROMETERS, K_NUM_AXIS> =
+        let raw_accelerometer_data: RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS> =
             RawAccelerometerData::from_slice(&[
                 Vec::from_slice(&[0.0, 0.0, 0.0]).unwrap(),
                 Vec::from_slice(&[0.0, 0.0, 0.0]).unwrap(),
