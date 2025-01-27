@@ -27,6 +27,7 @@ pub fn can_msg_type_from_u8(msg_type: &[u8; 8]) -> CanMsgType {
 
 pub trait CanSendable { 
     fn encode_to_can(&self, board_id:u8) -> [u8; 8];
+    fn can_decode(can_msg: &[u8; 8]) -> Self;
 }
 
 pub fn build_can_header(board_id:u8, msg_type:u8) -> u8 {
@@ -41,6 +42,10 @@ impl CanSendable for bool {
         data[0] = build_can_header(board_id, CAN_MSG_TYPE_BOOL);
         data[1] = *self as u8; 
         return data;
+    }
+
+    fn can_decode(can_msg: &[u8; 8]) -> Self {
+        can_msg[1] != 0
     }
 }
 
@@ -58,6 +63,16 @@ impl CanSendable for [u16; 2] {
         return data;
     }
     
+    fn can_decode(can_msg: &[u8; 8]) -> Self {
+        let mut u16_bytes: [u8; 2] = [0; 2];
+        u16_bytes.copy_from_slice(&can_msg[1..3]);
+        let u16_1 = u16::from_le_bytes(u16_bytes);
+
+        u16_bytes.copy_from_slice(&can_msg[3..5]);
+        let u16_2 = u16::from_le_bytes(u16_bytes);
+
+        [u16_1, u16_2]
+    }
 }
 
 impl CanSendable for f32 {
@@ -68,6 +83,12 @@ impl CanSendable for f32 {
         let f32_bytes: [u8; 4] = self.to_le_bytes();
         data[1..5].copy_from_slice(&f32_bytes);
         return data;
+    }
+    
+    fn can_decode(can_msg: &[u8; 8]) -> Self {
+        let mut f32_bytes: [u8; 4] = [0; 4];
+        f32_bytes.copy_from_slice(&can_msg[1..5]);
+        f32::from_le_bytes(f32_bytes)
     }
 }
 
@@ -109,4 +130,9 @@ impl PositionDelta {
         z[5] = 2;
         [x, y, z]
     }
+
+    pub fn can_decode(_can_msg: &[[u8; 8]; 3]) -> Self {
+        todo!("This cant be a clean interface like this without a little fenangling")
+    }
 }
+
