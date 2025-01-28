@@ -15,7 +15,6 @@ pub enum MeasurementFormat {
     Float,
     #[serde(rename = "integer")]
     Int,
-    // TODO: Add more formats
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
@@ -54,6 +53,7 @@ pub struct PodConfig {
 }
 
 impl PodConfig {
+    /// Create a new PodConfig from a raw YAML string
     pub fn new(raw_config: &str) -> Result<Self, serde_yml::Error> {
         let config = match serde_yml::from_str::<PodConfig>(raw_config) {
             Ok(mut config) => {
