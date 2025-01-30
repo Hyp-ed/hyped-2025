@@ -589,6 +589,7 @@ name = "hyped_can"
 version = "0.1.0"
 dependencies = [
  "embassy-sync 0.6.0",
+ "embassy-time",
  "heapless",
 ]
 
