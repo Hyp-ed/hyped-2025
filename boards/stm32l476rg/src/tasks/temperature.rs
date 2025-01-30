@@ -4,7 +4,10 @@ use defmt_rtt as _;
 use embassy_stm32::time::Hertz;
 use embassy_stm32::{i2c::I2c, mode::Blocking};
 use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
-use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
+use hyped_sensors::{
+    temperature::{Status, Temperature, TemperatureAddresses},
+    SensorValueRange::*,
+};
 use static_cell::StaticCell;
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
@@ -42,9 +45,17 @@ pub async fn read_temp() -> ! {
         }
 
         match temperature_sensor.read() {
-            Some(temperature) => {
-                defmt::info!("Temperature: {:?}", temperature);
-            }
+            Some(temperature) => match temperature {
+                Safe(temp) => {
+                    defmt::info!("Temperature: {}°C (safe)", temp);
+                }
+                Warning(temp) => {
+                    defmt::warn!("Temperature: {}°C (warning)", temp);
+                }
+                Critical(temp) => {
+                    defmt::error!("Temperature: {}°C (critical)", temp);
+                }
+            },
             None => {
                 defmt::info!("Failed to read temperature.");
             }
