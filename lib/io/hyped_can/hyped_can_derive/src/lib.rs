@@ -29,7 +29,7 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
                 });
             }
 
-            async fn write_frame(&mut self, frame: &CanFrame) -> () {
+            async fn write_frame(&mut self, frame: &CanFrame) {
 
                 self.can.lock(|can| {
                     can.borrow_mut().write(frame)

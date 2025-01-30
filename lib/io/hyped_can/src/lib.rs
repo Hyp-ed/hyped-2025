@@ -57,7 +57,7 @@ pub trait HypedCan {
     /// Queues the message to be sent.
     ///
     /// If the TX queue is full, this will wait until there is space, therefore exerting backpressure.
-    async fn write_frame(&mut self, frame: &CanFrame) -> ();
+    async fn write_frame(&mut self, frame: &CanFrame);
     /// Attempts to transmit a frame without blocking.
     ///
     /// Returns [Err(CanError::Full)] if the frame can not be queued for transmission now.
@@ -115,7 +115,7 @@ pub mod mock_can {
             })
         }
 
-        async fn write_frame(&mut self, frame: &super::CanFrame) -> () {
+        async fn write_frame(&mut self, frame: &super::CanFrame) {
             self.frames_sent.push_front(frame.clone());
         }
 
