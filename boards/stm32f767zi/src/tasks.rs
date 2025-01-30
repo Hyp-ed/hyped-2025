@@ -1,2 +1,2 @@
-pub mod keyence;
-pub mod temperature;
+pub mod read_keyence;
+pub mod read_temperature;
