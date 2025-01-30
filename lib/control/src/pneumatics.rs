@@ -1,4 +1,8 @@
 use hyped_gpio::HypedGpioOutputPin;
+use hyped_sensors::{time_of_flight::{TimeOfFlight, TimeOfFlightError}, SensorValueRange};
+use hyped_i2c::HypedI2c;
+use embassy_time::with_timeout;
+use embassy_time::Duration;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum BrakeState {
@@ -11,38 +15,61 @@ pub enum LateralSuspensionState {
     Deployed,
     Retracted,
 }
+pub enum BrakeActuationFailure {
+  TimeOfFlightError(TimeOfFlightError),
+  SensorNotInTolerance,
+  TimeoutError
+}
+
+
+const BRAKE_ACTUATION_THRESHOLD: u8 = 0;
+const BRAKE_CHECK_TIMEOUT: Duration = Duration::from_millis(100); //100ms
 
 /// Represents the pneumatics systems (brakes and lateral suspension) of the pod.
 /// Outputs two GPIO signals, one for the brakes and one for the lateral suspension, which turn on/off a solenoid valve.
-pub struct Pneumatics<P: HypedGpioOutputPin> {
+pub struct Pneumatics<'a, P: HypedGpioOutputPin, T: HypedI2c> {
     brake_state: BrakeState,
     lateral_suspension_state: LateralSuspensionState,
     brake_pin: P,
     lateral_suspension_pin: P,
+    time_of_flight: TimeOfFlight<'a, T>
 }
 
-impl<P: HypedGpioOutputPin> Pneumatics<P> {
-    pub fn new(brake_pin: P, lateral_suspension_pin: P) -> Self {
+impl<'a, P: HypedGpioOutputPin, T: HypedI2c> Pneumatics<'a, P, T> {
+    pub async fn new(brake_pin: P, lateral_suspension_pin: P, time_of_flight: TimeOfFlight<'a, T>) -> Result<Self, BrakeActuationFailure> {
         let mut pneumatics = Pneumatics {
             brake_state: BrakeState::Engaged,
             lateral_suspension_state: LateralSuspensionState::Retracted,
             brake_pin,
             lateral_suspension_pin,
+            time_of_flight
         };
 
-        // Engage brakes and retract lateral suspension on startup
-        pneumatics.engage_brakes();
+        // Engage brakes and retract lateral suspension on startup        
         pneumatics.retract_lateral_suspension();
-        pneumatics
+        match pneumatics.engage_brakes().await {
+          Ok(v) => Ok(pneumatics),
+          Err(e) => Err(e)
+        }
+        
     }
 
     /// Engages the brakes by setting the brake GPIO pin to low.
-    pub fn engage_brakes(&mut self) {
+    pub async fn engage_brakes(&mut self) -> Result<(), BrakeActuationFailure> {
         self.brake_state = BrakeState::Engaged;
 
         // Brake pin is set to low, as brakes clamp with no power,
         // and are retracted when powered.
         self.brake_pin.set_low();
+
+        match with_timeout(BRAKE_CHECK_TIMEOUT, self.check_brake_actuation()).await {
+          Ok(v) => match v {
+            Ok(v) => Ok(v),
+            Err(e) => Err(e)
+          },
+          Err(e) => Err(BrakeActuationFailure::TimeoutError),
+        }
+
     }
 
     /// Disengages the brakes by setting the brake GPIO pin to high.
@@ -73,6 +100,28 @@ impl<P: HypedGpioOutputPin> Pneumatics<P> {
     pub fn get_lateral_suspension_state(&self) -> LateralSuspensionState {
         self.lateral_suspension_state
     }
+
+    async fn check_brake_actuation(&mut self) -> Result<(), BrakeActuationFailure> {
+      let sensor_result = self.time_of_flight.single_shot_measurement();
+      
+      let sensor_range = match sensor_result {
+        Ok(v) => v, 
+        Err(e) => return Err(BrakeActuationFailure::TimeOfFlightError(e))
+      };
+      
+      // todo: Check this is correct.
+      let sensor_value = match sensor_range {
+          SensorValueRange::Safe(s) => s,
+          SensorValueRange::Warning(w) => w,
+          SensorValueRange::Critical(c) => c
+      };
+
+      if sensor_value >= BRAKE_ACTUATION_THRESHOLD {  // not good
+        return Err(BrakeActuationFailure::SensorNotInTolerance);
+      } else {
+        return Ok(());
+      }
+    }
 }
 
 #[cfg(test)]
@@ -81,11 +130,11 @@ mod tests {
     use hyped_gpio::mock_gpio::MockGpioOutputPin;
 
     #[test]
-    fn test_pneumatics() {
+     fn test_pneumatics() {
         let brake_pin = MockGpioOutputPin::new();
         let lateral_suspension_pin = MockGpioOutputPin::new();
 
-        let mut pneumatics = Pneumatics::new(brake_pin, lateral_suspension_pin);
+        let mut pneumatics = Pneumatics::new(brake_pin, lateral_suspension_pin).await.unwrap(); //TODOLater: add mock tof
 
         // Check that the brakes are engaged and the lateral suspension is retracted on startup
         assert_eq!(pneumatics.get_brake_state(), BrakeState::Engaged);
