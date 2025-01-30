@@ -20,12 +20,12 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
                 let result = self.can.lock(|can| can.borrow_mut().try_read());
                 match result {
                     Ok(envelope) => Ok(HypedEnvelope {
-                        frame: CanFrame {
+                        frame: HypedCanFrame {
                             can_id: {
                                 let id = envelope.frame.id();
                                 match id {
-                                    embassy_stm32::can::Id::Standard(id) => id.as_raw() as u32, // 11-bit ID
-                                    embassy_stm32::can::Id::Extended(id) => id.as_raw(),        // 29-bit ID
+                                    Id::Standard(id) => id.as_raw() as u32, // 11-bit ID
+                                    Id::Extended(id) => id.as_raw(),        // 29-bit ID
                                 }
                             },
                             data: {
@@ -36,35 +36,35 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
                         },
                         ts: envelope.ts,
                     }),
-                    Err(embassy_stm32::can::enums::TryReadError::BusError(e)) => Err(match e {
-                        embassy_stm32::can::enums::BusError::Stuff => CanError::Stuff,
-                        embassy_stm32::can::enums::BusError::Form => CanError::Form,
-                        embassy_stm32::can::enums::BusError::Acknowledge => CanError::Acknowledge,
-                        embassy_stm32::can::enums::BusError::BitRecessive => CanError::BitRecessive,
-                        embassy_stm32::can::enums::BusError::BitDominant => CanError::BitDominant,
-                        embassy_stm32::can::enums::BusError::Crc => CanError::Crc,
-                        embassy_stm32::can::enums::BusError::Software => CanError::Software,
-                        embassy_stm32::can::enums::BusError::BusOff => CanError::BusOff,
-                        embassy_stm32::can::enums::BusError::BusPassive => CanError::BusPassive,
-                        embassy_stm32::can::enums::BusError::BusWarning => CanError::BusWarning,
+                    Err(TryReadError::BusError(e)) => Err(match e {
+                        BusError::Stuff => CanError::Stuff,
+                        BusError::Form => CanError::Form,
+                        BusError::Acknowledge => CanError::Acknowledge,
+                        BusError::BitRecessive => CanError::BitRecessive,
+                        BusError::BitDominant => CanError::BitDominant,
+                        BusError::Crc => CanError::Crc,
+                        BusError::Software => CanError::Software,
+                        BusError::BusOff => CanError::BusOff,
+                        BusError::BusPassive => CanError::BusPassive,
+                        BusError::BusWarning => CanError::BusWarning,
                     }),
-                    Err(embassy_stm32::can::enums::TryReadError::Empty) => Err(CanError::Empty),
+                    Err(TryReadError::Empty) => Err(CanError::Empty),
                 }
             }
 
-            fn write_frame(&mut self, frame: &CanFrame) -> Result<(), CanError> {
-                let frame = embassy_stm32::can::Frame::new(
+            fn write_frame(&mut self, frame: &HypedCanFrame) -> Result<(), CanError> {
+                let frame = Frame::new(
                     match frame.can_id {
-                        id if id <= 0x7FF => embassy_stm32::can::frame::Header::new(
-                            embassy_stm32::can::Id::Standard(
-                                embassy_stm32::can::StandardId::new(id as u16).unwrap(),
+                        id if id <= 0x7FF => frame::Header::new(
+                            Id::Standard(
+                                StandardId::new(id as u16).unwrap(),
                             ),
                             frame.data.len() as u8,
                             false,
                         ),
-                        id => embassy_stm32::can::frame::Header::new(
-                            embassy_stm32::can::Id::Extended(
-                                embassy_stm32::can::ExtendedId::new(id).unwrap(),
+                        id => frame::Header::new(
+                            Id::Extended(
+                                ExtendedId::new(id).unwrap(),
                             ),
                             frame.data.len() as u8,
                             false,
@@ -72,22 +72,23 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
                     },
                     &frame.data,
                 );
+
                 match frame {
                     Ok(frame) => {
                         let result = self.can.lock(|can| can.borrow_mut().try_write(&frame));
                         match result {
                             Ok(_) => Ok(()),
-                            Err(embassy_stm32::can::TryWriteError::Full) => Err(CanError::Full),
+                            Err(TryWriteError::Full) => Err(CanError::Full),
                         }
                     }
                     Err(e) => Err(match e {
-                        embassy_stm32::can::enums::FrameCreateError::NotEnoughData => {
+                        FrameCreateError::NotEnoughData => {
                             CanError::NotEnoughData
                         }
-                        embassy_stm32::can::enums::FrameCreateError::InvalidDataLength => {
+                        FrameCreateError::InvalidDataLength => {
                             CanError::InvalidDataLength
                         }
-                        embassy_stm32::can::enums::FrameCreateError::InvalidCanId => CanError::InvalidCanId,
+                        FrameCreateError::InvalidCanId => CanError::InvalidCanId,
                     }),
                 }
             }

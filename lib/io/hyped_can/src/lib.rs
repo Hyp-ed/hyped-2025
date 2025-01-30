@@ -24,8 +24,9 @@ pub enum CanError {
     InvalidDataLength,
     InvalidCanId,
 }
+
 #[derive(Clone)]
-pub struct CanFrame {
+pub struct HypedCanFrame {
     pub can_id: u32,   // 32 bit CAN_ID + EFF/RTR/ERR flags
     pub data: [u8; 8], // data that is sent over CAN, split into bytes
 }
@@ -37,7 +38,7 @@ pub struct HypedEnvelope {
     /// Reception time.
     pub ts: Timestamp,
     /// The actual CAN frame.
-    pub frame: CanFrame,
+    pub frame: HypedCanFrame,
 }
 
 /// CAN trait used to abstract the CAN operations
@@ -54,7 +55,7 @@ pub trait HypedCan {
     ///
     /// Otherwise, the frame will only be accepted if there is no frame with the same priority already queued. This is done
     /// to work around a hardware limitation that could lead to out-of-order delivery of frames with the same priority.
-    fn write_frame(&mut self, frame: &CanFrame) -> Result<(), CanError>;
+    fn write_frame(&mut self, frame: &HypedCanFrame) -> Result<(), CanError>;
 }
 
 pub mod mock_can {
@@ -62,10 +63,10 @@ pub mod mock_can {
     use embassy_sync::blocking_mutex::{raw::CriticalSectionRawMutex, Mutex};
     use heapless::Deque;
 
-    use crate::CanFrame;
+    use crate::HypedCanFrame;
 
     /// A fixed-size map of CAN frames
-    type CanValues = Deque<CanFrame, 8>;
+    type CanValues = Deque<HypedCanFrame, 8>;
 
     /// A mock CAN instance which can be used for testing
     pub struct MockCan<'a> {
@@ -95,7 +96,7 @@ pub mod mock_can {
             })
         }
 
-        fn write_frame(&mut self, frame: &super::CanFrame) -> Result<(), super::CanError> {
+        fn write_frame(&mut self, frame: &super::HypedCanFrame) -> Result<(), super::CanError> {
             if self.fail_write {
                 return Err(super::CanError::Unknown);
             }

@@ -1,6 +1,9 @@
 use core::cell::RefCell;
 use embassy_stm32::adc::{Adc, AnyAdcChannel, Instance};
-use embassy_stm32::can::Can;
+use embassy_stm32::can::{
+    enums::{BusError, FrameCreateError, TryReadError},
+    frame, Can, ExtendedId, Frame, Id, StandardId, TryWriteError,
+};
 use embassy_stm32::gpio::{Input, Output};
 use embassy_stm32::{i2c::I2c, mode::Blocking};
 use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
