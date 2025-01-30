@@ -14,6 +14,8 @@ fn impl_hyped_spi(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let generics: &Generics = &ast.generics;
     let (_impl_generics, _ty_generics, _) = generics.split_for_impl();
-    let gen = quote! {};
+    let gen = quote! {
+        
+    };
     gen.into()
 }
