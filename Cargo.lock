@@ -364,6 +364,7 @@ dependencies = [
  "defmt",
  "embassy-sync 0.6.0",
  "heapless",
+ "hyped_adc",
  "hyped_core",
  "hyped_gpio",
  "hyped_i2c",
