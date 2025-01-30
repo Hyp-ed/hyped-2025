@@ -3,18 +3,21 @@ pods:
     name: 'Pod 1'
     measurements:
       keyence:
-          name: 'Keyence'
-          unit: 'number of stripes'
-          format: 'integer'
-          limits:
-            critical:
-              min: 0
-              max: 16
+        name: 'Keyence'
+        unit: 'number of stripes'
+        format: 'integer'
+        limits:
+          critical:
+            low: 0
+            high: 16
+          warning:
+            low: 5
+            high: 10
       accelerometer_1:
-          name: 'Accelerometer 1'
-          unit: 'm/s^2'
-          format: 'float'
-          limits:
-            critical:
-              min: -150
-              max: 150
+        name: 'Accelerometer 1'
+        unit: 'm/s^2'
+        format: 'float'
+        limits:
+          critical:
+            low: -150
+            high: 150

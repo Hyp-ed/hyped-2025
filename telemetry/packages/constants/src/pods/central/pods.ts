@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as YAML from 'yaml';
+import { PodSchema } from './schema';
 
 const podsYaml = path.join(
 	__dirname,
@@ -31,17 +32,16 @@ const pods = Object.entries(parsedYaml.pods).reduce(
 				(measResult, [key, measData]) => ({
 					...measResult,
 					[key]: {
-						...(measData as object),
 						key,
+						...(measData as object),
 					},
 				}),
 				{},
 			),
 		};
+		PodSchema.parse(result[podId]);
 		return result;
 	},
 	{},
 );
 
-console.log(pods);
-console.log(pods.pod_1.measurements.keyence);
