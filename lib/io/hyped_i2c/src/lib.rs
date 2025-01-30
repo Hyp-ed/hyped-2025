@@ -18,13 +18,16 @@ pub enum I2cError {
 
 /// I2C trait used to abstract the I2C peripheral
 pub trait HypedI2c {
+    /// Read a byte from a register on a device
     fn read_byte(&mut self, device_address: u8, register_address: u8) -> Option<u8>;
+    /// Write a byte to a register on a device
     fn write_byte_to_register(
         &mut self,
         device_address: u8,
         register_address: u8,
         data: u8,
     ) -> Result<(), I2cError>;
+    /// Write a byte to a device
     fn write_byte(&mut self, device_address: u8, data: u8) -> Result<(), I2cError>;
 }
 

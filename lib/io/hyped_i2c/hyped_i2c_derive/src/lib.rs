@@ -32,7 +32,7 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
                 }
             }
 
-            /// Write a byte to a register on a device
+
             fn write_byte_to_register(
                 &mut self,
                 device_address: u8,
@@ -57,7 +57,7 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
                 }
             }
 
-            /// Write a byte to a device
+
             fn write_byte(&mut self, device_address: u8, data: u8) -> Result<(), I2cError> {
                 let result = self.i2c.lock(|i2c| {
                     i2c.borrow_mut().blocking_write(device_address, [data].as_ref())

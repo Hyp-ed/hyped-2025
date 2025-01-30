@@ -16,27 +16,30 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
     let (impl_generics, ty_generics, _) = generics.split_for_impl();
     let gen = quote! {
         impl #impl_generics HypedCan for #name #ty_generics{
-            /// Read a byte from a register on a device
-            fn read_frame(&mut self, device_address: u8, register_address: u8) -> Option<u8> {
-                let mut read = [0];
-                let result = self.can.lock(|can| {
-                    can.borrow_mut().blocking_write_read(
-                        device_address,
-                        [register_address].as_ref(),
-                        &mut read,
-                    )
-                });
-                match result {
-                    Ok(_) => Some(read[0]),
-                    Err(_) => None,
-                }
+
+            async fn read_frame(&mut self) -> Result<Envelope, CanError> {
+                self.can.lock(|can| {
+                    can.borrow_mut().read()
+                })
             }
 
-            /// Write a CAN frame to the CAN bus
-            fn write_frame(&mut self, message: &CanFrame) -> Result<(), CanError> {
+            fn try_read_frame(&mut self) -> Result<Envelope, CanError> {
+                self.can.lock(|can| {
+                    can.borrow().try_read()
+                });
+            }
+
+            async fn write_frame(&mut self, frame: &CanFrame) -> () {
+
+                self.can.lock(|can| {
+                    can.borrow_mut().write(frame)
+                });
+            }
+
+            fn try_write_frame(&mut self, frame: &CanFrame) -> Result<(), CanError> {
 
                 let result = self.can.lock(|can| {
-                    can.borrow_mut().write()
+                    can.borrow_mut().try_write(frame)
                 });
                 match result {
                     Ok(_) => Ok(()),
