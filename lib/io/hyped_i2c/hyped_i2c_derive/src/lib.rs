@@ -16,7 +16,7 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
     let (impl_generics, ty_generics, _) = generics.split_for_impl();
     let gen = quote! {
         impl #impl_generics HypedI2c for #name #ty_generics{
-            /// Read a byte from a register on a device
+
             fn read_byte(&mut self, device_address: u8, register_address: u8) -> Option<u8> {
                 let mut read = [0];
                 let result = self.i2c.lock(|i2c| {
@@ -31,7 +31,6 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
                     Err(_) => None,
                 }
             }
-
 
             fn write_byte_to_register(
                 &mut self,
@@ -56,7 +55,6 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
                     }),
                 }
             }
-
 
             fn write_byte(&mut self, device_address: u8, data: u8) -> Result<(), I2cError> {
                 let result = self.i2c.lock(|i2c| {

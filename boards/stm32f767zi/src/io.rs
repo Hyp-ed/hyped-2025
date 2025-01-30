@@ -7,7 +7,8 @@ use embassy_sync::blocking_mutex::raw::NoopRawMutex;
 use embassy_sync::blocking_mutex::Mutex;
 use hyped_adc::HypedAdc;
 use hyped_adc_derive::HypedAdc;
-use hyped_can::{CanError, HypedCan};
+use hyped_can::Envelope;
+use hyped_can::{CanError, CanFrame, HypedCan};
 use hyped_can_derive::HypedCan;
 use hyped_gpio_input::HypedGpioInput;
 use hyped_gpio_input_derive::HypedGpioInput;
@@ -32,5 +33,5 @@ pub struct Stm32f767ziI2c<'d> {
 
 #[derive(HypedCan)]
 pub struct Stm32f767ziCan<'d> {
-    can: &'d Mutex<NoopRawMutex, RefCell<embassy_stm32::can::Can<'static, Blocking>>>,
+    can: &'d Mutex<NoopRawMutex, RefCell<embassy_stm32::can::Can<'static>>>,
 }
