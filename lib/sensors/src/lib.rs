@@ -1,5 +1,6 @@
 #![no_std]
 
+pub mod imd;
 pub mod keyence;
 pub mod temperature;
 pub mod time_of_flight;
