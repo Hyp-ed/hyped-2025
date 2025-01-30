@@ -20,11 +20,20 @@ pub enum I2cError {
 pub trait HypedI2c {
     /// Read a byte from a register on a device
     fn read_byte(&mut self, device_address: u8, register_address: u8) -> Option<u8>;
+    /// Read a byte from a 16-bit register on a device
+    fn read_byte_16(&mut self, device_address: u8, register_address: u16) -> Option<u8>;
     /// Write a byte to a register on a device
     fn write_byte_to_register(
         &mut self,
         device_address: u8,
         register_address: u8,
+        data: u8,
+    ) -> Result<(), I2cError>;
+    // Write a byte to a 16-bit register on a device
+    fn write_byte_to_register_16(
+        &mut self,
+        device_address: u8,
+        register_address: u16,
         data: u8,
     ) -> Result<(), I2cError>;
     /// Write a byte to a device
@@ -42,6 +51,17 @@ macro_rules! i2c_write_or_err {
         }
     };
 }
+#[macro_export]
+/// Macro to write a byte to a 16-bit register on an I2C device or return an error.
+/// Does nothing if the write is successful, otherwise returns the error type specified.
+macro_rules! i2c_write_or_err_16 {
+    ($i2c:expr, $device_address:expr, $register_address:expr, $data:expr, $err_type:ty) => {
+        match $i2c.write_byte_to_register_16($device_address, $register_address, $data) {
+            Ok(_) => (),
+            Err(e) => return Err(<$err_type>::I2cError(e)),
+        }
+    };
+}
 
 pub mod mock_i2c {
     use core::cell::RefCell;
@@ -49,7 +69,7 @@ pub mod mock_i2c {
     use heapless::FnvIndexMap;
 
     /// A fixed-size map of I2C values, indexed by device address and register address
-    type I2cValues = FnvIndexMap<(u8, u8), Option<u8>, 16>;
+    type I2cValues = FnvIndexMap<(u8, u16), Option<u8>, 64>;
 
     /// A mock I2C instance which can be used for testing
     pub struct MockI2c<'a> {
@@ -60,6 +80,17 @@ pub mod mock_i2c {
     impl crate::HypedI2c for MockI2c<'_> {
         /// Reads a byte by looking up the device address and register address in the map
         fn read_byte(&mut self, device_address: u8, register_address: u8) -> Option<u8> {
+            self.values.lock(|values| {
+                values
+                    .borrow()
+                    .get(&(device_address, register_address.into()))
+                    .copied()
+                    .unwrap()
+            })
+        }
+
+        /// Reads a byte by looking up the device address and register address in the map (16-bit address version)
+        fn read_byte_16(&mut self, device_address: u8, register_address: u16) -> Option<u8> {
             self.values.lock(|values| {
                 values
                     .borrow()
@@ -74,6 +105,22 @@ pub mod mock_i2c {
             &mut self,
             device_address: u8,
             register_address: u8,
+            data: u8,
+        ) -> Result<(), super::I2cError> {
+            match self
+                .writes
+                .insert((device_address, register_address.into()), Some(data))
+            {
+                Ok(_) => Ok(()),
+                Err(_) => Err(super::I2cError::Unknown),
+            }
+        }
+
+        /// Writes a byte to the map (with 16-bit register address) so that it can be read later to check the value
+        fn write_byte_to_register_16(
+            &mut self,
+            device_address: u8,
+            register_address: u16,
             data: u8,
         ) -> Result<(), super::I2cError> {
             match self

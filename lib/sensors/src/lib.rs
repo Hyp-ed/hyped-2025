@@ -2,9 +2,10 @@
 
 pub mod keyence;
 pub mod temperature;
+pub mod time_of_flight;
 
 #[must_use]
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum SensorValueRange<T: PartialEq> {
     /// This is the normal range of values for the sensor.
     Safe(T),

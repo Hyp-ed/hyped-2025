@@ -49,6 +49,12 @@ impl<T: HypedI2c> HypedI2c for I2cMux<T> {
             Err(_) => None,
         }
     }
+    fn read_byte_16(&mut self, device_address: u8, register_address: u16) -> Option<u8> {
+        match self.select_channel() {
+            Ok(_) => self.i2c.read_byte_16(device_address, register_address),
+            Err(_) => None,
+        }
+    }
 
     fn write_byte_to_register(
         &mut self,
@@ -60,6 +66,20 @@ impl<T: HypedI2c> HypedI2c for I2cMux<T> {
             Ok(_) => self
                 .i2c
                 .write_byte_to_register(device_address, register_address, data),
+            Err(e) => Err(e as I2cError),
+        }
+    }
+
+    fn write_byte_to_register_16(
+        &mut self,
+        device_address: u8,
+        register_address: u16,
+        data: u8,
+    ) -> Result<(), I2cError> {
+        match self.select_channel() {
+            Ok(_) => self
+                .i2c
+                .write_byte_to_register_16(device_address, register_address, data),
             Err(e) => Err(e as I2cError),
         }
     }
