@@ -33,5 +33,5 @@ pub struct Stm32f767ziI2c<'d> {
 
 #[derive(HypedCan)]
 pub struct Stm32f767ziCan<'d> {
-    can: &'d Mutex<NoopRawMutex, RefCell<embassy_stm32::can::Can<'static>>>,
+    can: &'d Mutex<NoopRawMutex, RefCell<Can<'static>>>,
 }

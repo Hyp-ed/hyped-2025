@@ -18,15 +18,45 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
         impl #impl_generics HypedCan for #name #ty_generics{
 
             async fn read_frame(&mut self) -> Result<Envelope, CanError> {
-                self.can.lock(|can| {
+                let result = self.can.lock(|can| {
                     can.borrow_mut().read()
                 })
+                match result {
+                    Ok(_) => Ok(result),
+                    Err(e) => Err(match e {
+                        embassy_stm32::can::enums::BusError::Stuff => CanError::Stuff,
+                        embassy_stm32::can::enums::BusError::Form => CanError::Form,
+                        embassy_stm32::can::enums::BusError::Acknowledge => CanError::Acknowledge,
+                        embassy_stm32::can::enums::BusError::BitRecessive => CanError::BitRecessive,
+                        embassy_stm32::can::enums::BusError::BitDominant => CanError::BitDominant,
+                        embassy_stm32::can::enums::BusError::Crc => CanError::Crc,
+                        embassy_stm32::can::enums::BusError::Software => CanError::Software,
+                        embassy_stm32::can::enums::BusError::BusOff => CanError::BusOff,
+                        embassy_stm32::can::enums::BusError::BusPassive => CanError::BusPassive,
+                        embassy_stm32::can::enums::BusError::BusWarning => CanError::BusWarning,
+                    }),
+                }
             }
 
             fn try_read_frame(&mut self) -> Result<Envelope, CanError> {
-                self.can.lock(|can| {
+                let result = self.can.lock(|can| {
                     can.borrow().try_read()
-                });
+                })
+                match result {
+                    Ok(_) => Ok(result),
+                    Err(e) => Err(match e {
+                        embassy_stm32::can::enums::BusError::Stuff => CanError::Stuff,
+                        embassy_stm32::can::enums::BusError::Form => CanError::Form,
+                        embassy_stm32::can::enums::BusError::Acknowledge => CanError::Acknowledge,
+                        embassy_stm32::can::enums::BusError::BitRecessive => CanError::BitRecessive,
+                        embassy_stm32::can::enums::BusError::BitDominant => CanError::BitDominant,
+                        embassy_stm32::can::enums::BusError::Crc => CanError::Crc,
+                        embassy_stm32::can::enums::BusError::Software => CanError::Software,
+                        embassy_stm32::can::enums::BusError::BusOff => CanError::BusOff,
+                        embassy_stm32::can::enums::BusError::BusPassive => CanError::BusPassive,
+                        embassy_stm32::can::enums::BusError::BusWarning => CanError::BusWarning,
+                    }),
+                }
             }
 
             async fn write_frame(&mut self, frame: &CanFrame) {
