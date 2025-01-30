@@ -20,7 +20,7 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
             async fn read_frame(&mut self) -> Result<Envelope, CanError> {
                 let result = self.can.lock(|can| {
                     can.borrow_mut().read()
-                })
+                });
                 match result {
                     Ok(_) => Ok(result),
                     Err(e) => Err(match e {
@@ -41,7 +41,7 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
             fn try_read_frame(&mut self) -> Result<Envelope, CanError> {
                 let result = self.can.lock(|can| {
                     can.borrow().try_read()
-                })
+                });
                 match result {
                     Ok(_) => Ok(result),
                     Err(e) => Err(match e {
