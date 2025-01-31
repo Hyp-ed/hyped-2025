@@ -1,6 +1,7 @@
 use crate::SensorValueRange;
 use defmt;
 use hyped_i2c::{i2c_write_or_err_16, HypedI2c, I2cError};
+
 /// time_of_flight implements the logic to read Time of Flight data from the VL6180V1 Time of Flight
 /// sensor using I2C peripheral provided by the Hyped I2c trait.
 ///
@@ -30,6 +31,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
     ) -> Result<Self, TimeOfFlightError> {
         Self::new_with_bounds(i2c, device_address, default_calculate_bounds)
     }
+
     /// Create a new instance of the time of flight sensor and configure it with bounds involved.
     pub fn new_with_bounds(
         i2c: &'a mut T,
@@ -196,11 +198,11 @@ const SYSRANGE_VHV_RECALIBRATE: u16 = 0x002e;
 const SYSRANGE_INTERMEASURE_PERIOD: u16 = 0x01b;
 const SYS_INTERRUPT_CONFIG_GPIO: u16 = 0x014;
 const SYSRANGE_START: u16 = 0x018;
-const RESULT_INTERR_STATUS_GPIO: u16 = 0x04f;
-const SYS_FRESH_OUT_RESET: u16 = 0x016;
+pub const RESULT_INTERR_STATUS_GPIO: u16 = 0x04f;
+pub const SYS_FRESH_OUT_RESET: u16 = 0x016;
 const SYS_INTERRUPT_CLEAR: u16 = 0x015;
 // RESULT_RANGE_VAL is actually a register; that's what the docs call it
-const RESULT_RANGE_VAL: u16 = 0x062;
+pub const RESULT_RANGE_VAL: u16 = 0x062;
 
 // Values for public registers
 const SYS_MODE_GPIO_VAL: u8 = 0x10;
