@@ -3,7 +3,7 @@
 version = 3
 
 [[package]]
-name = "hyped_i2c_derive"
+name = "hyped_can_derive"
 version = "0.1.0"
 dependencies = [
  "quote",
