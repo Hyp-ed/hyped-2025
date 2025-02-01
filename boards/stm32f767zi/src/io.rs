@@ -10,7 +10,7 @@ use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
 
 use hyped_adc::HypedAdc;
 use hyped_adc_derive::HypedAdc;
-use hyped_can::{CanError, CanFrame, HypedCan, HypedEnvelope};
+use hyped_can::{CanError, HypedCan, HypedCanFrame, HypedEnvelope};
 use hyped_can_derive::HypedCan;
 use hyped_gpio::{HypedGpioInputPin, HypedGpioOutputPin};
 use hyped_gpio_derive::{HypedGpioInputPin, HypedGpioOutputPin};
