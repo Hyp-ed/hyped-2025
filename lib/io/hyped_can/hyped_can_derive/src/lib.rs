@@ -19,23 +19,20 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
             fn read_frame(&mut self) -> Result<HypedEnvelope, CanError> {
                 let result = self.can.lock(|can| can.borrow_mut().try_read());
                 match result {
-                    Ok(envelope) => Ok(HypedEnvelope {
-                        frame: HypedCanFrame {
-                            can_id: {
-                                let id = envelope.frame.id();
-                                match id {
-                                    Id::Standard(id) => id.as_raw() as u32, // 11-bit ID
-                                    Id::Extended(id) => id.as_raw(),        // 29-bit ID
-                                }
-                            },
-                            data: {
-                                let mut data = [0u8; 8];
-                                data.copy_from_slice(envelope.frame.data());
-                                data
-                            },
-                        },
-                        ts: envelope.ts,
-                    }),
+                    Ok(envelope) => {
+                        let can_id = match envelope.frame.id() {
+                            Id::Standard(id) => id.as_raw() as u32, // 11-bit ID
+                            Id::Extended(id) => id.as_raw(),        // 29-bit ID
+                        };
+
+                        let mut data = [0u8; 8];
+                        data.copy_from_slice(envelope.frame.data());
+
+                        Ok(HypedEnvelope {
+                            frame: HypedCanFrame { can_id, data },
+                            ts: envelope.ts,
+                        })
+                    }
                     Err(TryReadError::BusError(e)) => Err(match e {
                         BusError::Stuff => CanError::Stuff,
                         BusError::Form => CanError::Form,
@@ -53,25 +50,14 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
             }
 
             fn write_frame(&mut self, frame: &HypedCanFrame) -> Result<(), CanError> {
-                let frame = Frame::new(
-                    match frame.can_id {
-                        id if id <= 0x7FF => frame::Header::new(
-                            Id::Standard(
-                                StandardId::new(id as u16).unwrap(),
-                            ),
-                            frame.data.len() as u8,
-                            false,
-                        ),
-                        id => frame::Header::new(
-                            Id::Extended(
-                                ExtendedId::new(id).unwrap(),
-                            ),
-                            frame.data.len() as u8,
-                            false,
-                        ),
-                    },
-                    &frame.data,
-                );
+                match frame.can_id {
+                    id if id <= 0x7FF => Id::Standard(StandardId::new(id as u16).unwrap()),
+                    id => Id::Extended(ExtendedId::new(id).unwrap()),
+                };
+
+                let frame_header = frame::Header::new(id, frame.data.len() as u8, false);
+
+                let frame = Frame::new(frame_header, &frame.data);
 
                 match frame {
                     Ok(frame) => {
@@ -82,17 +68,14 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
                         }
                     }
                     Err(e) => Err(match e {
-                        FrameCreateError::NotEnoughData => {
-                            CanError::NotEnoughData
-                        }
-                        FrameCreateError::InvalidDataLength => {
-                            CanError::InvalidDataLength
-                        }
+                        FrameCreateError::NotEnoughData => CanError::NotEnoughData,
+                        FrameCreateError::InvalidDataLength => CanError::InvalidDataLength,
                         FrameCreateError::InvalidCanId => CanError::InvalidCanId,
                     }),
                 }
             }
         }
+
 
 
         impl #impl_generics #name #ty_generics {

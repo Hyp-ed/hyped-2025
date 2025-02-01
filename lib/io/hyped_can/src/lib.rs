@@ -51,9 +51,7 @@ pub trait HypedCan {
     ///
     /// Returns [Err(CanError::Full)] if the frame can not be queued for transmission now.
     ///
-    /// If FIFO scheduling is enabled, any empty mailbox will be used.
-    ///
-    /// Otherwise, the frame will only be accepted if there is no frame with the same priority already queued. This is done
+    /// The frame will only be accepted if there is no frame with the same priority already queued. This is done
     /// to work around a hardware limitation that could lead to out-of-order delivery of frames with the same priority.
     fn write_frame(&mut self, frame: &HypedCanFrame) -> Result<(), CanError>;
 }
