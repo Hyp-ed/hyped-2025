@@ -51,10 +51,12 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
             }
 
             fn write_frame(&mut self, frame: &HypedCanFrame) -> Result<(), CanError> {
-                match frame.can_id {
-                    id if id <= 0x7FF => Id::Standard(StandardId::new(id as u16).unwrap()),
-                    id => Id::Extended(ExtendedId::new(id).unwrap()),
+                let id = if frame.can_id <= 0x7FF {
+                    Id::Standard(StandardId::new(frame.can_id as u16).unwrap())
+                } else {
+                    Id::Extended(ExtendedId::new(frame.can_id).unwrap())
                 };
+
 
                 let frame_header = frame::Header::new(id, frame.data.len() as u8, false);
 
