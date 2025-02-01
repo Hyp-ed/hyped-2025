@@ -20,7 +20,8 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
                 let result = self.can.lock(|can| can.borrow_mut().try_read());
                 match result {
                     Ok(envelope) => {
-                        let can_id = match envelope.frame.id() {
+                        let id = envelope.frame.id();
+                        let can_id = match id {
                             Id::Standard(id) => id.as_raw() as u32, // 11-bit ID
                             Id::Extended(id) => id.as_raw(),        // 29-bit ID
                         };
