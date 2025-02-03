@@ -1,5 +1,5 @@
 [package]
-name = "hyped_gpio_input_derive"
+name = "hyped_gpio_derive"
 version = "0.1.0"
 edition = "2021"
 

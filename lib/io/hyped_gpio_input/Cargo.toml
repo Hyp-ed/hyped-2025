@@ -1,7 +1,0 @@
-[package]
-name = "hyped_gpio_input"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-heapless = "0.8.0"
