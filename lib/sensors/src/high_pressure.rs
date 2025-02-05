@@ -1,6 +1,7 @@
 use hyped_adc::HypedAdc;
 
-/// The high pressure sensor (SPAW-P25R-G12M-2N-M12) is able to detect pressure in range from 0 to 25 bar
+/// The high pressure sensor (SPAW-P25R-G12M-2N-M12) is able to detect pressure in range
+/// from 0 to 25 bar.
 /// 
 
 /// Links to datasheets
@@ -13,7 +14,7 @@ pub struct HighPressure<T: HypedAdc> {
 }
 
 impl<T: HypedAdc> HighPressure<T> {
-    /// Creates new high pressure sensor instance
+    /// Create new high pressure sensor instance
     pub fn new(adc: T) -> HighPressure<T> {
         HighPressure {
             pressure: 0,
@@ -21,7 +22,7 @@ impl<T: HypedAdc> HighPressure<T> {
         }
     }
 
-    /// Read pressure from 
+    /// Read pressure from high pressure sensor
     pub fn read_pressure(&mut self) -> u16 {
         let pressure_val = self.adc.read_value();
         self.pressure = pressure_val;
@@ -32,5 +33,9 @@ impl<T: HypedAdc> HighPressure<T> {
 
 #[cfg(test)]
 mod tests {
-
+    
 }
+
+// need to handle raw data and convert to pressure units (search datasheet for info)
+// operating voltage range: 15-35V
+// max output current: 250mA
