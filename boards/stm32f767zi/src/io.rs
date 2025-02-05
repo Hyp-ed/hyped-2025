@@ -36,8 +36,3 @@ pub struct Stm32f767ziGpioOutput {
 pub struct Stm32f767ziI2c<'d> {
     i2c: &'d Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>,
 }
-
-#[derive(HypedCan)]
-pub struct Stm32f767ziCan<'d> {
-    can: &'d Mutex<NoopRawMutex, RefCell<Can<'static>>>,
-}
