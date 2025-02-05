@@ -3,6 +3,7 @@
 pub mod keyence;
 pub mod temperature;
 pub mod time_of_flight;
+pub mod low_pressure;
 
 #[must_use]
 #[derive(PartialEq, Debug, Clone)]
