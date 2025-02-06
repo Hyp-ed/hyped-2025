@@ -28,7 +28,6 @@ hyped_sensors = { path = "../../lib/sensors" }
 
 hyped_adc = { path = "../../lib/io/hyped_adc" }
 hyped_adc_derive = { path = "../../lib/io/hyped_adc/hyped_adc_derive" }
-hyped_can = { path = "../../lib/io/hyped_can" }
 hyped_i2c = { path = "../../lib/io/hyped_i2c" }
 hyped_i2c_derive = { path = "../../lib/io/hyped_i2c/hyped_i2c_derive" }
 hyped_gpio = { path = "../../lib/io/hyped_gpio" }
