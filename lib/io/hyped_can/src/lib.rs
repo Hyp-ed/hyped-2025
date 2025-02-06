@@ -106,8 +106,15 @@ pub mod mock_can {
     }
 
     impl MockCan<'_> {
-        /// Create a new mock CAN instance
         pub fn new(
+            frames_to_read: &'static Mutex<CriticalSectionRawMutex, RefCell<CanValues>>,
+        ) -> Self {
+            static FAIL_READ: Mutex<CriticalSectionRawMutex, bool> = Mutex::new(false);
+            static FAIL_WRITE: Mutex<CriticalSectionRawMutex, bool> = Mutex::new(false);
+            MockCan::new_with_failures(frames_to_read, &FAIL_READ, &FAIL_WRITE)
+        }
+
+        pub fn new_with_failures(
             frames_to_read: &'static Mutex<CriticalSectionRawMutex, RefCell<CanValues>>,
             fail_read: &'static Mutex<CriticalSectionRawMutex, bool>,
             fail_write: &'static Mutex<CriticalSectionRawMutex, bool>,
