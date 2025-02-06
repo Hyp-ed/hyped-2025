@@ -5,7 +5,8 @@ use hyped_adc::HypedAdc;
 /// 
 
 /// Links to datasheets
-///     [LINKS]
+///     (https://www.festo.com/gb/en/a/download-document/datasheet/8134897)
+///     (https://www.festo.com/media/catalog/203714_documentation.pdf)
 
 pub struct LowPressure<T: HypedAdc> {
     pressure: u16,
@@ -13,7 +14,7 @@ pub struct LowPressure<T: HypedAdc> {
 }
 
 impl<T: HypedAdc> LowPressure<T> {
-    /// Create new high pressure sensor instance
+    /// Create new low pressure sensor instance
     pub fn new(adc: T) -> LowPressure<T> {
         LowPressure {
             pressure: 0,
@@ -21,7 +22,7 @@ impl<T: HypedAdc> LowPressure<T> {
         }
     }
 
-    /// Read pressure from high pressure sensor
+    /// Read pressure from low pressure sensor
     pub fn read_pressure(&mut self) -> u16 {
         let pressure_val = self.adc.read_value();
         self.pressure = pressure_val;
