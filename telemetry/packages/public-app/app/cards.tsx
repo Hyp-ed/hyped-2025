@@ -1,12 +1,12 @@
-import { DisplacementChart } from "@/components/displacement-chart";
-import { LaunchTime } from "@/components/launch-time";
-import LevitationHeight from "@/components/levitation-height";
-import { SocialIcons } from "@/components/social-icons";
-import ThemeSwitch from "@/components/theme-switch";
-import { VelocityGraph } from "@/components/velocity-graph";
-import { Card, Grid, Text, Title } from "@tremor/react";
-import Image from "next/image";
-import { useState } from "react";
+import { DisplacementChart } from '@/components/displacement-chart';
+import { LaunchTime } from '@/components/launch-time';
+import LevitationHeight from '@/components/levitation-height';
+import { SocialIcons } from '@/components/social-icons';
+import ThemeSwitch from '@/components/theme-switch';
+import { VelocityGraph } from '@/components/velocity-graph';
+import { Card, Grid, Text, Title } from '@tremor/react';
+import Image from 'next/image';
+import { useState } from 'react';
 
 /**
  * The cards that are displayed on the dashboard.
@@ -20,7 +20,7 @@ const CARDS = {
 type CardType = keyof typeof CARDS;
 
 export default function Cards() {
-	const [selected, setSelected] = useState<CardType>("VELOCITY");
+	const [selected, setSelected] = useState<CardType>('VELOCITY');
 
 	const selectedCardComponent = CARDS[selected];
 	const otherCards = (Object.keys(CARDS) as CardType[]).filter(
@@ -63,7 +63,7 @@ export default function Cards() {
  */
 const HypedImage = () => {
 	const common = {
-		alt: "HYPED Logo, with a red E resembling 3 stacked hyperloop pods",
+		alt: 'HYPED Logo, with a red E resembling 3 stacked hyperloop pods',
 		width: 200,
 		height: 50,
 	};
