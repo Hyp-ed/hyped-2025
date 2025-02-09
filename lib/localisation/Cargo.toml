@@ -7,4 +7,4 @@ edition = "2021"
 nalgebra = { version = "0.33.0", default-features = false, features = ["libm"]  }
 heapless = "0.8.0"
 libm = "0.2.11"
-defmt = { version = "0.3.10", features = ["derive"] }
+defmt = "0.3"
