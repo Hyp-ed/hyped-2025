@@ -15,6 +15,7 @@ use hyped_adc::HypedAdc;
 ///     (https://www.festo.com/gb/en/a/download-document/datasheet/8134897)
 ///     (https://www.festo.com/media/catalog/203714_documentation.pdf)
 
+/// low pressure sensor struct
 pub struct LowPressure<T: HypedAdc> {
     adc: T,
 }
