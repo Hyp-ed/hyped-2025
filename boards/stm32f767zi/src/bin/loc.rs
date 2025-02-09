@@ -3,7 +3,10 @@
 
 use defmt::*;
 use embassy_executor::Spawner;
-use embassy_stm32::{init, gpio::{Input, Pull}};
+use embassy_stm32::{
+    gpio::{Input, Pull},
+    init,
+};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::read_keyence::read_keyence;
@@ -18,7 +21,6 @@ use hyped_localisation::{
 
 /// A Watch to hold the latest Keyence stripe count.
 static KEYENCE_STRIPE_COUNT: Watch<CriticalSectionRawMutex, u32, 1> = Watch::new();
-
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -43,7 +45,8 @@ async fn main(spawner: Spawner) -> ! {
 
         // Create the sensor data. (Optical and accelerometer data are simulated.)
         let optical_data: Vec<f64, 2> = Vec::from_slice(&[0.5, 0.5]).unwrap();
-        let keyence_data: Vec<u32, 2> = Vec::from_slice(&[new_stripe_count, new_stripe_count]).unwrap();
+        let keyence_data: Vec<u32, 2> =
+            Vec::from_slice(&[new_stripe_count, new_stripe_count]).unwrap();
         let accelerometer_data: RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS> =
             RawAccelerometerData::from_slice(&[
                 Vec::from_slice(&[0.0, 0.0, 9.81]).unwrap(),
