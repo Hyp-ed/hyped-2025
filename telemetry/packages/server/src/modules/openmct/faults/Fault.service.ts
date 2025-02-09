@@ -8,7 +8,7 @@ import { Point } from '@influxdata/influxdb-client';
 import { Injectable, type LoggerService } from '@nestjs/common';
 import type { HistoricalFaultDataService } from './data/historical/HistoricalFaultData.service';
 import type { RealtimeFaultDataGateway } from './data/realtime/RealtimeFaultData.gateway';
-import { convertToOpenMctFault } from './utils/convertToOpenMctFault';
+import { convertToOpenMctFault } from './utils/convert-to-openmct-fault';
 
 export type Fault = {
 	level: FaultLevel;
