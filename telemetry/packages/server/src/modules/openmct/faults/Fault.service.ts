@@ -2,7 +2,11 @@ import type { InfluxService } from '@/modules/influx/Influx.service';
 import { Logger } from '@/modules/logger/Logger.decorator';
 import type { MeasurementReading } from '@/modules/telemetry/MeasurementReading.types';
 import type { FaultLevel } from '@hyped/telemetry-constants';
-import type { Measurement, OpenMctFault, Unpacked } from '@hyped/telemetry-types';
+import type {
+	Measurement,
+	OpenMctFault,
+	Unpacked,
+} from '@hyped/telemetry-types';
 import type { HistoricalFaults } from '@hyped/telemetry-types/dist/openmct/openmct-fault.types';
 import { Point } from '@influxdata/influxdb-client';
 import { Injectable, type LoggerService } from '@nestjs/common';
