@@ -10,10 +10,10 @@ pub async fn read_low_pressure(
     adc_channel: AnyAdcChannel<T>,
     sender: Sender<'static, CriticalSectionRawMutex, u32, 1>,
 ) -> ! {
-    let mut low_pressre_sensor = LowPressure::new(Stm32f767ziAdc::new(adc_pin, adc_channel));
+    let mut low_pressure_sensor = LowPressure::new(Stm32f767ziAdc::new(adc_pin, adc_channel));
 
     loop {
-        Sender.send(low_pressure_sensor.read_pressure());
+        sender.send(low_pressure_sensor.read_pressure());
         Timer::after(Duration::from_millis(100)).await;
     }
 }
