@@ -17,6 +17,8 @@ const MAX_VOLTAGE: f32 = 500.0; // TODOLater
 const MAX_CURRENT: f32 = 500.0; // TODOLater
 const TARGET_HEIGHT: f32 = 10.0; // TODOLater to be determined by levitation
 const LOW_PASS_FILTER_CONSTANT_HEIGHT: f32 = 0.2; // TO TUNE. A number between 0 and 1
+const P_REFERENCE_GAIN_HEIGHT: f32 = 0.4; // TODOLater to be determined by levitation
+const D_REFERENCE_GAIN_HEIGHT: f32 = 0.4; // TODOLater to be determined by levitation
 
 const GAIN_HEIGHT: PidGain = PidGain {
     // TODOLater to be determined by levitation
@@ -43,10 +45,10 @@ const GAIN_VOLTAGE: PidGain = PidGain {
 #[derive(Debug, Clone)]
 pub struct Pid {
     config: PidConfig,
-    i_term: FloatType,
-    pre_error: FloatType,
-    current_filter: FloatType,
-    previous_filter: FloatType,
+    i_term: f32,
+    pre_error: f32,
+    current_filter: f32,
+    previous_filter: f32,
 }
 
 impl PidController for Pid {
@@ -55,7 +57,7 @@ impl PidController for Pid {
         Self {
             config,
             i_term: 0.0,
-            pre_error: FloatType::NAN,
+            pre_error: f32::NAN,
             current_filter: 0.0,
             previous_filter: 0.0,
         }
@@ -63,28 +65,30 @@ impl PidController for Pid {
     /// Updates the `Pid` controller with the specified set point, actual value, and time delta.
     /// Implements a low pass filter onto the derivative term.
     /// Returns the controller output.
-    fn update_wfilter(&mut self, set_point: FloatType, actual: FloatType, dt: FloatType, filter_constant: FloatType) -> FloatType {
-        let error = set_point - actual;
-        self.i_term += error * dt;
+    fn update_wfilter(&mut self, set_point: f32, actual: f32, dt: f32, filter_constant: f32) -> f32 {
+        let p_error = (set_point * P_REFERENCE_GAIN_HEIGHT) - actual;
+        let i_error = set_point - actual;
+        let d_error = (set_point * D_REFERENCE_GAIN_HEIGHT) - actual;
+        self.i_term += i_error * dt;
         let d_term = if self.pre_error.is_nan() {
             0.0
         } else {
-            let error_change = (error - self.pre_error);
+            let error_change = (d_error - self.pre_error);
             self.current_filter = (filter_constant * self.previous_filter) + ( (1-filter_constant) * error_change );
             self.previous_filter = self.current_filter;
             self.current_filter / dt
         };
-        let output = self.config.gain.kp * error
+        let output = self.config.gain.kp * p_error
             + self.config.gain.ki * self.i_term
             + self.config.gain.kd * d_term;
-        self.pre_error = error;
+        self.pre_error = d_error;
         output.clamp(self.config.min, self.config.max)
     }
 
     /// Updates the `Pid` controller, ignoring D.
     /// acts as a PI controller
     /// Returns the controller output.
-    fn update_PI(&mut self, set_point: FloatType, actual: FloatType, dt: FloatType) -> FloatType {
+    fn update_PI(&mut self, set_point: f32, actual: f32, dt: f32) -> f32 {
         let error = set_point - actual;
         self.i_term += error * dt;
         let output = self.config.gain.kp * error
@@ -106,8 +110,8 @@ then performed, and the duty cycle is set, and timer restarted.
 #[embassy_executor::main] 
 async fn main(_spawner: Spawner) {
     let mut pid_height = Pid::new(GAIN_HEIGHT.into());
-    let mut pid_current = Pid::new(GAIN_CURRENT.into());
-    let mut pid_voltage = Pid::new(GAIN_VOLTAGE.into());
+    let mut pi_current = Pid::new(GAIN_CURRENT.into());
+    let mut pi_voltage = Pid::new(GAIN_VOLTAGE.into());
 
     let p = embassy_stm32::init(Default::default());
 
@@ -132,9 +136,9 @@ async fn main(_spawner: Spawner) {
 
         let target_current = (pid_height.update_wfilter(TARGET_HEIGHT, actual_height, dt, LOW_PASS_FILTER_CONSTANT_HEIGHT)).min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries) and uses low pass filter on derivative term
 
-        let target_voltage = (pid_current.update_PI(target_current, actual_current, dt)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries) and ignores derivative term from output
+        let target_voltage = (pi_current.update_PI(target_current, actual_current, dt)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries) and ignores derivative term from output
 
-        let duty_cycle = pid_voltage.update_PI(target_voltage, actual_voltage, dt); // TODOLater include .min(max_duty) if max_duty given
+        let duty_cycle = pi_voltage.update_PI(target_voltage, actual_voltage, dt); // TODOLater include .min(max_duty) if max_duty given
 
         let duty_cycle *= max_duty; // the duty cycle ranges from 0 to max_duty, so what fraction of that do we need
                                                                       // probably TODOLater update how this is calculated
