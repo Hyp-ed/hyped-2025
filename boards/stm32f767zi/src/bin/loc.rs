@@ -1,13 +1,15 @@
 #![no_std]
 #![no_main]
 
-
 use defmt::*;
-use embassy_executor::Spawner;
 use embassy_time::{Duration, Timer};
+use embassy_executor::Spawner;
 use embassy_stm32::gpio::{Input, Pull};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use hyped_boards_stm32f767zi::tasks::read_keyence::read_keyence;
+use panic_probe as _;
+
+use heapless::Vec;
 
 use crate::{
     Localizer,
