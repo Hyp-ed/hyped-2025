@@ -5,7 +5,7 @@ use crate::{
         keyence::{KeyenceAgrees, SensorChecks},
         optical::process_optical_data,
     },
-    types::{RawAccelerometerData, NUM_ACCELEROMETERS, NUM_AXIS, NUM_OPTICAL_SENSORS},
+    types::{RawAccelerometerData, NUM_ACCELEROMETERS, NUM_AXIS},
 };
 
 use heapless::Vec;
