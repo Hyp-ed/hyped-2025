@@ -162,7 +162,7 @@ impl AccelerometerPreprocessor {
         let mut sorted_data = data.clone();
         sorted_data
             .as_mut_slice()
-            .sort_by(|a, b| a.partial_cmp(b).unwrap());
+            .sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
 
         let quartile_keys: Vec<f32, 3> = Vec::from_slice(&[0.25, 0.5, 0.75]).unwrap();
         let quartiles: Vec<f32, 3> = quartile_keys
