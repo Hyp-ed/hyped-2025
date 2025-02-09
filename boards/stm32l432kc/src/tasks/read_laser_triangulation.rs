@@ -13,7 +13,7 @@ use embassy_sync::{
 
 /// Test task that reads the distance by laser triangulation and sends it with the Watch Sender
 #[embassy_executor::task]
-pub async fn read_laser_triang_distance(
+pub async fn read_laser_triangulation_distance(
     sender: Sender<'static, CriticalSectionRawMutex, SensorValueRange<f32>, 1>,
 ) -> ! {
     let p = embassy_stm32::init(Default::default());

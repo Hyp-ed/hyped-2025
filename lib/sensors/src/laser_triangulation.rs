@@ -27,14 +27,15 @@ impl<T: HypedAdc> LaserTriangulation<T> {
     /// in the data sheet.
     pub fn read(&mut self) -> SensorValueRange<f32> {
         let current = self.adc.read_value() as f32;
-        let result = ((current - AMP_MIN) / (AMP_MAX - AMP_MIN)) * (MEASURE_RANGE - BASE_DISTANCE)
+        let result = ((current - AMP_MIN) / (AMP_MAX - AMP_MIN))
+            * ((MEASURE_RANGE + BASE_DISTANCE) - BASE_DISTANCE)
             + BASE_DISTANCE;
         (self.calculate_bounds)(result)
     }
 }
 
 pub fn default_calculate_bounds(value: f32) -> SensorValueRange<f32> {
-    if value <= BASE_DISTANCE || value >= MEASURE_RANGE {
+    if value <= BASE_DISTANCE || value >= (BASE_DISTANCE + MEASURE_RANGE) {
         SensorValueRange::Critical(value)
     } else {
         SensorValueRange::Safe(value)
