@@ -1,10 +1,12 @@
 #![no_std]
 #![no_main]
 
-use crate::io::Stm32f767ziAdc;
-use embassy_stm32::adc::{Adc, AdcChannel, AnyAdcChannel};
+use defmt::*;
+use embassy_executor::Spawner;
+use embassy_stm32::adc::{Adc, AdcChannel};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
 use embassy_time::{Duration, Timer};
+use hyped_boards_stm32f767zi::io::Stm32f767ziAdc;
 use hyped_sensors::low_pressure::LowPressure;
 
 /// Test task that just continually reads pressure from low pressure sensor and prints value to console
