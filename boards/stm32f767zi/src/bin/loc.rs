@@ -11,10 +11,8 @@ use panic_probe as _;
 
 use heapless::Vec;
 
-use crate::{
-    Localizer,
-    types::{RawAccelerometerData, NUM_ACCELEROMETERS, NUM_AXIS},
-};
+use localisation::control::localizer::Localizer;
+use localisation::types::{RawAccelerometerData, NUM_ACCELEROMETERS, NUM_AXIS};
 
 /// A Watch to hold the latest Keyence stripe count.
 static KEYENCE_STRIPE_COUNT: Watch<CriticalSectionRawMutex, u32, 1> = Watch::new();
