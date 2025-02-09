@@ -93,7 +93,7 @@ impl Default for Localizer {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, defmt::Format)]
 pub enum PreprocessorError {
     KeyenceUnacceptable,
     AccelerometerUnnaceptable,
