@@ -196,7 +196,7 @@ mod tests {
         assert_eq!(localizer.displacement, 0.0);
         assert_eq!(localizer.velocity, 0.0);
         assert_eq!(localizer.acceleration, 0.0);
-        
+
         Ok(())
     }
 }
