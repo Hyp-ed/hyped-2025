@@ -1,8 +1,8 @@
-import { LevitationHeightResponse } from '@hyped/telemetry-types';
-import {
-  DisplacementResponse,
-  LaunchTimeResponse,
-  VelocityResponse,
+import type { LevitationHeightResponse } from '@hyped/telemetry-types';
+import type {
+	DisplacementResponse,
+	LaunchTimeResponse,
+	VelocityResponse,
 } from '@hyped/telemetry-types/dist/server/responses';
 
 /**
@@ -18,15 +18,15 @@ const ONE_MINUTE = 60;
  * @returns The historical displacement data.
  */
 export const getDisplacement = async (
-  prev: number = ONE_MINUTE,
+	prev: number = ONE_MINUTE,
 ): Promise<DisplacementResponse> => {
-  const now = new Date().getTime();
-  const start = now - prev * 1000;
-  const response = await fetch(
-    `${SERVER_ENDPOINT}/displacement?start=${start}`,
-  );
-  if (response.status !== 200) throw new Error('Failed to fetch displacement');
-  return response.json() as Promise<DisplacementResponse>;
+	const now = new Date().getTime();
+	const start = now - prev * 1000;
+	const response = await fetch(
+		`${SERVER_ENDPOINT}/displacement?start=${start}`,
+	);
+	if (response.status !== 200) throw new Error('Failed to fetch displacement');
+	return response.json() as Promise<DisplacementResponse>;
 };
 
 /**
@@ -35,16 +35,16 @@ export const getDisplacement = async (
  * @returns The historical levitation height data.
  */
 export const getLevitationHeight = async (
-  prev: number = ONE_MINUTE,
+	prev: number = ONE_MINUTE,
 ): Promise<LevitationHeightResponse> => {
-  const now = new Date().getTime();
-  const start = now - prev * 1000;
-  const response = await fetch(
-    `${SERVER_ENDPOINT}/levitation-height?start=${start}`,
-  );
-  if (response.status !== 200)
-    throw new Error('Failed to fetch levitation height');
-  return response.json() as Promise<LevitationHeightResponse>;
+	const now = new Date().getTime();
+	const start = now - prev * 1000;
+	const response = await fetch(
+		`${SERVER_ENDPOINT}/levitation-height?start=${start}`,
+	);
+	if (response.status !== 200)
+		throw new Error('Failed to fetch levitation height');
+	return response.json() as Promise<LevitationHeightResponse>;
 };
 
 /**
@@ -53,13 +53,13 @@ export const getLevitationHeight = async (
  * @returns The historical velocity data.
  */
 export const getVelocity = async (
-  prev: number = ONE_MINUTE,
+	prev: number = ONE_MINUTE,
 ): Promise<VelocityResponse> => {
-  const now = new Date().getTime();
-  const start = now - prev * 1000;
-  const response = await fetch(`${SERVER_ENDPOINT}/velocity?start=${start}`);
-  if (response.status !== 200) throw new Error('Failed to fetch velocity');
-  return response.json() as Promise<VelocityResponse>;
+	const now = new Date().getTime();
+	const start = now - prev * 1000;
+	const response = await fetch(`${SERVER_ENDPOINT}/velocity?start=${start}`);
+	if (response.status !== 200) throw new Error('Failed to fetch velocity');
+	return response.json() as Promise<VelocityResponse>;
 };
 
 /**
@@ -67,7 +67,7 @@ export const getVelocity = async (
  * @returns The launch time of the pod.
  */
 export const getLaunchTime = async (): Promise<LaunchTimeResponse> => {
-  const response = await fetch(`${SERVER_ENDPOINT}/launch-time`);
-  if (response.status !== 200) throw new Error('Failed to fetch launch time');
-  return response.json() as Promise<LaunchTimeResponse>;
+	const response = await fetch(`${SERVER_ENDPOINT}/launch-time`);
+	if (response.status !== 200) throw new Error('Failed to fetch launch time');
+	return response.json() as Promise<LaunchTimeResponse>;
 };

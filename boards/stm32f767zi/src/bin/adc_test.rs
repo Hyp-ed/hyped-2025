@@ -6,8 +6,8 @@ use defmt::*;
 use embassy_executor::Spawner;
 use embassy_stm32::adc::{Adc, AdcChannel};
 use embassy_time::Timer;
-use hyped_boards_stm32f767zi::io::adc::Stm32f767ziAdc;
-use hyped_io::adc::HypedAdc;
+use hyped_adc::HypedAdc;
+use hyped_boards_stm32f767zi::io::Stm32f767ziAdc;
 use {defmt_rtt as _, panic_probe as _};
 
 #[embassy_executor::main]
@@ -27,7 +27,6 @@ async fn main(_spawner: Spawner) {
 
         (u32::from(sample) * VREFINT_MV / u32::from(vrefint_sample)) as u16
     };
-
 
     let mut hyped_adc = Stm32f767ziAdc::new(adc, pin.degrade_adc());
 

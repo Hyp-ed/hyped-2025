@@ -1,4 +1,4 @@
-import { OpenMctMeasurement, OpenMctPod } from '@hyped/telemetry-types';
+import type { OpenMctMeasurement, OpenMctPod } from '@hyped/telemetry-types';
 import { http } from '../../core/http';
 
 /**
@@ -6,7 +6,7 @@ import { http } from '../../core/http';
  * @returns
  */
 export const fetchPodIds = () =>
-  http.get('openmct/dictionary/pods').json<{ ids: string[] }>();
+	http.get('openmct/dictionary/pods').json<{ ids: string[] }>();
 
 /**
  * Fetches a pod from the server.
@@ -14,7 +14,7 @@ export const fetchPodIds = () =>
  * @returns The pod object in the format that Open MCT expects.
  */
 export const fetchPod = (id: string) =>
-  http.get(`openmct/dictionary/pods/${id}`).json<OpenMctPod>();
+	http.get(`openmct/dictionary/pods/${id}`).json<OpenMctPod>();
 
 /**
  * Fetches a pod measurement from the server.
@@ -23,6 +23,6 @@ export const fetchPod = (id: string) =>
  * @returns The measurement object in the format that Open MCT expects.
  */
 export const fetchMeasurement = (podId: string, measurementKey: string) =>
-  http
-    .get(`openmct/dictionary/pods/${podId}/measurements/${measurementKey}`)
-    .json<OpenMctMeasurement>();
+	http
+		.get(`openmct/dictionary/pods/${podId}/measurements/${measurementKey}`)
+		.json<OpenMctMeasurement>();
