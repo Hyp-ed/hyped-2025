@@ -1,6 +1,7 @@
 #![no_std]
 
 pub mod keyence;
+pub mod laser_triangulation;
 pub mod temperature;
 pub mod time_of_flight;
 
