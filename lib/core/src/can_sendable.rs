@@ -30,7 +30,7 @@ pub fn is_valid_can_msg(msg: &[u8; 8]) -> bool {
 
 /// Extracts the message type from a CAN message
 pub fn can_msg_type_from_u8(msg: &[u8; 8]) -> CanMsgType {
-    return CanMsgType::from(msg[0] & 0x0F)
+    CanMsgType::from(msg[0] & 0x0F)
 }
 
 /// Extracts the board id from a CAN message
