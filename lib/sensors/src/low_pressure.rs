@@ -16,7 +16,7 @@ use hyped_adc::HypedAdc;
 ///     (https://www.festo.com/media/catalog/203714_documentation.pdf)
 
 pub struct LowPressure<T: HypedAdc> {
-    adc: T
+    adc: T,
 }
 
 const GRADIENT_LOW: f32 = 0.00244;
@@ -24,18 +24,15 @@ const GRADIENT_LOW: f32 = 0.00244;
 impl<T: HypedAdc> LowPressure<T> {
     /// Create new low pressure sensor instance
     pub fn new(adc: T) -> LowPressure<T> {
-        LowPressure {
-            adc
-        }
+        LowPressure { adc }
     }
 
     /// Convert ADC reading to bar unit and return value to caller
     pub fn read_pressure(&mut self) -> f32 {
         let adc_val = self.adc.read_value() as f32;
-        
+
         // convert to bar unit
         let bar_pressure_val: f32 = adc_val * GRADIENT_LOW;
-
 
         bar_pressure_val
     }
