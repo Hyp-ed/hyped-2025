@@ -2,7 +2,7 @@ use defmt::error;
 
 pub const CAN_MSG_TYPE_BOOL: u8 = 0;
 pub const CAN_MSG_TYPE_F32: u8 = 1;
-pub const CAN_MSG_TYPE_U32: u8 = 2;
+pub const CAN_MSG_TYPE_TWO_U16: u8 = 2;
 pub const CAN_MSG_TYPE_POSDELTA: u8 = 3;
 
 /// Checks if a CAN message is a valid message
@@ -16,7 +16,7 @@ pub fn can_msg_type_from_u8(msg: &[u8; 8]) -> CanMsgType {
     match msg[0] & 0x0F {
         CAN_MSG_TYPE_BOOL => CanMsgType::Bool,
         CAN_MSG_TYPE_F32 => CanMsgType::F32,
-        CAN_MSG_TYPE_U32 => CanMsgType::U32,
+        CAN_MSG_TYPE_TWO_U16 => CanMsgType::U32,
         CAN_MSG_TYPE_POSDELTA => CanMsgType::PosDelta,
         _ => {
             error!("Unknown CAN message type: {}", msg[0] & 0x0F);
@@ -63,7 +63,7 @@ impl CanSendable for bool {
 impl CanSendable for [u16; 2] {
     fn encode_to_can(&self, board_id: u8) -> [u8; 8] {
         let mut data: [u8; 8] = [0; 8];
-        data[0] = build_can_header(board_id, CAN_MSG_TYPE_U32);
+        data[0] = build_can_header(board_id, CAN_MSG_TYPE_TWO_U16);
 
         let u16_bytes: [u8; 2] = self[0].to_le_bytes();
         data[1..3].copy_from_slice(&u16_bytes);
