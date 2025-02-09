@@ -29,12 +29,12 @@ impl<T: HypedAdc> LowPressure<T> {
         }
     }
 
-    /// Convert ADC reading to bar unit and assign to pressure variable
-    pub fn read_pressure(&mut self) -> u16 {
-        let adc_val = self.adc.read_value();
+    /// Convert ADC reading to bar unit and return value to caller
+    pub fn read_pressure(&mut self) -> f32 {
+        let adc_val = self.adc.read_value() as f32;
         
         // convert to bar unit
-        let bar_pressure_val: u16 = adc_val * GRADIENT_LOW;
+        let bar_pressure_val: f32 = adc_val * GRADIENT_LOW;
 
 
         bar_pressure_val
