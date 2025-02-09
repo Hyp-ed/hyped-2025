@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import { PodSchema } from '@hyped/telemetry-types';
 import * as YAML from 'yaml';
 import { z } from 'zod';
-import { measurementTypes } from './types';
+import { telemetryTypes } from './types';
 
 const CONFIG_FILE_NAME = 'pods.yaml';
 // Root of hyped repo
@@ -31,7 +31,7 @@ const RawPodsSchema = z.object({
 // We also want to check the 'type' field of each measurement and status is one of the object types
 // It would be unwise to add this directly to the schema (in the types package) because it would
 // break the circular dependency between the types and constants packages.
-type MeasurementType = (typeof measurementTypes)[number];
+type MeasurementType = (typeof telemetryTypes)[number];
 const validateType = (
 	ctx: z.RefinementCtx,
 	items: Record<string, unknown>,
@@ -39,7 +39,7 @@ const validateType = (
 ) => {
 	for (const [id, item] of Object.entries(items)) {
 		const itemType = (item as { type: string }).type;
-		if (!measurementTypes.includes(itemType as MeasurementType)) {
+		if (!telemetryTypes.includes(itemType as MeasurementType)) {
 			ctx.addIssue({
 				code: z.ZodIssueCode.custom,
 				message: `Invalid ${type.slice(0, -1)} type "${itemType}"`,

@@ -1,4 +1,4 @@
-export const measurementTypes = [
+export const telemetryTypes = [
 	'temperature',
 	'acceleration',
 	'pressure',

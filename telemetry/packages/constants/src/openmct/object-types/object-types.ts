@@ -1,7 +1,7 @@
 import type { OpenMctObjectTypes } from '@hyped/telemetry-types';
-import type { measurementTypes } from '../../pods/types';
+import type { telemetryTypes } from '../../pods/types';
 
-export type OpenMctObjectTypeId = (typeof measurementTypes)[number];
+export type OpenMctObjectTypeId = (typeof telemetryTypes)[number];
 
 type StrictOpenMctObjectTypes = OpenMctObjectTypes &
 	{ id: OpenMctObjectTypeId }[];
