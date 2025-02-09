@@ -172,6 +172,21 @@ impl Localizer {
     }
 }
 
+// Getters
+impl Localizer {
+    pub fn displacement(&self) -> f64 {
+        self.displacement
+    }
+
+    pub fn velocity(&self) -> f64 {
+        self.velocity
+    }
+
+    pub fn acceleration(&self) -> f64 {
+        self.acceleration
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -193,9 +208,9 @@ mod tests {
 
         localizer.iteration(optical_data, raw_keyence_data, raw_accelerometer_data)?;
 
-        assert_eq!(localizer.displacement, 0.0);
-        assert_eq!(localizer.velocity, 0.0);
-        assert_eq!(localizer.acceleration, 0.0);
+        assert_eq!(localizer.displacement(), 0.0);
+        assert_eq!(localizer.velocity(), 0.0);
+        assert_eq!(localizer.acceleration(), 0.0);
 
         Ok(())
     }
