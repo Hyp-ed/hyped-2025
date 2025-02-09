@@ -1,9 +1,26 @@
 use defmt::error;
 
-pub const CAN_MSG_TYPE_BOOL: u8 = 0;
-pub const CAN_MSG_TYPE_F32: u8 = 1;
-pub const CAN_MSG_TYPE_TWO_U16: u8 = 2;
-pub const CAN_MSG_TYPE_POSDELTA: u8 = 3;
+pub enum CanMsgType {
+    Bool = 0,
+    F32 = 1,
+    TwoU16 = 2,
+    PosDelta = 3,
+}
+
+impl From<u8> for CanMsgType {
+    fn from(val: u8) -> Self {
+        match val {
+            0 => CanMsgType::Bool,
+            1 => CanMsgType::F32,
+            2 => CanMsgType::TwoU16,
+            3 => CanMsgType::PosDelta,
+            _ => {
+                error!("Unknown CanMsgType: {}", val);
+                panic!();
+            }
+        }
+    }
+}
 
 /// Checks if a CAN message is a valid message
 pub fn is_valid_can_msg(msg: &[u8; 8]) -> bool {
@@ -13,16 +30,7 @@ pub fn is_valid_can_msg(msg: &[u8; 8]) -> bool {
 
 /// Extracts the message type from a CAN message
 pub fn can_msg_type_from_u8(msg: &[u8; 8]) -> CanMsgType {
-    match msg[0] & 0x0F {
-        CAN_MSG_TYPE_BOOL => CanMsgType::Bool,
-        CAN_MSG_TYPE_F32 => CanMsgType::F32,
-        CAN_MSG_TYPE_TWO_U16 => CanMsgType::U32,
-        CAN_MSG_TYPE_POSDELTA => CanMsgType::PosDelta,
-        _ => {
-            error!("Unknown CAN message type: {}", msg[0] & 0x0F);
-            panic!();
-        }
-    }
+    return CanMsgType::from(msg[0] & 0x0F)
 }
 
 /// Extracts the board id from a CAN message
@@ -31,15 +39,8 @@ pub fn get_board_id(msg: &[u8; 8]) -> u8 {
 }
 
 /// Builds a CAN header byte from a board id and message type
-pub fn build_can_header(board_id: u8, msg_type: u8) -> u8 {
-    (board_id << 4) | msg_type
-}
-
-pub enum CanMsgType {
-    Bool,
-    F32,
-    U32,
-    PosDelta,
+pub fn build_can_header(board_id: u8, msg_type: CanMsgType) -> u8 {
+    (board_id << 4) | (msg_type as u8)
 }
 
 pub trait CanSendable {
@@ -50,7 +51,7 @@ pub trait CanSendable {
 impl CanSendable for bool {
     fn encode_to_can(&self, board_id: u8) -> [u8; 8] {
         let mut data: [u8; 8] = [0; 8];
-        data[0] = build_can_header(board_id, CAN_MSG_TYPE_BOOL);
+        data[0] = build_can_header(board_id, CanMsgType::Bool);
         data[1] = *self as u8;
         data
     }
@@ -63,7 +64,7 @@ impl CanSendable for bool {
 impl CanSendable for [u16; 2] {
     fn encode_to_can(&self, board_id: u8) -> [u8; 8] {
         let mut data: [u8; 8] = [0; 8];
-        data[0] = build_can_header(board_id, CAN_MSG_TYPE_TWO_U16);
+        data[0] = build_can_header(board_id, CanMsgType::TwoU16);
 
         let u16_bytes: [u8; 2] = self[0].to_le_bytes();
         data[1..3].copy_from_slice(&u16_bytes);
@@ -89,7 +90,7 @@ impl CanSendable for [u16; 2] {
 impl CanSendable for f32 {
     fn encode_to_can(&self, board_id: u8) -> [u8; 8] {
         let mut data: [u8; 8] = [0; 8];
-        data[0] = build_can_header(board_id, CAN_MSG_TYPE_F32);
+        data[0] = build_can_header(board_id, CanMsgType::F32);
 
         let f32_bytes: [u8; 4] = self.to_le_bytes();
         data[1..5].copy_from_slice(&f32_bytes);
@@ -133,9 +134,9 @@ impl PositionDelta {
         let mut y = self.y.unwrap().encode_to_can(board_id);
         let mut z = self.z.unwrap().encode_to_can(board_id);
 
-        x[0] = build_can_header(board_id, CAN_MSG_TYPE_POSDELTA);
-        y[0] = build_can_header(board_id, CAN_MSG_TYPE_POSDELTA);
-        z[0] = build_can_header(board_id, CAN_MSG_TYPE_POSDELTA);
+        x[0] = build_can_header(board_id, CanMsgType::PosDelta);
+        y[0] = build_can_header(board_id, CanMsgType::PosDelta);
+        z[0] = build_can_header(board_id, CanMsgType::PosDelta);
 
         x[5] = 0;
         y[5] = 1;
@@ -176,12 +177,12 @@ impl PositionDelta {
     }
 
     /// Returns finished f32
-    pub fn return_complete(&self) -> [f32; 3] {
-        assert!(
-            self.is_complete(),
-            "Attempted to finalise an incomplete PositionDelta"
-        );
-        [self.x.unwrap(), self.y.unwrap(), self.z.unwrap()]
+    pub fn return_complete(&self) -> Option<[f32; 3]> {
+        if !self.is_complete() {
+            None
+        } else {
+            Some([self.x.unwrap(), self.y.unwrap(), self.z.unwrap()])
+        }
     }
 
     /// Attempt to decode a CAN PositionDelta value and add it to the current structure
@@ -200,7 +201,7 @@ impl PositionDelta {
     ///             PositionDeltaDecodeError::ClockInFuture => {
     ///                 err_cnt += 1;
     ///                 pos_d.clear();
-    ///                 pos_d.can_decode_step(next_val); // will never error on first call after clear
+    ///                 let _ = pos_d.can_decode_step(next_val); // will never error on first call after clear
     ///             }
     ///         }
     ///     }
@@ -208,9 +209,8 @@ impl PositionDelta {
     ///         // ... emergency exit    
     ///     }
     ///     
-    ///     if (pos_d.is_complete()){
+    ///     if let Some(vals) = pos_d.return_complete() {
     ///         let err_cnt = 0;
-    ///         let vals = pos_d.return_complete();
     ///         // ... do something with complete values
     ///     }  
     /// }
@@ -263,14 +263,9 @@ impl PositionDelta {
     }
 
     /// Checks if new clock is infront of the old
-    pub fn is_clock_infuture(old: u8, new: u8) -> bool {
+    fn is_clock_infuture(old: u8, new: u8) -> bool {
         let diff = new.wrapping_sub(old);
         diff < 128 // assume any diff > 128 is a wraparound
-    }
-
-    /// (synonym for `i.wrapping_add(1)` just used for sake of clarity)
-    pub fn next_clock(old: u8) -> u8 {
-        old.wrapping_add(1)
     }
 }
 
