@@ -52,7 +52,7 @@ impl CanSendable for bool {
         let mut data: [u8; 8] = [0; 8];
         data[0] = build_can_header(board_id, CAN_MSG_TYPE_BOOL);
         data[1] = *self as u8;
-        return data;
+        data
     }
 
     fn can_decode(can_msg: &[u8; 8]) -> Self {
@@ -71,7 +71,7 @@ impl CanSendable for [u16; 2] {
         let u16_bytes: [u8; 2] = self[1].to_le_bytes();
         data[3..5].copy_from_slice(&u16_bytes);
 
-        return data;
+        data
     }
 
     fn can_decode(can_msg: &[u8; 8]) -> Self {
@@ -93,7 +93,7 @@ impl CanSendable for f32 {
 
         let f32_bytes: [u8; 4] = self.to_le_bytes();
         data[1..5].copy_from_slice(&f32_bytes);
-        return data;
+        data
     }
 
     fn can_decode(can_msg: &[u8; 8]) -> Self {
@@ -122,7 +122,7 @@ impl PositionDelta {
         }
     }
 
-    // converts a provied F32
+    // converts a provided F32
     pub fn encode_to_can(&self, board_id: u8) -> [[u8; 8]; 3] {
         assert!(
             self.is_complete(),
@@ -150,7 +150,7 @@ impl PositionDelta {
 }
 
 impl PositionDelta {
-    // reciver code
+    // receiver code
 
     /// Create empty PositionDelta to fill
     pub fn new_empty() -> Self {
@@ -170,7 +170,7 @@ impl PositionDelta {
         self.z = None;
     }
 
-    /// Check we've recived a completed PositionDelta, (all x,y,z all with the same clock value)
+    /// Check we've received a completed PositionDelta, (all x,y,z all with the same clock value)
     pub fn is_complete(&self) -> bool {
         self.clock.is_some() && self.x.is_some() && self.y.is_some() && self.z.is_some()
     }
@@ -184,11 +184,11 @@ impl PositionDelta {
         [self.x.unwrap(), self.y.unwrap(), self.z.unwrap()]
     }
 
-    /// Atempt to decode a CAN PositionDelta value and add it to the current struture
+    /// Attempt to decode a CAN PositionDelta value and add it to the current structure
     /// example implementation
-    /// ```rust
+    /// ```NoRun // cos doctests dont like no_std
     /// use hyped_core::can_sendable::*;
-    ///
+    /// 
     /// let mut pos_d = PositionDelta::new_empty();
     /// let mut err_cnt = 0;
     /// loop {
@@ -211,9 +211,8 @@ impl PositionDelta {
     ///     if (pos_d.is_complete()){
     ///         let err_cnt = 0;
     ///         let vals = pos_d.return_complete();
-    ///         // ... do somthing with complete values
-    ///     }
-    ///     
+    ///         // ... do something with complete values
+    ///     }  
     /// }
     /// ```
     pub fn can_decode_step(&mut self, step: [u8; 8]) -> Option<PositionDeltaDecodeError> {
@@ -269,7 +268,7 @@ impl PositionDelta {
         diff < 128 // assume any diff > 128 is a wraparound
     }
 
-    /// (synonim for `i.wrapping_add(1)` just used for sake of clarity)
+    /// (synonym for `i.wrapping_add(1)` just used for sake of clarity)
     pub fn next_clock(old: u8) -> u8 {
         old.wrapping_add(1)
     }
@@ -277,17 +276,17 @@ impl PositionDelta {
 
 /// All the possible failure reasons for failing to decode a position delta step
 pub enum PositionDeltaDecodeError {
-    /// The x y or z value for a given clock cycle has already been recived.
+    /// The x y or z value for a given clock cycle has already been received.
     /// This error shouldn't ever be seen in normal operation, if it is that
     /// means that there is a **major issue** with the execution flow, either the
     /// CAN sender of the board is sending repeats or were are somehow an
     /// entire u8 out of sync (should be reason to stop the pod)
     PositionAlreadyReceived,
-    /// The clock value we've recived is in the future and so the current
+    /// The clock value we've received is in the future and so the current
     /// cycle should be discarded. The no. of discarded cycles should be
-    /// recorded and if it reaches a given threashold (recomended 3~5) the
+    /// recorded and if it reaches a given threshold (recommended 3~5) the
     /// pod should come to a stop as its current readings are too out of date
     ClockInFuture,
-    /// Clock cycle of an old clock cycle has been recived
+    /// Clock cycle of an old clock cycle has been received
     ClockOutdated,
 }
