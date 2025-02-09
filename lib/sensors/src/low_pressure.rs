@@ -10,11 +10,11 @@ use hyped_adc::HypedAdc;
 /// 4096 is the maximum ADC reading value.
 /// Since LPS has a minimum pressure of 0 bar, c0 is 0 and was did not need to be included in
 /// the source code.
-
+///
 /// Links to datasheets
 ///     (https://www.festo.com/gb/en/a/download-document/datasheet/8134897)
 ///     (https://www.festo.com/media/catalog/203714_documentation.pdf)
-
+///
 /// low pressure sensor struct
 pub struct LowPressure<T: HypedAdc> {
     adc: T,
