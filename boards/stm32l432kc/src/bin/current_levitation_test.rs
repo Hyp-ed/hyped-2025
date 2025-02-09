@@ -1,7 +1,6 @@
 #![no_std]
 #![no_main]
 
-use core::cell::RefCell;
 use embassy_executor::Spawner;
 use embassy_stm32::adc::Adc;
 use embassy_sync::{
@@ -24,10 +23,10 @@ async fn main(spawner: Spawner) -> {
     let p = embassy_stm32::init(Default::default());
     let adc = Adc::new(p.ADC1, Delay);
 
+    // Create a sender to pass to the current levitation reading task, and a receiver for reading the values back.
     let current_reading_sender = CURRENT_LEVITATION_READING.sender();
     let mut current_lev_reading_receiver = CURRENT_LEVITATION_READING.receiver().unwrap();
 
-    // Create a sender to pass to the current levitation reading task, and a receiver for reading the values back.
     spawner
         .spawn(read_current_levitation(current_reading_sender))
         .unwrap();

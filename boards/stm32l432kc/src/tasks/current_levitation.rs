@@ -11,7 +11,7 @@ use embassy_sync::{
 };
 
 
-/// Test task that reads the current and prints it to console
+/// Test task that reads the current and sends it with the Watch Sender
 #[embassy_executor::task]
 pub async fn read_current_levitation(
     sender: Sender<'static, CriticalSectionRawMutex, SensorValueRange<f32>, 1>,
