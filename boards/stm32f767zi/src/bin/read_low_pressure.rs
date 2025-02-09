@@ -5,6 +5,7 @@ use defmt::*;
 use embassy_executor::Spawner;
 use embassy_stm32::adc::{Adc, AdcChannel};
 use embassy_time::{Duration, Timer};
+use hyped_adc::HypedAdc;
 use hyped_boards_stm32f767zi::io::Stm32f767ziAdc;
 use hyped_sensors::low_pressure::LowPressure;
 
