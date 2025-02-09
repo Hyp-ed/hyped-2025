@@ -1,3 +1,6 @@
+#![no_std]
+#![no_main]
+
 use crate::io::Stm32f767ziAdc;
 use embassy_stm32::adc::{Adc, AdcChannel, AnyAdcChannel};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
