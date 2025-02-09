@@ -1,4 +1,4 @@
-use hyped_gpio::GpioOutputPin;
+use hyped_gpio::HypedGpioOutputPin;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum BrakeState {
@@ -14,14 +14,14 @@ pub enum LateralSuspensionState {
 
 /// Represents the pneumatics systems (brakes and lateral suspension) of the pod.
 /// Outputs two GPIO signals, one for the brakes and one for the lateral suspension, which turn on/off a solenoid valve.
-pub struct Pneumatics<P: GpioOutputPin> {
+pub struct Pneumatics<P: HypedGpioOutputPin> {
     brake_state: BrakeState,
     lateral_suspension_state: LateralSuspensionState,
     brake_pin: P,
     lateral_suspension_pin: P,
 }
 
-impl<P: GpioOutputPin> Pneumatics<P> {
+impl<P: HypedGpioOutputPin> Pneumatics<P> {
     pub fn new(brake_pin: P, lateral_suspension_pin: P) -> Self {
         let mut pneumatics = Pneumatics {
             brake_state: BrakeState::Engaged,

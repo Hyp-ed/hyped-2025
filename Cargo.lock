@@ -128,8 +128,8 @@ dependencies = [
 
 [[package]]
 name = "embassy-sync"
-version = "0.6.1"
-source = "git+https://github.com/embassy-rs/embassy#4b0e20315bddbb15aaee0e0b96548de405694c7b"
+version = "0.6.2"
+source = "git+https://github.com/embassy-rs/embassy#c65b6db318da7ecbe888a0a66b85d9ffb28106f0"
 dependencies = [
  "cfg-if",
  "critical-section",
@@ -147,6 +147,7 @@ source = "git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f70631
 dependencies = [
  "cfg-if",
  "critical-section",
+ "defmt",
  "document-features",
  "embassy-time-driver",
  "embassy-time-queue-driver",
@@ -298,7 +299,16 @@ dependencies = [
 name = "hyped_adc"
 version = "0.1.0"
 dependencies = [
- "embassy-sync 0.6.1",
+ "embassy-sync 0.6.2",
+ "heapless",
+]
+
+[[package]]
+name = "hyped_can"
+version = "0.1.0"
+dependencies = [
+ "embassy-sync 0.6.0",
+ "embassy-time",
  "heapless",
 ]
 
@@ -337,6 +347,7 @@ name = "hyped_gpio"
 version = "0.1.0"
 dependencies = [
  "heapless",
+ "hyped_core",
 ]
 
 [[package]]
@@ -360,6 +371,7 @@ dependencies = [
 name = "hyped_sensors"
 version = "0.1.0"
 dependencies = [
+ "defmt",
  "embassy-sync 0.6.0",
  "heapless",
  "hyped_core",
@@ -377,9 +389,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.7.0"
+version = "2.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62f822373a4fe84d4bb149bf54e584a7f4abec90e072ed49cda0edea5b95471f"
+checksum = "8c9c992b02b5b4c94ea26e32fe5bccb7aa7d9f390ab5c1221ff895bc7ea8b652"
 dependencies = [
  "equivalent",
  "hashbrown",
