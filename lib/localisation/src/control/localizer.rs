@@ -5,7 +5,7 @@ use crate::{
         keyence::{KeyenceAgrees, SensorChecks},
         optical::process_optical_data,
     },
-    types::{RawAccelerometerData, NUM_ACCELEROMETERS, NUM_AXIS},
+    types::{RawAccelerometerData, NUM_ACCELEROMETERS, NUM_AXIS, NUM_OPTICAL_SENSORS},
 };
 
 use heapless::Vec;
@@ -13,7 +13,12 @@ use heapless::Vec;
 use libm::pow;
 use nalgebra::{Matrix2, Vector1, Vector2};
 
+//TODOLater: Confirm values are correct
+
+// Time step (s)
 const DELTA_T: f64 = 0.01;
+
+// Stripe width (m)
 const STRIPE_WIDTH: f64 = 1.0;
 
 pub struct Localizer {
@@ -86,14 +91,20 @@ impl Default for Localizer {
     }
 }
 
+pub enum PreprocessorError {
+    KeyenceUnacceptable,
+    AccelerometerUnnaceptable,
+}
+
 impl Localizer {
     pub fn preprocessor(
         &mut self,
         optical_data: Vec<f64, 2>,
         keyence_data: Vec<u32, 2>,
         accelerometer_data: RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS>,
-    ) {
-        let processed_optical_data = process_optical_data(optical_data.clone());
+    ) -> Result<(), PreprocessorError> {
+        let processed_optical_data =
+            process_optical_data(Vec::from_slice(&[optical_data.clone()]).unwrap());
         self.optical_val = processed_optical_data as f64;
 
         let keyence_status = self
@@ -101,19 +112,16 @@ impl Localizer {
             .check_keyence_agrees(keyence_data.clone());
 
         if keyence_status == SensorChecks::Unacceptable {
-            //TODOLater: Change state
-            return;
+            return Err(PreprocessorError::KeyenceUnacceptable);
         } else {
-            //TODOLater: Check unit of keyence data
-            self.keyence_val = keyence_data[0] as f64;
+            self.keyence_val = (keyence_data[0] as f64) * STRIPE_WIDTH;
         }
 
         let mut accelerometer_preprocessor = AccelerometerPreprocessor::new();
         let processed_accelerometer_data =
             accelerometer_preprocessor.process_data(accelerometer_data);
         if processed_accelerometer_data.is_none() {
-            // TODOLater: Change state
-            return;
+            return Err(PreprocessorError::AccelerometerUnnaceptable);
         }
 
         let processed_accelerometer_data = processed_accelerometer_data.unwrap();
@@ -124,6 +132,8 @@ impl Localizer {
             }
         }
         self.accelerometer_val /= (NUM_ACCELEROMETERS * NUM_AXIS) as f64;
+
+        Ok(())
     }
 
     pub fn iteration(
@@ -142,7 +152,6 @@ impl Localizer {
 
         self.kalman_filter.predict(&control_input);
 
-        //TODOLater: Check unit of keyence data
         let measurement = Vector2::new(self.keyence_val * STRIPE_WIDTH, self.optical_val);
 
         self.kalman_filter.update(&measurement);
@@ -151,7 +160,7 @@ impl Localizer {
 
         self.displacement = state[0];
         self.velocity = state[1];
-        self.acceleration = (self.velocity - self.previous_velocity) / DELTA_T; //TODOLater: is this accurate enough?
+        self.acceleration = self.accelerometer_val;
         self.previous_velocity = self.velocity;
     }
 }
