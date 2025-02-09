@@ -1,0 +1,31 @@
+#![no_std]
+#![no_main]
+
+use embassy_executor::Spawner;
+use embassy_stm32::spi::{self, Spi};
+use embassy_stm32::time::{mhz, Hertz};
+use hyped_boards_stm32f767zi::io::Stm32f767ziSpi;
+use hyped_sensors::optical_flow::{self, OpticalFlow};
+use {defmt_rtt as _, panic_probe as _};
+
+#[embassy_executor::main]
+async fn main(_spawner: Spawner) -> ! {
+    let p = embassy_stm32::init(Default::default());
+
+    let mut spi_config = spi::Config::default();
+    spi_config.frequency = mhz(2);
+
+    let spi = Spi::new_blocking(p.SPI1, p.PB3, p.PB5, p.PB4, spi_config);
+    let mut hyped_spi = Stm32f767ziSpi::new(spi);
+
+    let mut optical_flow = OpticalFlow::new(&mut hyped_spi)
+        .await
+        .expect("Failed to initialize optical flow sensor.");
+
+    defmt::info!("Optical flow sensor initialized.");
+
+    loop {
+        let flow = optical_flow.get_motion().await.unwrap();
+        defmt::info!("Flow: {:?}", flow);
+    }
+}
