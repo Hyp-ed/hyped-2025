@@ -63,8 +63,8 @@ pub fn initialise_mqtt_config(client_id: &str) -> ClientConfig<'_, 5, CountingRn
 }
 
 // Implement send_message for HypedMqttClient
-impl<'a, T: embedded_io_async::Read + embedded_io_async::Write, R: rand_core::RngCore>
-    HypedMqttClient<'a, T, R>
+impl<T: embedded_io_async::Read + embedded_io_async::Write, R: rand_core::RngCore>
+    HypedMqttClient<'_, T, R>
 {
     pub async fn connect_to_broker(&mut self) {
         match self.client.connect_to_broker().await {

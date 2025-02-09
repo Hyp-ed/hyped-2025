@@ -3,7 +3,6 @@ use embassy_stm32::adc::{Adc, AnyAdcChannel, Instance};
 use embassy_stm32::gpio::{Input, Output};
 use embassy_stm32::{i2c::I2c, mode::Blocking};
 use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
-
 use hyped_adc::HypedAdc;
 use hyped_adc_derive::HypedAdc;
 use hyped_gpio::{HypedGpioInputPin, HypedGpioOutputPin};
