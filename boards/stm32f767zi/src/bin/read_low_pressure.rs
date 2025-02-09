@@ -1,5 +1,7 @@
+#![no_std]
 #![no_main]
 
+use core::panic::PanicInfo;
 use defmt::*;
 use embassy_executor::Spawner;
 use embassy_stm32::adc::{Adc, AdcChannel};
@@ -23,4 +25,9 @@ async fn main(_spawner: Spawner) -> ! {
         info!("{}", low_pressure_sensor.read_pressure());
         Timer::after(Duration::from_millis(100)).await;
     }
+}
+
+#[panic_handler]
+fn panic(_info: &PanicInfo) -> ! {
+    loop {}
 }
