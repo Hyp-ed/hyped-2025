@@ -23,6 +23,8 @@ struct PidGain {
     kp: f32,
     ki: f32,
     kd: f32,
+    p_reference_gain: f32,
+    d_reference_gain: f32,
 }
 /// `Pid` is a structure that implements the [`PidController`] trait.
 #[derive(Debug, Clone)]
@@ -48,9 +50,9 @@ impl PidController for Pid {
         }
     }
     fn update(&mut self, set_point: f32, actual: f32, dt: f32, filter_constant: f32) -> f32 {
-        let p_error = (set_point * P_REFERENCE_GAIN_HEIGHT) - actual;
+        let p_error = (set_point * self.config.p_reference_gain) - actual;
         let i_error = set_point - actual;
-        let d_error = (set_point * D_REFERENCE_GAIN_HEIGHT) - actual;
+        let d_error = (set_point * self.config.d_reference_gain) - actual;
         self.i_term += i_error * dt;
         let d_term = if self.pre_error.is_nan() {
             0.0
@@ -110,14 +112,14 @@ const MAX_VOLTAGE: f32 = 500.0; // TODOLater
 const MAX_CURRENT: f32 = 500.0; // TODOLater
 const TARGET_HEIGHT: f32 = 10.0; // TODOLater to be determined by levitation
 const LOW_PASS_FILTER_CONSTANT_HEIGHT: f32 = 0.2; // TO TUNE. A number between 0 and 1
-const P_REFERENCE_GAIN_HEIGHT: f32 = 0.4; // TODOLater to be determined by levitation
-const D_REFERENCE_GAIN_HEIGHT: f32 = 0.4; // TODOLater to be determined by levitation
 
 const GAIN_HEIGHT: PidGain = PidGain {
     // TODOLater to be determined by levitation
     kp: 1.0,
     ki: 0.05,
     kd: 0.005,
+    p_reference_gain: 0.4, // TODOLater to be determined by levitation
+    d_reference_gain: 0.4, // TODOLater to be determined by levitation
 };
 
 const GAIN_CURRENT: PiGain = PiGain {
