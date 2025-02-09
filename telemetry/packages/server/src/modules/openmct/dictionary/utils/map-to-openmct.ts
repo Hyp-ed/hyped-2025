@@ -4,23 +4,18 @@ export function mapMeasurementToOpenMct(
 	measurement: Measurement,
 ): OpenMctMeasurement {
 	return {
-		name: measurement.name,
-		key: measurement.key,
+		name: measurement.label,
+		key: measurement.id,
 		type: measurement.type,
 		values: [
 			{
 				key: 'value',
-				name: measurement.name,
+				name: measurement.label,
 				unit: measurement.unit,
 				format: measurement.format,
-				...('limits' in measurement && {
-					min: measurement.limits?.critical.low,
-					max: measurement.limits?.critical.high,
-					limits: measurement.limits,
-				}),
-				...('enumerations' in measurement && {
-					enumerations: measurement.enumerations,
-				}),
+				min: measurement.limits?.critical.low,
+				max: measurement.limits?.critical.high,
+				limits: measurement.limits,
 				hints: {
 					range: 1,
 				},
