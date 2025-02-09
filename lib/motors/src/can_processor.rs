@@ -1,8 +1,6 @@
 use crate::can_open_message::{config_messages, messages, CanOpenMessage};
 use hyped_can::{CanError, HypedCan, HypedCanFrame};
 
-// TODO Allow data input
-
 pub enum MessagesEnum {
     TestStepperEnable,
     TestModeCommand,
