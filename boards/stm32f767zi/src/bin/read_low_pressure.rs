@@ -14,7 +14,7 @@ pub async fn main(_spawner: Spawner) -> ! {
     let p = embassy_stm32::init(Default::default());
     info!("Low pressure sensor");
 
-    let mut adc = Adc::new(p.ADC1);
+    let adc = Adc::new(p.ADC1);
     let pin = p.PA3;
 
     let mut low_pressure_sensor = LowPressure::new(Stm32f767ziAdc::new(adc, pin.degrade_adc()));
