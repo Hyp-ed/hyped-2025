@@ -27,11 +27,10 @@ impl From<CanOpenMessage> for HypedCanFrame {
         data[6] = ((msg.data >> 16) & 0xFF) as u8;
         data[7] = ((msg.data >> 24) & 0xFF) as u8;
 
-        let frame = HypedCanFrame {
+        HypedCanFrame {
             can_id: msg.id,
             data,
-        };
-        frame
+        }
     }
 }
 
