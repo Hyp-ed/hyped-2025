@@ -3,7 +3,7 @@
 
 use defmt::*;
 use embassy_executor::Spawner;
-use embassy_stm32::gpio::{Input, Pull};
+use embassy_stm32::{init, gpio::{Input, Pull}};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::read_keyence::read_keyence;
@@ -20,7 +20,7 @@ use hyped_localisation::{
 static KEYENCE_STRIPE_COUNT: Watch<CriticalSectionRawMutex, u32, 1> = Watch::new();
 
 #[embassy_executor::main]
-async fn main(_spawner: Spawner) -> ! {
+async fn main(spawner: Spawner) -> ! {
     let p = init(Default::default());
     let gpio_pin = Input::new(p.PC13, Pull::Down);
 
