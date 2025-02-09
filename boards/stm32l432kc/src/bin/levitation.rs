@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use advanced_pid::{prelude::*, Pid, PidGain};
+// use advanced_pid::{prelude::*, Pid, PidGain};
 use defmt::info;
 use embassy_executor::Spawner;
 use embassy_stm32::gpio::OutputType;
@@ -20,6 +20,19 @@ const LOW_PASS_FILTER_CONSTANT_HEIGHT: f32 = 0.2; // TO TUNE. A number between 0
 const P_REFERENCE_GAIN_HEIGHT: f32 = 0.4; // TODOLater to be determined by levitation
 const D_REFERENCE_GAIN_HEIGHT: f32 = 0.4; // TODOLater to be determined by levitation
 
+#[derive(Debug, Clone)]
+struct PiGain {
+    kp: f32,
+    ki: f32
+}
+
+#[derive(Debug, Clone)]
+struct PidGain {
+    kp: f32,
+    ki: f32,
+    kd: f32,
+}
+
 const GAIN_HEIGHT: PidGain = PidGain {
     // TODOLater to be determined by levitation
     kp: 1.0,
@@ -27,33 +40,50 @@ const GAIN_HEIGHT: PidGain = PidGain {
     kd: 0.005,
 };
 
-const GAIN_CURRENT: PidGain = PidGain {
+const GAIN_CURRENT: PiGain = PiGain {
     // TODOLater determined by levitation
     kp: 1.1,
     ki: 0.12,
-    kd: 0.05,
 };
 
-const GAIN_VOLTAGE: PidGain = PidGain {
+const GAIN_VOLTAGE: PiGain = PiGain {
     // TODOLater determined by levitation
     kp: 1.1,
     ki: 0.12,
-    kd: 0.05,
 };
 
 /// `Pid` is a structure that implements the [`PidController`] trait.
 #[derive(Debug, Clone)]
 pub struct Pid {
-    config: PidConfig,
+    config: PidGain,
     i_term: f32,
     pre_error: f32,
     current_filter: f32,
     previous_filter: f32,
 }
 
+#[derive(Debug, Clone)]
+pub struct Pi {
+    config: PiGain,
+    i_term: f32,
+    pre_error: f32,
+}
+
+trait PidController {
+    fn new(config: PidGain) -> Self;
+    fn update(&mut self, set_point: f32, actual: f32, dt: f32, filter_constant: f32) -> f32;
+}
+
+trait PiController {
+    fn new(config: PiGain) -> Self;
+    fn update(&mut self, set_point: f32, actual: f32, dt: f32) -> f32;
+}
+
 impl PidController for Pid {
-    /// Creates a new `Pid` with the specified configuration.
-    fn new(config: PidConfig) -> Self {
+    /// Updates the `Pid` controller with the specified set point, actual value, and time delta.
+    /// Implements a low pass filter onto the derivative term.
+    /// Returns the controller output.
+    fn new(config: PidGain) -> Self {
         Self {
             config,
             i_term: 0.0,
@@ -62,10 +92,7 @@ impl PidController for Pid {
             previous_filter: 0.0,
         }
     }
-    /// Updates the `Pid` controller with the specified set point, actual value, and time delta.
-    /// Implements a low pass filter onto the derivative term.
-    /// Returns the controller output.
-    fn update_wfilter(&mut self, set_point: f32, actual: f32, dt: f32, filter_constant: f32) -> f32 {
+    fn update(&mut self, set_point: f32, actual: f32, dt: f32, filter_constant: f32) -> f32 {
         let p_error = (set_point * P_REFERENCE_GAIN_HEIGHT) - actual;
         let i_error = set_point - actual;
         let d_error = (set_point * D_REFERENCE_GAIN_HEIGHT) - actual;
@@ -73,30 +100,40 @@ impl PidController for Pid {
         let d_term = if self.pre_error.is_nan() {
             0.0
         } else {
-            let error_change = (d_error - self.pre_error);
-            self.current_filter = (filter_constant * self.previous_filter) + ( (1-filter_constant) * error_change );
+            let error_change = d_error - self.pre_error;
+            self.current_filter = (filter_constant * self.previous_filter) + ( (1.0 - filter_constant) * error_change );
             self.previous_filter = self.current_filter;
             self.current_filter / dt
         };
-        let output = self.config.gain.kp * p_error
-            + self.config.gain.ki * self.i_term
-            + self.config.gain.kd * d_term;
+        let output = self.config.kp * p_error
+            + self.config.ki * self.i_term
+            + self.config.kd * d_term;
         self.pre_error = d_error;
-        output.clamp(self.config.min, self.config.max)
-    }
-
-    /// Updates the `Pid` controller, ignoring D.
-    /// acts as a PI controller
-    /// Returns the controller output.
-    fn update_PI(&mut self, set_point: f32, actual: f32, dt: f32) -> f32 {
-        let error = set_point - actual;
-        self.i_term += error * dt;
-        let output = self.config.gain.kp * error
-            + self.config.gain.ki * self.i_term; // removed the derivative term
-        self.pre_error = error;
-        output.clamp(self.config.min, self.config.max)
+        output // TOMaybeDO could restrict output by min value here instead of using .min()
     }
 }
+
+impl PiController for Pi {
+    /// Creates a new `Pi` with the specified configuration.
+    fn new(config: PiGain) -> Self {
+        Self {
+            config,
+            i_term: 0.0,
+            pre_error: f32::NAN,
+        }
+    }
+    /// Updates the `Pi` controller, ignoring D.
+    /// Returns the controller output.
+    fn update(&mut self, set_point: f32, actual: f32, dt: f32) -> f32 {
+        let error = set_point - actual;
+        self.i_term += error * dt;
+        let output = self.config.kp * error
+            + self.config.ki * self.i_term; // removed the derivative term
+        self.pre_error = error;
+        output // TOMaybeDO could restrict output by min value here instead of using .min()
+    }
+}
+
 
 /*
 For the lev control, we need to chain 2 PIDs together and output a PWM signal. The first one takes in a height and 
@@ -110,8 +147,8 @@ then performed, and the duty cycle is set, and timer restarted.
 #[embassy_executor::main] 
 async fn main(_spawner: Spawner) {
     let mut pid_height = Pid::new(GAIN_HEIGHT.into());
-    let mut pi_current = Pid::new(GAIN_CURRENT.into());
-    let mut pi_voltage = Pid::new(GAIN_VOLTAGE.into());
+    let mut pi_current = Pi::new(GAIN_CURRENT.into());
+    let mut pi_voltage = Pi::new(GAIN_VOLTAGE.into());
 
     let p = embassy_stm32::init(Default::default());
 
@@ -134,13 +171,13 @@ async fn main(_spawner: Spawner) {
 
         let dt = (Instant::now().as_micros() as f32) - time_start; // this gets the timeframe between the last change in the pwm signal for the PID
 
-        let target_current = (pid_height.update_wfilter(TARGET_HEIGHT, actual_height, dt, LOW_PASS_FILTER_CONSTANT_HEIGHT)).min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries) and uses low pass filter on derivative term
+        let target_current = (pid_height.update(TARGET_HEIGHT, actual_height, dt, LOW_PASS_FILTER_CONSTANT_HEIGHT)).min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries) and uses low pass filter on derivative term
 
-        let target_voltage = (pi_current.update_PI(target_current, actual_current, dt)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries) and ignores derivative term from output
+        let target_voltage = (pi_current.update(target_current, actual_current, dt)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries) and ignores derivative term from output
 
-        let duty_cycle = pi_voltage.update_PI(target_voltage, actual_voltage, dt); // TODOLater include .min(max_duty) if max_duty given
+        let duty_cycle = pi_voltage.update(target_voltage, actual_voltage, dt); // TODOLater include .min(max_duty) if max_duty given
 
-        let duty_cycle *= max_duty; // the duty cycle ranges from 0 to max_duty, so what fraction of that do we need
+        let duty_cycle = duty_cycle * max_duty; // the duty cycle ranges from 0 to max_duty, so what fraction of that do we need
                                                                       // probably TODOLater update how this is calculated
 
         pwm.set_duty(Channel::Ch2, duty_cycle as u32);
