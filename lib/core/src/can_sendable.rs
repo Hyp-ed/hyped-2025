@@ -188,7 +188,7 @@ impl PositionDelta {
     /// example implementation
     /// ```NoRun // cos doctests dont like no_std
     /// use hyped_core::can_sendable::*;
-    /// 
+    ///
     /// let mut pos_d = PositionDelta::new_empty();
     /// let mut err_cnt = 0;
     /// loop {
