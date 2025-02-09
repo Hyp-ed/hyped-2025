@@ -26,6 +26,7 @@ static_cell = "2"
 
 hyped_core = { path = "../../lib/core" }
 hyped_sensors = { path = "../../lib/sensors" }
+hyped_localisation = { path = "../../lib/localisation" }
 
 hyped_adc = { path = "../../lib/io/hyped_adc" }
 hyped_adc_derive = { path = "../../lib/io/hyped_adc/hyped_adc_derive" }
