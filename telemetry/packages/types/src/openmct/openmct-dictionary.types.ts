@@ -1,4 +1,4 @@
-import type { MeasurementLimits } from "../pods/pods";
+import type { MeasurementLimits } from '../pods/pods';
 
 /**
  * Type of an Open MCT measurement.
