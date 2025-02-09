@@ -31,6 +31,7 @@ pub struct Localizer {
     keyence_val: f64,
     optical_val: f64,
     accelerometer_val: f64,
+    accelerometer_preprocessor: AccelerometerPreprocessor,
 }
 
 impl Localizer {
@@ -81,6 +82,7 @@ impl Localizer {
             keyence_val: 0.0,
             optical_val: 0.0,
             accelerometer_val: 0.0,
+            accelerometer_preprocessor: AccelerometerPreprocessor::new(),
         }
     }
 }
@@ -91,12 +93,14 @@ impl Default for Localizer {
     }
 }
 
+#[derive(Debug)]
 pub enum PreprocessorError {
     KeyenceUnacceptable,
     AccelerometerUnnaceptable,
 }
 
 impl Localizer {
+    /// Preprocesses the data from the sensors, checking for errors and outliers
     pub fn preprocessor(
         &mut self,
         optical_data: Vec<f64, 2>,
@@ -117,9 +121,9 @@ impl Localizer {
             self.keyence_val = (keyence_data[0] as f64) * STRIPE_WIDTH;
         }
 
-        let mut accelerometer_preprocessor = AccelerometerPreprocessor::new();
-        let processed_accelerometer_data =
-            accelerometer_preprocessor.process_data(accelerometer_data);
+        let processed_accelerometer_data = self
+            .accelerometer_preprocessor
+            .process_data(accelerometer_data);
         if processed_accelerometer_data.is_none() {
             return Err(PreprocessorError::AccelerometerUnnaceptable);
         }
@@ -136,6 +140,7 @@ impl Localizer {
         Ok(())
     }
 
+    /// Preprocesses the sensor data by calling the preprocessor and then runs the kalman filter
     pub fn iteration(
         &mut self,
         optical_data: Vec<f64, 2>,
@@ -172,13 +177,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_localizer_with_zeros() {
+    fn test_localizer_with_zeros() -> Result<(), PreprocessorError> {
         let mut localizer = Localizer::default();
 
         let optical_data: Vec<f64, 2> = Vec::from_slice(&[0.0, 0.0]).unwrap();
-
         let raw_keyence_data: Vec<u32, 2> = Vec::from_slice(&[0, 0]).unwrap();
-
         let raw_accelerometer_data: RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS> =
             RawAccelerometerData::from_slice(&[
                 Vec::from_slice(&[0.0, 0.0, 0.0]).unwrap(),
@@ -188,10 +191,12 @@ mod tests {
             ])
             .unwrap();
 
-        localizer.iteration(optical_data, raw_keyence_data, raw_accelerometer_data);
+        localizer.iteration(optical_data, raw_keyence_data, raw_accelerometer_data)?;
 
         assert_eq!(localizer.displacement, 0.0);
         assert_eq!(localizer.velocity, 0.0);
         assert_eq!(localizer.acceleration, 0.0);
+        
+        Ok(())
     }
 }
