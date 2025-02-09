@@ -141,12 +141,12 @@ impl Localizer {
         optical_data: Vec<f64, 2>,
         keyence_data: Vec<u32, 2>,
         accelerometer_data: RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS>,
-    ) {
+    ) -> Result<(), PreprocessorError> {
         self.preprocessor(
             optical_data.clone(),
             keyence_data.clone(),
             accelerometer_data.clone(),
-        );
+        )?;
 
         let control_input = Vector1::new(self.accelerometer_val);
 
@@ -162,6 +162,8 @@ impl Localizer {
         self.velocity = state[1];
         self.acceleration = self.accelerometer_val;
         self.previous_velocity = self.velocity;
+
+        Ok(())
     }
 }
 
