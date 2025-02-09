@@ -36,6 +36,13 @@ importers:
         version: 5.7.3
 
   packages/constants:
+    dependencies:
+      yaml:
+        specifier: ^2.7.0
+        version: 2.7.0
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
     devDependencies:
       '@hyped/telemetry-types':
         specifier: workspace:*
@@ -43,6 +50,9 @@ importers:
       '@hyped/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@types/node':
+        specifier: ^22.12.0
+        version: 22.12.0
       dts-cli:
         specifier: ^2.0.5
         version: 2.0.5(@babel/plugin-syntax-flow@7.26.0(@babel/core@7.26.0))(@babel/plugin-transform-react-jsx@7.25.9(@babel/core@7.26.0))(@jest/transform@29.7.0)(@jest/types@29.6.3)(@types/babel__core@7.20.1)(@types/node@22.12.0)
@@ -298,6 +308,9 @@ importers:
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
 
   packages/ui:
     dependencies:
@@ -7097,6 +7110,11 @@ packages:
   yaml@2.3.1:
     resolution: {integrity: sha512-2eHWfjaoXgTBC2jNM1LRef62VQa0umtvRiDSk6HSzW7RvS5YtkabJrwYLLEKWBc8a5U2PTSCs+dJjUTJdlHsWQ==}
     engines: {node: '>= 14'}
+
+  yaml@2.7.0:
+    resolution: {integrity: sha512-+hSoy/QHluxmC9kCIJyL/uyFmLmc+e5CFR5Wa+bpIhIj85LVb9ZH2nVnqrHoSvKogwODv0ClqZkmiSSaIH5LTA==}
+    engines: {node: '>= 14'}
+    hasBin: true
 
   yargs-parser@21.1.1:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}
@@ -15123,6 +15141,8 @@ snapshots:
   yaml@1.10.2: {}
 
   yaml@2.3.1: {}
+
+  yaml@2.7.0: {}
 
   yargs-parser@21.1.1: {}
 
