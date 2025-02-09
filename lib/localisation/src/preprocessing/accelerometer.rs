@@ -3,6 +3,7 @@ use crate::types::{
     NUM_ALLOWED_ACCELEROMETER_OUTLIERS, NUM_AXIS,
 };
 use heapless::Vec;
+use libm;
 
 /// Stores the quartiles of the data and the bounds for outliers
 /// which are calculated from the quartiles
@@ -120,9 +121,11 @@ impl AccelerometerPreprocessor {
     ) -> Option<AccelerometerData<NUM_ACCELEROMETERS>> {
         let accelerometer_data: AccelerometerData<NUM_ACCELEROMETERS> = data
             .iter()
-            .map(|axis| axis.iter().fold(0.0, |acc, val| acc + val * val).sqrt())
+            .map(|axis| {
+                let sum = axis.iter().fold(0.0, |acc, val| acc + val * val);
+                libm::sqrtf(sum)
+            })
             .collect();
-
         let clean_accelerometer_data = self.handle_outliers(accelerometer_data)?;
 
         if self.check_reliable() == SensorChecks::Unacceptable {
@@ -157,7 +160,7 @@ impl AccelerometerPreprocessor {
 
     pub fn get_quartiles<const SIZE: usize>(&self, data: &AccelerometerData<SIZE>) -> Quartiles {
         let mut sorted_data = data.clone();
-        sorted_data.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        sorted_data.as_mut_slice().sort_by(|a, b| a.partial_cmp(b).unwrap());
 
         let quartile_keys: Vec<f32, 3> = Vec::from_slice(&[0.25, 0.5, 0.75]).unwrap();
         let quartiles: Vec<f32, 3> = quartile_keys
@@ -165,8 +168,8 @@ impl AccelerometerPreprocessor {
             .map(|quartile| {
                 let index_quartile: f32 =
                     (1.0 + self.num_reliable_accelerometers as f32) * quartile;
-                let index_quartile_floor = index_quartile.floor() as usize - 1;
-                let index_quartile_ceil = index_quartile.ceil() as usize - 1;
+                    let index_quartile_floor = libm::floorf(index_quartile) as usize - 1;
+                    let index_quartile_ceil = libm::ceilf(index_quartile) as usize - 1;
 
                 (data.get(index_quartile_floor).unwrap_or(&0.0)
                     + data.get(index_quartile_ceil).unwrap_or(&0.0))
