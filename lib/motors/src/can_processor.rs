@@ -1,13 +1,15 @@
 use crate::can_open_message::{config_messages, messages, CanOpenMessage};
 use hyped_can::{CanError, HypedCan, HypedCanFrame};
 
+// TODO Allow data input
+
 pub enum MessagesEnum {
     TestStepperEnable,
     TestModeCommand,
     EnterStopState,
     EnterPreoperationalState,
     EnterOperationalState,
-    SetFrequency,
+    SetFrequency(u32),
     Shutdown,
     SwitchOn,
     StartDrive,
@@ -42,7 +44,13 @@ impl From<MessagesEnum> for CanOpenMessage {
             MessagesEnum::EnterStopState => messages::ENTER_STOP_STATE,
             MessagesEnum::EnterPreoperationalState => messages::ENTER_PREOPERATIONAL_STATE,
             MessagesEnum::EnterOperationalState => messages::ENTER_OPERATIONAL_STATE,
-            MessagesEnum::SetFrequency => messages::SET_FREQUENCY,
+            MessagesEnum::SetFrequency(f) => CanOpenMessage {
+                id: messages::SET_FREQUENCY.id,
+                command: messages::SET_FREQUENCY.command,
+                index: messages::SET_FREQUENCY.index,
+                sub_index: messages::SET_FREQUENCY.sub_index,
+                data: f,
+            },
             MessagesEnum::Shutdown => messages::SHUTDOWN,
             MessagesEnum::SwitchOn => messages::SWITCH_ON,
             MessagesEnum::StartDrive => messages::START_DRIVE,
