@@ -10,7 +10,7 @@ use hyped_sensors::low_pressure::LowPressure;
 
 /// Test task that just continually reads pressure from low pressure sensor and prints value to console
 #[embassy_executor::main]
-pub async fn main(_spawner: Spawner) -> ! {
+async fn main(_spawner: Spawner) -> ! {
     let p = embassy_stm32::init(Default::default());
     info!("Low pressure sensor");
 
