@@ -1,5 +1,5 @@
 import type { HistoricalTelemetryDataService } from '@/modules/openmct/data/historical/HistoricalTelemetryData.service';
-import { POD_IDS, type PodId } from '@hyped/telemetry-constants';
+import { podIds } from '@hyped/telemetry-constants';
 import type {
 	LevitationHeightResponse,
 	RawLevitationHeight,
@@ -168,7 +168,7 @@ export class PublicDataController {
 	}
 
 	private validatePodId(podId: string) {
-		if (!POD_IDS.includes(podId as PodId)) {
+		if (!podIds.includes(podId)) {
 			throw new HttpException('Invalid pod ID', 400);
 		}
 	}

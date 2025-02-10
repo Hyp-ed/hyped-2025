@@ -1,14 +1,15 @@
 import type { OpenMctObjectTypes } from '@hyped/telemetry-types';
+import type { telemetryTypes } from '../../pods/types';
 
-export const openMctObjectTypes: OpenMctObjectTypes = [
+export type OpenMctObjectTypeId = (typeof telemetryTypes)[number];
+
+type StrictOpenMctObjectTypes = OpenMctObjectTypes &
+	{ id: OpenMctObjectTypeId }[];
+
+export const openMctObjectTypes: StrictOpenMctObjectTypes = [
 	{
 		id: 'temperature',
 		name: 'Temperature',
-		icon: 'icon-telemetry',
-	},
-	{
-		id: 'thermistor',
-		name: 'Thermistor',
 		icon: 'icon-telemetry',
 	},
 	{
@@ -42,13 +43,28 @@ export const openMctObjectTypes: OpenMctObjectTypes = [
 		icon: 'icon-telemetry',
 	},
 	{
+		id: 'magnetism',
+		name: 'Magnetism',
+		icon: 'icon-telemetry',
+	},
+	{
 		id: 'keyence',
 		name: 'Keyence',
 		icon: 'icon-telemetry',
 	},
 	{
-		id: 'brake_feedback',
-		name: 'Brake Feedback',
+		id: 'resistance',
+		name: 'Resistance',
+		icon: 'icon-telemetry',
+	},
+	{
+		id: 'levitation',
+		name: 'Levitation',
+		icon: 'icon-telemetry',
+	},
+	{
+		id: 'binary-status',
+		name: 'Binary Status',
 		icon: 'icon-telemetry',
 	},
 ];

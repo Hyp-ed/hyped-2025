@@ -9,4 +9,4 @@ import { MeasurementService } from './Measurement.service';
 	providers: [MeasurementService],
 	exports: [MeasurementService],
 })
-export class MeasurementModule {}
+export class TelemetryModule {}

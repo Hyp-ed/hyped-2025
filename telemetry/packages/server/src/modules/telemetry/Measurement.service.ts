@@ -10,7 +10,7 @@ import {
 	MeasurementReadingSchema,
 } from './MeasurementReading.types';
 import { MeasurementReadingValidationError } from './errors/MeasurementReadingValidationError';
-import { doesMeasurementBreachLimits } from './utils/doesMeasurementBreachLimits';
+import { doesMeasurementBreachLimits } from './utils/limit-breach-checker';
 
 @Injectable()
 export class MeasurementService {
@@ -42,19 +42,18 @@ export class MeasurementService {
 		});
 
 		// Then check if it breaches limits
-		if (measurement.format === 'float' || measurement.format === 'integer') {
-			const breachLevel = doesMeasurementBreachLimits(measurement, reading);
-			if (breachLevel) {
-				this.logger.debug(
-					`Measurement breached limits {${props.podId}/${props.measurementKey}}: ${breachLevel} with value ${props.value}`,
-					MeasurementService.name,
-				);
-				await this.faultService.addLimitBreachFault({
-					level: breachLevel,
-					measurement,
-					tripReading: reading,
-				});
-			}
+		const breachLevel = doesMeasurementBreachLimits(measurement, value);
+
+		if (breachLevel) {
+			this.logger.debug(
+				`Measurement breached limits {${props.podId}/${props.measurementKey}}: ${breachLevel} with value ${props.value}`,
+				MeasurementService.name,
+			);
+			await this.faultService.addLimitBreachFault({
+				level: breachLevel,
+				measurement,
+				tripReading: reading,
+			});
 		}
 
 		// Then save it to the database
@@ -62,7 +61,6 @@ export class MeasurementService {
 			.timestamp(timestamp)
 			.tag('podId', podId)
 			.tag('measurementKey', measurementKey)
-			.tag('format', measurement.format)
 			.floatField('value', value);
 
 		try {
@@ -90,9 +88,17 @@ export class MeasurementService {
 
 		const { podId, measurementKey } = result.data;
 
+		const possibleMeasurement = pods?.[podId]?.measurements?.[measurementKey];
+
+		if (!possibleMeasurement) {
+			throw new MeasurementReadingValidationError(
+				`Measurement ${measurementKey} not found for pod ${podId}`,
+			);
+		}
+
 		return {
 			reading: result.data,
-			measurement: pods[podId].measurements[measurementKey],
+			measurement: possibleMeasurement,
 		};
 	}
 }
