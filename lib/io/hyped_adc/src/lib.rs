@@ -24,6 +24,7 @@ pub mod mock_adc {
             self.current_value
         }
 
+        /// Return value of resolution (4095)
         fn get_resolution(&self) -> u16 {
             4095
         }

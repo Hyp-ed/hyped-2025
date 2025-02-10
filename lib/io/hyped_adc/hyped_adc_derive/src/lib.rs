@@ -21,6 +21,7 @@ fn impl_hyped_adc(ast: &syn::DeriveInput) -> TokenStream {
                 self.adc.blocking_read(&mut self.channel)
             }
 
+            /// Return value of ADC resolution (4095)
             fn get_resolution(&self) -> u16 {
                 4095
             }
