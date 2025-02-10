@@ -1,21 +1,21 @@
 use defmt::error;
 
-pub enum CanMsgType {
+pub enum CanMessageType {
     Bool = 0,
     F32 = 1,
     TwoU16 = 2,
     PosDelta = 3,
 }
 
-impl From<u8> for CanMsgType {
+impl From<u8> for CanMessageType {
     fn from(val: u8) -> Self {
         match val {
-            0 => CanMsgType::Bool,
-            1 => CanMsgType::F32,
-            2 => CanMsgType::TwoU16,
-            3 => CanMsgType::PosDelta,
+            0 => CanMessageType::Bool,
+            1 => CanMessageType::F32,
+            2 => CanMessageType::TwoU16,
+            3 => CanMessageType::PosDelta,
             _ => {
-                error!("Unknown CanMsgType: {}", val);
+                error!("Unknown CanMessageType: {}", val);
                 panic!();
             }
         }
@@ -29,8 +29,8 @@ pub fn is_valid_can_msg(msg: &[u8; 8]) -> bool {
 }
 
 /// Extracts the message type from a CAN message
-pub fn can_msg_type_from_u8(msg: &[u8; 8]) -> CanMsgType {
-    CanMsgType::from(msg[0] & 0x0F)
+pub fn can_msg_type_from_u8(msg: &[u8; 8]) -> CanMessageType {
+    CanMessageType::from(msg[0] & 0x0F)
 }
 
 /// Extracts the board id from a CAN message
@@ -39,7 +39,7 @@ pub fn get_board_id(msg: &[u8; 8]) -> u8 {
 }
 
 /// Builds a CAN header byte from a board id and message type
-pub fn build_can_header(board_id: u8, msg_type: CanMsgType) -> u8 {
+pub fn build_can_header(board_id: u8, msg_type: CanMessageType) -> u8 {
     (board_id << 4) | (msg_type as u8)
 }
 
@@ -51,7 +51,7 @@ pub trait CanSendable {
 impl CanSendable for bool {
     fn encode_to_can(&self, board_id: u8) -> [u8; 8] {
         let mut data: [u8; 8] = [0; 8];
-        data[0] = build_can_header(board_id, CanMsgType::Bool);
+        data[0] = build_can_header(board_id, CanMessageType::Bool);
         data[1] = *self as u8;
         data
     }
@@ -64,7 +64,7 @@ impl CanSendable for bool {
 impl CanSendable for [u16; 2] {
     fn encode_to_can(&self, board_id: u8) -> [u8; 8] {
         let mut data: [u8; 8] = [0; 8];
-        data[0] = build_can_header(board_id, CanMsgType::TwoU16);
+        data[0] = build_can_header(board_id, CanMessageType::TwoU16);
 
         let u16_bytes: [u8; 2] = self[0].to_le_bytes();
         data[1..3].copy_from_slice(&u16_bytes);
@@ -90,7 +90,7 @@ impl CanSendable for [u16; 2] {
 impl CanSendable for f32 {
     fn encode_to_can(&self, board_id: u8) -> [u8; 8] {
         let mut data: [u8; 8] = [0; 8];
-        data[0] = build_can_header(board_id, CanMsgType::F32);
+        data[0] = build_can_header(board_id, CanMessageType::F32);
 
         let f32_bytes: [u8; 4] = self.to_le_bytes();
         data[1..5].copy_from_slice(&f32_bytes);
@@ -134,9 +134,9 @@ impl PositionDelta {
         let mut y = self.y.unwrap().encode_to_can(board_id);
         let mut z = self.z.unwrap().encode_to_can(board_id);
 
-        x[0] = build_can_header(board_id, CanMsgType::PosDelta);
-        y[0] = build_can_header(board_id, CanMsgType::PosDelta);
-        z[0] = build_can_header(board_id, CanMsgType::PosDelta);
+        x[0] = build_can_header(board_id, CanMessageType::PosDelta);
+        y[0] = build_can_header(board_id, CanMessageType::PosDelta);
+        z[0] = build_can_header(board_id, CanMessageType::PosDelta);
 
         x[5] = 0;
         y[5] = 1;
