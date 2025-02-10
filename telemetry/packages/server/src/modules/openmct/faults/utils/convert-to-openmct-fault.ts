@@ -10,13 +10,13 @@ import type { Fault } from '../Fault.service';
 export function convertToOpenMctFault(fault: Fault): OpenMctFault {
 	const { measurement, tripReading, level } = fault;
 
-	const namespace = `/${tripReading.podId}/${measurement.key}`;
+	const namespace = `/${tripReading.podId}/${measurement.id}`;
 
 	return {
 		type: 'global-alarm-status',
 		fault: {
 			id: `${namespace}-${nanoid()}`,
-			name: `${measurement.name} is out of range`,
+			name: `${measurement.label} is out of range`,
 			namespace,
 			seqNum: 0,
 			severity: level,

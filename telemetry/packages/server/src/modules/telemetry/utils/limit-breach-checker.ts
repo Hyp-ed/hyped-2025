@@ -1,15 +1,13 @@
 import type { FaultLevel } from '@hyped/telemetry-constants';
-import type { RangeMeasurement } from '@hyped/telemetry-types/dist/pods/pods.types';
+import type { Measurement } from '@hyped/telemetry-types';
 import type { MeasurementReading } from '../MeasurementReading.types';
 
 export type DoesMeasurementBreachLimitsReturn = false | FaultLevel;
 
 export function doesMeasurementBreachLimits(
-	measurement: RangeMeasurement,
-	reading: MeasurementReading,
+	measurement: Measurement,
+	value: MeasurementReading['value'],
 ): DoesMeasurementBreachLimitsReturn {
-	const { value } = reading;
-
 	const { low, high } = measurement.limits.critical;
 	if (value < low || value > high) {
 		return 'CRITICAL';
