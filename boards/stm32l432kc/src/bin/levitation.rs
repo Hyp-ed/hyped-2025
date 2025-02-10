@@ -108,30 +108,27 @@ impl PiController for Pi {
     }
 }
 
-const MAX_VOLTAGE: f32 = 500.0; // TODOLater
-const MAX_CURRENT: f32 = 500.0; // TODOLater
-const TARGET_HEIGHT: f32 = 10.0; // TODOLater to be determined by levitation
+const MAX_VOLTAGE: f32 = 500.0;
+const MAX_CURRENT: f32 = 5.0; // TODOLater check with lev
+const TARGET_HEIGHT: f32 = 15.0; // mm
 const LOW_PASS_FILTER_CONSTANT_HEIGHT: f32 = 0.2; // TO TUNE. A number between 0 and 1
 
 const GAIN_HEIGHT: PidGain = PidGain {
-    // TODOLater to be determined by levitation
-    kp: 1.0,
-    ki: 0.05,
-    kd: 0.005,
-    p_reference_gain: 0.4, // TODOLater to be determined by levitation
-    d_reference_gain: 0.4, // TODOLater to be determined by levitation
+    kp: 29497.7537305353,
+    ki: 262105.664028736,
+    kd: 815.114265452965,
+    p_reference_gain: 0.873451984, 
+    d_reference_gain: 0.705728005, 
 };
 
 const GAIN_CURRENT: PiGain = PiGain {
-    // TODOLater determined by levitation
-    kp: 1.1,
-    ki: 0.12,
+    kp: 1000,
+    ki: 5_000_000,
 };
 
 const GAIN_VOLTAGE: PiGain = PiGain {
-    // TODOLater determined by levitation
-    kp: 1.1,
-    ki: 0.12,
+    kp: 50,
+    ki: 10_000_000,
 };
 
 /*
