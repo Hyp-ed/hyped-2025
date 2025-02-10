@@ -3,6 +3,7 @@
 /// ADC trait used to abstract the ADC peripheral
 pub trait HypedAdc {
     fn read_value(&mut self) -> u16;
+    fn get_resolution(&self) -> u16;
 }
 
 pub mod mock_adc {
@@ -21,6 +22,10 @@ pub mod mock_adc {
             let next_value: u16 = self.next_values.pop().unwrap_or(self.current_value);
             self.current_value = next_value;
             self.current_value
+        }
+
+        fn get_resolution(&self) -> u16 {
+            4095
         }
     }
 
