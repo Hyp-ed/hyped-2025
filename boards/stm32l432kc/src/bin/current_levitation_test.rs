@@ -24,16 +24,16 @@ async fn main(spawner: Spawner) -> {
     let adc = Adc::new(p.ADC1, Delay);
 
     // Create a sender to pass to the current levitation reading task, and a receiver for reading the values back.
-    let current_reading_sender = CURRENT_LEVITATION_READING.sender();
-    let mut current_lev_reading_receiver = CURRENT_LEVITATION_READING.receiver().unwrap();
+    let current_levitation_reading_sender = CURRENT_LEVITATION_READING.sender();
+    let mut current_levitation_reading_receiver = CURRENT_LEVITATION_READING.receiver().unwrap();
 
     spawner
-        .spawn(read_current_levitation(current_reading_sender))
+        .spawn(read_current_levitation(current_levitation_reading_sender))
         .unwrap();
 
     // Every 100ms we read for the latest value from the current levitation sensor.
     loop {
-        match current_lev_reading_receiver.try_changed() {
+        match current_levitation_reading_receiver.try_changed() {
             Some(reading) => match reading {
                 Safe(value) => {
                     defmt::info!("Current: {} A (safe)", value)
