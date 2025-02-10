@@ -20,6 +20,10 @@ fn impl_hyped_adc(ast: &syn::DeriveInput) -> TokenStream {
             fn read_value(&mut self) -> u16 {
                 self.adc.blocking_read(&mut self.channel)
             }
+
+            fn get_resolution(&self) -> u16 {
+                4095
+            }
         }
 
         impl #impl_generics #name #ty_generics {
