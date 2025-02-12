@@ -1,8 +1,9 @@
-import { Bug, GitBranch, LineChart, Terminal } from 'lucide-react';
+import { Bug, GitBranch, LineChart, Terminal, List} from 'lucide-react';
 import { DebugView } from './components/views/debug-view';
 import { LogViewer } from './components/views/log-viewer';
 import { OpenMCT } from './components/views/openmct';
 import { StateMachine } from './components/views/state-machine';
+import { Checklist } from './components/views/checklist';
 
 /**
  * The views that can be rendered in the LHS of the GUI.
@@ -28,6 +29,11 @@ export const VIEWS = {
 		component: <StateMachine />,
 		icon: <GitBranch width={18} />,
 	},
+	CHECKLIST: {
+		name: 'Checklist',
+		component: <Checklist />,
+		icon: <List width={18} />,
+	}
 } as const;
 
 export type View = (typeof VIEWS)[keyof typeof VIEWS];
