@@ -4,7 +4,7 @@ use hyped_can::{CanError, HypedCan, HypedCanFrame};
 // Datasheet: https://www.sensata.com/sites/default/files/a/sensata-el-sim100-mod-datasheet.pdf
 pub struct Imd<'a, T: HypedCan> {
     can: &'a mut T,
-    resistance_positive: u16, // not entirely sure if i should include these three fields...
+    resistance_positive: u16,
     resistance_negative: u16,
     isolation_status: u8,
 }
@@ -17,7 +17,7 @@ impl<'a, T: HypedCan> Imd<'a, T> {
             resistance_positive: 0,
             resistance_negative: 0,
             isolation_status: 0,
-        } // may need to do error handling
+        }
     }
 
     pub fn update_values(&mut self) -> Result<(), ImdError> {
@@ -36,6 +36,18 @@ impl<'a, T: HypedCan> Imd<'a, T> {
         self.isolation_status = frame.data[1] & 3;
         self.resistance_positive = (frame.data[2] as u16) << 8 | (frame.data[3] as u16);
         self.resistance_negative = (frame.data[5] as u16) << 8 | (frame.data[6] as u16);
+    }
+
+    pub fn get_resistance_positive(&self) -> u16 {
+        self.resistance_positive
+    }
+
+    pub fn get_resistance_negative(&self) -> u16 {
+        self.resistance_negative
+    }
+
+    pub fn get_isolation_status(&self) -> u8 {
+        self.isolation_status
     }
 }
 
