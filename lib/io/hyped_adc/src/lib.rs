@@ -2,7 +2,10 @@
 
 /// ADC trait used to abstract the ADC peripheral
 pub trait HypedAdc {
+    /// Read value from the ADC channel
     fn read_value(&mut self) -> u16;
+
+    /// Get resolution of ADC sensor
     fn get_resolution(&self) -> u16;
 }
 
@@ -17,16 +20,14 @@ pub mod mock_adc {
     }
 
     impl crate::HypedAdc for MockAdc {
-        /// Reads a value from the ADC
         fn read_value(&mut self) -> u16 {
             let next_value: u16 = self.next_values.pop().unwrap_or(self.current_value);
             self.current_value = next_value;
             self.current_value
         }
 
-        /// Return value of resolution (4095)
         fn get_resolution(&self) -> u16 {
-            4095
+            4096
         }
     }
 
