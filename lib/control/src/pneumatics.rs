@@ -71,13 +71,11 @@ impl<'a, P: HypedGpioOutputPin, T: HypedI2c> Pneumatics<'a, P, T> {
 
         // Check that the brakes have been actuated by reading the time of flight sensor.
         match with_timeout(BRAKE_CHECK_TIMEOUT, self.check_brake_actuation()).await {
-            Ok(v) => match v {
-                Ok(_) => {
-                    self.brake_state = BrakeState::Engaged;
-                    Ok(())
-                }
-                Err(e) => Err(e),
-            },
+            Ok(Ok(_)) => {
+                self.brake_state = BrakeState::Engaged;
+                Ok(())
+            }
+            Ok(Err(e)) => Err(e),
             // If the brakes have not been actuated within the timeout period, return a timeout error.
             Err(_) => Err(BrakeActuationFailure::TimeoutError),
         }
@@ -93,13 +91,11 @@ impl<'a, P: HypedGpioOutputPin, T: HypedI2c> Pneumatics<'a, P, T> {
 
         // Check that the brakes have been disengaged by reading the time of flight sensor.
         match with_timeout(BRAKE_CHECK_TIMEOUT, self.check_brake_actuation()).await {
-            Ok(v) => match v {
-                Ok(_) => {
-                    self.brake_state = BrakeState::Disengaged;
-                    Ok(())
-                }
-                Err(e) => Err(e),
-            },
+            Ok(Ok(_)) => {
+                self.brake_state = BrakeState::Disengaged;
+                Ok(())
+            }
+            Ok(Err(e)) => Err(e),
             // If the brakes have not been disengaged within the timeout period, return a timeout error.
             Err(_) => Err(BrakeActuationFailure::TimeoutError),
         }

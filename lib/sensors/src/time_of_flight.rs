@@ -198,11 +198,11 @@ const SYSRANGE_VHV_RECALIBRATE: u16 = 0x002e;
 const SYSRANGE_INTERMEASURE_PERIOD: u16 = 0x01b;
 const SYS_INTERRUPT_CONFIG_GPIO: u16 = 0x014;
 const SYSRANGE_START: u16 = 0x018;
-pub const RESULT_INTERR_STATUS_GPIO: u16 = 0x04f;
-pub const SYS_FRESH_OUT_RESET: u16 = 0x016;
+const RESULT_INTERR_STATUS_GPIO: u16 = 0x04f;
+const SYS_FRESH_OUT_RESET: u16 = 0x016;
 const SYS_INTERRUPT_CLEAR: u16 = 0x015;
 // RESULT_RANGE_VAL is actually a register; that's what the docs call it
-pub const RESULT_RANGE_VAL: u16 = 0x062;
+const RESULT_RANGE_VAL: u16 = 0x062;
 
 // Values for public registers
 const SYS_MODE_GPIO_VAL: u8 = 0x10;
