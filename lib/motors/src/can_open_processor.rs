@@ -1,6 +1,7 @@
 use crate::can_open_message::{config_messages, messages, CanOpenMessage};
 use hyped_can::{CanError, HypedCan, HypedCanFrame};
 
+/// All types of messages that can be sent to the motor controller
 pub enum MessagesEnum {
     TestStepperEnable,
     TestModeCommand,
@@ -14,6 +15,9 @@ pub enum MessagesEnum {
     QuickStop,
 }
 
+// TODOLater consider adding a ReceivedMessagesEnum so we can decide what we do depending on the message we receive
+
+/// Convert a CanOpenMessage to a HypedCanFrame
 impl From<CanOpenMessage> for HypedCanFrame {
     fn from(msg: CanOpenMessage) -> Self {
         let mut data: [u8; 8] = [0; 8];
@@ -34,6 +38,23 @@ impl From<CanOpenMessage> for HypedCanFrame {
     }
 }
 
+/// Convert a HypedCanFrame to a CanOpenMessage
+impl From<HypedCanFrame> for CanOpenMessage {
+    fn from(frame: HypedCanFrame) -> Self {
+        CanOpenMessage {
+            id: frame.can_id,
+            command: frame.data[0],
+            index: u16::from(frame.data[1]) | (u16::from(frame.data[2]) << 8),
+            sub_index: frame.data[3],
+            data: u32::from(frame.data[4])
+                | (u32::from(frame.data[5]) << 8)
+                | (u32::from(frame.data[6]) << 16)
+                | (u32::from(frame.data[7]) << 24),
+        }
+    }
+}
+
+/// Convert a MessagesEnum to a CanOpenMessage
 impl From<MessagesEnum> for CanOpenMessage {
     fn from(message: MessagesEnum) -> Self {
         match message {
@@ -57,6 +78,8 @@ impl From<MessagesEnum> for CanOpenMessage {
     }
 }
 
+/// A wrapper around a HypedCan that turns a CanOpenMessage into a HypedCanFrame and sends it over the HypedCan
+/// Also reads a HypedCanFrame and turns it into a CanOpenMessage
 pub struct CanOpen<T: HypedCan> {
     can: T,
 }
@@ -66,8 +89,17 @@ impl<T: HypedCan> CanOpen<T> {
         CanOpen { can }
     }
 
+    /// Send a message to the motor controller
     pub fn send_message(&mut self, message: MessagesEnum) -> Result<(), CanError> {
         let frame: HypedCanFrame = CanOpenMessage::from(message).into();
         self.can.write_frame(&frame)
+    }
+
+    /// Read a message from the motor controller and return it
+    pub fn read_message(&mut self) -> Result<CanOpenMessage, CanError> {
+        let envelope = self.can.read_frame()?;
+        let frame = envelope.frame;
+        let message = CanOpenMessage::from(frame);
+        Ok(message)
     }
 }

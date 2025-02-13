@@ -1,3 +1,4 @@
+/// Basic structure for a CanOpen Message
 pub struct CanOpenMessage {
     pub id: u32,
     pub index: u16,
@@ -53,6 +54,7 @@ pub mod messages {
         data: 0x00000000,
     };
 
+    // Data will be overwritten at runtime depending on the frequency desired
     pub const SET_FREQUENCY: CanOpenMessage = CanOpenMessage {
         id: 0x601,
         command: 0x2B,
