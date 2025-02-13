@@ -35,8 +35,8 @@ async fn main(spawner: Spawner) -> ! {
     let sender2 = KEYENCE_2_STRIPE_COUNT.sender();
     let mut receiver2 = KEYENCE_2_STRIPE_COUNT.receiver().unwrap();
 
-    spawner.spawn(read_keyence(gpio_pin, sender1)).unwrap();
-    spawner.spawn(read_keyence(gpio_pin, sender2)).unwrap();
+    spawner.spawn(read_keyence(gpio_pin.clone(), sender1)).unwrap();
+    spawner.spawn(read_keyence(gpio_pin.clone(), sender2)).unwrap();
 
     info!("Starting localizer loop...");
 
