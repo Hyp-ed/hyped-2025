@@ -19,13 +19,13 @@ pub enum LimitLevel {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MeasurementLimits {
-    min: f64,
-    max: f64,
+    low: f64,
+    high: f64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Measurement {
-    pub name: String,
+    pub label: String,
     pub unit: String,
     pub format: MeasurementFormat,
     pub limits: HashMap<LimitLevel, MeasurementLimits>,
@@ -33,7 +33,7 @@ pub struct Measurement {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Pod {
-    pub name: String,
+    pub label: String,
     pub measurements: HashMap<String, Measurement>,
 }
 
@@ -80,38 +80,38 @@ mod tests {
         let raw_config = r#"
         pods:
             pod_1:
-                name: 'Pod 1'
+                label: 'Pod 1'
                 measurements:
                     keyence:
-                        name: 'Keyence'
+                        label: 'Keyence'
                         unit: 'number of stripes'
                         format: 'integer'
                         limits:
                             critical:
-                                min: 0
-                                max: 16
+                                low: 0
+                                high: 16
                     accelerometer_1:
-                        name: 'Accelerometer 1'
+                        label: 'Accelerometer 1'
                         unit: 'm/s^2'
                         format: 'float'
                         limits:
                             critical:
-                                min: -150
-                                max: 150
+                                low: -150
+                                high: 150
         "#;
         let config = PodConfig::new(raw_config).unwrap();
         assert_eq!(config.pod_ids, vec!["pod_1"]);
         let pod = config.pods.get("pod_1").unwrap();
-        assert_eq!(pod.name, "Pod 1");
+        assert_eq!(pod.label, "Pod 1");
         assert_eq!(pod.measurements.len(), 2);
         let keyence = pod.measurements.get("keyence").unwrap();
-        assert_eq!(keyence.name, "Keyence");
+        assert_eq!(keyence.label, "Keyence");
         assert_eq!(keyence.unit, "number of stripes");
         assert_eq!(keyence.format, MeasurementFormat::Int);
         assert_eq!(keyence.limits.len(), 1);
         let keyence_limits = keyence.limits.get(&LimitLevel::Critical).unwrap();
-        assert_eq!(keyence_limits.min, 0.0);
-        assert_eq!(keyence_limits.max, 16.0);
+        assert_eq!(keyence_limits.low, 0.0);
+        assert_eq!(keyence_limits.high, 16.0);
     }
 
     #[test]
@@ -119,27 +119,27 @@ mod tests {
         let raw_config = r#"
         pods:
             pod_1:
-                name: 'Pod 1'
+                label: 'Pod 1'
                 measurements:
                     keyence:
-                        name: 'Keyence'
+                        label: 'Keyence'
                         unit: 'number of stripes'
                         format: 'integer'
                         limits:
                             critical:
-                                min: 0
-                                max: 16
+                                low: 0
+                                high: 16
             pod_2:
-                name: 'Pod 2'
+                label: 'Pod 2'
                 measurements:
                     accelerometer_1:
-                        name: 'Accelerometer 1'
+                        label: 'Accelerometer 1'
                         unit: 'm/s^2'
                         format: 'float'
                         limits:
                             critical:
-                                min: -150
-                                max: 150
+                                low: -150
+                                high: 150
         "#;
         let config = PodConfig::new(raw_config).unwrap();
         assert!(config.pod_ids.len() == 2);
@@ -147,9 +147,9 @@ mod tests {
         assert!(config.pod_ids[0] == "pod_2" || config.pod_ids[1] == "pod_2");
         let pod1 = config.pods.get("pod_1").unwrap();
         let pod2 = config.pods.get("pod_2").unwrap();
-        assert_eq!(pod1.name, "Pod 1");
+        assert_eq!(pod1.label, "Pod 1");
         assert_eq!(pod1.measurements.len(), 1);
-        assert_eq!(pod2.name, "Pod 2");
+        assert_eq!(pod2.label, "Pod 2");
         assert_eq!(pod2.measurements.len(), 1);
     }
 
@@ -158,55 +158,55 @@ mod tests {
         let raw_config = r#"
         pods:
             pod_1:
-                name: 'Pod 1'
+                label: 'Pod 1'
                 measurements:
                     keyence:
-                        name: 'Keyence'
+                        label: 'Keyence'
                         unit: 'number of stripes'
                         format: 'integer'
                         limits:
                             warning:
-                                min: 0
-                                max: 16
+                                low: 0
+                                high: 16
                     accelerometer_1:
-                        name: 'Accelerometer 1'
+                        label: 'Accelerometer 1'
                         unit: 'm/s^2'
                         format: 'float'
                         limits:
                             critical:
-                                min: -150
-                                max: 150
+                                low: -150
+                                high: 150
                     temperature:
-                        name: 'Temperature'
+                        label: 'Temperature'
                         unit: 'C'
                         format: 'float'
                         limits:
                             warning:
-                                min: 0
-                                max: 50
+                                low: 0
+                                high: 50
                             critical:
-                                min: -20
-                                max: 80
+                                low: -20
+                                high: 80
         "#;
         let config = PodConfig::new(raw_config).unwrap();
         let pod = config.pods.get("pod_1").unwrap();
         let keyence = pod.measurements.get("keyence").unwrap();
         assert_eq!(keyence.limits.len(), 1);
-        assert_eq!(keyence.limits.get(&LimitLevel::Warning).unwrap().min, 0.0);
+        assert_eq!(keyence.limits.get(&LimitLevel::Warning).unwrap().low, 0.0);
         let accelerometer = pod.measurements.get("accelerometer_1").unwrap();
         assert_eq!(accelerometer.limits.len(), 1);
         assert_eq!(
-            accelerometer.limits.get(&LimitLevel::Critical).unwrap().min,
+            accelerometer.limits.get(&LimitLevel::Critical).unwrap().low,
             -150.0
         );
         let temperature = pod.measurements.get("temperature").unwrap();
         assert_eq!(temperature.limits.len(), 2);
         assert_eq!(
-            temperature.limits.get(&LimitLevel::Warning).unwrap().max,
+            temperature.limits.get(&LimitLevel::Warning).unwrap().high,
             50.0
         );
         assert_eq!(
-            temperature.limits.get(&LimitLevel::Critical).unwrap().max,
+            temperature.limits.get(&LimitLevel::Critical).unwrap().high,
             80.0
         );
     }
