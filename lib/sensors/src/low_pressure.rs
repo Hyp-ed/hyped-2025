@@ -12,7 +12,7 @@ pub struct LowPressure<T: HypedAdc> {
 }
 
 const MAX_PRESSURE: f32 = 10.0;
-const ADC_RESOLUTION: f32 = 4096.0; 
+const ADC_RESOLUTION: f32 = 4096.0;
 const GRADIENT_LOW: f32 = MAX_PRESSURE / ADC_RESOLUTION;
 
 impl<T: HypedAdc> LowPressure<T> {
