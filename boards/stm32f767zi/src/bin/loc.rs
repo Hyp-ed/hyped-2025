@@ -44,7 +44,9 @@ async fn main(spawner: Spawner) -> ! {
 
     loop {
         // Wait for a new Keyence stripe count.
-        let (stripe_count1, stripe_count2) = join!(receiver1.get(), receiver2.get());
+        let stripe_count1 = receiver1.get().await;
+        let stripe_count2 = receiver2.get().await;
+
         defmt::info!(
             "New Keyence stripe counts: sensor1 = {}, sensor2 = {}",
             stripe_count1,
