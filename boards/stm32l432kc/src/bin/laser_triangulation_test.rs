@@ -39,7 +39,7 @@ async fn main(spawner: Spawner) -> {
                     defmt::info!("Range: {} mm (safe)", value)
                 }
                 Warning(value) => {
-                    defmt::info!("Range: {} mm (safe)", value)
+                    defmt::warning!("Range: {} mm (warning)", value)
                 }
                 Critical(value) => {
                     defmt::error!("Range: {} A (critical)", value)

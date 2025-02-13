@@ -13,9 +13,16 @@ pub struct LaserTriangulation<T: HypedAdc> {
 impl<T: HypedAdc> LaserTriangulation<T> {
     /// Create a new instance of the Laser Triangulation sensor
     pub fn new(adc: T) -> LaserTriangulation<T> {
+        Self::new_with_bounds(adc, default_calculate_bounds)
+    }
+
+    pub fn new_with_bounds(
+        adc: T,
+        calculate_bounds: fn(f32) -> SensorValueRange<f32>,
+    ) -> LaserTriangulation<T> {
         LaserTriangulation {
             adc,
-            calculate_bounds: default_calculate_bounds,
+            calculate_bounds,
         }
     }
 
@@ -27,9 +34,7 @@ impl<T: HypedAdc> LaserTriangulation<T> {
     /// in the data sheet.
     pub fn read(&mut self) -> SensorValueRange<f32> {
         let current = self.adc.read_value() as f32;
-        let result = ((current - AMP_MIN) / (AMP_MAX - AMP_MIN))
-            * ((MEASURE_RANGE + BASE_DISTANCE) - BASE_DISTANCE)
-            + BASE_DISTANCE;
+        let result = ((current - AMP_MIN) / (AMP_MAX - AMP_MIN)) * (MEASURE_RANGE) + BASE_DISTANCE;
         (self.calculate_bounds)(result)
     }
 }
