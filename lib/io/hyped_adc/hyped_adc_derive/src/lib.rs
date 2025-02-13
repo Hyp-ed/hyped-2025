@@ -16,14 +16,13 @@ fn impl_hyped_adc(ast: &syn::DeriveInput) -> TokenStream {
     let (impl_generics, ty_generics, _) = generics.split_for_impl();
     let gen = quote! {
         impl #impl_generics HypedAdc for #name #ty_generics {
-            /// Read a value from the ADC channel
             fn read_value(&mut self) -> u16 {
                 self.adc.blocking_read(&mut self.channel)
             }
 
-            /// Return value of ADC resolution (4095)
             fn get_resolution(&self) -> u16 {
-                4095
+                /// STM32 boards have a resolution of 12 bits
+                4096
             }
         }
 
