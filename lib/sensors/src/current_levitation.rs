@@ -13,9 +13,16 @@ pub struct CurrentLevitation<T: HypedAdc> {
 impl<T: HypedAdc> CurrentLevitation<T> {
     /// Create a new instance of the Current Levitation sensor
     pub fn new(adc: T) -> CurrentLevitation<T> {
+        Self::new_with_bounds(adc, default_calculate_bounds)
+    }
+
+    pub fn new_with_bounds(
+        adc: T,
+        calculate_bounds: fn(f32) -> SensorValueRange<f32>,
+    ) -> CurrentLevitation<T> {
         CurrentLevitation {
             adc,
-            calculate_bounds: default_calculate_bounds,
+            calculate_bounds,
         }
     }
     /// The ACHS-7121 has a current range of +- 10 A, sensitivity of 185 mV/A.
