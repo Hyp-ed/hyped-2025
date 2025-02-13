@@ -4,8 +4,7 @@
 pub trait HypedAdc {
     /// Read value from the ADC channel
     fn read_value(&mut self) -> u16;
-
-    /// Get resolution of ADC sensor
+    /// Get resolution of ADC
     fn get_resolution(&self) -> u16;
 }
 
