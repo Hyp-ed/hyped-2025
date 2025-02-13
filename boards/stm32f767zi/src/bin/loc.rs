@@ -27,7 +27,8 @@ static KEYENCE_2_STRIPE_COUNT: Watch<CriticalSectionRawMutex, u32, 1> = Watch::n
 async fn main(spawner: Spawner) -> ! {
     // Import `init` so that we can initialize board peripherals.
     let p = init(Default::default());
-    let gpio_pin = Input::new(p.PC13, Pull::Down);
+    let gpio_pin1 = Input::new(p.PC13, Pull::Down);
+    let gpio_pin2 = Input::new(p.PC13, Pull::Down);
 
     // Create a sender and a receiver for the Keyence stripe count.
     let sender1 = KEYENCE_1_STRIPE_COUNT.sender();
@@ -36,10 +37,10 @@ async fn main(spawner: Spawner) -> ! {
     let mut receiver2 = KEYENCE_2_STRIPE_COUNT.receiver().unwrap();
 
     spawner
-        .spawn(read_keyence(gpio_pin.clone(), sender1))
+        .spawn(read_keyence(gpio_pin1, sender1))
         .unwrap();
     spawner
-        .spawn(read_keyence(gpio_pin.clone(), sender2))
+        .spawn(read_keyence(gpio_pin2, sender2))
         .unwrap();
 
     info!("Starting localizer loop...");
