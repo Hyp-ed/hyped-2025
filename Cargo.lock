@@ -388,6 +388,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_uart"
+version = "0.1.0"
+dependencies = [
+ "embassy-sync 0.6.2",
+ "heapless",
+]
+
+[[package]]
 name = "indexmap"
 version = "2.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
