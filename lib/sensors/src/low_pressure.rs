@@ -7,7 +7,6 @@ use hyped_adc::HypedAdc;
 /// Links to datasheets
 ///     (https://www.festo.com/gb/en/a/download-document/datasheet/8134897)
 ///     (https://www.festo.com/media/catalog/203714_documentation.pdf)
-
 pub struct LowPressure<T: HypedAdc> {
     adc: T,
 }
