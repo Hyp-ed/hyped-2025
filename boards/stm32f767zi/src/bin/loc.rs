@@ -28,7 +28,7 @@ async fn main(spawner: Spawner) -> ! {
     // Import `init` so that we can initialize board peripherals.
     let p = init(Default::default());
     let gpio_pin1 = Input::new(p.PC13, Pull::Down);
-    let gpio_pin2 = Input::new(p.PC13, Pull::Down);
+    let gpio_pin2 = Input::new(p.PC14, Pull::Down);
 
     // Create a sender and a receiver for the Keyence stripe count.
     let sender1 = KEYENCE_1_STRIPE_COUNT.sender();
