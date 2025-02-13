@@ -544,6 +544,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_adc"
+version = "0.1.0"
+dependencies = [
+ "embassy-sync 0.6.1",
+ "heapless",
+]
+
+[[package]]
 name = "hyped_boards_stm32l432kc"
 version = "0.1.0"
 dependencies = [
@@ -585,6 +593,7 @@ name = "hyped_gpio"
 version = "0.1.0"
 dependencies = [
  "heapless",
+ "hyped_core",
 ]
 
 [[package]]
@@ -602,6 +611,7 @@ dependencies = [
  "defmt",
  "embassy-sync 0.6.0",
  "heapless",
+ "hyped_adc",
  "hyped_core",
  "hyped_gpio",
  "hyped_i2c",
