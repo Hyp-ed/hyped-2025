@@ -13,8 +13,9 @@ pub mod mock_adc {
     }
 
     impl MockUart {
+        #[allow(clippy::new_without_default)]
         pub fn new() -> Self {
-            MockUart {}
+            Self {}
         }
     }
 }
