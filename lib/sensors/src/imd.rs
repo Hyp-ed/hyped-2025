@@ -1,4 +1,5 @@
 use hyped_can::{CanError, HypedCan, HypedCanFrame};
+
 // CAN Protocol Reference Manual: https://www.sensata.com/sites/default/files/a/sensata-sendyne-sim100mod-insulation-monitoring-device-protocol-manual.pdf
 // Datasheet: https://www.sensata.com/sites/default/files/a/sensata-el-sim100-mod-datasheet.pdf
 pub struct Imd<'a, T: HypedCan> {
@@ -21,7 +22,7 @@ impl<'a, T: HypedCan> Imd<'a, T> {
 
     pub fn update_values(&mut self) -> Result<(), ImdError> {
         let frame = HypedCanFrame {
-            can_id: 0x80000000 | IMD_REQUEST_DATA_CAN_ID, //the 0x80000000 is the CAN_EFF_FLAG constant from the 2023 code.
+            can_id: CAN_EFF_FLAG | IMD_REQUEST_DATA_CAN_ID,
             data: [REQUEST_ISOLATION_RESISTANCES, 0, 0, 0, 0, 0, 0, 0],
         };
 
@@ -42,6 +43,7 @@ pub enum ImdError {
     CanError(CanError),
 }
 
+const CAN_EFF_FLAG: u32 = 0x80000000;
 const IMD_REQUEST_DATA_CAN_ID: u32 = 0xA100101;
 const IMD_RESPONSE_CAN_ID: u32 = 0xA100100;
 const REQUEST_ISOLATION_RESISTANCES: u8 = 0xE1;
