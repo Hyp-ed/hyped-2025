@@ -1,6 +1,7 @@
 use crate::SensorValueRange;
 use defmt;
 use hyped_i2c::{i2c_write_or_err_16, HypedI2c, I2cError};
+
 /// time_of_flight implements the logic to read Time of Flight data from the VL6180V1 Time of Flight
 /// sensor using I2C peripheral provided by the Hyped I2c trait.
 ///
@@ -30,6 +31,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
     ) -> Result<Self, TimeOfFlightError> {
         Self::new_with_bounds(i2c, device_address, default_calculate_bounds)
     }
+
     /// Create a new instance of the time of flight sensor and configure it with bounds involved.
     pub fn new_with_bounds(
         i2c: &'a mut T,
