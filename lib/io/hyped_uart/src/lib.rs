@@ -4,7 +4,7 @@ pub trait HypedUart {
     // Add required functions here
 }
 
-pub mod mock_adc {
+pub mod mock_uart {
     /// A mock UART instance which can be used for testing
     pub struct MockUart {}
 
