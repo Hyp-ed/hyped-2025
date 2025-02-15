@@ -5,6 +5,7 @@ members = [
   "lib/control",
   "lib/io/*",
   "lib/localisation",
+  "lib/motors",
   "lib/sensors"
 ]
 exclude = [

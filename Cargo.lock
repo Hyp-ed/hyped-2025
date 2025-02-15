@@ -372,6 +372,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_motors"
+version = "0.1.0"
+dependencies = [
+ "embassy-sync 0.6.0",
+ "embassy-time",
+ "heapless",
+ "hyped_can",
+ "hyped_core",
+]
+
+[[package]]
 name = "hyped_sensors"
 version = "0.1.0"
 dependencies = [
