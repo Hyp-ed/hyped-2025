@@ -2,7 +2,7 @@ use crate::can_open_message::{config_messages, messages, CanOpenMessage};
 use hyped_can::{CanError, HypedCan, HypedCanFrame};
 
 /// All types of messages that can be sent to the motor controller
-pub enum MessagesEnum {
+pub enum Messages {
     TestStepperEnable,
     TestModeCommand,
     EnterStopState,
@@ -15,7 +15,7 @@ pub enum MessagesEnum {
     QuickStop,
 }
 
-// TODOLater consider adding a ReceivedMessagesEnum so we can decide what we do depending on the message we receive
+// TODOLater consider adding a ReceivedMessages so we can decide what we do depending on the message we receive
 
 /// Convert a CanOpenMessage to a HypedCanFrame
 impl From<CanOpenMessage> for HypedCanFrame {
@@ -46,34 +46,31 @@ impl From<HypedCanFrame> for CanOpenMessage {
             command: frame.data[0],
             index: u16::from(frame.data[1]) | (u16::from(frame.data[2]) << 8),
             sub_index: frame.data[3],
-            data: u32::from(frame.data[4])
-                | (u32::from(frame.data[5]) << 8)
-                | (u32::from(frame.data[6]) << 16)
-                | (u32::from(frame.data[7]) << 24),
+            data: u32::from_le_bytes([frame.data[4], frame.data[5], frame.data[6], frame.data[7]]),
         }
     }
 }
 
-/// Convert a MessagesEnum to a CanOpenMessage
-impl From<MessagesEnum> for CanOpenMessage {
-    fn from(message: MessagesEnum) -> Self {
+/// Convert a Message to a CanOpenMessage
+impl From<Messages> for CanOpenMessage {
+    fn from(message: Messages) -> Self {
         match message {
-            MessagesEnum::TestStepperEnable => config_messages::TEST_STEPPER_ENABLE,
-            MessagesEnum::TestModeCommand => config_messages::TEST_MODE_COMMAND,
-            MessagesEnum::EnterStopState => messages::ENTER_STOP_STATE,
-            MessagesEnum::EnterPreoperationalState => messages::ENTER_PREOPERATIONAL_STATE,
-            MessagesEnum::EnterOperationalState => messages::ENTER_OPERATIONAL_STATE,
-            MessagesEnum::SetFrequency(f) => CanOpenMessage {
+            Messages::TestStepperEnable => config_messages::TEST_STEPPER_ENABLE,
+            Messages::TestModeCommand => config_messages::TEST_MODE_COMMAND,
+            Messages::EnterStopState => messages::ENTER_STOP_STATE,
+            Messages::EnterPreoperationalState => messages::ENTER_PREOPERATIONAL_STATE,
+            Messages::EnterOperationalState => messages::ENTER_OPERATIONAL_STATE,
+            Messages::SetFrequency(f) => CanOpenMessage {
                 id: messages::SET_FREQUENCY.id,
                 command: messages::SET_FREQUENCY.command,
                 index: messages::SET_FREQUENCY.index,
                 sub_index: messages::SET_FREQUENCY.sub_index,
                 data: f,
             },
-            MessagesEnum::Shutdown => messages::SHUTDOWN,
-            MessagesEnum::SwitchOn => messages::SWITCH_ON,
-            MessagesEnum::StartDrive => messages::START_DRIVE,
-            MessagesEnum::QuickStop => messages::QUICK_STOP,
+            Messages::Shutdown => messages::SHUTDOWN,
+            Messages::SwitchOn => messages::SWITCH_ON,
+            Messages::StartDrive => messages::START_DRIVE,
+            Messages::QuickStop => messages::QUICK_STOP,
         }
     }
 }
@@ -90,7 +87,7 @@ impl<T: HypedCan> CanOpen<T> {
     }
 
     /// Send a message to the motor controller
-    pub fn send_message(&mut self, message: MessagesEnum) -> Result<(), CanError> {
+    pub fn send_message(&mut self, message: Messages) -> Result<(), CanError> {
         let frame: HypedCanFrame = CanOpenMessage::from(message).into();
         self.can.write_frame(&frame)
     }
@@ -101,5 +98,18 @@ impl<T: HypedCan> CanOpen<T> {
         let frame = envelope.frame;
         let message = CanOpenMessage::from(frame);
         Ok(message)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn convert_to_and_back() {
+        let og_message = CanOpenMessage::from(Messages::SetFrequency(1000));
+        let frame: HypedCanFrame = og_message.clone().into();
+        let message = CanOpenMessage::from(frame);
+        assert_eq!(og_message, message);
     }
 }

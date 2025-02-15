@@ -1,4 +1,5 @@
 /// Basic structure for a CanOpen Message
+#[derive(Debug, PartialEq, Clone)]
 pub struct CanOpenMessage {
     pub id: u32,
     pub index: u16,
