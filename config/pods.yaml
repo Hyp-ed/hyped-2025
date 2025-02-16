@@ -5,7 +5,7 @@ pods:
     measurements:
       accelerometer_1:
         label: 'Accelerometer 1'
-        type: 'acceleration'
+        measurement_type: 'acceleration'
         unit: 'm/s²'
         format: 'float'
         limits:
@@ -14,7 +14,7 @@ pods:
             high: 150
       accelerometer_2:
         label: 'Accelerometer 2'
-        type: 'acceleration'
+        measurement_type: 'acceleration'
         unit: 'm/s²'
         format: 'float'
         limits:
@@ -23,7 +23,7 @@ pods:
             high: 150
       accelerometer_3:
         label: 'Accelerometer 3'
-        type: 'acceleration'
+        measurement_type: 'acceleration'
         unit: 'm/s²'
         format: 'float'
         limits:
@@ -32,7 +32,7 @@ pods:
             high: 150
       accelerometer_4:
         label: 'Accelerometer 4'
-        type: 'acceleration'
+        measurement_type: 'acceleration'
         unit: 'm/s²'
         format: 'float'
         limits:
@@ -41,7 +41,7 @@ pods:
             high: 150
       accelerometer_avg:
         label: 'Accelerometer Average'
-        type: 'acceleration'
+        measurement_type: 'acceleration'
         unit: 'm/s²'
         format: 'float'
         limits:
@@ -50,7 +50,7 @@ pods:
             high: 150
       displacement:
         label: 'Displacement'
-        type: 'displacement'
+        measurement_type: 'displacement'
         unit: 'm'
         format: 'float'
         limits:
@@ -59,7 +59,7 @@ pods:
             high: 100
       velocity:
         label: 'Velocity'
-        type: 'velocity'
+        measurement_type: 'velocity'
         unit: 'm/s'
         format: 'float'
         limits:
@@ -68,7 +68,7 @@ pods:
             high: 50
       acceleration:
         label: 'Acceleration'
-        type: 'acceleration'
+        measurement_type: 'acceleration'
         unit: 'm/s²'
         format: 'float'
         limits:
@@ -77,7 +77,7 @@ pods:
             high: 5
       pressure_back_pull:
         label: 'Pressure – Back Pull'
-        type: 'pressure'
+        measurement_type: 'pressure'
         unit: 'bar'
         format: 'float'
         limits:
@@ -89,7 +89,7 @@ pods:
             high: 5.2
       pressure_front_pull:
         label: 'Pressure – Front Pull'
-        type: 'pressure'
+        measurement_type: 'pressure'
         unit: 'bar'
         format: 'float'
         limits:
@@ -101,7 +101,7 @@ pods:
             high: 5.2
       pressure_front_push:
         label: 'Pressure – Front Push'
-        type: 'pressure'
+        measurement_type: 'pressure'
         unit: 'bar'
         format: 'float'
         limits:
@@ -113,7 +113,7 @@ pods:
             high: 5.2
       pressure_back_push:
         label: 'Pressure – Back Push'
-        type: 'pressure'
+        measurement_type: 'pressure'
         unit: 'bar'
         format: 'float'
         limits:
@@ -125,7 +125,7 @@ pods:
             high: 5.2
       pressure_brakes_reservoir:
         label: 'Pressure – Brakes Reservoir'
-        type: 'pressure'
+        measurement_type: 'pressure'
         unit: 'bar'
         format: 'float'
         limits:
@@ -137,7 +137,7 @@ pods:
             high: 6.9
       pressure_active_suspension_reservoir:
         label: 'Pressure – Active Suspension Reservoir'
-        type: 'pressure'
+        measurement_type: 'pressure'
         unit: 'bar'
         format: 'float'
         limits:
@@ -149,7 +149,7 @@ pods:
             high: 6.9
       pressure_front_brake:
         label: 'Pressure – Front Brake'
-        type: 'pressure'
+        measurement_type: 'pressure'
         unit: 'bar'
         format: 'float'
         limits:
@@ -161,7 +161,7 @@ pods:
             high: 4
       pressure_back_brake:
         label: 'Pressure – Back Brake'
-        type: 'pressure'
+        measurement_type: 'pressure'
         unit: 'bar'
         format: 'float'
         limits:
@@ -173,7 +173,7 @@ pods:
             high: 4
       thermistor_1:
         label: 'Thermistor 1'
-        type: 'temperature'
+        measurement_type: 'temperature'
         unit: '°C'
         format: 'float'
         limits:
@@ -182,7 +182,7 @@ pods:
             high: 100
       thermistor_2:
         label: 'Thermistor 2'
-        type: 'temperature'
+        measurement_type: 'temperature'
         unit: '°C'
         format: 'float'
         limits:
@@ -191,7 +191,7 @@ pods:
             high: 100
       thermistor_3:
         label: 'Thermistor 3'
-        type: 'temperature'
+        measurement_type: 'temperature'
         unit: '°C'
         format: 'float'
         limits:
@@ -200,7 +200,7 @@ pods:
             high: 100
       thermistor_4:
         label: 'Thermistor 4'
-        type: 'temperature'
+        measurement_type: 'temperature'
         unit: '°C'
         format: 'float'
         limits:
@@ -209,7 +209,7 @@ pods:
             high: 100
       thermistor_5:
         label: 'Thermistor 5'
-        type: 'temperature'
+        measurement_type: 'temperature'
         unit: '°C'
         format: 'float'
         limits:
@@ -218,7 +218,7 @@ pods:
             high: 100
       thermistor_6:
         label: 'Thermistor 6'
-        type: 'temperature'
+        measurement_type: 'temperature'
         unit: '°C'
         format: 'float'
         limits:
@@ -227,7 +227,7 @@ pods:
             high: 100
       thermistor_7:
         label: 'Thermistor 7'
-        type: 'temperature'
+        measurement_type: 'temperature'
         unit: '°C'
         format: 'float'
         limits:
@@ -236,7 +236,7 @@ pods:
             high: 100
       thermistor_8:
         label: 'Thermistor 8'
-        type: 'temperature'
+        measurement_type: 'temperature'
         unit: '°C'
         format: 'float'
         limits:
@@ -245,7 +245,7 @@ pods:
             high: 100
       thermistor_9:
         label: 'Thermistor 9'
-        type: 'temperature'
+        measurement_type: 'temperature'
         unit: '°C'
         format: 'float'
         limits:
@@ -254,7 +254,7 @@ pods:
             high: 100
       thermistor_10:
         label: 'Thermistor 10'
-        type: 'temperature'
+        measurement_type: 'temperature'
         unit: '°C'
         format: 'float'
         limits:
@@ -263,7 +263,7 @@ pods:
             high: 100
       thermistor_11:
         label: 'Thermistor 11'
-        type: 'temperature'
+        measurement_type: 'temperature'
         unit: '°C'
         format: 'float'
         limits:
@@ -272,7 +272,7 @@ pods:
             high: 100
       thermistor_12:
         label: 'Thermistor 12'
-        type: 'temperature'
+        measurement_type: 'temperature'
         unit: '°C'
         format: 'float'
         limits:
@@ -281,7 +281,7 @@ pods:
             high: 100
       hall_effect_1:
         label: 'Hall Effect 1'
-        type: 'magnetism'
+        measurement_type: 'magnetism'
         unit: 'mT'
         format: 'float'
         limits:
@@ -290,7 +290,7 @@ pods:
             high: 100
       hall_effect_2:
         label: 'Hall Effect 2'
-        type: 'magnetism'
+        measurement_type: 'magnetism'
         unit: 'mT'
         format: 'float'
         limits:
@@ -299,7 +299,7 @@ pods:
             high: 100
       keyence_1:
         label: 'Keyence 1'
-        type: 'keyence'
+        measurement_type: 'keyence'
         unit: 'number of stripes'
         format: 'integer'
         limits:
@@ -311,7 +311,7 @@ pods:
             high: 10
       keyence_2:
         label: 'Keyence 2'
-        type: 'keyence'
+        measurement_type: 'keyence'
         unit: 'number of stripes'
         format: 'integer'
         limits:
@@ -323,7 +323,7 @@ pods:
             high: 10
       power_line_resistance:
         label: 'Power Line Resistance'
-        type: 'resistance'
+        measurement_type: 'resistance'
         unit: 'kΩ'
         format: 'integer'
         limits:
@@ -332,7 +332,7 @@ pods:
             high: 100
       levitation_height_1:
         label: 'Levitation Height 1'
-        type: 'levitation'
+        measurement_type: 'levitation'
         unit: 'mm'
         format: 'float'
         limits:
@@ -341,7 +341,7 @@ pods:
             high: 100
       levitation_height_2:
         label: 'Levitation Height 2'
-        type: 'levitation'
+        measurement_type: 'levitation'
         unit: 'mm'
         format: 'float'
         limits:
@@ -350,7 +350,7 @@ pods:
             high: 100
       levitation_height_3:
         label: 'Levitation Height 3'
-        type: 'levitation'
+        measurement_type: 'levitation'
         unit: 'mm'
         format: 'float'
         limits:
@@ -359,7 +359,7 @@ pods:
             high: 100
       levitation_height_4:
         label: 'Levitation Height 4'
-        type: 'levitation'
+        measurement_type: 'levitation'
         unit: 'mm'
         format: 'float'
         limits:
@@ -368,7 +368,7 @@ pods:
             high: 100
       levitation_height_lateral_1:
         label: 'Levitation Height Lateral 1'
-        type: 'levitation'
+        measurement_type: 'levitation'
         unit: 'mm'
         format: 'float'
         limits:
@@ -377,7 +377,7 @@ pods:
             high: 100
       levitation_height_lateral_2:
         label: 'Levitation Height Lateral 2'
-        type: 'levitation'
+        measurement_type: 'levitation'
         unit: 'mm'
         format: 'float'
         limits:
@@ -387,7 +387,7 @@ pods:
     statuses:
       brake_clamp_status:
         label: 'Brake Clamp Status'
-        type: 'binary-status'
+        measurement_type: 'binary-status'
         format: 'enum'
         values:
           - value: 1
@@ -396,7 +396,7 @@ pods:
             label: 'UNCLAMPED'
       pod_raised_status:
         label: 'Pod Raised Status'
-        type: 'binary-status'
+        measurement_type: 'binary-status'
         format: 'enum'
         values:
           - value: 1
@@ -405,7 +405,7 @@ pods:
             label: 'LOWERED'
       battery_status:
         label: 'Battery Status'
-        type: 'binary-status'
+        measurement_type: 'binary-status'
         format: 'enum'
         values:
           - value: 1
@@ -414,7 +414,7 @@ pods:
             label: 'UNHEALTHY'
       motor_controller_status:
         label: 'Motor Controller Status'
-        type: 'binary-status'
+        measurement_type: 'binary-status'
         format: 'enum'
         values:
           - value: 1
@@ -423,7 +423,7 @@ pods:
             label: 'UNHEALTHY'
       high_power_status:
         label: 'High Power Status'
-        type: 'binary-status'
+        measurement_type: 'binary-status'
         format: 'enum'
         values:
           - value: 1
