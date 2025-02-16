@@ -388,10 +388,12 @@ version = "0.1.0"
 dependencies = [
  "defmt",
  "embassy-sync 0.6.0",
+ "embassy-time",
  "heapless",
  "hyped_core",
  "hyped_gpio",
  "hyped_i2c",
+ "hyped_spi",
 ]
 
 [[package]]
