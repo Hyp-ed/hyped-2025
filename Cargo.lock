@@ -81,9 +81,9 @@ dependencies = [
 
 [[package]]
 name = "document-features"
-version = "0.2.10"
+version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb6969eaabd2421f8a2775cfd2471a2b634372b4a25d41e3bd647b79912850a0"
+checksum = "95249b50c6c185bee49034bcb378a49dc2b5dff0be90ff6616d31d64febab05d"
 dependencies = [
  "litrs",
 ]
@@ -129,7 +129,7 @@ dependencies = [
 [[package]]
 name = "embassy-sync"
 version = "0.6.2"
-source = "git+https://github.com/embassy-rs/embassy#c65b6db318da7ecbe888a0a66b85d9ffb28106f0"
+source = "git+https://github.com/embassy-rs/embassy#f6b480ef1c2ba421353a674cdaa5e52372d1273f"
 dependencies = [
  "cfg-if",
  "critical-section",
@@ -234,9 +234,9 @@ dependencies = [
 
 [[package]]
 name = "equivalent"
-version = "1.0.1"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
+checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
 
 [[package]]
 name = "futures-core"
@@ -324,9 +324,13 @@ dependencies = [
 name = "hyped_control"
 version = "0.1.0"
 dependencies = [
+ "embassy-sync 0.6.0",
+ "embassy-time",
  "heapless",
  "hyped_core",
  "hyped_gpio",
+ "hyped_i2c",
+ "hyped_sensors",
 ]
 
 [[package]]
@@ -374,6 +378,7 @@ dependencies = [
  "embassy-sync 0.6.0",
  "embassy-time",
  "heapless",
+ "hyped_can",
  "hyped_core",
  "libm",
 ]
@@ -395,6 +400,14 @@ name = "hyped_spi"
 version = "0.1.0"
 dependencies = [
  "embassy-sync 0.6.0",
+ "heapless",
+]
+
+[[package]]
+name = "hyped_uart"
+version = "0.1.0"
+dependencies = [
+ "embassy-sync 0.6.2",
  "heapless",
 ]
 
@@ -600,9 +613,9 @@ dependencies = [
 
 [[package]]
 name = "ryu"
-version = "1.0.18"
+version = "1.0.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3cb5ba0dc43242ce17de99c180e96db90b235b8a9fdc9543c96d2209116bd9f"
+checksum = "6ea1a2d0a644769cc99faa24c3ad26b379b786fe7c36fd3c546254801650e6dd"
 
 [[package]]
 name = "serde"
@@ -673,9 +686,9 @@ checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
 name = "syn"
-version = "2.0.96"
+version = "2.0.98"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5d0adab1ae378d7f53bdebc67a39f1f151407ef230f0ce2883572f5d8985c80"
+checksum = "36147f1a48ae0ec2b5b3bc5b537d267457555a10dc06f3dbc8cb11ba3006d3b1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -710,9 +723,9 @@ checksum = "42ff0bf0c66b8238c6f3b578df37d0b7848e55df8577b3f74f92a69acceeb825"
 
 [[package]]
 name = "unicode-ident"
-version = "1.0.14"
+version = "1.0.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "adb9e6ca4f869e1180728b7950e35922a7fc6397f7b641499e8f3ef06e50dc83"
+checksum = "a210d160f08b701c8721ba1c726c11662f877ea6b7094007e1ca9a1041945034"
 
 [[package]]
 name = "version_check"

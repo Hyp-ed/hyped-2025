@@ -1,4 +1,4 @@
-use crate::tasks::mqtt::SEND_CHANNEL;
+use crate::tasks::mqtt_send::SEND_TO_MQTT_CHANNEL;
 use core::str::FromStr;
 use defmt::{debug, error, info, warn};
 use heapless::String;
@@ -12,7 +12,7 @@ pub async fn log(level: LogLevel, message: &str) {
         LogLevel::Error => error!("{}", message),
         LogLevel::Debug => debug!("{}", message),
     }
-    SEND_CHANNEL
+    SEND_TO_MQTT_CHANNEL
         .send(MqttMessage {
             topic: MqttTopics::to_string(&MqttTopics::Logs),
             payload: String::<512>::from_str(message).unwrap(),

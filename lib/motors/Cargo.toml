@@ -9,3 +9,4 @@ embassy-time = { version = "0.3.1", features = ["defmt", "defmt-timestamp-uptime
 heapless = { version = "0.8", default-features = false, features = ["serde"] }
 hyped_core = { path = "../core" }
 libm = "0.2.11"
+hyped_can = { path = "../io/hyped_can" }
