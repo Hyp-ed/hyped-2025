@@ -1,4 +1,4 @@
-use defmt::{info, warn};
+use crate::logging::{info, warn};
 use embassy_net::tcp::TcpSocket;
 use heapless::String;
 use rust_mqtt::{
