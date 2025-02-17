@@ -331,6 +331,7 @@ dependencies = [
  "heapless",
  "hyped_can",
  "hyped_core",
+ "libm",
 ]
 
 [[package]]
