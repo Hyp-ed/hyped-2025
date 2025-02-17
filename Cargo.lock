@@ -375,6 +375,7 @@ dependencies = [
  "embassy-time",
  "heapless",
  "hyped_core",
+ "libm",
 ]
 
 [[package]]

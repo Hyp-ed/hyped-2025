@@ -8,3 +8,4 @@ embassy-sync = { version = "0.6.0", features = ["defmt"], git = "https://github.
 embassy-time = { version = "0.3.1", features = ["defmt", "defmt-timestamp-uptime", "tick-hz-32_768"], git = "https://github.com/embassy-rs/embassy", rev = "1c466b81e6af6b34b1f706318cc0870a459550b7"}
 heapless = { version = "0.8", default-features = false, features = ["serde"] }
 hyped_core = { path = "../core" }
+libm = "0.2.11"
