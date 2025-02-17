@@ -584,13 +584,16 @@ dependencies = [
 name = "hyped_gpio"
 version = "0.1.0"
 dependencies = [
+ "defmt",
  "heapless",
+ "hyped_core",
 ]
 
 [[package]]
 name = "hyped_i2c"
 version = "0.1.0"
 dependencies = [
+ "defmt",
  "embassy-sync 0.6.0",
  "heapless",
 ]

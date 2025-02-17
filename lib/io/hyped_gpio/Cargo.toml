@@ -6,4 +6,7 @@ edition = "2021"
 [dependencies]
 heapless = "0.8.0"
 hyped_core = { path = "../../core" }
+defmt = "0.3"
+
+[dev-dependencies]
 defmt = { version = "0.3", features = ["unstable-test"] }
