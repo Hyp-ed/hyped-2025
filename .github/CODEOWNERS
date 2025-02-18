@@ -1,7 +1,6 @@
 * @davidbeechey
 
 # Infrastructure
-config @kshxtij
 debugger @kshxtij
 lib/core @kshxtij
 lib/state_machine @DylanCavers
