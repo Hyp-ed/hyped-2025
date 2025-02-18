@@ -91,7 +91,6 @@ impl KalmanFilter {
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
     use nalgebra::{Matrix2, Vector1, Vector2};
 

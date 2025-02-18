@@ -13,4 +13,5 @@ defmt = "0.3"
 
 [dev-dependencies]
 # Fix from: https://github.com/embassy-rs/embassy/pull/2727
-embassy-sync = { version = "0.6.0", features = ["defmt", "std"], git = "https://github.com/embassy-rs/embassy", rev = "1c466b81e6af6b34b1f706318cc0870a459550b7"}
+embassy-sync = { version = "0.6.0", features = ["std"], git = "https://github.com/embassy-rs/embassy", rev = "1c466b81e6af6b34b1f706318cc0870a459550b7"}
+defmt = { version = "0.3", features = ["unstable-test"] }
