@@ -1,18 +1,19 @@
 * @davidbeechey
 
 # Infrastructure
+config @kshxtij
 debugger @kshxtij
 lib/core @kshxtij
-lib/config @kshxtij
 lib/state_machine @DylanCavers
 
 # Localisation
 lib/localisation @misha7b
 
-# Motors & Levitation Control
+# Control
 lib/motors @jpfbastos
 lib/levitation @jpfbastos
 lib/control @jpfbastos
+boards/stm32l432kc @jpfbastos
 
 # Sensors
 lib/sensors @H-Allen
