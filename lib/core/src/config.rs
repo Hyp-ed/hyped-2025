@@ -10,7 +10,7 @@ use config_to_rs::config_to_rs;
 ///
 /// assert_eq!(pod_name, "Poddington");
 /// ````
-#[config_to_rs(yaml, "config/pods.yaml")]
+#[config_to_rs(yaml)]
 pub struct Config;
 
 mod test {
