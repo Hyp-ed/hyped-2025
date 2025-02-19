@@ -25,8 +25,8 @@ jobs:
       matrix:
         board:
           - stm32l476rg
-          - stm32h743zi
           - stm32f767zi
+          - stm32l432kc
     steps:
       - uses: actions/checkout@v4
       - run: cargo fmt --manifest-path boards/${{ matrix.board }}/Cargo.toml -- --check

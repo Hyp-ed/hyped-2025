@@ -15,6 +15,12 @@ pub struct MqttMessage {
     pub payload: String<512>,
 }
 
+impl MqttMessage {
+    pub fn new(topic: String<48>, payload: String<512>) -> Self {
+        MqttMessage { topic, payload }
+    }
+}
+
 pub struct HypedMqttClient<'a, T, R>
 where
     T: embedded_io_async::Read + embedded_io_async::Write,
