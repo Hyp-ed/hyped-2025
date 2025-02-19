@@ -73,14 +73,14 @@ pub mod mock_can {
         /// Values that have been sent over the CAN bus
         frames_sent: CanValues,
         /// Whether to fail reading frames
-        fail_read: bool,
+        fail_read: &'a Mutex<CriticalSectionRawMutex, bool>,
         /// Whether to fail writing frames
-        fail_write: bool,
+        fail_write: &'a Mutex<CriticalSectionRawMutex, bool>,
     }
 
     impl crate::HypedCan for MockCan<'_> {
         fn read_frame(&mut self) -> Result<super::HypedEnvelope, super::CanError> {
-            if self.fail_read {
+            if self.fail_read.lock(|fail_read| *fail_read) {
                 return Err(super::CanError::Unknown);
             }
             self.frames_to_read.lock(|frames_to_read| {
@@ -95,7 +95,7 @@ pub mod mock_can {
         }
 
         fn write_frame(&mut self, frame: &super::HypedCanFrame) -> Result<(), super::CanError> {
-            if self.fail_write {
+            if self.fail_write.lock(|fail_write| *fail_write) {
                 return Err(super::CanError::Unknown);
             }
             match self.frames_sent.push_front(frame.clone()) {
@@ -109,13 +109,15 @@ pub mod mock_can {
         pub fn new(
             frames_to_read: &'static Mutex<CriticalSectionRawMutex, RefCell<CanValues>>,
         ) -> Self {
-            MockCan::new_with_failures(frames_to_read, false, false)
+            static FAIL_READ: Mutex<CriticalSectionRawMutex, bool> = Mutex::new(false);
+            static FAIL_WRITE: Mutex<CriticalSectionRawMutex, bool> = Mutex::new(false);
+            MockCan::new_with_failures(frames_to_read, &FAIL_READ, &FAIL_WRITE)
         }
 
         pub fn new_with_failures(
             frames_to_read: &'static Mutex<CriticalSectionRawMutex, RefCell<CanValues>>,
-            fail_read: bool,
-            fail_write: bool,
+            fail_read: &'static Mutex<CriticalSectionRawMutex, bool>,
+            fail_write: &'static Mutex<CriticalSectionRawMutex, bool>,
         ) -> Self {
             MockCan {
                 frames_to_read,
@@ -128,22 +130,6 @@ pub mod mock_can {
         /// Get the values that have been sent over the CAN bus
         pub fn get_can_frames(&self) -> &CanValues {
             &self.frames_sent
-        }
-
-        pub fn set_read_to_fail(&mut self) {
-            self.fail_read = true;
-        }
-
-        pub fn set_write_to_fail(&mut self) {
-            self.fail_write = true;
-        }
-
-        pub fn set_read_to_pass(&mut self) {
-            self.fail_read = false;
-        }
-
-        pub fn set_write_to_pass(&mut self) {
-            self.fail_write = false;
         }
     }
 }

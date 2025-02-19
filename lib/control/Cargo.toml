@@ -4,7 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+embassy-time = { version = "0.3.1", git = "https://github.com/embassy-rs/embassy", rev = "1c466b81e6af6b34b1f706318cc0870a459550b7"}
+embassy-sync = { version = "0.6.0", git = "https://github.com/embassy-rs/embassy", rev = "1c466b81e6af6b34b1f706318cc0870a459550b7"}
 heapless = "0.8.0"
 
 hyped_core = { path = "../core" }
 hyped_gpio = { path = "../io/hyped_gpio" }
+hyped_i2c = { path = "../io/hyped_i2c"}
+hyped_sensors = { path = "../sensors"}  

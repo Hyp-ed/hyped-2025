@@ -7,7 +7,6 @@ use embassy_stm32::can::{
 use embassy_stm32::gpio::{Input, Output};
 use embassy_stm32::{i2c::I2c, mode::Blocking};
 use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
-
 use hyped_adc::HypedAdc;
 use hyped_adc_derive::HypedAdc;
 use hyped_can::{CanError, HypedCan, HypedCanFrame, HypedEnvelope};
