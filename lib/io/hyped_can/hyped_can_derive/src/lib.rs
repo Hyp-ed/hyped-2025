@@ -79,10 +79,8 @@ fn impl_hyped_can(ast: &syn::DeriveInput) -> TokenStream {
             }
         }
 
-
-
         impl #impl_generics #name #ty_generics {
-            pub fn new(can: &'static Mutex<NoopRawMutex, RefCell<Can<'static>>>) -> Self {
+            pub fn new(can: &'d Mutex<NoopRawMutex, RefCell<&'d mut Can<'static>>>) -> Self {
                 Self { can }
             }
         }

@@ -31,6 +31,12 @@ pub struct HypedCanFrame {
     pub data: [u8; 8], // data that is sent over CAN, split into bytes
 }
 
+impl HypedCanFrame {
+    pub fn new(can_id: u32, data: [u8; 8]) -> Self {
+        HypedCanFrame { can_id, data }
+    }
+}
+
 pub type Timestamp = embassy_time::Instant;
 
 #[derive(Clone)]
