@@ -1,70 +1,76 @@
 use embassy_time::{Duration, Instant, Timer};
+use hyped_gpio::HypedGpioOutputPin;
 use hyped_spi::{HypedSpi, SpiError};
 
 /// Optical flow implements the logic to interact with the PMW3901MB-TXQT: Optical Motion Tracking Chip
 ///
 /// This implementation is directly coming from https://github.com/pimoroni/pmw3901-python/blob/main/pmw3901/__init__.py
 /// Data Sheet: https://www.codico.com/de/mpattachment/file/download/id/952/
-pub struct OpticalFlow<'a, T: HypedSpi + 'a> {
+pub struct OpticalFlow<'a, T: HypedSpi + 'a, C: HypedGpioOutputPin> {
     spi: &'a mut T,
+    cs: C,
 }
 
-impl<'a, T: HypedSpi> OpticalFlow<'a, T> {
+impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
     /// Note: ensure SPI instance is configured properly being passed in
-    pub async fn new(spi: &'a mut T) -> Result<Self, OpticalFlowError> {
-        let mut optical_flow = Self { spi };
+    pub async fn new(spi: &'a mut T, cs: C) -> Result<Self, OpticalFlowError> {
+        let mut optical_flow = Self { spi, cs };
 
-        let power_up_reset_instr = &mut [REG_POWER_UP_RESET | 0x80, POWER_UP_RESET_INSTR];
+        optical_flow.cs.set_low();
+        Timer::after(Duration::from_millis(5)).await;
+        optical_flow.cs.set_high();
+
+        let power_up_reset_instr = &mut [REG_POWER_UP_RESET, POWER_UP_RESET_INSTR];
+        Timer::after(Duration::from_millis(2)).await;
         optical_flow.write(power_up_reset_instr)?;
 
         for offset in 0..NUM_UNIQUE_DATA_VALUES {
-            let data = &mut [REG_DATA_READY + offset];
-            optical_flow.read(data)?;
+            optical_flow.read(REG_DATA_READY + offset)?;
         }
 
         optical_flow.secret_sauce().await?;
         defmt::info!("Secret sauce done");
 
-        // ensure device identifies itself correctly
-        // let product_id_data = &mut [REG_PRODUCT_ID];
-        // defmt::info!("Reading product ID...");
-        // perform_transfer(optical_flow.spi, product_id_data)?;
-        // defmt::info!("read");
-        // match product_id_data.get(0) {
-        //     Some(x)) if *x == PMW3901_PRODUCT_ID => (),
-        //     _ => return Err(OpticalFlowError::InvalidProductId),
-        // }
+        let (product_id, revision_id) = optical_flow.get_id()?;
+        if product_id != PMW3901_PRODUCT_ID {
+            return Err(OpticalFlowError::InvalidProductId);
+        }
 
-        // defmt::info!("Product ID check done");
-
-        // let revision_id_data = &mut [REG_REVISION_ID];
-        // perform_transfer(optical_flow.spi, revision_id_data)?;
-        // match revision_id_data.get(0) {
-        //     Some(x)) if VALID_PMW3901_REVISIONS.contains(x) => (),
-        //     _ => return Err(OpticalFlowError::InvalidRevisionId),
-        // }
-
-        // defmt::info!("Revision ID check done");
+        if !VALID_PMW3901_REVISIONS.contains(&revision_id) {
+            return Err(OpticalFlowError::InvalidRevisionId);
+        }
 
         Ok(optical_flow)
     }
 
-    fn write(&mut self, data: &mut [u8]) -> Result<(), OpticalFlowError> {
-        match self.spi.transfer_in_place(data) {
-            Ok(_) => Ok(()),
-            Err(e) => Err(OpticalFlowError::SpiError(e)),
-        }
+    fn get_id(&mut self) -> Result<(u8, u8), OpticalFlowError> {
+        let product_id = self.read(REG_PRODUCT_ID)?;
+        let revision_id = self.read(REG_REVISION_ID)?;
+        Ok((product_id, revision_id))
     }
 
-    fn read(&mut self, data: &mut [u8]) -> Result<(), OpticalFlowError> {
-        let register = data[0];
-        for i in 0..data.len() {
-            let _value = self
-                .spi
-                .transfer_in_place(&mut [register + i as u8, 0])
-                .unwrap();
-        }
-        Ok(())
+    fn write(&mut self, data: &mut [u8; 2]) -> Result<(), OpticalFlowError> {
+        self.cs.set_low();
+        let result = match self.spi.transfer_in_place(
+            // OR 0x80 to the register
+            &mut [data[0] | 0x80, data[1]],
+        ) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(OpticalFlowError::SpiError(e)),
+        };
+        self.cs.set_high();
+        result
+    }
+
+    fn read(&mut self, register: u8) -> Result<u8, OpticalFlowError> {
+        let data = &mut [register, 0];
+        self.cs.set_low();
+        let _value = self
+            .spi
+            .transfer_in_place(&mut [register as u8, 0])
+            .unwrap();
+        self.cs.set_high();
+        Ok(data[1])
     }
 
     /// Get motion data from PMW3901 using burst read.
@@ -72,6 +78,7 @@ impl<'a, T: HypedSpi> OpticalFlow<'a, T> {
         let start = Instant::now();
 
         while start.elapsed() < TIMEOUT {
+            self.cs.set_low();
             let mut data = [
                 REG_MOTION_BURST, // Command byte to initiate burst read
                 0x00,             // Placeholder for the rest of the 12 bytes
@@ -87,10 +94,10 @@ impl<'a, T: HypedSpi> OpticalFlow<'a, T> {
                 0x00,
                 0x00,
             ];
-
             self.spi
                 .transfer_in_place(&mut data)
                 .expect("Failed to read motion data.");
+            self.cs.set_high();
 
             // Parse the response data
             let response = &data[1..]; // Ignore the command byte
@@ -128,9 +135,7 @@ impl<'a, T: HypedSpi> OpticalFlow<'a, T> {
                     Timer::after(Duration::from_millis(value as u64)).await;
                 }
                 register => {
-                    self.spi
-                        .write(&[register, value])
-                        .map_err(|e| OpticalFlowError::SpiError(e))?;
+                    let _ = self.write(&mut [register, value]);
                 }
             }
         }
@@ -144,10 +149,7 @@ impl<'a, T: HypedSpi> OpticalFlow<'a, T> {
             .await?;
 
         // Read from register 0x67
-        let mut read_data = [0x67, 0x00];
-        self.read(&mut read_data)
-            .expect("Failed to read register 0x67");
-        let result = read_data[1];
+        let result = self.read(0x67).expect("Failed to read register 0x67");
 
         // Perform conditional writes based on the read result
         let value_to_write = if result & 0b1000_0000 != 0 {
@@ -163,20 +165,11 @@ impl<'a, T: HypedSpi> OpticalFlow<'a, T> {
             .await?;
 
         // Perform the conditional register adjustments
-        let mut reg_73_data = [0x73, 0x00];
-        self.read(&mut reg_73_data)
-            .expect("Failed to read register 0x73");
-        if reg_73_data[1] == 0x00 {
-            let mut reg_70 = [0x70, 0x00];
-            let mut reg_71 = [0x71, 0x00];
+        let reg_73_data = self.read(0x73).expect("Failed to read register 0x73");
 
-            self.read(&mut reg_70)
-                .expect("Failed to read register 0x70");
-            self.read(&mut reg_71)
-                .expect("Failed to read register 0x71");
-
-            let mut c1 = reg_70[1];
-            let mut c2 = reg_71[1];
+        if reg_73_data == 0x00 {
+            let mut c1 = self.read(0x70).expect("Failed to read register 0x70");
+            let mut c2 = self.read(0x71).expect("Failed to read register 0x71");
 
             if c1 <= 28 {
                 c1 += 14;
@@ -186,7 +179,7 @@ impl<'a, T: HypedSpi> OpticalFlow<'a, T> {
 
             c1 = c1.min(0x3F);
             c1 = c1.max(0x00);
-            c2 = (c2 * 45) / 100;
+            c2 = (c2 * 45) / 100; // TODO: maybe need floor division
 
             self.bulk_write(&[0x7F, 0x00, 0x61, 0xAD, 0x51, 0x70, 0x7F, 0x0E])
                 .await?;
