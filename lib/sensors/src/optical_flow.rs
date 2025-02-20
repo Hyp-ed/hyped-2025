@@ -1,4 +1,3 @@
-use defmt::warn;
 use embassy_time::{Duration, Instant, Timer};
 use hyped_gpio::HypedGpioOutputPin;
 use hyped_spi::{HypedSpi, SpiError};
