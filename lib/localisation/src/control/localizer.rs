@@ -9,7 +9,6 @@ use crate::{
 };
 
 use heapless::Vec;
-
 use libm::pow;
 use nalgebra::{Matrix2, Vector1, Vector2};
 
