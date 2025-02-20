@@ -23,7 +23,7 @@ critical-section = "1.1"
 embedded-storage = "0.3.1"
 static_cell = "2"
 
-hyped_core ={ path = "../../lib/core" }
+hyped_core = { path = "../../lib/core" }
 hyped_sensors = { path = "../../lib/sensors" }
 hyped_control = { path = "../../lib/control" }
 

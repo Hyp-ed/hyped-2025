@@ -21,12 +21,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "683d7910e743518b0e34f1186f92494becacb047c7b6bf616c96772180fef923"
 
 [[package]]
-name = "anyhow"
-version = "1.0.95"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34ac096ce696dc2fcabef30516bb13c0a68a11d30131d3df6f04711467681b04"
-
-[[package]]
 name = "approx"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -143,7 +137,7 @@ dependencies = [
  "defmt",
  "document-features",
  "embassy-net-driver",
- "embassy-sync 0.6.0",
+ "embassy-sync",
  "embassy-time",
  "embedded-io-async",
  "embedded-nal-async",
@@ -174,27 +168,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "embassy-sync"
-version = "0.6.2"
-source = "git+https://github.com/embassy-rs/embassy#f3b98a8748ad5ef7761dccb2e935cecea9e1e707"
-dependencies = [
- "cfg-if",
- "critical-section",
- "defmt",
- "embedded-io-async",
- "futures-sink",
- "futures-util",
- "heapless",
-]
-
-[[package]]
 name = "embassy-time"
 version = "0.3.2"
 source = "git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f706318cc0870a459550b7#1c466b81e6af6b34b1f706318cc0870a459550b7"
 dependencies = [
  "cfg-if",
  "critical-section",
- "defmt",
  "document-features",
  "embassy-time-driver",
  "embassy-time-queue-driver",
@@ -289,22 +268,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "equivalent"
-version = "1.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
-
-[[package]]
 name = "futures-core"
 version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "05f29059c0c2090612e8d742178b0580d2dc940c837851ad723096f87af6663e"
-
-[[package]]
-name = "futures-sink"
-version = "0.3.31"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e575fab7d1e0dcb8d0c7bcf9a63ee213816ab51902e6d244a95819acacf1d4f7"
 
 [[package]]
 name = "futures-task"
@@ -344,18 +311,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "hashbrown"
-version = "0.15.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf151400ff0baff5465007dd2f3e717f3fe502074ca563069ce3a6629d07b289"
-
-[[package]]
 name = "hashlink"
 version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8094feaf31ff591f651a2664fb9cfd92bba7a60ce3197265e9482ebe753c8f7"
 dependencies = [
- "hashbrown 0.14.5",
+ "hashbrown",
 ]
 
 [[package]]
@@ -371,35 +332,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "hyped_adc"
-version = "0.1.0"
-dependencies = [
- "embassy-sync 0.6.2",
- "heapless",
-]
-
-[[package]]
 name = "hyped_can"
 version = "0.1.0"
 dependencies = [
- "embassy-sync 0.6.0",
+ "defmt",
+ "embassy-sync",
  "embassy-time",
  "heapless",
-]
-
-[[package]]
-name = "hyped_config"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_yml",
 ]
 
 [[package]]
 name = "hyped_control"
 version = "0.1.0"
 dependencies = [
- "embassy-sync 0.6.0",
+ "embassy-sync",
  "embassy-time",
  "heapless",
  "hyped_core",
@@ -417,6 +363,7 @@ dependencies = [
  "embassy-net",
  "embedded-io-async",
  "heapless",
+ "log",
  "rand_core",
  "rust-mqtt",
  "serde",
@@ -426,6 +373,7 @@ dependencies = [
 name = "hyped_gpio"
 version = "0.1.0"
 dependencies = [
+ "defmt",
  "heapless",
  "hyped_core",
 ]
@@ -434,7 +382,8 @@ dependencies = [
 name = "hyped_i2c"
 version = "0.1.0"
 dependencies = [
- "embassy-sync 0.6.0",
+ "defmt",
+ "embassy-sync",
  "heapless",
 ]
 
@@ -442,6 +391,7 @@ dependencies = [
 name = "hyped_localisation"
 version = "0.1.0"
 dependencies = [
+ "defmt",
  "heapless",
  "libm",
  "nalgebra",
@@ -451,7 +401,8 @@ dependencies = [
 name = "hyped_motors"
 version = "0.1.0"
 dependencies = [
- "embassy-sync 0.6.0",
+ "defmt",
+ "embassy-sync",
  "embassy-time",
  "heapless",
  "hyped_can",
@@ -464,7 +415,7 @@ name = "hyped_sensors"
 version = "0.1.0"
 dependencies = [
  "defmt",
- "embassy-sync 0.6.0",
+ "embassy-sync",
  "heapless",
  "hyped_core",
  "hyped_gpio",
@@ -472,36 +423,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "hyped_spi"
+name = "hyped_state_machine"
 version = "0.1.0"
 dependencies = [
- "embassy-sync 0.6.0",
+ "defmt",
+ "embassy-net",
  "heapless",
+ "hyped_core",
+ "rust-mqtt",
 ]
-
-[[package]]
-name = "hyped_uart"
-version = "0.1.0"
-dependencies = [
- "embassy-sync 0.6.2",
- "heapless",
-]
-
-[[package]]
-name = "indexmap"
-version = "2.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c9c992b02b5b4c94ea26e32fe5bccb7aa7d9f390ab5c1221ff895bc7ea8b652"
-dependencies = [
- "equivalent",
- "hashbrown 0.15.2",
-]
-
-[[package]]
-name = "itoa"
-version = "1.0.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d75a2a4b1b190afb6f5425f10f6a8f959d2ea0b9c2b1d79553551850539e4674"
 
 [[package]]
 name = "libm"
@@ -510,32 +440,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8355be11b20d696c8f18f6cc018c4e372165b1fa8126cef092399c9951984ffa"
 
 [[package]]
-name = "libyml"
-version = "0.0.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3302702afa434ffa30847a83305f0a69d6abd74293b6554c18ec85c7ef30c980"
-dependencies = [
- "anyhow",
- "version_check",
-]
-
-[[package]]
 name = "litrs"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4ce301924b7887e9d637144fdade93f9dfff9b60981d4ac161db09720d39aa5"
 
 [[package]]
+name = "log"
+version = "0.4.25"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "04cbf5b083de1c7e0222a7a51dbfdba1cbe1c6ab0b15e29fff3f6c077fd9cd9f"
+
+[[package]]
 name = "managed"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0ca88d725a0a943b096803bd34e73a4437208b6077654cc4ecb2947a5f91618d"
-
-[[package]]
-name = "memchr"
-version = "2.7.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
 
 [[package]]
 name = "nalgebra"
@@ -694,12 +614,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ryu"
-version = "1.0.19"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ea1a2d0a644769cc99faa24c3ad26b379b786fe7c36fd3c546254801650e6dd"
-
-[[package]]
 name = "saphyr"
 version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -739,21 +653,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "serde_yml"
-version = "0.0.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "59e2dd588bf1597a252c3b920e0143eb99b0f76e4e082f4c92ce34fbc9e71ddd"
-dependencies = [
- "indexmap",
- "itoa",
- "libyml",
- "memchr",
- "ryu",
- "serde",
- "version_check",
 ]
 
 [[package]]
