@@ -1,4 +1,4 @@
-use defmt::warn;
+use defmt::*;
 use embassy_time::{Duration, Instant, Timer};
 use hyped_gpio::HypedGpioOutputPin;
 use hyped_spi::{HypedSpi, SpiError};
@@ -28,7 +28,7 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
         }
 
         optical_flow.secret_sauce().await?;
-        defmt::info!("Secret sauce done");
+        debug!("Secret sauce done");
 
         let (product_id, revision_id) = optical_flow.get_id()?;
         if product_id != PMW3901_PRODUCT_ID {
@@ -49,31 +49,8 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
         Ok((product_id, revision_id))
     }
 
-    /// Writes a single byte to a register
-    fn write(&mut self, register: u8, data: u8) -> Result<(), OpticalFlowError> {
-        self.cs.set_low();
-        let result = match self.spi.transfer_in_place(
-            // OR 0x80 to the register
-            &mut [register | 0x80, data],
-        ) {
-            Ok(_) => Ok(()),
-            Err(e) => Err(OpticalFlowError::SpiError(e)),
-        };
-        self.cs.set_high();
-        result
-    }
-
-    /// Read a single byte from a register
-    fn read(&mut self, register: u8) -> Result<u8, OpticalFlowError> {
-        let data = &mut [register, 0];
-        self.cs.set_low();
-        self.spi.transfer_in_place(data).unwrap();
-        self.cs.set_high();
-        Ok(data[1])
-    }
-
     /// Get motion data from PMW3901 using burst read.
-    pub async fn get_motion(&mut self) -> Result<OpticalFlowMotion, &'static str> {
+    pub async fn get_motion(&mut self) -> Result<Motion, &'static str> {
         let start = Instant::now();
 
         while start.elapsed() < TIMEOUT {
@@ -115,7 +92,7 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
 
             // Validate the data
             if (dr & 0b1000_0000) != 0 && !(quality < 0x19 && shutter_upper == 0x1F) {
-                return Ok(OpticalFlowMotion { x, y });
+                return Ok(Motion { x, y });
             }
 
             // Wait before retrying
@@ -123,6 +100,60 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
         }
 
         Err("Timed out waiting for motion data")
+    }
+
+    /// Set orientation of PMW3901 in increments of 90 degrees.
+    pub async fn set_rotation(&mut self, orientation: Orientation) -> Result<(), OpticalFlowError> {
+        match orientation {
+            Orientation::Degrees0 => self.set_orientation(true, true, true).await,
+            Orientation::Degrees90 => self.set_orientation(false, true, false).await,
+            Orientation::Degrees180 => self.set_orientation(false, false, true).await,
+            Orientation::Degrees270 => self.set_orientation(true, false, false).await,
+        }
+    }
+
+    /// Sets the orientation of the PMW3901 manually.
+    /// Swapping is performed before flipping.
+    pub async fn set_orientation(
+        &mut self,
+        invert_x: bool,
+        invert_y: bool,
+        swap_xy: bool,
+    ) -> Result<(), OpticalFlowError> {
+        let mut value = 0;
+        if swap_xy {
+            value |= 0b1000_0000;
+        }
+        if invert_x {
+            value |= 0b0100_0000;
+        }
+        if invert_y {
+            value |= 0b0010_0000;
+        }
+        self.write(REG_ORIENTATION, value)
+    }
+
+    /// Writes a single byte to a register
+    fn write(&mut self, register: u8, data: u8) -> Result<(), OpticalFlowError> {
+        self.cs.set_low();
+        let result = match self.spi.transfer_in_place(
+            // OR 0x80 to the register
+            &mut [register | 0x80, data],
+        ) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(OpticalFlowError::SpiError(e)),
+        };
+        self.cs.set_high();
+        result
+    }
+
+    /// Read a single byte from a register
+    fn read(&mut self, register: u8) -> Result<u8, OpticalFlowError> {
+        let data = &mut [register, 0];
+        self.cs.set_low();
+        self.spi.transfer_in_place(data).unwrap();
+        self.cs.set_high();
+        Ok(data[1])
     }
 
     /// Perform a bulk write of data to the sensor
@@ -154,11 +185,10 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
         ])
         .await?;
 
-        // Read from register 0x67
-        let result = self.read(0x67).expect("Failed to read register 0x67");
+        let reg_67_data = self.read(0x67).expect("Failed to read register 0x67");
 
         // Perform conditional writes based on the read result
-        let value_to_write = if result & 0b1000_0000 != 0 {
+        let value_to_write = if reg_67_data & 0b1000_0000 != 0 {
             0x04
         } else {
             0x02
@@ -190,7 +220,6 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
             }
 
             c1 = c1.min(0x3F);
-            c1 = c1.max(0x00);
             c2 = (c2 * 45) / 100;
 
             self.bulk_write(&[(0x7F, 0x00), (0x61, 0xAD), (0x51, 0x70), (0x7F, 0x0E)])
@@ -288,9 +317,16 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
 }
 
 #[derive(Debug)]
-pub struct OpticalFlowMotion {
+pub struct Motion {
     pub x: i16,
     pub y: i16,
+}
+
+pub enum Orientation {
+    Degrees0,
+    Degrees90,
+    Degrees180,
+    Degrees270,
 }
 
 /// Represents the possible errors that can occur when reading the optical flow sensor
@@ -308,9 +344,9 @@ const REG_DATA_READY: u8 = 0x02;
 const REG_POWER_UP_RESET: u8 = 0x3A;
 const REG_MOTION_BURST: u8 = 0x16;
 const REG_ORIENTATION: u8 = 0x5B;
-const REG_RESOLUTION: u8 = 0x4E;
-const REG_RAWDATA_GRAB: u8 = 0x58;
-const REG_RAWDATA_GRAB_STATUS: u8 = 0x59;
+const _REG_RESOLUTION: u8 = 0x4E;
+const _REG_RAWDATA_GRAB: u8 = 0x58;
+const _REG_RAWDATA_GRAB_STATUS: u8 = 0x59;
 
 // Register Configurations
 const POWER_UP_RESET_INSTR: u8 = 0x5A;

@@ -8,4 +8,4 @@ runner = "probe-rs run --chip STM32F767ZITx"
 target = "thumbv7em-none-eabihf"
 
 [env]
-DEFMT_LOG = "debug,smoltcp=info"
+DEFMT_LOG = "info"
