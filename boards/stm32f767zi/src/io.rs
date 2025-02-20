@@ -5,9 +5,10 @@ use embassy_stm32::spi::{self, Spi};
 use embassy_stm32::{i2c::I2c, mode::Blocking};
 use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
 
-use heapless::Vec;
+use heapless::{String, Vec};
 use hyped_adc::HypedAdc;
 use hyped_adc_derive::HypedAdc;
+use hyped_core::format;
 use hyped_gpio::{HypedGpioInputPin, HypedGpioOutputPin};
 use hyped_gpio_derive::{HypedGpioInputPin, HypedGpioOutputPin};
 use hyped_i2c::{HypedI2c, I2cError};
@@ -51,6 +52,7 @@ impl HypedSpi for Stm32f767ziSpi {
         // only support u8 for now, create a new vec to store the read data
         let mut binding = Vec::<u8, 64>::new();
         let new_words = binding.as_mut_slice();
+        defmt::info!("r: {:#04x} {:#04x}", new_words[0], new_words[1]);
         match self.spi.blocking_read(new_words) {
             Ok(_) => {
                 // convert new_words to HypedWord and store it in words
@@ -72,7 +74,7 @@ impl HypedSpi for Stm32f767ziSpi {
         // only support u8 for now, convert HypedWord to u8
         let binding = words.iter().map(|word| *word).collect::<Vec<u8, 64>>();
         let new_words = binding.as_slice();
-
+        defmt::info!("w: {:#04x} {:#04x}", new_words[0], new_words[1]);
         match self.spi.blocking_write(new_words) {
             Ok(_) => Ok(()),
             Err(e) => Err(match e {
@@ -88,7 +90,7 @@ impl HypedSpi for Stm32f767ziSpi {
         // only support u8 for now, convert HypedWord to u8
         let mut binding = data.iter().map(|word| *word).collect::<Vec<u8, 64>>();
         let new_words = binding.as_mut_slice();
-
+        defmt::info!("t: {:#04x} {:#04x}", new_words[0], new_words[1]);
         match self.spi.blocking_transfer_in_place(new_words) {
             Ok(_) => {
                 // convert new_words to HypedWord and store it in data

@@ -4,10 +4,10 @@
 use embassy_executor::Spawner;
 use embassy_stm32::gpio::{Level, Output, Speed};
 use embassy_stm32::spi::{self, BitOrder, Spi};
-use embassy_stm32::time::{khz, mhz, Hertz};
+use embassy_stm32::time::khz;
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::io::{Stm32f767ziGpioOutput, Stm32f767ziSpi};
-use hyped_sensors::optical_flow::{self, OpticalFlow};
+use hyped_sensors::optical_flow::OpticalFlow;
 use {defmt_rtt as _, panic_probe as _};
 
 #[embassy_executor::main]
@@ -16,7 +16,7 @@ async fn main(_spawner: Spawner) -> ! {
 
     let mut spi_config = spi::Config::default();
     spi_config.frequency = khz(400);
-    spi_config.bit_order = BitOrder::LsbFirst;
+    spi_config.bit_order = BitOrder::MsbFirst;
 
     let spi = Spi::new_blocking(p.SPI1, p.PB3, p.PB5, p.PB4, spi_config);
     let mut hyped_spi = Stm32f767ziSpi::new(spi);
@@ -30,9 +30,8 @@ async fn main(_spawner: Spawner) -> ! {
     defmt::info!("Optical flow sensor initialized.");
 
     loop {
-        defmt::info!("Reading optical flow sensor...");
         let flow = optical_flow.get_motion().await.unwrap();
         defmt::info!("Flow: {:?}", flow);
-        // Timer::after(Duration::from_secs(1)).await;
+        Timer::after(Duration::from_millis(500)).await;
     }
 }

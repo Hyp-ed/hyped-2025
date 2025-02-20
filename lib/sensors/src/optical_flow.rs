@@ -1,3 +1,4 @@
+use defmt::warn;
 use embassy_time::{Duration, Instant, Timer};
 use hyped_gpio::HypedGpioOutputPin;
 use hyped_spi::{HypedSpi, SpiError};
@@ -31,14 +32,14 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
         optical_flow.secret_sauce().await?;
         defmt::info!("Secret sauce done");
 
-        let (product_id, revision_id) = optical_flow.get_id()?;
-        if product_id != PMW3901_PRODUCT_ID {
-            return Err(OpticalFlowError::InvalidProductId);
-        }
+        // let (product_id, revision_id) = optical_flow.get_id()?;
+        // if product_id != PMW3901_PRODUCT_ID {
+        //     warn!("Invalid product id: {}", product_id);
+        // }
 
-        if !VALID_PMW3901_REVISIONS.contains(&revision_id) {
-            return Err(OpticalFlowError::InvalidRevisionId);
-        }
+        // if !VALID_PMW3901_REVISIONS.contains(&revision_id) {
+        //     warn!("Invalid revision id: {}", revision_id);
+        // }
 
         Ok(optical_flow)
     }
@@ -65,10 +66,7 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
     fn read(&mut self, register: u8) -> Result<u8, OpticalFlowError> {
         let data = &mut [register, 0];
         self.cs.set_low();
-        let _value = self
-            .spi
-            .transfer_in_place(&mut [register as u8, 0])
-            .unwrap();
+        self.spi.transfer_in_place(data).unwrap();
         self.cs.set_high();
         Ok(data[1])
     }
@@ -101,6 +99,9 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
 
             // Parse the response data
             let response = &data[1..]; // Ignore the command byte
+
+            defmt::info!("Response: {:?}", response);
+
             let mut cursor = response.iter(); // Iterator to parse data sequentially
 
             let dr = cursor.next().unwrap();
