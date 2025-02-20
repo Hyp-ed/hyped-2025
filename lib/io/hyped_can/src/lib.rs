@@ -25,15 +25,21 @@ pub enum CanError {
     InvalidCanId,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy, Debug)]
 pub struct HypedCanFrame {
     pub can_id: u32,   // 32 bit CAN_ID + EFF/RTR/ERR flags
     pub data: [u8; 8], // data that is sent over CAN, split into bytes
 }
 
+impl HypedCanFrame {
+    pub fn new(can_id: u32, data: [u8; 8]) -> Self {
+        HypedCanFrame { can_id, data }
+    }
+}
+
 pub type Timestamp = embassy_time::Instant;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct HypedEnvelope {
     /// Reception time.
     pub ts: Timestamp,
@@ -98,7 +104,7 @@ pub mod mock_can {
             if self.fail_write.lock(|fail_write| *fail_write) {
                 return Err(super::CanError::Unknown);
             }
-            match self.frames_sent.push_front(frame.clone()) {
+            match self.frames_sent.push_front(*frame) {
                 Ok(_) => Ok(()),
                 Err(_) => Err(super::CanError::Unknown),
             }
