@@ -174,7 +174,7 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
         Ok(())
     }
 
-    /// Perform bulk writes as per the Python implementation, but who knows wth this function does
+    /// Perform bulk writes as per the Python implementation, but who knows what this function does
     async fn secret_sauce(&mut self) -> Result<(), OpticalFlowError> {
         self.bulk_write(&[
             (0x7F, 0x00),
