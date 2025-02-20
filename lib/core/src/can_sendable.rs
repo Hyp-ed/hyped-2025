@@ -1,5 +1,3 @@
-use defmt::error;
-
 pub enum CanMessageType {
     Bool = 0,
     F32 = 1,
@@ -15,8 +13,7 @@ impl From<u8> for CanMessageType {
             2 => CanMessageType::TwoU16,
             3 => CanMessageType::PosDelta,
             _ => {
-                error!("Unknown CanMessageType: {}", val);
-                panic!();
+                panic!("Unknown CanMessageType: {}", val);
             }
         }
     }
@@ -187,7 +184,7 @@ impl PositionDelta {
 
     /// Attempt to decode a CAN PositionDelta value and add it to the current structure
     /// example implementation
-    /// ```NoRun // cos doctests dont like no_std
+    /// ```no_run (doc tests don't like no_std)
     /// use hyped_core::can_sendable::*;
     ///
     /// let mut pos_d = PositionDelta::new_empty();
@@ -255,8 +252,7 @@ impl PositionDelta {
                 }
             }
             _ => {
-                error!("Unknown PositionDelta step type: {}", step_type);
-                panic!();
+                panic!("Unknown PositionDelta step type: {}", step_type);
             }
         }
         None
