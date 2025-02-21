@@ -2,3 +2,4 @@
 
 pub mod hp_relay;
 pub mod pneumatics;
+pub mod pid_controller;
