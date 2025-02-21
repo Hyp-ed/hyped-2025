@@ -9,8 +9,10 @@ use embassy_sync::{
     },
     watch::Sender,
 };
-use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
-use hyped_sensors::SensorValueRange;
+use hyped_sensors::{
+    temperature::{Status, Temperature, TemperatureAddresses},
+    SensorValueRange,
+};
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
@@ -22,8 +24,13 @@ pub async fn read_temperature(
 ) -> ! {
     let mut hyped_i2c = Stm32f767ziI2c::new(i2c_bus);
 
-    let mut temperature_sensor = Temperature::new(&mut hyped_i2c, TemperatureAddresses::Address3f)
-        .expect(
+    let mut temperature_sensor = Temperature::new_unconfigured(
+        "poddington",
+        "thermistor_1",
+        &mut hyped_i2c,
+        TemperatureAddresses::Address3f,
+    )
+    .expect(
         "Failed to create temperature sensor. Check the wiring and the I2C address of the sensor.",
     );
 
