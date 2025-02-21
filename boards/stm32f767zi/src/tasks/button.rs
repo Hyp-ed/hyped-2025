@@ -1,4 +1,4 @@
-use super::mqtt::SEND_CHANNEL;
+use super::mqtt_send::SEND_TO_MQTT_CHANNEL;
 use core::str::FromStr;
 use embassy_stm32::gpio::{AnyPin, Input, Pull};
 use embassy_time::{Duration, Timer};
@@ -20,7 +20,7 @@ pub struct ButtonMqttMessage {
 pub async fn button_task(pin: AnyPin) {
     let button = Input::new(pin, Pull::Down);
     loop {
-        SEND_CHANNEL
+        SEND_TO_MQTT_CHANNEL
             .send(MqttMessage {
                 topic: MqttTopics::to_string(&MqttTopics::Debug),
                 payload: String::<512>::from_str(
