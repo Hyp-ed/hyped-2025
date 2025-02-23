@@ -14,3 +14,17 @@ pub enum SensorValueRange<T: PartialEq> {
     /// This is the range of values that are considered critical and will trigger an emergency.
     Critical(T),
 }
+
+macro_rules! create_calculate_bounds_function {
+    ($critical_limit_low:expr, $warning_limit_low:expr, $warning_limit_high:expr, $critical_limit_high:expr) => {
+        pub fn calculate_bounds(value: f32) -> SensorValueRange<f32> {
+            if value <= $critical_limit_low || value >= $critical_limit_high {
+                SensorValueRange::Critical(value)
+            } else if value <= $warning_limit_low || value >= $warning_limit_high {
+                SensorValueRange::Warning(value)
+            } else {
+                SensorValueRange::Safe(value)
+            }
+        }
+    };
+}
