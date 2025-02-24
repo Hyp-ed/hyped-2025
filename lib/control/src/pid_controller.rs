@@ -1,4 +1,4 @@
-use core::f32;
+use core::f32::NAN;
 
 pub trait PidController {
     fn new(config: PidGain) -> Self;
@@ -31,7 +31,7 @@ impl PidController for Pid {
         Self {
             config,
             i_term: 0.0,
-            pre_error: core::f32::NAN,
+            pre_error: NAN,
             current_filter: 0.0,
             previous_filter: 0.0,
         }
@@ -81,7 +81,7 @@ impl PiController for Pi {
         Self {
             config,
             i_term: 0.0,
-            pre_error: f32::NAN,
+            pre_error: NAN,
         }
     }
     /// Updates the `Pi` controller, ignoring D.
