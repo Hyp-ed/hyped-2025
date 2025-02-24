@@ -18,6 +18,19 @@ pub struct Quartiles {
     upper_bound: f32,
 }
 
+
+fn insertion_sort(slice: &mut [f32]) {
+    for i in 1..slice.len() {
+        let key = slice[i];
+        let mut j = i;
+        while j > 0 && slice[j - 1] > key {
+            slice[j] = slice[j - 1];
+            j -= 1;
+        }
+        slice[j] = key;
+    }
+}
+
 /// Implementation of the Quartiles struct which calculates the bounds for outliers
 impl Quartiles {
     pub fn new(q1: f32, q2: f32, q3: f32, is_unreliable: bool) -> Self {
@@ -158,9 +171,7 @@ impl AccelerometerPreprocessor {
     pub fn get_quartiles<const SIZE: usize>(&self, data: &AccelerometerData<SIZE>) -> Quartiles {
         // Clone and sort data
         let mut sorted_data = data.clone();
-        sorted_data
-            .as_mut_slice()
-            .sort_by(|a, b| a.partial_cmp(b).unwrap());
+        insertion_sort(sorted_data.as_mut_slice());
 
         let quartile_keys: [f32; 3] = [0.25, 0.5, 0.75];
         let mut quartiles: [f32; 3] = [0.0; 3];
