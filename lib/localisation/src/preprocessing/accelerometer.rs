@@ -121,7 +121,7 @@ impl AccelerometerPreprocessor {
     ) -> Option<AccelerometerData<NUM_ACCELEROMETERS>> {
         let accelerometer_data: AccelerometerData<NUM_ACCELEROMETERS> = data
             .iter()
-            .map(|axis| libm::sqrtf32(axis.iter().fold(0.0, |acc, val| acc + val * val)))
+            .map(|axis| libm::sqrtf(axis.iter().fold(0.0, |acc, val| acc + val * val)))
             .collect();
         let clean_accelerometer_data = self.handle_outliers(accelerometer_data)?;
 
@@ -217,10 +217,10 @@ mod tests {
         assert!(processed_data.is_some());
 
         let processed_data = processed_data.unwrap();
-        assert_eq!(processed_data[0], libm::sqrtf32(14.0_f32));
-        assert_eq!(processed_data[1], libm::sqrtf32(77.0_f32));
-        assert_eq!(processed_data[2], libm::sqrtf32(194.0_f32));
-        assert_eq!(processed_data[3], libm::sqrtf32(365.0_f32));
+        assert_eq!(processed_data[0], libm::sqrtf(14.0_f32));
+        assert_eq!(processed_data[1], libm::sqrtf(77.0_f32));
+        assert_eq!(processed_data[2], libm::sqrtf(194.0_f32));
+        assert_eq!(processed_data[3], libm::sqrtf(365.0_f32));
     }
 
     #[test]
@@ -253,10 +253,10 @@ mod tests {
         assert!(processed_data.is_some());
 
         let processed_data = processed_data.unwrap();
-        assert_eq!(processed_data[0], libm::sqrtf32(14.0_f32));
-        assert_eq!(processed_data[1], libm::sqrtf32(194.0_f32));
-        assert_eq!(processed_data[2], libm::sqrtf32(194.0_f32));
-        assert_eq!(processed_data[3], libm::sqrtf32(365.0_f32));
+        assert_eq!(processed_data[0], libm::sqrtf(14.0_f32));
+        assert_eq!(processed_data[1], libm::sqrtf(194.0_f32));
+        assert_eq!(processed_data[2], libm::sqrtf(194.0_f32));
+        assert_eq!(processed_data[3], libm::sqrtf(365.0_f32));
     }
 
     #[test]
