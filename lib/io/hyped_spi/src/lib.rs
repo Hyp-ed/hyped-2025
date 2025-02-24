@@ -1,5 +1,8 @@
 #![no_std]
 
+pub mod cs;
+pub use cs::*;
+
 /// SPI errors that can occur
 /// From: https://docs.embassy.dev/embassy-stm32/git/stm32f103c8/spi/enum.Error.html
 #[derive(Debug)]

@@ -1,34 +1,34 @@
 use defmt::*;
 use embassy_time::{Duration, Instant, Timer};
 use hyped_gpio::HypedGpioOutputPin;
-use hyped_spi::{HypedSpi, SpiError};
+use hyped_spi::{HypedSpi, HypedSpiCsPin, SpiError};
 
 /// Optical flow implements the logic to interact with the PMW3901MB-TXQT: Optical Motion Tracking Chip
 ///
 /// This implementation is directly coming from https://github.com/pimoroni/pmw3901-python/blob/main/pmw3901/__init__.py
 /// Data Sheet: https://www.codico.com/de/mpattachment/file/download/id/952/
-pub struct OpticalFlow<'a, T: HypedSpi + 'a, C: HypedGpioOutputPin> {
+pub struct OpticalFlow<'a, T: HypedSpi + 'a, P: HypedGpioOutputPin> {
     spi: &'a mut T,
-    cs: C,
+    cs: HypedSpiCsPin<P>,
 }
 
 impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
     /// Create a new instance of the optical flow sensor
-    pub async fn new(spi: &'a mut T, cs: C) -> Result<Self, OpticalFlowError> {
+    pub async fn new(spi: &'a mut T, cs: HypedSpiCsPin<C>) -> Result<Self, OpticalFlowError> {
         Self::new_with_orientation(spi, cs, Orientation::Degrees0).await
     }
 
     /// Create a new instance of the optical flow sensor with a specific orientation
     pub async fn new_with_orientation(
         spi: &'a mut T,
-        cs: C,
+        cs: HypedSpiCsPin<C>,
         orientation: Orientation,
     ) -> Result<Self, OpticalFlowError> {
         let mut optical_flow = Self { spi, cs };
 
-        optical_flow.cs.set_low();
+        optical_flow.cs.set_active();
         Timer::after(Duration::from_millis(5)).await;
-        optical_flow.cs.set_high();
+        optical_flow.cs.set_inactive();
 
         Timer::after(Duration::from_millis(2)).await;
         optical_flow.write(REG_POWER_UP_RESET, POWER_UP_RESET_INSTR)?;
@@ -65,7 +65,7 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
         let start = Instant::now();
 
         while start.elapsed() < TIMEOUT {
-            self.cs.set_low();
+            self.cs.set_active();
             let mut data = [
                 REG_MOTION_BURST, // Command byte to initiate burst read
                 0x00,             // Placeholder for the rest of the 12 bytes
@@ -84,7 +84,7 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
             self.spi
                 .transfer_in_place(&mut data)
                 .expect("Failed to read motion data.");
-            self.cs.set_high();
+            self.cs.set_inactive();
 
             // Parse the response data
             let dr = data[1];
@@ -128,7 +128,7 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
 
     /// Writes a single byte to a register
     fn write(&mut self, register: u8, data: u8) -> Result<(), OpticalFlowError> {
-        self.cs.set_low();
+        self.cs.set_active();
         let result = match self.spi.transfer_in_place(
             // OR 0x80 to the register
             &mut [register | 0x80, data],
@@ -136,16 +136,16 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
             Ok(_) => Ok(()),
             Err(e) => Err(OpticalFlowError::SpiError(e)),
         };
-        self.cs.set_high();
+        self.cs.set_inactive();
         result
     }
 
     /// Read a single byte from a register
     fn read(&mut self, register: u8) -> Result<u8, OpticalFlowError> {
         let data = &mut [register, 0];
-        self.cs.set_low();
+        self.cs.set_active();
         self.spi.transfer_in_place(data).unwrap();
-        self.cs.set_high();
+        self.cs.set_inactive();
         Ok(data[1])
     }
 
