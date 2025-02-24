@@ -61,9 +61,9 @@ checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
 name = "bitflags"
-version = "2.7.0"
+version = "2.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1be3f42a67d6d345ecd59f675f3f012d6974981560836e938c22b424b85ce1be"
+checksum = "8f68f53c83ab957f72c32642f3868eec03eb974d1fb82e453128456482613d36"
 
 [[package]]
 name = "byteorder"
@@ -314,7 +314,7 @@ version = "0.1.0"
 source = "git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f706318cc0870a459550b7#1c466b81e6af6b34b1f706318cc0870a459550b7"
 dependencies = [
  "bit_field",
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "cfg-if",
  "cortex-m",
  "cortex-m-rt",
@@ -381,8 +381,8 @@ dependencies = [
 
 [[package]]
 name = "embassy-sync"
-version = "0.6.1"
-source = "git+https://github.com/embassy-rs/embassy#4b0e20315bddbb15aaee0e0b96548de405694c7b"
+version = "0.6.2"
+source = "git+https://github.com/embassy-rs/embassy#1b440342085a0a4f752c795937cc038b41ca1e78"
 dependencies = [
  "cfg-if",
  "critical-section",
@@ -630,8 +630,8 @@ dependencies = [
 name = "hyped_adc"
 version = "0.1.0"
 dependencies = [
+ "embassy-sync 0.6.2",
  "defmt",
- "embassy-sync 0.6.1 (git+https://github.com/embassy-rs/embassy)",
  "heapless",
 ]
 
@@ -656,7 +656,7 @@ dependencies = [
  "embassy-futures",
  "embassy-net",
  "embassy-stm32",
- "embassy-sync 0.6.1 (git+https://github.com/embassy-rs/embassy?rev=92326f10b5be1d6fdc6bd414eb0656e3890bd825)",
+ "embassy-sync 0.6.1",
  "embassy-time",
  "embedded-hal 0.2.7",
  "embedded-storage",
@@ -1074,9 +1074,9 @@ dependencies = [
 
 [[package]]
 name = "unicode-ident"
-version = "1.0.14"
+version = "1.0.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "adb9e6ca4f869e1180728b7950e35922a7fc6397f7b641499e8f3ef06e50dc83"
+checksum = "a210d160f08b701c8721ba1c726c11662f877ea6b7094007e1ca9a1041945034"
 
 [[package]]
 name = "unicode-segmentation"

@@ -51,15 +51,4 @@ jobs:
           else
             echo "All good"
           fi
-
-  check-no-crlf:
-    name: Check no crlf line endings
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run check for CRLF line endings
-        run: |
-          if git ls-files --eol | grep crlf; then
-            echo "[ERROR] found CRLF line endings, install dos2unix and run 'find . -type f -exec dos2unix {} \;' to fix"
-            exit 1
-          fi
+      

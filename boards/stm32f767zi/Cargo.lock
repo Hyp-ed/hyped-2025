@@ -394,7 +394,7 @@ dependencies = [
 [[package]]
 name = "embassy-sync"
 version = "0.6.2"
-source = "git+https://github.com/embassy-rs/embassy#2e7a2b61275d70d7d09cb676490e2cba4d2bde3f"
+source = "git+https://github.com/embassy-rs/embassy#00ef474b94d99a1fd933e79bd66628cd3a16e3c4"
 dependencies = [
  "cfg-if",
  "critical-section",
@@ -724,6 +724,8 @@ dependencies = [
  "heapless 0.8.0",
  "hyped_adc",
  "hyped_adc_derive",
+ "hyped_can",
+ "hyped_can_derive",
  "hyped_core",
  "hyped_gpio",
  "hyped_gpio_derive",
@@ -739,6 +741,24 @@ dependencies = [
  "serde-json-core",
  "static_cell",
  "typenum",
+]
+
+[[package]]
+name = "hyped_can"
+version = "0.1.0"
+dependencies = [
+ "defmt",
+ "embassy-sync 0.6.0",
+ "embassy-time",
+ "heapless 0.8.0",
+]
+
+[[package]]
+name = "hyped_can_derive"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -898,9 +918,9 @@ checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
 name = "portable-atomic"
-version = "1.10.0"
+version = "1.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "280dc24453071f1b63954171985a0b0d30058d287960968b9b2aca264c8d4ee6"
+checksum = "350e9b48cbc6b0e028b0473b114454c6316e57336ee184ceab6e53f72c178b3e"
 
 [[package]]
 name = "proc-macro-error-attr2"
