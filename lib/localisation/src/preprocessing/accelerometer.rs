@@ -121,7 +121,7 @@ impl AccelerometerPreprocessor {
     ) -> Option<AccelerometerData<NUM_ACCELEROMETERS>> {
         let accelerometer_data: AccelerometerData<NUM_ACCELEROMETERS> = data
             .iter()
-            .map(|axis| axis.iter().fold(0.0, |acc, val| acc + val * val).sqrt())
+            .map(|axis| libm::sqrtf32(axis.iter().fold(0.0, |acc, val| acc + val * val)))
             .collect();
         let clean_accelerometer_data = self.handle_outliers(accelerometer_data)?;
 
@@ -165,8 +165,8 @@ impl AccelerometerPreprocessor {
             .map(|quartile| {
                 let index_quartile: f32 =
                     (1.0 + self.num_reliable_accelerometers as f32) * quartile;
-                let index_quartile_floor = index_quartile.floor() as usize - 1;
-                let index_quartile_ceil = index_quartile.ceil() as usize - 1;
+                let index_quartile_floor = libm::floorf32(index_quartile) as usize - 1;
+                let index_quartile_ceil = libm::ceilf32(index_quartile) as usize - 1;
 
                 (data.get(index_quartile_floor).unwrap_or(&0.0)
                     + data.get(index_quartile_ceil).unwrap_or(&0.0))
@@ -186,6 +186,7 @@ impl AccelerometerPreprocessor {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use libm;
 
     #[test]
     pub fn test_process_data() {
@@ -203,10 +204,10 @@ mod tests {
 
         let raw_data: RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS> =
             RawAccelerometerData::from_slice(&[
-                Vec::from_slice(&[1.0, 2.0, 3.0]).unwrap(), // sqrt(14) = 3.74
-                Vec::from_slice(&[4.0, 5.0, 6.0]).unwrap(), // sqrt(77) = 8.77
-                Vec::from_slice(&[7.0, 8.0, 9.0]).unwrap(), // sqrt(194) = 13.93
-                Vec::from_slice(&[10.0, 11.0, 12.0]).unwrap(), // sqrt(365) = 19.1
+                Vec::from_slice(&[1.0, 2.0, 3.0]).unwrap(), // sqrt(14) ≈ 3.74
+                Vec::from_slice(&[4.0, 5.0, 6.0]).unwrap(), // sqrt(77) ≈ 8.77
+                Vec::from_slice(&[7.0, 8.0, 9.0]).unwrap(), // sqrt(194) ≈ 13.93
+                Vec::from_slice(&[10.0, 11.0, 12.0]).unwrap(), // sqrt(365) ≈ 19.1
             ])
             .unwrap();
 
@@ -214,10 +215,10 @@ mod tests {
         assert!(processed_data.is_some());
 
         let processed_data = processed_data.unwrap();
-        assert_eq!(processed_data[0], (14.0_f32).sqrt());
-        assert_eq!(processed_data[1], (77.0_f32).sqrt());
-        assert_eq!(processed_data[2], (194.0_f32).sqrt());
-        assert_eq!(processed_data[3], (365.0_f32).sqrt());
+        assert_eq!(processed_data[0], libm::sqrtf32(14.0_f32));
+        assert_eq!(processed_data[1], libm::sqrtf32(77.0_f32));
+        assert_eq!(processed_data[2], libm::sqrtf32(194.0_f32));
+        assert_eq!(processed_data[3], libm::sqrtf32(365.0_f32));
     }
 
     #[test]
@@ -239,11 +240,10 @@ mod tests {
 
         let raw_data: RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS> =
             RawAccelerometerData::from_slice(&[
-                Vec::from_slice(&[1.0, 2.0, 3.0]).unwrap(), // sqrt(14) = 3.74
-                Vec::from_slice(&[4.0, 5.0, 6.0]).unwrap(), // sqrt(Median (3.74, 13.93,
-                // 19.1)) = 13.93
-                Vec::from_slice(&[7.0, 8.0, 9.0]).unwrap(), // sqrt(194) = 13.93
-                Vec::from_slice(&[10.0, 11.0, 12.0]).unwrap(), // sqrt(365) = 19.1
+                Vec::from_slice(&[1.0, 2.0, 3.0]).unwrap(), // sqrt(14) ≈ 3.74
+                Vec::from_slice(&[4.0, 5.0, 6.0]).unwrap(), // replaced with median (from sqrt(14), sqrt(194), sqrt(365))
+                Vec::from_slice(&[7.0, 8.0, 9.0]).unwrap(), // sqrt(194) ≈ 13.93
+                Vec::from_slice(&[10.0, 11.0, 12.0]).unwrap(), // sqrt(365) ≈ 19.1
             ])
             .unwrap();
 
@@ -251,10 +251,10 @@ mod tests {
         assert!(processed_data.is_some());
 
         let processed_data = processed_data.unwrap();
-        assert_eq!(processed_data[0], (14.0_f32).sqrt());
-        assert_eq!(processed_data[1], (194.0_f32).sqrt());
-        assert_eq!(processed_data[2], (194.0_f32).sqrt());
-        assert_eq!(processed_data[3], (365.0_f32).sqrt());
+        assert_eq!(processed_data[0], libm::sqrtf32(14.0_f32));
+        assert_eq!(processed_data[1], libm::sqrtf32(194.0_f32));
+        assert_eq!(processed_data[2], libm::sqrtf32(194.0_f32));
+        assert_eq!(processed_data[3], libm::sqrtf32(365.0_f32));
     }
 
     #[test]
