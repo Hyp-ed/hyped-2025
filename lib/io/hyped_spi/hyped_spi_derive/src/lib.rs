@@ -36,7 +36,7 @@ fn impl_hyped_spi(ast: &syn::DeriveInput) -> TokenStream {
             }
 
             fn write(&mut self, words: &[u8]) -> Result<(), SpiError> {
-                let binding = words.iter().map(|word| *word).collect::<Vec<u8, 64>>();
+                let binding = words.iter().copied().collect::<Vec<u8, 64>>();
                 let new_words = binding.as_slice();
                 match self.spi.blocking_write(new_words) {
                     Ok(_) => Ok(()),
@@ -50,7 +50,7 @@ fn impl_hyped_spi(ast: &syn::DeriveInput) -> TokenStream {
             }
 
             fn transfer_in_place(&mut self, data: &mut [u8]) -> Result<(), SpiError> {
-                let mut binding = data.iter().map(|word| *word).collect::<Vec<u8, 64>>();
+                let mut binding = data.iter().copied().collect::<Vec<u8, 64>>();
                 let new_words = binding.as_mut_slice();
                 match self.spi.blocking_transfer_in_place(new_words) {
                     Ok(_) => {

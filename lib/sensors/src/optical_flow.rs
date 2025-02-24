@@ -14,6 +14,14 @@ pub struct OpticalFlow<'a, T: HypedSpi + 'a, C: HypedGpioOutputPin> {
 
 impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
     pub async fn new(spi: &'a mut T, cs: C) -> Result<Self, OpticalFlowError> {
+        Self::new_with_orientation(spi, cs, Orientation::Degrees0).await
+    }
+
+    pub async fn new_with_orientation(
+        spi: &'a mut T,
+        cs: C,
+        orientation: Orientation,
+    ) -> Result<Self, OpticalFlowError> {
         let mut optical_flow = Self { spi, cs };
 
         optical_flow.cs.set_low();
@@ -30,23 +38,25 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
         optical_flow.secret_sauce().await?;
         debug!("Secret sauce done");
 
-        let (product_id, revision_id) = optical_flow.get_id()?;
+        let product_id = optical_flow.read(REG_PRODUCT_ID)?;
         if product_id != PMW3901_PRODUCT_ID {
             warn!("Invalid product id: {}", product_id);
         }
 
+        let revision_id = optical_flow.read(REG_REVISION_ID)?;
         if !VALID_PMW3901_REVISIONS.contains(&revision_id) {
             warn!("Invalid revision id: {}", revision_id);
         }
 
-        Ok(optical_flow)
-    }
+        // Set the orientation
+        match orientation {
+            Orientation::Degrees0 => optical_flow.set_orientation(true, true, true).await,
+            Orientation::Degrees90 => optical_flow.set_orientation(false, true, false).await,
+            Orientation::Degrees180 => optical_flow.set_orientation(false, false, true).await,
+            Orientation::Degrees270 => optical_flow.set_orientation(true, false, false).await,
+        }?;
 
-    /// Gets the product ID and revision ID to verify the sensor is connected
-    fn get_id(&mut self) -> Result<(u8, u8), OpticalFlowError> {
-        let product_id = self.read(REG_PRODUCT_ID)?;
-        let revision_id = self.read(REG_REVISION_ID)?;
-        Ok((product_id, revision_id))
+        Ok(optical_flow)
     }
 
     /// Get motion data from PMW3901 using burst read.
@@ -102,19 +112,9 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
         Err("Timed out waiting for motion data")
     }
 
-    /// Set orientation of PMW3901 in increments of 90 degrees.
-    pub async fn set_rotation(&mut self, orientation: Orientation) -> Result<(), OpticalFlowError> {
-        match orientation {
-            Orientation::Degrees0 => self.set_orientation(true, true, true).await,
-            Orientation::Degrees90 => self.set_orientation(false, true, false).await,
-            Orientation::Degrees180 => self.set_orientation(false, false, true).await,
-            Orientation::Degrees270 => self.set_orientation(true, false, false).await,
-        }
-    }
-
     /// Sets the orientation of the PMW3901 manually.
     /// Swapping is performed before flipping.
-    pub async fn set_orientation(
+    async fn set_orientation(
         &mut self,
         invert_x: bool,
         invert_y: bool,
