@@ -4,23 +4,25 @@
 use defmt::*;
 use embassy_executor::Spawner;
 use embassy_net::{Stack, StackResources};
+use embassy_stm32::can::{
+    filter::Mask32, Can, CanRx, Fifo, Rx0InterruptHandler, Rx1InterruptHandler,
+    SceInterruptHandler, TxInterruptHandler,
+};
+use embassy_stm32::peripherals::CAN1;
 use embassy_stm32::{
     bind_interrupts,
     eth::{self, generic_smi::GenericSMI, Ethernet, PacketQueue},
     peripherals::{self, ETH},
-    rcc,
     rng::{self, Rng},
     time::Hertz,
     Config,
 };
 use embassy_time::{Duration, Timer};
-use hyped_boards_stm32h743zi::{
-    config::{BOARD_STATIC_ADDRESS, GATEWAY_IP},
+use hyped_boards_stm32f767zi::tasks::can_receiver::can_receiver;
+use hyped_boards_stm32f767zi::{
     log::log,
-    tasks::{
-        heartbeat::heartbeat,
-        mqtt::{mqtt_recv_task, mqtt_send_task},
-    },
+    tasks::{heartbeat::heartbeat, mqtt_recv::mqtt_recv_task, mqtt_send::mqtt_send_task},
+    telemetry_config::{BOARD_STATIC_ADDRESS, GATEWAY_IP},
 };
 use hyped_core::log_types::LogLevel;
 use rand_core::RngCore;
@@ -30,6 +32,10 @@ use {defmt_rtt as _, panic_probe as _};
 bind_interrupts!(struct Irqs {
     ETH => eth::InterruptHandler;
     RNG => rng::InterruptHandler<peripherals::RNG>;
+    CAN1_RX0 => Rx0InterruptHandler<CAN1>;
+    CAN1_RX1 => Rx1InterruptHandler<CAN1>;
+    CAN1_SCE => SceInterruptHandler<CAN1>;
+    CAN1_TX => TxInterruptHandler<CAN1>;
 });
 
 /// Task for running the network stack
@@ -47,22 +53,19 @@ async fn main(spawner: Spawner) -> ! {
             freq: Hertz(8_000_000),
             mode: HseMode::Bypass,
         });
-        config.rcc.pll1 = Some(rcc::Pll {
-            source: PllSource::HSE,
+        config.rcc.pll_src = PllSource::HSE;
+        config.rcc.pll = Some(Pll {
             prediv: PllPreDiv::DIV4,
             mul: PllMul::MUL216,
-            divp: Some(rcc::PllDiv::DIV2),
+            divp: Some(PllPDiv::DIV2), // 8mhz / 4 * 216 / 2 = 216Mhz
             divq: None,
             divr: None,
         });
-        config.rcc.ahb_pre = AHBPrescaler::DIV2; // 200Mhz
-        config.rcc.apb1_pre = APBPrescaler::DIV2; // APB are additional clocks for external devices
-        config.rcc.apb2_pre = APBPrescaler::DIV2; // and just need to be set to some value less
-        config.rcc.apb3_pre = APBPrescaler::DIV2; // than the real clock
-        config.rcc.apb4_pre = APBPrescaler::DIV2; //
-        config.rcc.sys = Sysclk::PLL1_P; // 400Mhz
+        config.rcc.ahb_pre = AHBPrescaler::DIV1;
+        config.rcc.apb1_pre = APBPrescaler::DIV4;
+        config.rcc.apb2_pre = APBPrescaler::DIV2;
+        config.rcc.sys = Sysclk::PLL1_P;
     }
-
     let p = embassy_stm32::init(config);
 
     let mut rng = Rng::new(p.RNG, Irqs);
@@ -114,12 +117,28 @@ async fn main(spawner: Spawner) -> ! {
 
     log(LogLevel::Info, "Network stack initialized").await;
 
-    // Launch MQTT send and receive tasks
+    // Launch MQTT send and receive tasks and heartbeat
     unwrap!(spawner.spawn(mqtt_send_task(stack)));
     unwrap!(spawner.spawn(mqtt_recv_task(stack)));
     unwrap!(spawner.spawn(heartbeat()));
 
+    static CAN: StaticCell<Can<'static>> = StaticCell::new();
+    let can = CAN.init(Can::new(p.CAN1, p.PD0, p.PD1, Irqs));
+    can.modify_filters()
+        .enable_bank(0, Fifo::Fifo0, Mask32::accept_all());
+    can.modify_config().set_bitrate(500_000);
+    can.enable().await;
+    println!("CAN enabled");
+
+    let (_tx, rx) = can.split();
+
+    static CAN_RX: StaticCell<CanRx<'static>> = StaticCell::new();
+    let rx = CAN_RX.init(rx);
+
+    // Launch CAN receiver task
+    unwrap!(spawner.spawn(can_receiver(rx)));
+
     loop {
-        Timer::after(Duration::from_secs(1)).await;
+        Timer::after(Duration::from_millis(1000)).await;
     }
 }
