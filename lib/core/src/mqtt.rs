@@ -1,4 +1,4 @@
-use defmt::{info, warn};
+use crate::logging::{info, warn};
 use embassy_net::tcp::TcpSocket;
 use heapless::String;
 use rust_mqtt::{
@@ -13,6 +13,12 @@ use rust_mqtt::{
 pub struct MqttMessage {
     pub topic: String<48>,
     pub payload: String<512>,
+}
+
+impl MqttMessage {
+    pub fn new(topic: String<48>, payload: String<512>) -> Self {
+        MqttMessage { topic, payload }
+    }
 }
 
 pub struct HypedMqttClient<'a, T, R>

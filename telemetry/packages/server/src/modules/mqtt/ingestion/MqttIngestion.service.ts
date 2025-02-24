@@ -1,10 +1,6 @@
-import type { MeasurementService } from '@/modules/measurement/Measurement.service';
 import type { StateService } from '@/modules/state/State.service';
-import {
-	POD_IDS,
-	type PodId,
-	type PodStateType,
-} from '@hyped/telemetry-constants';
+import type { MeasurementService } from '@/modules/telemetry/Measurement.service';
+import { type PodStateType, podIds } from '@hyped/telemetry-constants';
 import { currentTime } from '@influxdata/influxdb-client';
 import { Injectable } from '@nestjs/common';
 import { Params, Payload, Subscribe } from 'nest-mqtt';
@@ -71,8 +67,8 @@ export class MqttIngestionService {
 		}
 	}
 
-	private validatePodId(podId: string): asserts podId is PodId {
-		if (!POD_IDS.includes(podId as PodId)) {
+	private validatePodId(podId: string) {
+		if (!podIds.includes(podId)) {
 			throw new MqttIngestionError('Invalid pod ID');
 		}
 	}
