@@ -156,25 +156,25 @@ impl AccelerometerPreprocessor {
     }
 
     pub fn get_quartiles<const SIZE: usize>(&self, data: &AccelerometerData<SIZE>) -> Quartiles {
+        // Clone and sort data
         let mut sorted_data = data.clone();
         sorted_data
             .as_mut_slice()
-            .is_sorted_by(|a, b| a.partial_cmp(b).unwrap());
+            .sort_by(|a, b| a.partial_cmp(b).unwrap());
 
-        let quartile_keys: Vec<f32, 3> = Vec::from_slice(&[0.25, 0.5, 0.75]).unwrap();
-        let quartiles: Vec<f32, 3> = quartile_keys
-            .iter()
-            .map(|quartile| {
-                let index_quartile: f32 =
-                    (1.0 + self.num_reliable_accelerometers as f32) * quartile;
-                let index_quartile_floor = libm::floorf(index_quartile) as usize - 1;
-                let index_quartile_ceil = libm::ceilf(index_quartile) as usize - 1;
+        let quartile_keys: [f32; 3] = [0.25, 0.5, 0.75];
+        let mut quartiles: [f32; 3] = [0.0; 3];
 
-                (data.get(index_quartile_floor).unwrap_or(&0.0)
-                    + data.get(index_quartile_ceil).unwrap_or(&0.0))
-                    / 2.0
-            })
-            .collect();
+        for (i, &quartile) in quartile_keys.iter().enumerate() {
+            let index_quartile = (1.0 + self.num_reliable_accelerometers as f32) * quartile;
+
+            let index_quartile_floor = libm::floorf(index_quartile) as usize - 1;
+            let index_quartile_ceil = libm::ceilf(index_quartile) as usize - 1;
+
+            quartiles[i] = (data.get(index_quartile_floor).unwrap_or(&0.0)
+                + data.get(index_quartile_ceil).unwrap_or(&0.0))
+                / 2.0;
+        }
 
         Quartiles::new(
             quartiles[0],
