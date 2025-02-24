@@ -561,10 +561,20 @@ dependencies = [
  "embassy-time",
  "embedded-hal 0.2.7",
  "embedded-storage",
+ "hyped_control",
  "hyped_sensors",
  "panic-probe",
  "rand_core",
  "static_cell",
+]
+
+[[package]]
+name = "hyped_control"
+version = "0.1.0"
+dependencies = [
+ "heapless",
+ "hyped_core",
+ "hyped_gpio",
 ]
 
 [[package]]

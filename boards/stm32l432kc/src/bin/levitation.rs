@@ -1,9 +1,7 @@
 #![no_std]
 #![no_main]
 
-use core::f32;
 use defmt::info;
-use control::pid_controller::{Pid, PidGain, Pi, PiGain};
 use embassy_executor::Spawner;
 use embassy_stm32::gpio::OutputType;
 use embassy_stm32::time::hz;
@@ -11,6 +9,7 @@ use embassy_stm32::timer::low_level::CountingMode;
 use embassy_stm32::timer::simple_pwm::{PwmPin, SimplePwm};
 use embassy_stm32::timer::Channel;
 use embassy_time::Instant;
+use hyped_control::pid_controller::{Pi, PiController, PiGain, Pid, PidController, PidGain};
 
 use {defmt_rtt as _, panic_probe as _};
 
@@ -23,18 +22,18 @@ const GAIN_HEIGHT: PidGain = PidGain {
     kp: 29497.7537305353,
     ki: 262105.664028736,
     kd: 815.114265452965,
-    p_reference_gain: 0.873451984, 
-    d_reference_gain: 0.705728005, 
+    p_reference_gain: 0.873451984,
+    d_reference_gain: 0.705728005,
 };
 
 const GAIN_CURRENT: PiGain = PiGain {
-    kp: 1000,
-    ki: 5_000_000,
+    kp: 1000.0,
+    ki: 5_000_000.0,
 };
 
 const GAIN_VOLTAGE: PiGain = PiGain {
-    kp: 50,
-    ki: 10_000_000,
+    kp: 50.0,
+    ki: 10_000_000.0,
 };
 
 /*

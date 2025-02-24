@@ -5,20 +5,20 @@ pub trait PidController {
 
 #[derive(Debug, Clone)]
 pub struct PidGain {
-    kp: f32,
-    ki: f32,
-    kd: f32,
-    p_reference_gain: f32,
-    d_reference_gain: f32,
+    pub kp: f32,
+    pub ki: f32,
+    pub kd: f32,
+    pub p_reference_gain: f32,
+    pub d_reference_gain: f32,
 }
 /// `Pid` is a structure that implements the [`PidController`] trait.
 #[derive(Debug, Clone)]
 pub struct Pid {
-    config: PidGain,
-    i_term: f32,
-    pre_error: f32,
-    current_filter: f32,
-    previous_filter: f32,
+    pub config: PidGain,
+    pub i_term: f32,
+    pub pre_error: f32,
+    pub current_filter: f32,
+    pub previous_filter: f32,
 }
 
 impl PidController for Pid {
@@ -62,15 +62,15 @@ pub trait PiController {
 
 #[derive(Debug, Clone)]
 pub struct PiGain {
-    kp: f32,
-    ki: f32,
+    pub kp: f32,
+    pub ki: f32,
 }
 
 #[derive(Debug, Clone)]
 pub struct Pi {
-    config: PiGain,
-    i_term: f32,
-    pre_error: f32,
+    pub config: PiGain,
+    pub i_term: f32,
+    pub pre_error: f32,
 }
 
 impl PiController for Pi {
