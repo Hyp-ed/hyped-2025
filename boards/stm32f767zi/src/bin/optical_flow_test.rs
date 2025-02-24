@@ -8,6 +8,7 @@ use embassy_stm32::time::khz;
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::io::{Stm32f767ziGpioOutput, Stm32f767ziSpi};
 use hyped_sensors::optical_flow::OpticalFlow;
+use hyped_spi::HypedSpiCsPin;
 use {defmt_rtt as _, panic_probe as _};
 
 #[embassy_executor::main]
@@ -21,7 +22,11 @@ async fn main(_spawner: Spawner) -> ! {
     let spi = Spi::new_blocking(p.SPI1, p.PB3, p.PB5, p.PB4, spi_config);
     let mut hyped_spi = Stm32f767ziSpi::new(spi);
 
-    let cs = Stm32f767ziGpioOutput::new(Output::new(p.PA4, Level::High, Speed::VeryHigh));
+    let cs = HypedSpiCsPin::new(Stm32f767ziGpioOutput::new(Output::new(
+        p.PA4,
+        Level::High,
+        Speed::VeryHigh,
+    )));
 
     let mut optical_flow = OpticalFlow::new(&mut hyped_spi, cs)
         .await
