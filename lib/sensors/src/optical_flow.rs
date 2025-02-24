@@ -13,10 +13,12 @@ pub struct OpticalFlow<'a, T: HypedSpi + 'a, C: HypedGpioOutputPin> {
 }
 
 impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
+    /// Create a new instance of the optical flow sensor
     pub async fn new(spi: &'a mut T, cs: C) -> Result<Self, OpticalFlowError> {
         Self::new_with_orientation(spi, cs, Orientation::Degrees0).await
     }
 
+    /// Create a new instance of the optical flow sensor with a specific orientation
     pub async fn new_with_orientation(
         spi: &'a mut T,
         cs: C,
@@ -36,7 +38,6 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
         }
 
         optical_flow.secret_sauce().await?;
-        debug!("Secret sauce done");
 
         let product_id = optical_flow.read(REG_PRODUCT_ID)?;
         if product_id != PMW3901_PRODUCT_ID {
@@ -86,19 +87,11 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
             self.cs.set_high();
 
             // Parse the response data
-            let response = &data[1..]; // Ignore the command byte
-            let mut cursor = response.iter(); // Iterator to parse data sequentially
-
-            let dr = cursor.next().unwrap();
-            let _obs = cursor.next().unwrap();
-            let x = i16::from_le_bytes([*cursor.next().unwrap(), *cursor.next().unwrap()]);
-            let y = i16::from_le_bytes([*cursor.next().unwrap(), *cursor.next().unwrap()]);
-            let quality = *cursor.next().unwrap();
-            let _raw_sum = cursor.next();
-            let _raw_max = cursor.next();
-            let _raw_min = cursor.next();
-            let shutter_upper = *cursor.next().unwrap();
-            let _shutter_lower = cursor.next();
+            let dr = data[1];
+            let x = i16::from_le_bytes([data[3], data[4]]);
+            let y = i16::from_le_bytes([data[5], data[6]]);
+            let quality = data[7];
+            let shutter_upper = data[11];
 
             // Validate the data
             if (dr & 0b1000_0000) != 0 && !(quality < 0x19 && shutter_upper == 0x1F) {
@@ -159,8 +152,7 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
     /// Perform a bulk write of data to the sensor
     async fn bulk_write(&mut self, write_data: &[(u8, u8)]) -> Result<(), OpticalFlowError> {
         for write in write_data {
-            let register = write.0;
-            let value = write.1;
+            let (register, value) = *write;
             match register {
                 WAIT => {
                     Timer::after(Duration::from_millis(value as u64)).await;
@@ -185,14 +177,13 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
         ])
         .await?;
 
-        let reg_67_data = self.read(0x67).expect("Failed to read register 0x67");
-
         // Perform conditional writes based on the read result
-        let value_to_write = if reg_67_data & 0b1000_0000 != 0 {
-            0x04
-        } else {
-            0x02
-        };
+        let value_to_write =
+            if self.read(0x67).expect("Failed to read register 0x67") & 0b1000_0000 != 0 {
+                0x04
+            } else {
+                0x02
+            };
 
         self.write(0x48, value_to_write)?;
 
@@ -207,9 +198,7 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
         .await?;
 
         // Perform the conditional register adjustments
-        let reg_73_data = self.read(0x73).expect("Failed to read register 0x73");
-
-        if reg_73_data == 0x00 {
+        if self.read(0x73).expect("Failed to read register 0x73") == 0x00 {
             let mut c1 = self.read(0x70).expect("Failed to read register 0x70");
             let mut c2 = self.read(0x71).expect("Failed to read register 0x71");
 
@@ -322,6 +311,7 @@ pub struct Motion {
     pub y: i16,
 }
 
+/// Represents the possible orientations of the optical flow sensor
 pub enum Orientation {
     Degrees0,
     Degrees90,

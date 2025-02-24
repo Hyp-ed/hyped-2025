@@ -17,15 +17,8 @@ fn impl_hyped_spi(ast: &syn::DeriveInput) -> TokenStream {
     let gen = quote! {
         impl #impl_generics HypedSpi for #name #ty_generics{
             fn read(&mut self, words: &mut [u8]) -> Result<(), SpiError> {
-                let mut binding = Vec::<u8, 64>::new();
-                let new_words = binding.as_mut_slice();
-                match self.spi.blocking_read(new_words) {
-                    Ok(_) => {
-                        for (i, word) in new_words.iter().enumerate() {
-                            words[i] = *word;
-                        }
-                        Ok(())
-                    }
+                match self.spi.blocking_read(words) {
+                    Ok(_) => Ok(()),
                     Err(e) => Err(match e {
                         spi::Error::Framing => SpiError::Framing,
                         spi::Error::Crc => SpiError::Crc,
@@ -50,15 +43,8 @@ fn impl_hyped_spi(ast: &syn::DeriveInput) -> TokenStream {
             }
 
             fn transfer_in_place(&mut self, data: &mut [u8]) -> Result<(), SpiError> {
-                let mut binding = data.iter().copied().collect::<Vec<u8, 64>>();
-                let new_words = binding.as_mut_slice();
-                match self.spi.blocking_transfer_in_place(new_words) {
-                    Ok(_) => {
-                        for (i, word) in new_words.iter().enumerate() {
-                            data[i] = *word;
-                        }
-                        Ok(())
-                    }
+                match self.spi.blocking_transfer_in_place(data) {
+                    Ok(_) => Ok(()),
                     Err(e) => Err(match e {
                         spi::Error::Framing => SpiError::Framing,
                         spi::Error::Crc => SpiError::Crc,
@@ -74,7 +60,6 @@ fn impl_hyped_spi(ast: &syn::DeriveInput) -> TokenStream {
                 Self { spi }
             }
         }
-
     };
     gen.into()
 }

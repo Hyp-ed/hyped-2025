@@ -7,7 +7,7 @@ use embassy_stm32::spi::{self, BitOrder, Spi};
 use embassy_stm32::time::khz;
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::io::{Stm32f767ziGpioOutput, Stm32f767ziSpi};
-use hyped_sensors::optical_flow::{OpticalFlow, Orientation};
+use hyped_sensors::optical_flow::OpticalFlow;
 use {defmt_rtt as _, panic_probe as _};
 
 #[embassy_executor::main]
@@ -28,12 +28,6 @@ async fn main(_spawner: Spawner) -> ! {
         .expect("Failed to initialize optical flow sensor.");
 
     defmt::info!("Optical flow sensor initialized.");
-
-    // Example of setting the rotation of the optical flow sensor!
-    optical_flow
-        .set_rotation(Orientation::Degrees180)
-        .await
-        .expect("Failed to set rotation.");
 
     loop {
         let flow = optical_flow.get_motion().await.unwrap();
