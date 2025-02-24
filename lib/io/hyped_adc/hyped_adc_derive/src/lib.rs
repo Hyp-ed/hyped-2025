@@ -27,7 +27,6 @@ fn impl_hyped_adc(ast: &syn::DeriveInput) -> TokenStream {
         }
 
         impl #impl_generics #name #ty_generics {
-            /// Create a new instance of our ADC implementation for the STM32L476RG
             pub fn new(adc: Adc<'d, T>, channel: AnyAdcChannel<T>) -> Self {
                 Self { adc, channel }
             }
