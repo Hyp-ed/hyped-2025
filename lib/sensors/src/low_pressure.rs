@@ -45,15 +45,15 @@ impl<T: HypedAdc> LowPressure<T> {
     /// Since LPS has a minimum pressure of 0 bar, c0 is 0 and was did not need to be included in
     /// the source code.
     /// wrapped in a SensorValueRange enum to indicate if the temperature is safe, warning, or critical.
-    pub fn read_pressure(&mut self) -> SensorValueRange<f32> {
+    pub fn read_pressure(&mut self) -> Option<SensorValueRange<f32>> {
         let adc_val = self.adc.read_value() as f32;
 
         // convert to bar unit
         let bar_pressure_val: f32 = adc_val * GRADIENT_LOW;
 
-        (self.calculate_bounds)(
+        Some((self.calculate_bounds)(
             bar_pressure_val
-        )
+        ))
     }
 }
 
