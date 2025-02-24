@@ -1,12 +1,12 @@
 use core::f32;
 
-trait PidController {
+pub trait PidController {
     fn new(config: PidGain) -> Self;
     fn update(&mut self, set_point: f32, actual: f32, dt: f32, filter_constant: f32) -> f32;
 }
 
 #[derive(Debug, Clone)]
-struct PidGain {
+pub struct PidGain {
     kp: f32,
     ki: f32,
     kd: f32,
@@ -57,13 +57,13 @@ impl PidController for Pid {
     }
 }
 
-trait PiController {
+pub trait PiController {
     fn new(config: PiGain) -> Self;
     fn update(&mut self, set_point: f32, actual: f32, dt: f32) -> f32;
 }
 
 #[derive(Debug, Clone)]
-struct PiGain {
+pub struct PiGain {
     kp: f32,
     ki: f32,
 }
@@ -119,10 +119,7 @@ mod tests {
 
     #[test]
     fn test_pi_controller() {
-        let config = PiGain {
-            kp: 1.0,
-            ki: 0.0,
-        };
+        let config = PiGain { kp: 1.0, ki: 0.0 };
         let mut pi = Pi::new(config);
         let set_point = 0.0;
         let actual = 0.0;
