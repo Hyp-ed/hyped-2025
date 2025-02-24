@@ -2,6 +2,7 @@ use crate::types::{
     AccelerometerData, RawAccelerometerData, SensorChecks, NUM_ACCELEROMETERS,
     NUM_ALLOWED_ACCELEROMETER_OUTLIERS, NUM_AXIS,
 };
+use heapless::Vec;
 use libm;
 
 /// Stores the quartiles of the data and the bounds for outliers
@@ -16,6 +17,7 @@ pub struct Quartiles {
     lower_bound: f32,
     upper_bound: f32,
 }
+
 
 fn insertion_sort(slice: &mut [f32]) {
     for i in 1..slice.len() {
