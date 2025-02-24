@@ -1,5 +1,4 @@
-use embassy_time::with_timeout;
-use embassy_time::Duration;
+use embassy_time::{with_timeout, Duration};
 use hyped_gpio::HypedGpioOutputPin;
 use hyped_i2c::HypedI2c;
 use hyped_sensors::{
