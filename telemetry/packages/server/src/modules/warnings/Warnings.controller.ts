@@ -1,12 +1,12 @@
 import { Controller, Param, Post } from '@nestjs/common';
-import { WarningsService } from './Warnings.service';
+import type { WarningsService } from './Warnings.service';
 
 @Controller('pods/:podId/warnings')
 export class WarningsController {
-  constructor(private warningsService: WarningsService) {}
+	constructor(private warningsService: WarningsService) {}
 
-  @Post('latency')
-  createLatencyWarning(@Param('podId') podId: string) {
-    this.warningsService.createLatencyWarning(podId);
-  }
+	@Post('latency')
+	createLatencyWarning(@Param('podId') podId: string) {
+		this.warningsService.createLatencyWarning(podId);
+	}
 }

@@ -1,0 +1,14 @@
+[package]
+name = "hyped_state_machine"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+heapless = "0.8.0"
+rust-mqtt = { version = "0.3.0", default-features = false, features = ["defmt"] }
+embassy-net = { version = "0.4.0", default-features = false, features = ["defmt", "tcp", "proto-ipv4", "medium-ip"], git = "https://github.com/embassy-rs/embassy", rev = "1c466b81e6af6b34b1f706318cc0870a459550b7" }
+hyped_core = { path = "../core" }
+defmt = "0.3"
+
+[dev-dependencies]
+defmt = { version = "0.3", features = ["unstable-test"] }

@@ -1,0 +1,43 @@
+// You _must_ open this workspace to work on the telemetry code so that Biome (our linter) can find its configuration.
+// This way, we also avoid annoying everyone else who isn't working on the telemetry code.
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../"
+		}
+	],
+	"settings": {
+		"editor.codeActionsOnSave": {
+			"quickfix.biome": "explicit",
+			"source.organizeImports.biome": "explicit"
+		},
+		"editor.formatOnSave": true,
+		"typescript.tsdk": "node_modules/typescript/lib",
+		"editor.defaultFormatter": "biomejs.biome",
+		// Not sure why we have to specify all, but VSCode doesn't seem to pick up the global config reliably
+		"[typescript]": {
+			"editor.defaultFormatter": "biomejs.biome"
+		},
+		"[javascript]": {
+			"editor.defaultFormatter": "biomejs.biome"
+		},
+		"[javascriptreact]": {
+			"editor.defaultFormatter": "biomejs.biome"
+		},
+		"[typescriptreact]": {
+			"editor.defaultFormatter": "biomejs.biome"
+		},
+		"[json]": {
+			"editor.defaultFormatter": "biomejs.biome"
+		},
+		"[jsonc]": {
+			"editor.defaultFormatter": "biomejs.biome"
+		}
+	},
+	"extensions": {
+		"recommendations": ["biomejs.biome"]
+	}
+}

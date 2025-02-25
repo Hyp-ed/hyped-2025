@@ -1,4 +1,4 @@
-use defmt::{info, warn};
+use crate::logging::{info, warn};
 use embassy_net::tcp::TcpSocket;
 use heapless::String;
 use rust_mqtt::{
@@ -13,6 +13,12 @@ use rust_mqtt::{
 pub struct MqttMessage {
     pub topic: String<48>,
     pub payload: String<512>,
+}
+
+impl MqttMessage {
+    pub fn new(topic: String<48>, payload: String<512>) -> Self {
+        MqttMessage { topic, payload }
+    }
 }
 
 pub struct HypedMqttClient<'a, T, R>
@@ -57,8 +63,8 @@ pub fn initialise_mqtt_config(client_id: &str) -> ClientConfig<'_, 5, CountingRn
 }
 
 // Implement send_message for HypedMqttClient
-impl<'a, T: embedded_io_async::Read + embedded_io_async::Write, R: rand_core::RngCore>
-    HypedMqttClient<'a, T, R>
+impl<T: embedded_io_async::Read + embedded_io_async::Write, R: rand_core::RngCore>
+    HypedMqttClient<'_, T, R>
 {
     pub async fn connect_to_broker(&mut self) {
         match self.client.connect_to_broker().await {
