@@ -8,5 +8,7 @@ heapless = "0.8.0"
 embassy-sync = { version = "0.6.0", features = ["defmt"], git = "https://github.com/embassy-rs/embassy"}
 defmt = "0.3"
 
+hyped_i2c = { path = "../hyped_i2c" }
+
 [dev-dependencies]
 defmt = { version = "0.3", features = ["unstable-test"] }

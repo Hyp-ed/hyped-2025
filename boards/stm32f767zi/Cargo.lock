@@ -694,6 +694,7 @@ dependencies = [
  "defmt",
  "embassy-sync 0.6.2",
  "heapless 0.8.0",
+ "hyped_i2c",
 ]
 
 [[package]]
