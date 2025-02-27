@@ -5,16 +5,28 @@ use core::panic::PanicInfo;
 use defmt::*;
 use embassy_executor::Spawner;
 use embassy_stm32::adc::{Adc, AdcChannel};
+use embassy_sync::{
+    blocking_mutex::{
+        raw::{CriticalSectionRawMutex, NoopRawMutex},
+        Mutex,
+    },
+    watch::Watch,
+};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::io::Stm32f767ziAdc;
 use hyped_sensors::low_pressure::LowPressure;
+use hyped_sensors::SensorValueRange::{self, *};
+use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
+
+/// Used to keep the latest low pressure sensor value.
+static LOW_PRESSURE_READING: Watch<CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1> =
+    Watch::new();
 
 /// Test task that just continually reads pressure from low pressure sensor and prints value to console
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) -> ! {
     let p = embassy_stm32::init(Default::default());
-    info!("Low pressure sensor");
 
     let adc = Adc::new(p.ADC1);
     let pin = p.PA3;
@@ -22,7 +34,8 @@ async fn main(_spawner: Spawner) -> ! {
     let mut low_pressure_sensor = LowPressure::new(Stm32f767ziAdc::new(adc, pin.degrade_adc()));
 
     loop {
-        info!("{}", low_pressure_sensor.read_pressure());
+
+        info!("{}", );
         Timer::after(Duration::from_millis(100)).await;
     }
 }
