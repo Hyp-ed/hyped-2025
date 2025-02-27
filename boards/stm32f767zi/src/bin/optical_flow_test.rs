@@ -37,6 +37,6 @@ async fn main(_spawner: Spawner) -> ! {
     loop {
         let flow = optical_flow.get_motion().await.unwrap();
         defmt::info!("x: {:?}, y: {:?}", flow.x, flow.y);
-        Timer::after(Duration::from_millis(200)).await;
+        Timer::after(Duration::from_millis(10)).await;
     }
 }

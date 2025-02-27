@@ -41,12 +41,14 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
 
         let product_id = optical_flow.read(REG_PRODUCT_ID)?;
         if product_id != PMW3901_PRODUCT_ID {
-            warn!("Invalid product id: {}", product_id);
+            error!("Invalid product id: {}", product_id);
+            return Err(OpticalFlowError::InvalidProductId);
         }
 
         let revision_id = optical_flow.read(REG_REVISION_ID)?;
         if !VALID_PMW3901_REVISIONS.contains(&revision_id) {
-            warn!("Invalid revision id: {}", revision_id);
+            error!("Invalid revision id: {}", revision_id);
+            return Err(OpticalFlowError::InvalidRevisionId);
         }
 
         // Set the orientation
