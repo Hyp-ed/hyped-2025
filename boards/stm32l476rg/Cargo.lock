@@ -663,6 +663,8 @@ dependencies = [
  "heapless",
  "hyped_adc",
  "hyped_adc_derive",
+ "hyped_can",
+ "hyped_can_derive",
  "hyped_control",
  "hyped_core",
  "hyped_gpio",
@@ -675,6 +677,24 @@ dependencies = [
  "panic-probe",
  "rand_core",
  "static_cell",
+]
+
+[[package]]
+name = "hyped_can"
+version = "0.1.0"
+dependencies = [
+ "defmt",
+ "embassy-sync 0.6.0",
+ "embassy-time",
+ "heapless",
+]
+
+[[package]]
+name = "hyped_can_derive"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn",
 ]
 
 [[package]]
