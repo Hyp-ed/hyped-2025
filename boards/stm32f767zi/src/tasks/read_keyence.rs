@@ -5,13 +5,16 @@ use embassy_time::{Duration, Timer};
 use hyped_core::types::DigitalSignal;
 use hyped_sensors::keyence::Keyence;
 
+/// The update frequency of the Keyence sensor in Hz
+const UPDATE_FREQUENCY: u64 = 10;
+
 /// Test task that just continually updates the stripe count from the Keyence sensor (or other GPIO pin input)
 #[embassy_executor::task]
 pub async fn read_keyence(
     gpio_pin: Input<'static>,
     sender: Sender<'static, CriticalSectionRawMutex, u32, 1>,
 ) -> ! {
-    let mut keyence = Keyence::new(Stm32f767ziGpioInput::new(gpio_pin), DigitalSignal::Low);
+    let mut keyence = Keyence::new(Stm32f767ziGpioInput::new(gpio_pin), DigitalSignal::High);
 
     keyence.update_stripe_count();
     sender.send(keyence.get_stripe_count());
@@ -27,6 +30,6 @@ pub async fn read_keyence(
                 false
             }
         });
-        Timer::after(Duration::from_millis(100)).await;
+        Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
     }
 }
