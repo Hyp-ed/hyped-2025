@@ -630,8 +630,8 @@ dependencies = [
 name = "hyped_adc"
 version = "0.1.0"
 dependencies = [
- "embassy-sync 0.6.2",
  "defmt",
+ "embassy-sync 0.6.2",
  "heapless",
 ]
 
@@ -759,6 +759,7 @@ dependencies = [
  "defmt",
  "embassy-sync 0.6.0",
  "heapless",
+ "hyped_gpio",
 ]
 
 [[package]]

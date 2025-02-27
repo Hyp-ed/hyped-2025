@@ -19,12 +19,7 @@ fn impl_hyped_spi(ast: &syn::DeriveInput) -> TokenStream {
             fn read(&mut self, words: &mut [u8]) -> Result<(), SpiError> {
                 match self.spi.blocking_read(words) {
                     Ok(_) => Ok(()),
-                    Err(e) => Err(match e {
-                        spi::Error::Framing => SpiError::Framing,
-                        spi::Error::Crc => SpiError::Crc,
-                        spi::Error::ModeFault => SpiError::ModeFault,
-                        spi::Error::Overrun => SpiError::Overrun,
-                    }),
+                    Err(e) => Err(spi_error_from_error(e)),
                 }
             }
 
@@ -33,24 +28,16 @@ fn impl_hyped_spi(ast: &syn::DeriveInput) -> TokenStream {
                 let new_words = binding.as_slice();
                 match self.spi.blocking_write(new_words) {
                     Ok(_) => Ok(()),
-                    Err(e) => Err(match e {
-                        spi::Error::Framing => SpiError::Framing,
-                        spi::Error::Crc => SpiError::Crc,
-                        spi::Error::ModeFault => SpiError::ModeFault,
-                        spi::Error::Overrun => SpiError::Overrun,
-                    }),
+                    Err(e) => Err(spi_error_from_error(e)),
+
                 }
             }
 
             fn transfer_in_place(&mut self, data: &mut [u8]) -> Result<(), SpiError> {
                 match self.spi.blocking_transfer_in_place(data) {
                     Ok(_) => Ok(()),
-                    Err(e) => Err(match e {
-                        spi::Error::Framing => SpiError::Framing,
-                        spi::Error::Crc => SpiError::Crc,
-                        spi::Error::ModeFault => SpiError::ModeFault,
-                        spi::Error::Overrun => SpiError::Overrun,
-                    }),
+                    Err(e) => Err(spi_error_from_error(e)),
+
                 }
             }
         }
@@ -58,6 +45,15 @@ fn impl_hyped_spi(ast: &syn::DeriveInput) -> TokenStream {
         impl #impl_generics #name #ty_generics {
             pub fn new(spi: Spi<'static, Blocking>) -> Self {
                 Self { spi }
+            }
+        }
+
+        fn spi_error_from_error(e: spi::Error) -> SpiError {
+            match e {
+                spi::Error::Framing => SpiError::Framing,
+                spi::Error::Crc => SpiError::Crc,
+                spi::Error::ModeFault => SpiError::ModeFault,
+                spi::Error::Overrun => SpiError::Overrun,
             }
         }
     };

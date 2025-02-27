@@ -61,15 +61,7 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
                 });
                 match result {
                     Ok(_) => Ok(()),
-                    Err(e) => Err(match e {
-                        embassy_stm32::i2c::Error::Bus => I2cError::Bus,
-                        embassy_stm32::i2c::Error::Arbitration => I2cError::Arbitration,
-                        embassy_stm32::i2c::Error::Nack => I2cError::Nack,
-                        embassy_stm32::i2c::Error::Timeout => I2cError::Timeout,
-                        embassy_stm32::i2c::Error::Crc => I2cError::Crc,
-                        embassy_stm32::i2c::Error::Overrun => I2cError::Overrun,
-                        embassy_stm32::i2c::Error::ZeroLengthTransfer => I2cError::ZeroLengthTransfer,
-                    }),
+                    Err(e) => Err(i2c_error_from_error(e)),
                 }
             }
 
@@ -79,15 +71,7 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
                 });
                 match result {
                     Ok(_) => Ok(()),
-                    Err(e) => Err(match e {
-                        embassy_stm32::i2c::Error::Bus => I2cError::Bus,
-                        embassy_stm32::i2c::Error::Arbitration => I2cError::Arbitration,
-                        embassy_stm32::i2c::Error::Nack => I2cError::Nack,
-                        embassy_stm32::i2c::Error::Timeout => I2cError::Timeout,
-                        embassy_stm32::i2c::Error::Crc => I2cError::Crc,
-                        embassy_stm32::i2c::Error::Overrun => I2cError::Overrun,
-                        embassy_stm32::i2c::Error::ZeroLengthTransfer => I2cError::ZeroLengthTransfer,
-                    }),
+                    Err(e) => Err(i2c_error_from_error(e)),
                 }
             }
 
@@ -105,15 +89,7 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
                 });
                 match result {
                     Ok(_) => Ok(()),
-                    Err(e) => Err(match e {
-                        embassy_stm32::i2c::Error::Bus => I2cError::Bus,
-                        embassy_stm32::i2c::Error::Arbitration => I2cError::Arbitration,
-                        embassy_stm32::i2c::Error::Nack => I2cError::Nack,
-                        embassy_stm32::i2c::Error::Timeout => I2cError::Timeout,
-                        embassy_stm32::i2c::Error::Crc => I2cError::Crc,
-                        embassy_stm32::i2c::Error::Overrun => I2cError::Overrun,
-                        embassy_stm32::i2c::Error::ZeroLengthTransfer => I2cError::ZeroLengthTransfer,
-                    }),
+                    Err(e) => Err(i2c_error_from_error(e)),
                 }
             }
         }
@@ -121,6 +97,18 @@ fn impl_hyped_i2c(ast: &syn::DeriveInput) -> TokenStream {
         impl #impl_generics #name #ty_generics {
             pub fn new(i2c: &'static Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>) -> Self {
                 Self { i2c }
+            }
+        }
+
+        fn i2c_error_from_error(error: i2c::Error) -> I2cError {
+            match error {
+                i2c::Error::Bus => I2cError::Bus,
+                i2c::Error::Arbitration => I2cError::Arbitration,
+                i2c::Error::Nack => I2cError::Nack,
+                i2c::Error::Timeout => I2cError::Timeout,
+                i2c::Error::Crc => I2cError::Crc,
+                i2c::Error::Overrun => I2cError::Overrun,
+                i2c::Error::ZeroLengthTransfer => I2cError::ZeroLengthTransfer,
             }
         }
     };

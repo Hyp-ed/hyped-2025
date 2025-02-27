@@ -129,10 +129,7 @@ impl<'a, T: HypedSpi, C: HypedGpioOutputPin> OpticalFlow<'a, T, C> {
     /// Writes a single byte to a register
     fn write(&mut self, register: u8, data: u8) -> Result<(), OpticalFlowError> {
         self.cs.set_active();
-        let result = match self.spi.transfer_in_place(
-            // OR 0x80 to the register
-            &mut [register | 0x80, data],
-        ) {
+        let result = match self.spi.transfer_in_place(&mut [register | 0x80, data]) {
             Ok(_) => Ok(()),
             Err(e) => Err(OpticalFlowError::SpiError(e)),
         };
@@ -347,7 +344,7 @@ const VALID_PMW3901_REVISIONS: [u8; 2] = [0x01, 0x00];
 const NUM_UNIQUE_DATA_VALUES: u8 = 5;
 const WAIT: u8 = 0xFF;
 
-// Constants
+// Timing constants
 
 /// The timeout duration for reading motion data
 const TIMEOUT: Duration = Duration::from_secs(5);

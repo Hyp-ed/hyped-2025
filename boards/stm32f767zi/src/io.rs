@@ -6,7 +6,10 @@ use embassy_stm32::can::{
 };
 use embassy_stm32::gpio::{Input, Output};
 use embassy_stm32::spi::{self, Spi};
-use embassy_stm32::{i2c::I2c, mode::Blocking};
+use embassy_stm32::{
+    i2c::{self, I2c},
+    mode::Blocking,
+};
 use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
 use heapless::Vec;
 

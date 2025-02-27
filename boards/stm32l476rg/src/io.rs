@@ -3,7 +3,10 @@ use core::cell::RefCell;
 use embassy_stm32::adc::{Adc, AnyAdcChannel, Instance};
 use embassy_stm32::gpio::{Input, Output};
 use embassy_stm32::spi::{self, Spi};
-use embassy_stm32::{i2c::I2c, mode::Blocking};
+use embassy_stm32::{
+    i2c::{self, I2c},
+    mode::Blocking,
+};
 use embassy_sync::blocking_mutex::raw::NoopRawMutex;
 use embassy_sync::blocking_mutex::Mutex;
 use heapless::Vec;

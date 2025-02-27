@@ -22,7 +22,7 @@ pub trait HypedSpi {
     fn read(&mut self, words: &mut [u8]) -> Result<(), SpiError>;
     /// Write a list of bytes to an SPI device
     fn write(&mut self, words: &[u8]) -> Result<(), SpiError>;
-    /// Perform a Bidirectional transfer (using DMA), i.e. an SPI transaction
+    /// Perform a bidirectional transfer (using DMA), i.e. an SPI transaction
     /// A list of bytes is written to the SPI device
     /// and as each byte in that list is sent out, it is replaced by the data
     /// simultaneously read from the SPI device over the MISO line.
