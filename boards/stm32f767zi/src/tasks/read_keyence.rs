@@ -11,11 +11,22 @@ pub async fn read_keyence(
     gpio_pin: Input<'static>,
     sender: Sender<'static, CriticalSectionRawMutex, u32, 1>,
 ) -> ! {
-    let mut keyence = Keyence::new(Stm32f767ziGpioInput::new(gpio_pin), DigitalSignal::High);
+    let mut keyence = Keyence::new(Stm32f767ziGpioInput::new(gpio_pin), DigitalSignal::Low);
+
+    keyence.update_stripe_count();
+    sender.send(keyence.get_stripe_count());
 
     loop {
         keyence.update_stripe_count();
-        sender.send(keyence.get_stripe_count());
+        let new_stripe_count = Some(keyence.get_stripe_count());
+        sender.send_if_modified(|old_stripe_count| {
+            if new_stripe_count != *old_stripe_count {
+                *old_stripe_count = new_stripe_count;
+                true
+            } else {
+                false
+            }
+        });
         Timer::after(Duration::from_millis(100)).await;
     }
 }
