@@ -39,43 +39,40 @@ async fn main(_spawner: Spawner) {
     let (_tx, mut rx) = can.split();
 
     loop {
-        match rx.read().await {
-            Ok(envelope) => {
-                let id = envelope.frame.id();
-                let can_id = match id {
-                    Id::Standard(id) => id.as_raw() as u32, // 11-bit ID
-                    Id::Extended(id) => id.as_raw(),        // 29-bit ID
-                };
+        if let Ok(envelope) = rx.read().await {
+            let id = envelope.frame.id();
+            let can_id = match id {
+                Id::Standard(id) => id.as_raw() as u32, // 11-bit ID
+                Id::Extended(id) => id.as_raw(),        // 29-bit ID
+            };
 
-                let mut data = [0; 8];
-                data.copy_from_slice(envelope.frame.data());
-                let can_frame = HypedCanFrame::new(can_id, data);
-                let can_message: CanMessage = can_frame.into();
+            let mut data = [0; 8];
+            data.copy_from_slice(envelope.frame.data());
+            let can_frame = HypedCanFrame::new(can_id, data);
+            let can_message: CanMessage = can_frame.into();
 
-                match can_message {
-                    CanMessage::MeasurementReading(measurement_reading) => {
-                        let measurement_id = measurement_reading.measurement_id;
+            match can_message {
+                CanMessage::MeasurementReading(measurement_reading) => {
+                    let measurement_id = measurement_reading.measurement_id;
 
-                        match measurement_id {
-                            MeasurementId::Temperature => {
-                                defmt::info!(
-                                    "Received temperature reading over CAN: {:?}",
-                                    measurement_reading.reading,
-                                );
-                            }
-                            MeasurementId::Test => {
-                                defmt::info!(
-                                    "Received test reading over CAN: {:?}",
-                                    measurement_reading
-                                )
-                            }
+                    match measurement_id {
+                        MeasurementId::Temperature => {
+                            defmt::info!(
+                                "Received temperature reading over CAN: {:?}",
+                                measurement_reading.reading,
+                            );
+                        }
+                        MeasurementId::Test => {
+                            defmt::info!(
+                                "Received test reading over CAN: {:?}",
+                                measurement_reading
+                            )
                         }
                     }
                 }
-
-                Timer::after(Duration::from_millis(100)).await
             }
-            Err(_) => {}
+
+            Timer::after(Duration::from_millis(100)).await
         }
     }
 }

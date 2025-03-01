@@ -63,27 +63,24 @@ pub async fn read_temperature(
         sender.send(reading);
 
         // Send reading to CAN bus
-        match reading {
-            Some(reading) => {
-                let value = match reading {
-                    SensorValueRange::Critical(v) => v,
-                    SensorValueRange::Warning(v) => v,
-                    SensorValueRange::Safe(v) => v,
-                };
+        if let Some(reading) = reading {
+            let value = match reading {
+                SensorValueRange::Critical(v) => v,
+                SensorValueRange::Warning(v) => v,
+                SensorValueRange::Safe(v) => v,
+            };
 
-                let measurement_reading = MeasurementReading::new(
-                    CanData::F32(value),
-                    CanDataType::F32,
-                    board,
-                    MeasurementId::Temperature,
-                );
-                let can_message = CanMessage::MeasurementReading(measurement_reading);
+            let measurement_reading = MeasurementReading::new(
+                CanData::F32(value),
+                CanDataType::F32,
+                board,
+                MeasurementId::Temperature,
+            );
+            let can_message = CanMessage::MeasurementReading(measurement_reading);
 
-                can_sender.send(can_message).await;
+            can_sender.send(can_message).await;
 
-                defmt::info!("Send temperature over CAN: {:?}", value);
-            }
-            None => {}
+            defmt::info!("Send temperature over CAN: {:?}", value);
         }
 
         Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
