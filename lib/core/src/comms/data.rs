@@ -6,10 +6,10 @@ pub enum CanData {
     State(u8),
 }
 
-impl Into<u8> for CanData {
+impl From<CanData> for u8 {
     /// Gets the index of the CanData enum
-    fn into(self) -> u8 {
-        match self {
+    fn from(val: CanData) -> Self {
+        match val {
             CanData::Bool(_) => 0,
             CanData::TwoU16(_) => 1,
             CanData::F32(_) => 2,
@@ -31,18 +31,18 @@ impl From<u8> for CanData {
     }
 }
 
-impl Into<[u8; 8]> for CanData {
-    fn into(self) -> [u8; 8] {
-        match self {
+impl From<CanData> for [u8; 8] {
+    fn from(val: CanData) -> Self {
+        match val {
             CanData::Bool(b) => {
                 let mut data: [u8; 8] = [0; 8];
-                data[0] = self.into();
+                data[0] = val.into();
                 data[1] = b as u8;
                 data
             }
             CanData::TwoU16(u16s) => {
                 let mut data: [u8; 8] = [0; 8];
-                data[0] = self.into();
+                data[0] = val.into();
                 let u16_bytes: [u8; 2] = u16s[0].to_le_bytes();
                 data[1..3].copy_from_slice(&u16_bytes);
 
@@ -53,14 +53,14 @@ impl Into<[u8; 8]> for CanData {
             }
             CanData::F32(f) => {
                 let mut data: [u8; 8] = [0; 8];
-                data[0] = self.into();
+                data[0] = val.into();
                 let f32_bytes: [u8; 4] = f.to_le_bytes();
                 data[1..5].copy_from_slice(&f32_bytes);
                 data
             }
             CanData::State(s) => {
                 let mut data: [u8; 8] = [0; 8];
-                data[0] = self.into();
+                data[0] = val.into();
                 data[1] = s;
                 data
             }
@@ -102,9 +102,9 @@ pub enum CanDataType {
     State,
 }
 
-impl Into<u8> for CanDataType {
-    fn into(self) -> u8 {
-        match self {
+impl From<CanDataType> for u8 {
+    fn from(val: CanDataType) -> Self {
+        match val {
             CanDataType::Bool => 0,
             CanDataType::TwoU16 => 1,
             CanDataType::F32 => 2,
@@ -125,9 +125,9 @@ impl From<u8> for CanDataType {
     }
 }
 
-impl Into<CanDataType> for CanData {
-    fn into(self) -> CanDataType {
-        match self {
+impl From<CanData> for CanDataType {
+    fn from(val: CanData) -> Self {
+        match val {
             CanData::Bool(_) => CanDataType::Bool,
             CanData::TwoU16(_) => CanDataType::TwoU16,
             CanData::F32(_) => CanDataType::F32,

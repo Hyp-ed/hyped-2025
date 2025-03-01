@@ -21,11 +21,11 @@ impl CanId {
     }
 }
 
-impl Into<u32> for CanId {
-    fn into(self) -> u32 {
-        let board: u8 = self.board.into();
-        let message_type: u8 = self.message_type.into();
-        let message_identifier: u16 = self.message_identifier.into();
+impl From<CanId> for u32 {
+    fn from(val: CanId) -> Self {
+        let board: u8 = val.board.into();
+        let message_type: u8 = val.message_type.into();
+        let message_identifier: u16 = val.message_identifier.into();
 
         // Format: board message_type message_identifier
         ((board as u32) << 24) | ((message_type as u32) << 16) | (message_identifier as u32)

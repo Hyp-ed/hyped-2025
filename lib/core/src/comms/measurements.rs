@@ -17,9 +17,9 @@ pub enum MeasurementId {
     Test,
 }
 
-impl Into<u16> for MeasurementId {
-    fn into(self) -> u16 {
-        match self {
+impl From<MeasurementId> for u16 {
+    fn from(val: MeasurementId) -> Self {
+        match val {
             MeasurementId::Temperature => 0x00,
             MeasurementId::Test => 0x01,
         }

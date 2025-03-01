@@ -20,9 +20,9 @@ pub enum State {
     Shutdown,
 }
 
-impl Into<u8> for State {
-    fn into(self) -> u8 {
-        match self {
+impl From<State> for u8 {
+    fn from(val: State) -> Self {
+        match val {
             State::Idle => 0x00,
             State::Calibrate => 0x01,
             State::Precharge => 0x02,

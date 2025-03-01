@@ -6,9 +6,9 @@ pub enum Board {
     Test,
 }
 
-impl Into<u8> for Board {
-    fn into(self) -> u8 {
-        match self {
+impl From<Board> for u8 {
+    fn from(val: Board) -> Self {
+        match val {
             Board::Telemetry => 0,
             Board::Navigation => 1,
             Board::Pneumatics => 2,

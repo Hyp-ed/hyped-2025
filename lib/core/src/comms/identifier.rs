@@ -6,9 +6,9 @@ pub enum MessageIdentifier {
     StateTransition,
 }
 
-impl Into<u16> for MessageIdentifier {
-    fn into(self) -> u16 {
-        match self {
+impl From<MessageIdentifier> for u16 {
+    fn from(val: MessageIdentifier) -> Self {
+        match val {
             MessageIdentifier::Measurement(measurement_id) => measurement_id.into(),
             MessageIdentifier::StateTransition => 0xFF,
         }

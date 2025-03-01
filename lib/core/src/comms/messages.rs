@@ -16,9 +16,9 @@ pub enum CanMessage {
     StateTransition(StateTransition),
 }
 
-impl Into<HypedCanFrame> for CanMessage {
-    fn into(self) -> HypedCanFrame {
-        match self {
+impl From<CanMessage> for HypedCanFrame {
+    fn from(val: CanMessage) -> Self {
+        match val {
             CanMessage::MeasurementReading(measurement_reading) => {
                 let message_identifier =
                     MessageIdentifier::Measurement(measurement_reading.measurement_id);
