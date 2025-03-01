@@ -1,43 +1,58 @@
-use super::mqtt_send::SEND_TO_MQTT_CHANNEL;
-use core::str::FromStr;
-use defmt::*;
-use embassy_stm32::can::{CanRx, Id, StandardId};
+use embassy_stm32::can::{CanRx, Id};
+use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
 use embassy_time::{Duration, Timer};
-use heapless::String;
-use hyped_core::format;
-use hyped_core::format_string::show;
-use hyped_core::{mqtt::MqttMessage, mqtt_topics::MqttTopics};
+use hyped_can::HypedCanFrame;
+use hyped_core::comms::{messages::CanMessage, state_transition::StateTransition};
 use {defmt_rtt as _, panic_probe as _};
 
-/// Receives CAN messages and sends them over MQTT to the base station.
-/// The CAN messages can be sent to different topics based on the CAN ID.
+/// Stores incoming state transitions received from CAN.
+/// All boards should listen to this channel and update their states accordingly.
+pub static INCOMING_STATE_TRANSITIONS: Channel<CriticalSectionRawMutex, StateTransition, 10> =
+    Channel::new();
+
+/// Stores incoming state transition requests received from CAN.
+/// Only used by the main control board running the state_machine task.
+pub static INCOMING_STATE_TRANSITION_REQUESTS: Channel<
+    CriticalSectionRawMutex,
+    StateTransition,
+    10,
+> = Channel::new();
+
+/// Task that receives CAN messages and puts them into a channel.
+/// Currently only supports StateTransition and StateTransitionRequest messages.
 #[embassy_executor::task]
-pub async fn can_receiver(rx: &'static mut CanRx<'static>) {
-    Timer::after(Duration::from_secs(1)).await;
+pub async fn can_receiver(mut rx: CanRx<'static>) {
+    let state_transition_sender = INCOMING_STATE_TRANSITIONS.sender();
+    let state_transition_request_sender = INCOMING_STATE_TRANSITION_REQUESTS.sender();
+
     loop {
         let envelope = rx.read().await;
         if envelope.is_err() {
             continue;
         }
         let envelope = envelope.unwrap();
-        println!("Received: {:?}", envelope);
-
-        let topic_string = if *envelope.frame.header().id() == Id::from(StandardId::new(0).unwrap())
-        {
-            MqttTopics::to_string(&MqttTopics::Debug)
-        } else {
-            MqttTopics::to_string(&MqttTopics::Test)
+        let id = envelope.frame.id();
+        let can_id = match id {
+            Id::Standard(id) => id.as_raw() as u32, // 11-bit ID
+            Id::Extended(id) => id.as_raw(),        // 29-bit ID
         };
+        let mut data = [0u8; 8];
+        data.copy_from_slice(envelope.frame.data());
+        let can_frame = HypedCanFrame::new(can_id, data);
 
-        SEND_TO_MQTT_CHANNEL
-            .send(MqttMessage {
-                topic: topic_string,
-                payload: String::<512>::from_str(
-                    format!(&mut [0u8; 1024], "Received: {:?}", envelope).expect("invalid env"),
-                )
-                .unwrap(),
-            })
-            .await;
+        let can_message: CanMessage = can_frame.into();
+
+        match can_message {
+            CanMessage::StateTransition(state_transition) => {
+                state_transition_sender.send(state_transition).await;
+            }
+            // Requests will only be used on the primary board running the state_machine task.
+            CanMessage::StateTransitionRequest(state_transition) => {
+                state_transition_request_sender.send(state_transition).await;
+            }
+            _ => {}
+        }
+
         Timer::after(Duration::from_millis(100)).await;
     }
 }
