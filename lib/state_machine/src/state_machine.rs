@@ -1,8 +1,8 @@
-use crate::types::State;
 use embassy_net::tcp::TcpSocket;
 use hyped_core::{
     logging::{info, warn},
     mqtt::HypedMqttClient,
+    states::State,
 };
 use rust_mqtt::utils::rng_generator::CountingRng;
 

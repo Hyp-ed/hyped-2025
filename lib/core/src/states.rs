@@ -1,7 +1,7 @@
 use core::str::FromStr;
 use heapless::String;
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, defmt::Format, Clone)]
 pub enum State {
     Idle,
     Calibrate,
@@ -18,6 +18,51 @@ pub enum State {
     EmergencyBrake,
     Safe,
     Shutdown,
+}
+
+impl Into<u8> for State {
+    fn into(self) -> u8 {
+        match self {
+            State::Idle => 0x00,
+            State::Calibrate => 0x01,
+            State::Precharge => 0x02,
+            State::ReadyForLevitation => 0x03,
+            State::BeginLevitation => 0x04,
+            State::Levitating => 0x05,
+            State::Ready => 0x06,
+            State::Accelerate => 0x07,
+            State::LimBrake => 0x08,
+            State::FrictionBrake => 0x09,
+            State::StopLevitation => 0x0A,
+            State::Stopped => 0x0B,
+            State::EmergencyBrake => 0x0C,
+            State::Safe => 0x0D,
+            State::Shutdown => 0x0E,
+        }
+    }
+}
+
+impl From<u8> for State {
+    fn from(state: u8) -> Self {
+        match state {
+            0x00 => State::Idle,
+            0x01 => State::Calibrate,
+            0x02 => State::Precharge,
+            0x03 => State::ReadyForLevitation,
+            0x04 => State::BeginLevitation,
+            0x05 => State::Levitating,
+            0x06 => State::Ready,
+            0x07 => State::Accelerate,
+            0x08 => State::LimBrake,
+            0x09 => State::FrictionBrake,
+            0x0A => State::StopLevitation,
+            0x0B => State::Stopped,
+            0x0C => State::EmergencyBrake,
+            0x0D => State::Safe,
+            0x0E => State::Shutdown,
+            _ => State::Idle,
+        }
+    }
 }
 
 impl State {

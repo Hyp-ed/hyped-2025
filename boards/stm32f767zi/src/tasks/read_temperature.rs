@@ -1,4 +1,4 @@
-use crate::io::Stm32f767ziI2c;
+use crate::{io::Stm32f767ziI2c, trigger_emergency};
 use core::cell::RefCell;
 use defmt_rtt as _;
 use embassy_stm32::{i2c::I2c, mode::Blocking};
@@ -11,11 +11,15 @@ use embassy_sync::{
     watch::Sender as WatchSender,
 };
 use embassy_time::{Duration, Timer};
-use hyped_core::comms::{
-    boards::Board,
-    data::{CanData, CanDataType},
-    measurements::{MeasurementId, MeasurementReading},
-    messages::CanMessage,
+use hyped_core::{
+    comms::{
+        boards::Board,
+        data::{CanData, CanDataType},
+        measurements::{MeasurementId, MeasurementReading},
+        messages::CanMessage,
+        state_transition::StateTransition,
+    },
+    states::State,
 };
 use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 use hyped_sensors::SensorValueRange;
@@ -43,9 +47,11 @@ pub async fn read_temperature(
     loop {
         match temperature_sensor.check_status() {
             Status::TempOverUpperLimit => {
+                trigger_emergency!(can_sender, board);
                 defmt::error!("Temperature is over the upper limit.");
             }
             Status::TempUnderLowerLimit => {
+                trigger_emergency!(can_sender, board);
                 defmt::error!("Temperature is under the lower limit.");
             }
             Status::Busy => {
@@ -65,8 +71,15 @@ pub async fn read_temperature(
         // Send reading to CAN bus
         if let Some(reading) = reading {
             let value = match reading {
-                SensorValueRange::Critical(v) => v,
-                SensorValueRange::Warning(v) => v,
+                SensorValueRange::Critical(v) => {
+                    trigger_emergency!(can_sender, board);
+                    defmt::error!("Critical temperature reading: {:?}", v);
+                    v
+                }
+                SensorValueRange::Warning(v) => {
+                    defmt::warn!("Warning temperature reading: {:?}", v);
+                    v
+                }
                 SensorValueRange::Safe(v) => v,
             };
 
@@ -79,8 +92,6 @@ pub async fn read_temperature(
             let can_message = CanMessage::MeasurementReading(measurement_reading);
 
             can_sender.send(can_message).await;
-
-            defmt::info!("Send temperature over CAN: {:?}", value);
         }
 
         Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;

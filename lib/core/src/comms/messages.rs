@@ -1,14 +1,19 @@
 use hyped_can::HypedCanFrame;
 
+use crate::states::State;
+
 use super::{
     can_id::CanId,
-    data::CanData,
-    measurements::{MeasurementId, MeasurementReading},
+    data::{CanData, CanDataType},
+    identifier::MessageIdentifier,
+    measurements::MeasurementReading,
+    state_transition::StateTransition,
 };
 
 #[derive(PartialEq, Debug, Clone, defmt::Format)]
 pub enum CanMessage {
     MeasurementReading(MeasurementReading),
+    StateTransition(StateTransition),
 }
 
 impl Into<HypedCanFrame> for CanMessage {
@@ -23,6 +28,17 @@ impl Into<HypedCanFrame> for CanMessage {
                     message_identifier,
                 );
                 HypedCanFrame::new(can_id.into(), measurement_reading.reading.into())
+            }
+            CanMessage::StateTransition(state_transition) => {
+                let can_id = CanId::new(
+                    state_transition.board,
+                    CanDataType::State,
+                    MessageIdentifier::StateTransition,
+                );
+                HypedCanFrame::new(
+                    can_id.into(),
+                    CanData::State(state_transition.to_state.into()).into(),
+                )
             }
         }
     }
@@ -46,26 +62,18 @@ impl From<HypedCanFrame> for CanMessage {
                 };
                 CanMessage::MeasurementReading(measurement_reading)
             }
+            MessageIdentifier::StateTransition => {
+                let reading: CanData = frame.data.into();
+                match reading {
+                    CanData::State(state) => {
+                        let to_state: State = state.into();
+                        let state_transition = StateTransition::new(board, to_state);
+                        CanMessage::StateTransition(state_transition)
+                    }
+                    _ => panic!("Invalid CanData for StateTransition"),
+                }
+            }
         }
-    }
-}
-
-#[derive(Debug)]
-pub enum MessageIdentifier {
-    Measurement(MeasurementId),
-}
-
-impl Into<u16> for MessageIdentifier {
-    fn into(self) -> u16 {
-        match self {
-            MessageIdentifier::Measurement(measurement_id) => measurement_id.into(),
-        }
-    }
-}
-
-impl From<u16> for MessageIdentifier {
-    fn from(id: u16) -> Self {
-        MessageIdentifier::Measurement(id.into())
     }
 }
 
@@ -73,11 +81,15 @@ impl From<u16> for MessageIdentifier {
 mod tests {
     use hyped_can::HypedCanFrame;
 
-    use crate::comms::{
-        boards::Board,
-        data::{CanData, CanDataType},
-        measurements::{MeasurementId, MeasurementReading},
-        messages::CanMessage,
+    use crate::{
+        comms::{
+            boards::Board,
+            data::{CanData, CanDataType},
+            measurements::{MeasurementId, MeasurementReading},
+            messages::CanMessage,
+            state_transition::StateTransition,
+        },
+        states::State,
     };
 
     #[test]
@@ -94,5 +106,23 @@ mod tests {
         let can_message_from_frame: CanMessage = can_frame.into();
 
         assert_eq!(can_message, can_message_from_frame)
+    }
+
+    #[test]
+    fn it_works_state_transition() {
+        let state_transition = StateTransition::new(Board::Test, State::EmergencyBrake);
+        let state_transition = CanMessage::StateTransition(state_transition);
+
+        println!("{:?}", state_transition);
+
+        let can_frame: HypedCanFrame = state_transition.clone().into();
+
+        println!("{:?}", can_frame);
+
+        let can_message_from_frame: CanMessage = can_frame.into();
+
+        println!("{:?}", can_message_from_frame);
+
+        assert_eq!(state_transition, can_message_from_frame)
     }
 }

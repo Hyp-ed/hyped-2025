@@ -1,5 +1,6 @@
-use super::{boards::Board, data::CanDataType, messages::MessageIdentifier};
+use super::{boards::Board, data::CanDataType, identifier::MessageIdentifier};
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct CanId {
     pub board: Board,
     pub message_type: CanDataType,
@@ -42,5 +43,26 @@ impl From<u32> for CanId {
             message_type,
             message_identifier,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        let can_id = CanId::new(
+            Board::Test,
+            CanDataType::State,
+            MessageIdentifier::StateTransition,
+        );
+        let id: u32 = can_id.clone().into();
+
+        assert_eq!(can_id, CanId::from(id));
+        assert_eq!(
+            CanId::from(id).message_identifier,
+            MessageIdentifier::StateTransition
+        );
     }
 }

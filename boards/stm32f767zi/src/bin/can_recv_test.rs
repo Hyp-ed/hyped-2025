@@ -70,6 +70,12 @@ async fn main(_spawner: Spawner) {
                         }
                     }
                 }
+                CanMessage::StateTransition(state_transition) => {
+                    defmt::info!(
+                        "Received state transition over CAN: {:?}",
+                        state_transition.to_state
+                    );
+                }
             }
 
             Timer::after(Duration::from_millis(100)).await
