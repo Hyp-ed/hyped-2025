@@ -20,15 +20,12 @@ pub async fn state_machine(board: Board) {
 
         let new_state = state_machine.handle_transition(&to_state);
 
-        match new_state {
-            Some(state) => {
-                defmt::info!("State transition successful. New state: {:?}", state);
+        if let Some(state) = new_state {
+            defmt::info!("State transition successful. New state: {:?}", state);
 
-                // Send the new state to the CAN bus
-                let can_message = CanMessage::StateTransition(StateTransition::new(board, state));
-                can_sender.send(can_message).await;
-            }
-            None => {}
+            // Send the new state to the CAN bus
+            let can_message = CanMessage::StateTransition(StateTransition::new(board, state));
+            can_sender.send(can_message).await;
         }
     }
 }
