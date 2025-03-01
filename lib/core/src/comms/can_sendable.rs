@@ -1,8 +1,8 @@
 pub enum CanMessageType {
-    Bool = 0,
-    F32 = 1,
-    TwoU16 = 2,
-    PosDelta = 3,
+    Bool,
+    F32,
+    TwoU16,
+    PosDelta,
 }
 
 impl From<u8> for CanMessageType {
@@ -185,7 +185,7 @@ impl PositionDelta {
     /// Attempt to decode a CAN PositionDelta value and add it to the current structure
     /// example implementation
     /// ```no_run (doc tests don't like no_std)
-    /// use hyped_core::can_sendable::*;
+    /// use hyped_core::comms::can_sendable::*;
     ///
     /// let mut pos_d = PositionDelta::new_empty();
     /// let mut err_cnt = 0;

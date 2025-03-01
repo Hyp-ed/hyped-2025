@@ -1,5 +1,6 @@
 // CAN
 pub mod can_receiver;
+pub mod can_sender;
 
 // MQTT
 pub mod button;

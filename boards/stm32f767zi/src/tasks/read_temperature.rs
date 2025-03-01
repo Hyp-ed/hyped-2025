@@ -7,9 +7,16 @@ use embassy_sync::{
         raw::{CriticalSectionRawMutex, NoopRawMutex},
         Mutex,
     },
-    watch::Sender,
+    channel::Sender as ChannelSender,
+    watch::Sender as WatchSender,
 };
 use embassy_time::{Duration, Timer};
+use hyped_core::comms::{
+    boards::Board,
+    data::{CanData, CanDataType},
+    measurements::{MeasurementId, MeasurementReading},
+    messages::CanMessage,
+};
 use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 use hyped_sensors::SensorValueRange;
 
@@ -22,7 +29,9 @@ const UPDATE_FREQUENCY: u64 = 1000;
 #[embassy_executor::task]
 pub async fn read_temperature(
     i2c_bus: &'static I2c1Bus,
-    sender: Sender<'static, CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1>,
+    sender: WatchSender<'static, CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1>,
+    can_sender: ChannelSender<'static, CriticalSectionRawMutex, CanMessage, 10>,
+    board: Board,
 ) -> ! {
     let mut hyped_i2c = Stm32f767ziI2c::new(i2c_bus);
 
@@ -48,7 +57,35 @@ pub async fn read_temperature(
             Status::Ok => {}
         }
 
-        sender.send(temperature_sensor.read());
+        let reading = temperature_sensor.read();
+
+        // Send reading to main task
+        sender.send(reading);
+
+        // Send reading to CAN bus
+        match reading {
+            Some(reading) => {
+                let value = match reading {
+                    SensorValueRange::Critical(v) => v,
+                    SensorValueRange::Warning(v) => v,
+                    SensorValueRange::Safe(v) => v,
+                };
+
+                let measurement_reading = MeasurementReading::new(
+                    CanData::F32(value),
+                    CanDataType::F32,
+                    board,
+                    MeasurementId::Temperature,
+                );
+                let can_message = CanMessage::MeasurementReading(measurement_reading);
+
+                can_sender.send(can_message).await;
+
+                defmt::info!("Send temperature over CAN: {:?}", value);
+            }
+            None => {}
+        }
+
         Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
     }
 }

@@ -1,43 +1,36 @@
-use super::mqtt_send::SEND_TO_MQTT_CHANNEL;
-use core::str::FromStr;
-use defmt::*;
-use embassy_stm32::can::{CanRx, Id, StandardId};
+use embassy_stm32::can::{CanRx, Id};
+use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+use embassy_sync::channel::Sender;
 use embassy_time::{Duration, Timer};
-use heapless::String;
-use hyped_core::format;
-use hyped_core::format_string::show;
-use hyped_core::{mqtt::MqttMessage, mqtt_topics::MqttTopics};
+use hyped_can::HypedCanFrame;
+use hyped_core::comms::messages::CanMessage;
 use {defmt_rtt as _, panic_probe as _};
 
-/// Receives CAN messages and sends them over MQTT to the base station.
-/// The CAN messages can be sent to different topics based on the CAN ID.
+/// Task that receives CAN messages and sends them to the main task
 #[embassy_executor::task]
-pub async fn can_receiver(rx: &'static mut CanRx<'static>) {
-    Timer::after(Duration::from_secs(1)).await;
+pub async fn can_receiver(
+    mut rx: CanRx<'static>,
+    sender: Sender<'static, CriticalSectionRawMutex, CanMessage, 10>,
+) {
     loop {
         let envelope = rx.read().await;
         if envelope.is_err() {
             continue;
         }
         let envelope = envelope.unwrap();
-        println!("Received: {:?}", envelope);
-
-        let topic_string = if *envelope.frame.header().id() == Id::from(StandardId::new(0).unwrap())
-        {
-            MqttTopics::to_string(&MqttTopics::Debug)
-        } else {
-            MqttTopics::to_string(&MqttTopics::Test)
+        let id = envelope.frame.id();
+        let can_id = match id {
+            Id::Standard(id) => id.as_raw() as u32, // 11-bit ID
+            Id::Extended(id) => id.as_raw(),        // 29-bit ID
         };
+        let mut data = [0u8; 8];
+        data.copy_from_slice(envelope.frame.data());
+        let can_frame = HypedCanFrame::new(can_id, data);
 
-        SEND_TO_MQTT_CHANNEL
-            .send(MqttMessage {
-                topic: topic_string,
-                payload: String::<512>::from_str(
-                    format!(&mut [0u8; 1024], "Received: {:?}", envelope).expect("invalid env"),
-                )
-                .unwrap(),
-            })
-            .await;
+        let can_message: CanMessage = can_frame.into();
+
+        sender.send(can_message).await;
+
         Timer::after(Duration::from_millis(100)).await;
     }
 }

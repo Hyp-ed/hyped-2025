@@ -4,25 +4,47 @@
 use core::cell::RefCell;
 
 use embassy_executor::Spawner;
-use embassy_stm32::{i2c::I2c, mode::Blocking, time::Hertz};
+use embassy_stm32::{
+    bind_interrupts,
+    can::{
+        filter::Mask32, Can, Fifo, Rx0InterruptHandler, Rx1InterruptHandler, SceInterruptHandler,
+        TxInterruptHandler,
+    },
+    i2c::I2c,
+    mode::Blocking,
+    peripherals::CAN1,
+    time::Hertz,
+};
 use embassy_sync::{
     blocking_mutex::{
         raw::{CriticalSectionRawMutex, NoopRawMutex},
         Mutex,
     },
+    channel::Channel,
     watch::Watch,
 };
 use embassy_time::{Duration, Timer};
-use hyped_boards_stm32f767zi::tasks::read_temperature::read_temperature;
-use hyped_sensors::SensorValueRange::{self, *};
+use hyped_boards_stm32f767zi::tasks::{can_sender::can_sender, read_temperature::read_temperature};
+use hyped_core::comms::{boards::Board, messages::CanMessage};
+use hyped_sensors::SensorValueRange::{self};
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
+
+bind_interrupts!(struct Irqs {
+    CAN1_RX0 => Rx0InterruptHandler<CAN1>;
+    CAN1_RX1 => Rx1InterruptHandler<CAN1>;
+    CAN1_SCE => SceInterruptHandler<CAN1>;
+    CAN1_TX => TxInterruptHandler<CAN1>;
+});
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
 /// Used to keep the latest temperature sensor value.
 static TEMP_READING: Watch<CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1> =
     Watch::new();
+
+static CAN_SEND: Channel<CriticalSectionRawMutex, CanMessage, 10> = Channel::new();
+static CAN_RECEIVE: Channel<CriticalSectionRawMutex, CanMessage, 10> = Channel::new();
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -33,31 +55,39 @@ async fn main(spawner: Spawner) -> ! {
     static I2C_BUS: StaticCell<I2c1Bus> = StaticCell::new();
     let i2c_bus = I2C_BUS.init(Mutex::new(RefCell::new(i2c)));
 
+    // Initialise CAN
+    static CAN: StaticCell<Can<'static>> = StaticCell::new();
+    let can = CAN.init(Can::new(p.CAN1, p.PD0, p.PD1, Irqs));
+    can.modify_filters()
+        .enable_bank(0, Fifo::Fifo0, Mask32::accept_all());
+    can.modify_config().set_bitrate(500_000);
+    can.enable().await;
+    defmt::info!("CAN enabled");
+
+    let (tx, _rx) = can.split();
+
+    // Create a sender and receiver for the CAN messages
+    let can_send_sender = CAN_SEND.sender();
+    let can_send_receiver = CAN_SEND.receiver();
+
+    let _can_receive_sender = CAN_RECEIVE.sender();
+    let mut _can_receive_receiver = CAN_RECEIVE.receiver();
+
+    // spawner.must_spawn(can_receiver(rx, can_receive_sender));
+    spawner.must_spawn(can_sender(tx, can_send_receiver));
+
     // Create a sender to pass to the temperature reading task, and a receiver for reading the values back.
     let temp_reading_sender = TEMP_READING.sender();
-    let mut temp_reading_receiver = TEMP_READING.receiver().unwrap();
+    let mut _temp_reading_receiver = TEMP_READING.receiver().unwrap();
 
-    spawner.must_spawn(read_temperature(i2c_bus, temp_reading_sender));
+    spawner.must_spawn(read_temperature(
+        i2c_bus,
+        temp_reading_sender,
+        can_send_sender,
+        Board::Test,
+    ));
 
-    // Every 100ms we read for the latest value from the temperature sensor.
     loop {
-        match temp_reading_receiver.try_changed() {
-            Some(reading) => match reading {
-                Some(reading) => match reading {
-                    Safe(temp) => {
-                        defmt::info!("Temperature: {}°C (safe)", temp);
-                    }
-                    Warning(temp) => {
-                        defmt::warn!("Temperature: {}°C (warning)", temp);
-                    }
-                    Critical(temp) => {
-                        defmt::error!("Temperature: {}°C (critical)", temp);
-                    }
-                },
-                None => defmt::warn!("No temperature reading available."),
-            },
-            None => (),
-        }
         Timer::after(Duration::from_millis(100)).await;
     }
 }

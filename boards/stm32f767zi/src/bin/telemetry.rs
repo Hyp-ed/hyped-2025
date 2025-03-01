@@ -18,7 +18,6 @@ use embassy_stm32::{
     Config,
 };
 use embassy_time::{Duration, Timer};
-use hyped_boards_stm32f767zi::tasks::can_receiver::can_receiver;
 use hyped_boards_stm32f767zi::{
     log::log,
     tasks::{heartbeat::heartbeat, mqtt_recv::mqtt_recv_task, mqtt_send::mqtt_send_task},
@@ -133,10 +132,10 @@ async fn main(spawner: Spawner) -> ! {
     let (_tx, rx) = can.split();
 
     static CAN_RX: StaticCell<CanRx<'static>> = StaticCell::new();
-    let rx = CAN_RX.init(rx);
+    let _rx = CAN_RX.init(rx);
 
     // Launch CAN receiver task
-    unwrap!(spawner.spawn(can_receiver(rx)));
+    // unwrap!(spawner.spawn(can_receiver(rx)));
 
     loop {
         Timer::after(Duration::from_millis(1000)).await;
