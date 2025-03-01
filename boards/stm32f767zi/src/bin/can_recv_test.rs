@@ -10,10 +10,13 @@ use embassy_stm32::can::{
     TxInterruptHandler,
 };
 use embassy_stm32::peripherals::CAN1;
+use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
+use embassy_sync::watch::Watch;
 use embassy_time::{Duration, Timer};
 use hyped_can::HypedCanFrame;
 use hyped_core::comms::measurements::MeasurementId;
 use hyped_core::comms::messages::CanMessage;
+use hyped_core::states::State;
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
 
@@ -23,6 +26,9 @@ bind_interrupts!(struct Irqs {
     CAN1_SCE => SceInterruptHandler<CAN1>;
     CAN1_TX => TxInterruptHandler<CAN1>;
 });
+
+/// The current state of the state machine.
+pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();
 
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) {

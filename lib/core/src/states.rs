@@ -1,7 +1,7 @@
 use core::str::FromStr;
 use heapless::String;
 
-#[derive(PartialEq, Debug, defmt::Format, Clone)]
+#[derive(PartialEq, Debug, defmt::Format, Clone, Copy)]
 pub enum State {
     Idle,
     Calibrate,

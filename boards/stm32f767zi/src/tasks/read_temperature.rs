@@ -1,4 +1,4 @@
-use crate::{io::Stm32f767ziI2c, trigger_emergency};
+use crate::{io::Stm32f767ziI2c, oh_god_oh_fuck};
 use core::cell::RefCell;
 use defmt_rtt as _;
 use embassy_stm32::{i2c::I2c, mode::Blocking};
@@ -28,8 +28,11 @@ use super::can_sender::CAN_SEND;
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
 /// Used to keep the latest temperature sensor value.
-pub static TEMP_READING: Watch<CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1> =
-    Watch::new();
+pub static LATEST_TEMPERATURE_READING: Watch<
+    CriticalSectionRawMutex,
+    Option<SensorValueRange<f32>>,
+    1,
+> = Watch::new();
 
 /// The update frequency of the temperature sensor in Hz
 const UPDATE_FREQUENCY: u64 = 1000;
@@ -37,25 +40,23 @@ const UPDATE_FREQUENCY: u64 = 1000;
 /// Test task that just reads the temperature from the sensor and prints it to the console
 #[embassy_executor::task]
 pub async fn read_temperature(i2c_bus: &'static I2c1Bus, board: Board) -> ! {
-    let sender = TEMP_READING.sender();
+    let latest_temperature_reading_sender = LATEST_TEMPERATURE_READING.sender();
+    let can_sender = CAN_SEND.sender();
 
     let mut hyped_i2c = Stm32f767ziI2c::new(i2c_bus);
-
     let mut temperature_sensor = Temperature::new(&mut hyped_i2c, TemperatureAddresses::Address3f)
         .expect(
         "Failed to create temperature sensor. Check the wiring and the I2C address of the sensor.",
     );
 
-    let can_sender = CAN_SEND.sender();
-
     loop {
         match temperature_sensor.check_status() {
             Status::TempOverUpperLimit => {
-                trigger_emergency!(can_sender, board);
+                oh_god_oh_fuck!(can_sender, board);
                 defmt::error!("Temperature is over the upper limit.");
             }
             Status::TempUnderLowerLimit => {
-                trigger_emergency!(can_sender, board);
+                oh_god_oh_fuck!(can_sender, board);
                 defmt::error!("Temperature is under the lower limit.");
             }
             Status::Busy => {
@@ -69,14 +70,15 @@ pub async fn read_temperature(i2c_bus: &'static I2c1Bus, board: Board) -> ! {
 
         let reading = temperature_sensor.read();
 
-        // Send reading to main task
-        sender.send(reading);
+        // Send reading to the Watch
+        latest_temperature_reading_sender.send(reading);
 
         // Send reading to CAN bus
         if let Some(reading) = reading {
+            // Handle the reading based on the range
             let value = match reading {
                 SensorValueRange::Critical(v) => {
-                    trigger_emergency!(can_sender, board);
+                    oh_god_oh_fuck!(can_sender, board);
                     defmt::error!("Critical temperature reading: {:?}", v);
                     v
                 }

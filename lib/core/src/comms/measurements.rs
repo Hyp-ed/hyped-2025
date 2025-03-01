@@ -15,6 +15,7 @@ pub struct MeasurementReading {
 pub enum MeasurementId {
     Temperature,
     Test,
+    KeyenceStripeCount,
 }
 
 impl From<MeasurementId> for u16 {
@@ -22,6 +23,7 @@ impl From<MeasurementId> for u16 {
         match val {
             MeasurementId::Temperature => 0x00,
             MeasurementId::Test => 0x01,
+            MeasurementId::KeyenceStripeCount => 0x02,
         }
     }
 }
@@ -31,6 +33,7 @@ impl From<u16> for MeasurementId {
         match id {
             0x00 => MeasurementId::Temperature,
             0x01 => MeasurementId::Test,
+            0x02 => MeasurementId::KeyenceStripeCount,
             _ => panic!("Invalid MeasurementId"),
         }
     }

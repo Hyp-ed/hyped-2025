@@ -1,17 +1,23 @@
 use super::{can_receiver::INCOMING_STATE_TRANSITION_REQUESTS, can_sender::CAN_SEND};
-use hyped_core::comms::{boards::Board, messages::CanMessage, state_transition::StateTransition};
+use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
+use hyped_core::{
+    comms::{boards::Board, messages::CanMessage, state_transition::StateTransition},
+    states::State,
+};
 use hyped_state_machine::state_machine::StateMachine;
 
 use {defmt_rtt as _, panic_probe as _};
 
 /// Handles the state machine logic by receiving state transition requests and sending new states.
 #[embassy_executor::task]
-pub async fn state_machine(board: Board) {
+pub async fn state_machine(
+    board: Board,
+    state_sender: Sender<'static, CriticalSectionRawMutex, State, 1>,
+) {
     // Initialise the state machine with the initial state
     let mut state_machine = StateMachine::new();
 
     let incoming_state_transition_requests = INCOMING_STATE_TRANSITION_REQUESTS.receiver();
-
     let can_sender = CAN_SEND.sender();
 
     loop {
@@ -20,12 +26,24 @@ pub async fn state_machine(board: Board) {
 
         let new_state = state_machine.handle_transition(&to_state);
 
-        if let Some(state) = new_state {
-            defmt::info!("State transition successful. New state: {:?}", state);
+        match new_state {
+            Some(state) => {
+                defmt::info!("State transition successful. New state: {:?}", state);
 
-            // Send the new state to the CAN bus
-            let can_message = CanMessage::StateTransition(StateTransition::new(board, state));
-            can_sender.send(can_message).await;
+                // Update this board's state
+                state_sender.send(state);
+
+                // Send the new state to the CAN bus
+                let can_message = CanMessage::StateTransition(StateTransition::new(board, state));
+                can_sender.send(can_message).await;
+            }
+            None => {
+                defmt::error!(
+                    "State transition failed. Invalid transition from {:?} to {:?}",
+                    state_machine.current_state,
+                    to_state
+                );
+            }
         }
     }
 }

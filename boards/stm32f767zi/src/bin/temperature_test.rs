@@ -15,13 +15,19 @@ use embassy_stm32::{
     peripherals::CAN1,
     time::Hertz,
 };
-use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
+use embassy_sync::{
+    blocking_mutex::{
+        raw::{CriticalSectionRawMutex, NoopRawMutex},
+        Mutex,
+    },
+    watch::Watch,
+};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::{
     can_receiver::can_receiver, can_sender::can_sender, read_temperature::read_temperature,
-    state_machine::state_machine,
+    state_updater::state_updater,
 };
-use hyped_core::comms::boards::Board;
+use hyped_core::{comms::boards::Board, states::State};
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
 
@@ -33,6 +39,10 @@ bind_interrupts!(struct Irqs {
 });
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
+
+/// The current state of the state machine.
+pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();
+static BOARD: Board = Board::TemperatureTester;
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -56,8 +66,8 @@ async fn main(spawner: Spawner) -> ! {
 
     spawner.must_spawn(can_receiver(rx));
     spawner.must_spawn(can_sender(tx));
-    spawner.must_spawn(read_temperature(i2c_bus, Board::Test));
-    spawner.must_spawn(state_machine(Board::Test));
+    spawner.must_spawn(read_temperature(i2c_bus, BOARD));
+    spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
 
     loop {
         Timer::after(Duration::from_millis(100)).await;

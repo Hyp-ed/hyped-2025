@@ -4,6 +4,7 @@ pub enum CanData {
     TwoU16([u16; 2]),
     F32(f32),
     State(u8),
+    U32(u32),
 }
 
 impl From<CanData> for u8 {
@@ -14,6 +15,7 @@ impl From<CanData> for u8 {
             CanData::TwoU16(_) => 1,
             CanData::F32(_) => 2,
             CanData::State(_) => 3,
+            CanData::U32(_) => 4,
         }
     }
 }
@@ -26,6 +28,7 @@ impl From<u8> for CanData {
             1 => CanData::TwoU16([0, 0]),
             2 => CanData::F32(0.0),
             3 => CanData::State(0),
+            4 => CanData::U32(0),
             _ => panic!("Invalid CanData index"),
         }
     }
@@ -64,6 +67,13 @@ impl From<CanData> for [u8; 8] {
                 data[1] = s;
                 data
             }
+            CanData::U32(u) => {
+                let mut data: [u8; 8] = [0; 8];
+                data[0] = val.into();
+                let u32_bytes: [u8; 4] = u.to_le_bytes();
+                data[1..5].copy_from_slice(&u32_bytes);
+                data
+            }
         }
     }
 }
@@ -90,6 +100,12 @@ impl From<[u8; 8]> for CanData {
                 CanData::F32(f)
             }
             CanData::State(_) => CanData::State(data[1]),
+            CanData::U32(_) => {
+                let mut u32_bytes: [u8; 4] = [0; 4];
+                u32_bytes.copy_from_slice(&data[1..5]);
+                let u = u32::from_le_bytes(u32_bytes);
+                CanData::U32(u)
+            }
         }
     }
 }
@@ -100,6 +116,7 @@ pub enum CanDataType {
     TwoU16,
     F32,
     State,
+    U32,
 }
 
 impl From<CanDataType> for u8 {
@@ -109,6 +126,7 @@ impl From<CanDataType> for u8 {
             CanDataType::TwoU16 => 1,
             CanDataType::F32 => 2,
             CanDataType::State => 3,
+            CanDataType::U32 => 4,
         }
     }
 }
@@ -120,6 +138,7 @@ impl From<u8> for CanDataType {
             1 => CanDataType::TwoU16,
             2 => CanDataType::F32,
             3 => CanDataType::State,
+            4 => CanDataType::U32,
             _ => panic!("Invalid CanDataType index"),
         }
     }
@@ -132,6 +151,7 @@ impl From<CanData> for CanDataType {
             CanData::TwoU16(_) => CanDataType::TwoU16,
             CanData::F32(_) => CanDataType::F32,
             CanData::State(_) => CanDataType::State,
+            CanData::U32(_) => CanDataType::F32,
         }
     }
 }
@@ -143,6 +163,7 @@ impl From<CanDataType> for CanData {
             CanDataType::TwoU16 => CanData::TwoU16([0, 0]),
             CanDataType::F32 => CanData::F32(0.0),
             CanDataType::State => CanData::State(0),
+            CanDataType::U32 => CanData::U32(0),
         }
     }
 }
