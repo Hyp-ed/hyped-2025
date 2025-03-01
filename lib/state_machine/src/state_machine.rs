@@ -7,13 +7,13 @@ pub struct StateMachine {
     pub current_state: State,
 }
 
-impl<'a> Default for StateMachine {
+impl Default for StateMachine {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<'a> StateMachine {
+impl StateMachine {
     pub fn new() -> Self {
         StateMachine {
             current_state: State::Idle,
