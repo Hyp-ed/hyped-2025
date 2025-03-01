@@ -7,6 +7,12 @@ pub struct StateMachine {
     pub current_state: State,
 }
 
+impl<'a> Default for StateMachine {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<'a> StateMachine {
     pub fn new() -> Self {
         StateMachine {
@@ -22,7 +28,7 @@ impl<'a> StateMachine {
                     "Transitioning from {:?} to {:?}",
                     self.current_state, transition
                 );
-                self.current_state = transition.clone();
+                self.current_state = transition;
                 Some(transition)
             }
             None => {
