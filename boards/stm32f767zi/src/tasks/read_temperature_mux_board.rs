@@ -9,6 +9,7 @@ use embassy_sync::{
     },
     watch::Sender,
 };
+use embassy_time::{Duration, Timer};
 use heapless::Vec;
 use hyped_i2c::i2c_mux::I2cMux;
 use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
@@ -17,11 +18,11 @@ use hyped_sensors::SensorValueRange;
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
 const NUM_TEMPERATURE_SENSORS: usize = 24;
-type TemperatureMuxReadings = Vec<Option<SensorValueRange<f32>>, NUM_TEMPERATURE_SENSORS>;
+pub type TemperatureMuxReadings = Vec<Option<SensorValueRange<f32>>, NUM_TEMPERATURE_SENSORS>;
 
 /// Test task that just reads the temperature from the sensor and prints it to the console
 #[embassy_executor::task]
-pub async fn read_temperature(
+pub async fn read_temperature_mux_board(
     i2c_bus: &'static I2c1Bus,
     sender: Sender<'static, CriticalSectionRawMutex, TemperatureMuxReadings, 1>,
 ) -> ! {
@@ -55,11 +56,19 @@ pub async fn read_temperature(
 
     // Create all the temperature sensors
     let mut temperature_sensors: Vec<
-        Temperature<'_, I2cMux<Stm32f767ziI2c<'_>>>,
+        Option<Temperature<'_, I2cMux<Stm32f767ziI2c<'_>>>>,
         NUM_TEMPERATURE_SENSORS,
     > = i2c_muxes.iter_mut().map(|i2c_mux| {
-        Temperature::new(i2c_mux, TemperatureAddresses::Address3f)
-            .expect("Failed to create temperature sensor. Check the wiring and the I2C address of the sensor.")
+        match Temperature::new(i2c_mux, TemperatureAddresses::Address3f) {
+            Ok(temperature_sensor) => {
+                defmt::info!("Temperature sensor created.");
+                Some(temperature_sensor)
+            },
+            Err(_) => {
+                defmt::warn!("Failed to create temperature sensor. Check the wiring and the I2C address of the sensor.");
+                None
+            }
+        }
     }).collect();
 
     loop {
@@ -69,29 +78,39 @@ pub async fn read_temperature(
         for i in 0..NUM_TEMPERATURE_SENSORS as u8 {
             let temperature_sensor = &mut temperature_sensors[i as usize];
 
-            match temperature_sensor.check_status() {
-                Status::TempOverUpperLimit => {
-                    defmt::error!("Temperature is over the upper limit.");
-                }
-                Status::TempUnderLowerLimit => {
-                    defmt::error!("Temperature is under the lower limit.");
-                }
-                Status::Busy => {
-                    defmt::warn!("Temperature sensor is busy.");
-                }
-                Status::Unknown => {
-                    panic!("Could not get the status of the temperature sensor.")
-                }
-                Status::Ok => {}
-            }
+            match temperature_sensor {
+                Some(temperature_sensor) => {
+                    match temperature_sensor.check_status() {
+                        Status::TempOverUpperLimit => {
+                            defmt::error!("Temperature is over the upper limit.");
+                        }
+                        Status::TempUnderLowerLimit => {
+                            defmt::error!("Temperature is under the lower limit.");
+                        }
+                        Status::Busy => {
+                            defmt::warn!("Temperature sensor is busy.");
+                        }
+                        Status::Unknown => {
+                            panic!("Could not get the status of the temperature sensor.")
+                        }
+                        Status::Ok => {}
+                    }
 
-            readings
-                .push(temperature_sensor.read())
-                .expect("Failed to add temperature reading to the vector.");
+                    readings
+                        .push(temperature_sensor.read())
+                        .expect("Failed to add temperature reading to the vector.");
+                }
+                None => {
+                    readings
+                        .push(None)
+                        .expect("Failed to add None to the vector.");
+                }
+            }
         }
 
         // Send this round of readings
         sender.send(readings);
+        Timer::after(Duration::from_millis(100)).await;
     }
 }
 
