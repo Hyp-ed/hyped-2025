@@ -11,3 +11,6 @@ pub mod mqtt_send;
 // Sensors
 pub mod read_keyence;
 pub mod read_temperature;
+
+// Control
+pub mod state_machine;

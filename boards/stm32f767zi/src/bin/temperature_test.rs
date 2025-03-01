@@ -15,18 +15,13 @@ use embassy_stm32::{
     peripherals::CAN1,
     time::Hertz,
 };
-use embassy_sync::{
-    blocking_mutex::{
-        raw::{CriticalSectionRawMutex, NoopRawMutex},
-        Mutex,
-    },
-    channel::Channel,
-    watch::Watch,
-};
+use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
 use embassy_time::{Duration, Timer};
-use hyped_boards_stm32f767zi::tasks::{can_sender::can_sender, read_temperature::read_temperature};
-use hyped_core::comms::{boards::Board, messages::CanMessage};
-use hyped_sensors::SensorValueRange::{self};
+use hyped_boards_stm32f767zi::tasks::{
+    can_receiver::can_receiver, can_sender::can_sender, read_temperature::read_temperature,
+    state_machine::state_machine,
+};
+use hyped_core::comms::boards::Board;
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
 
@@ -38,13 +33,6 @@ bind_interrupts!(struct Irqs {
 });
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
-
-/// Used to keep the latest temperature sensor value.
-static TEMP_READING: Watch<CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1> =
-    Watch::new();
-
-static CAN_SEND: Channel<CriticalSectionRawMutex, CanMessage, 10> = Channel::new();
-static CAN_RECEIVE: Channel<CriticalSectionRawMutex, CanMessage, 10> = Channel::new();
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -64,28 +52,12 @@ async fn main(spawner: Spawner) -> ! {
     can.enable().await;
     defmt::info!("CAN enabled");
 
-    let (tx, _rx) = can.split();
+    let (tx, rx) = can.split();
 
-    // Create a sender and receiver for the CAN messages
-    let can_send_sender = CAN_SEND.sender();
-    let can_send_receiver = CAN_SEND.receiver();
-
-    let _can_receive_sender = CAN_RECEIVE.sender();
-    let mut _can_receive_receiver = CAN_RECEIVE.receiver();
-
-    // spawner.must_spawn(can_receiver(rx, can_receive_sender));
-    spawner.must_spawn(can_sender(tx, can_send_receiver));
-
-    // Create a sender to pass to the temperature reading task, and a receiver for reading the values back.
-    let temp_reading_sender = TEMP_READING.sender();
-    let mut _temp_reading_receiver = TEMP_READING.receiver().unwrap();
-
-    spawner.must_spawn(read_temperature(
-        i2c_bus,
-        temp_reading_sender,
-        can_send_sender,
-        Board::Test,
-    ));
+    spawner.must_spawn(can_receiver(rx));
+    spawner.must_spawn(can_sender(tx));
+    spawner.must_spawn(read_temperature(i2c_bus, Board::Test));
+    spawner.must_spawn(state_machine(Board::Test));
 
     loop {
         Timer::after(Duration::from_millis(100)).await;

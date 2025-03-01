@@ -1,17 +1,30 @@
 use embassy_stm32::can::{CanRx, Id};
-use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
-use embassy_sync::channel::Sender;
+use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
 use embassy_time::{Duration, Timer};
 use hyped_can::HypedCanFrame;
-use hyped_core::comms::messages::CanMessage;
+use hyped_core::comms::{messages::CanMessage, state_transition::StateTransition};
 use {defmt_rtt as _, panic_probe as _};
 
-/// Task that receives CAN messages and sends them to the main task
+/// Stores incoming state transitions received from CAN.
+/// All boards should listen to this channel and update their states accordingly.
+pub static INCOMING_STATE_TRANSITIONS: Channel<CriticalSectionRawMutex, StateTransition, 10> =
+    Channel::new();
+
+/// Stores incoming state transition requests received from CAN.
+/// Only used by the main control board running the state_machine task.
+pub static INCOMING_STATE_TRANSITION_REQUESTS: Channel<
+    CriticalSectionRawMutex,
+    StateTransition,
+    10,
+> = Channel::new();
+
+/// Task that receives CAN messages and puts them into a channel.
+/// Currently only supports StateTransition and StateTransitionRequest messages.
 #[embassy_executor::task]
-pub async fn can_receiver(
-    mut rx: CanRx<'static>,
-    sender: Sender<'static, CriticalSectionRawMutex, CanMessage, 10>,
-) {
+pub async fn can_receiver(mut rx: CanRx<'static>) {
+    let state_transition_sender = INCOMING_STATE_TRANSITIONS.sender();
+    let state_transition_request_sender = INCOMING_STATE_TRANSITION_REQUESTS.sender();
+
     loop {
         let envelope = rx.read().await;
         if envelope.is_err() {
@@ -29,7 +42,16 @@ pub async fn can_receiver(
 
         let can_message: CanMessage = can_frame.into();
 
-        sender.send(can_message).await;
+        match can_message {
+            CanMessage::StateTransition(state_transition) => {
+                state_transition_sender.send(state_transition).await;
+            }
+            // Requests will only be used on the primary board running the state_machine task.
+            CanMessage::StateTransitionRequest(state_transition) => {
+                state_transition_request_sender.send(state_transition).await;
+            }
+            _ => {}
+        }
 
         Timer::after(Duration::from_millis(100)).await;
     }

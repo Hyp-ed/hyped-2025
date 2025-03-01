@@ -732,6 +732,7 @@ dependencies = [
  "hyped_i2c",
  "hyped_i2c_derive",
  "hyped_sensors",
+ "hyped_state_machine",
  "panic-probe",
  "rand_core",
  "rust-mqtt",
@@ -818,6 +819,17 @@ dependencies = [
  "hyped_core",
  "hyped_gpio",
  "hyped_i2c",
+]
+
+[[package]]
+name = "hyped_state_machine"
+version = "0.1.0"
+dependencies = [
+ "defmt",
+ "embassy-net",
+ "heapless 0.8.0",
+ "hyped_core",
+ "rust-mqtt",
 ]
 
 [[package]]

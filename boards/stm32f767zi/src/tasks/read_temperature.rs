@@ -7,8 +7,7 @@ use embassy_sync::{
         raw::{CriticalSectionRawMutex, NoopRawMutex},
         Mutex,
     },
-    channel::Sender as ChannelSender,
-    watch::Sender as WatchSender,
+    watch::Watch,
 };
 use embassy_time::{Duration, Timer};
 use hyped_core::{
@@ -24,25 +23,30 @@ use hyped_core::{
 use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 use hyped_sensors::SensorValueRange;
 
+use super::can_sender::CAN_SEND;
+
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
+
+/// Used to keep the latest temperature sensor value.
+pub static TEMP_READING: Watch<CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1> =
+    Watch::new();
 
 /// The update frequency of the temperature sensor in Hz
 const UPDATE_FREQUENCY: u64 = 1000;
 
 /// Test task that just reads the temperature from the sensor and prints it to the console
 #[embassy_executor::task]
-pub async fn read_temperature(
-    i2c_bus: &'static I2c1Bus,
-    sender: WatchSender<'static, CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1>,
-    can_sender: ChannelSender<'static, CriticalSectionRawMutex, CanMessage, 10>,
-    board: Board,
-) -> ! {
+pub async fn read_temperature(i2c_bus: &'static I2c1Bus, board: Board) -> ! {
+    let sender = TEMP_READING.sender();
+
     let mut hyped_i2c = Stm32f767ziI2c::new(i2c_bus);
 
     let mut temperature_sensor = Temperature::new(&mut hyped_i2c, TemperatureAddresses::Address3f)
         .expect(
         "Failed to create temperature sensor. Check the wiring and the I2C address of the sensor.",
     );
+
+    let can_sender = CAN_SEND.sender();
 
     loop {
         match temperature_sensor.check_status() {

@@ -14,6 +14,7 @@ use super::{
 pub enum CanMessage {
     MeasurementReading(MeasurementReading),
     StateTransition(StateTransition),
+    StateTransitionRequest(StateTransition),
 }
 
 impl From<CanMessage> for HypedCanFrame {
@@ -34,6 +35,17 @@ impl From<CanMessage> for HypedCanFrame {
                     state_transition.board,
                     CanDataType::State,
                     MessageIdentifier::StateTransition,
+                );
+                HypedCanFrame::new(
+                    can_id.into(),
+                    CanData::State(state_transition.to_state.into()).into(),
+                )
+            }
+            CanMessage::StateTransitionRequest(state_transition) => {
+                let can_id = CanId::new(
+                    state_transition.board,
+                    CanDataType::State,
+                    MessageIdentifier::StateTransitionRequest,
                 );
                 HypedCanFrame::new(
                     can_id.into(),
@@ -71,6 +83,17 @@ impl From<HypedCanFrame> for CanMessage {
                         CanMessage::StateTransition(state_transition)
                     }
                     _ => panic!("Invalid CanData for StateTransition"),
+                }
+            }
+            MessageIdentifier::StateTransitionRequest => {
+                let reading: CanData = frame.data.into();
+                match reading {
+                    CanData::State(state) => {
+                        let to_state: State = state.into();
+                        let state_transition = StateTransition::new(board, to_state);
+                        CanMessage::StateTransitionRequest(state_transition)
+                    }
+                    _ => panic!("Invalid CanData for StateTransitionRequest"),
                 }
             }
         }
@@ -112,17 +135,17 @@ mod tests {
     fn it_works_state_transition() {
         let state_transition = StateTransition::new(Board::Test, State::EmergencyBrake);
         let state_transition = CanMessage::StateTransition(state_transition);
-
-        println!("{:?}", state_transition);
-
         let can_frame: HypedCanFrame = state_transition.clone().into();
-
-        println!("{:?}", can_frame);
-
         let can_message_from_frame: CanMessage = can_frame.into();
+        assert_eq!(state_transition, can_message_from_frame)
+    }
 
-        println!("{:?}", can_message_from_frame);
-
+    #[test]
+    fn it_works_state_transition_request() {
+        let state_transition = StateTransition::new(Board::Test, State::EmergencyBrake);
+        let state_transition = CanMessage::StateTransitionRequest(state_transition);
+        let can_frame: HypedCanFrame = state_transition.clone().into();
+        let can_message_from_frame: CanMessage = can_frame.into();
         assert_eq!(state_transition, can_message_from_frame)
     }
 }

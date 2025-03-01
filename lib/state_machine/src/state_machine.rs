@@ -1,25 +1,20 @@
-use embassy_net::tcp::TcpSocket;
 use hyped_core::{
     logging::{info, warn},
-    mqtt::HypedMqttClient,
     states::State,
 };
-use rust_mqtt::utils::rng_generator::CountingRng;
 
-pub struct StateMachine<'a> {
+pub struct StateMachine {
     pub current_state: State,
-    pub mqtt_client: HypedMqttClient<'a, TcpSocket<'a>, CountingRng>,
 }
 
-impl<'a> StateMachine<'a> {
-    pub fn new(&self, mqtt_client: HypedMqttClient<'a, TcpSocket<'a>, CountingRng>) -> Self {
+impl<'a> StateMachine {
+    pub fn new() -> Self {
         StateMachine {
             current_state: State::Idle,
-            mqtt_client,
         }
     }
 
-    pub fn handle_transition(&mut self, to_state: &State) {
+    pub fn handle_transition(&mut self, to_state: &State) -> Option<State> {
         let transition = State::transition(&self.current_state, to_state);
         match transition {
             Some(transition) => {
@@ -27,13 +22,15 @@ impl<'a> StateMachine<'a> {
                     "Transitioning from {:?} to {:?}",
                     self.current_state, transition
                 );
-                self.current_state = transition;
+                self.current_state = transition.clone();
+                Some(transition)
             }
             None => {
                 warn!(
                     "Invalid transition requested from {:?} to {:?}",
                     self.current_state, to_state
                 );
+                None
             }
         }
     }
