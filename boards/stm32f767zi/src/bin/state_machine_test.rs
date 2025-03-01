@@ -28,7 +28,7 @@ bind_interrupts!(struct Irqs {
 
 /// The current state of the state machine.
 pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();
-static BOARD: Board = Board::StateMachineTester;
+static _BOARD: Board = Board::StateMachineTester;
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {

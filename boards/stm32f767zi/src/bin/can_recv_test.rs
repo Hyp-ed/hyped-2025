@@ -74,6 +74,12 @@ async fn main(_spawner: Spawner) {
                                 measurement_reading
                             )
                         }
+                        MeasurementId::KeyenceStripeCount => {
+                            defmt::info!(
+                                "Received keyence stripe count reading over CAN: {:?}",
+                                measurement_reading
+                            )
+                        }
                     }
                 }
                 CanMessage::StateTransition(state_transition) => {
