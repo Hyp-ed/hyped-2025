@@ -31,6 +31,7 @@ typenum = "1.17.0"
 
 hyped_core = { path = "../../lib/core" }
 hyped_sensors = { path = "../../lib/sensors" }
+hyped_state_machine = { path = "../../lib/state_machine" }
 
 hyped_adc = { path = "../../lib/io/hyped_adc" }
 hyped_adc_derive = { path = "../../lib/io/hyped_adc/hyped_adc_derive" }
