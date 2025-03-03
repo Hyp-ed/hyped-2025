@@ -8,6 +8,7 @@ use embassy_stm32::{
         filter::Mask32, Can, Fifo, Rx0InterruptHandler, Rx1InterruptHandler, SceInterruptHandler,
         TxInterruptHandler,
     },
+    gpio::Pin,
     peripherals::CAN1,
 };
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
@@ -19,13 +20,6 @@ use hyped_boards_stm32f767zi::tasks::{
 use hyped_core::{comms::boards::Board, states::State};
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
-
-bind_interrupts!(struct Irqs {
-    CAN1_RX0 => Rx0InterruptHandler<CAN1>;
-    CAN1_RX1 => Rx1InterruptHandler<CAN1>;
-    CAN1_SCE => SceInterruptHandler<CAN1>;
-    CAN1_TX => TxInterruptHandler<CAN1>;
-});
 
 /// The current state of the state machine.
 pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();

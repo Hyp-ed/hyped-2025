@@ -10,7 +10,7 @@ use hyped_core::comms::{
 };
 use hyped_sensors::keyence::Keyence;
 
-use super::can_sender::CAN_SEND;
+use super::can::CAN_SEND;
 
 /// Used to keep the latest temperature sensor value.
 pub static CURRENT_KEYENCE_STRIPE_COUNT: Watch<CriticalSectionRawMutex, u32, 1> = Watch::new();

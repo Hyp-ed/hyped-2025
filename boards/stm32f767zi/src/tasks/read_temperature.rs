@@ -23,7 +23,7 @@ use hyped_core::{
 use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 use hyped_sensors::SensorValueRange;
 
-use super::can_sender::CAN_SEND;
+use super::can::CAN_SEND;
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 

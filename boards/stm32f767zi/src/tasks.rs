@@ -1,6 +1,5 @@
 // CAN
-pub mod can_receiver;
-pub mod can_sender;
+pub mod can;
 pub mod heartbeat_coordinator;
 pub mod heartbeats_responder;
 

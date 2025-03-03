@@ -1,4 +1,4 @@
-use super::{can_receiver::INCOMING_STATE_TRANSITION_REQUESTS, can_sender::CAN_SEND};
+use super::{can::CAN_SEND, can::INCOMING_STATE_TRANSITION_REQUESTS};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
 use embassy_time::{Duration, Timer};
 use hyped_core::{
