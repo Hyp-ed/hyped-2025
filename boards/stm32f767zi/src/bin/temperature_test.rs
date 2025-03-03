@@ -6,10 +6,7 @@ use core::cell::RefCell;
 use embassy_executor::Spawner;
 use embassy_stm32::{
     bind_interrupts,
-    can::{
-        filter::Mask32, Can, Fifo, Rx0InterruptHandler, Rx1InterruptHandler, SceInterruptHandler,
-        TxInterruptHandler,
-    },
+    can::{Can, Rx0InterruptHandler, Rx1InterruptHandler, SceInterruptHandler, TxInterruptHandler},
     i2c::I2c,
     mode::Blocking,
     peripherals::CAN1,
@@ -24,8 +21,7 @@ use embassy_sync::{
 };
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::{
-    can_receiver::can_receiver, can_sender::can_sender, read_temperature::read_temperature,
-    state_updater::state_updater,
+    can::can, read_temperature::read_temperature, state_updater::state_updater,
 };
 use hyped_core::{comms::boards::Board, states::State};
 use static_cell::StaticCell;
@@ -53,19 +49,7 @@ async fn main(spawner: Spawner) -> ! {
     static I2C_BUS: StaticCell<I2c1Bus> = StaticCell::new();
     let i2c_bus = I2C_BUS.init(Mutex::new(RefCell::new(i2c)));
 
-    // Initialise CAN
-    static CAN: StaticCell<Can<'static>> = StaticCell::new();
-    let can = CAN.init(Can::new(p.CAN1, p.PD0, p.PD1, Irqs));
-    can.modify_filters()
-        .enable_bank(0, Fifo::Fifo0, Mask32::accept_all());
-    can.modify_config().set_bitrate(500_000);
-    can.enable().await;
-    defmt::info!("CAN enabled");
-
-    let (tx, rx) = can.split();
-
-    spawner.must_spawn(can_receiver(rx));
-    spawner.must_spawn(can_sender(tx));
+    spawner.must_spawn(can(Can::new(p.CAN1, p.PD0, p.PD1, Irqs)));
     spawner.must_spawn(read_temperature(i2c_bus, BOARD));
     spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
 

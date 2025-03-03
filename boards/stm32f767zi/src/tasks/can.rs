@@ -1,39 +1,16 @@
 use super::heartbeats_responder::INCOMING_HEARTBEATS;
 use embassy_futures::join::join;
-use embassy_stm32::{
-    bind_interrupts,
-    can::{
-        filter::Mask32, Can, CanRx, CanTx, ExtendedId, Fifo, Frame, Id, Rx0InterruptHandler,
-        Rx1InterruptHandler, RxPin, SceInterruptHandler, TxInterruptHandler, TxPin,
-    },
-    peripherals::CAN1,
-};
+use embassy_stm32::can::{Can, CanRx, CanTx, ExtendedId, Frame, Id};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
 use embassy_time::{Duration, Timer};
 use hyped_can::HypedCanFrame;
 use hyped_core::comms::{messages::CanMessage, state_transition::StateTransition};
-use static_cell::StaticCell;
 
 use {defmt_rtt as _, panic_probe as _};
 
-bind_interrupts!(struct Irqs {
-    CAN1_RX0 => Rx0InterruptHandler<CAN1>;
-    CAN1_RX1 => Rx1InterruptHandler<CAN1>;
-    CAN1_SCE => SceInterruptHandler<CAN1>;
-    CAN1_TX => TxInterruptHandler<CAN1>;
-});
-
 #[embassy_executor::task]
-pub async fn can(can_1: CAN1, rx_pin: impl RxPin<CAN1>, tx_pin: impl TxPin<CAN1>) {
-    // Initialise CAN
-    static CAN: StaticCell<Can<'static>> = StaticCell::new();
-    let can = CAN.init(Can::new(can_1, rx_pin, tx_pin, Irqs));
-    can.modify_filters()
-        .enable_bank(0, Fifo::Fifo0, Mask32::accept_all());
-    can.modify_config().set_bitrate(500_000);
-    can.enable().await;
+pub async fn can(mut can: Can<'static>) {
     defmt::info!("CAN enabled");
-
     join(can_receiver(can.split().1), can_sender(can.split().0)).await;
 }
 

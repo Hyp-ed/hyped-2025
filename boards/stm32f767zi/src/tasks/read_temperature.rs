@@ -39,7 +39,7 @@ const UPDATE_FREQUENCY: u64 = 1000;
 
 /// Test task that just reads the temperature from the sensor and prints it to the console
 #[embassy_executor::task]
-pub async fn read_temperature(i2c_bus: &'static I2c1Bus, board: Board) -> ! {
+pub async fn read_temperature(i2c_bus: &'static I2c1Bus, this_board: Board) -> ! {
     let latest_temperature_reading_sender = LATEST_TEMPERATURE_READING.sender();
     let can_sender = CAN_SEND.sender();
 
@@ -52,11 +52,11 @@ pub async fn read_temperature(i2c_bus: &'static I2c1Bus, board: Board) -> ! {
     loop {
         match temperature_sensor.check_status() {
             Status::TempOverUpperLimit => {
-                emergency!(can_sender, board);
+                emergency!(this_board);
                 defmt::error!("Temperature is over the upper limit.");
             }
             Status::TempUnderLowerLimit => {
-                emergency!(can_sender, board);
+                emergency!(this_board);
                 defmt::error!("Temperature is under the lower limit.");
             }
             Status::Busy => {
@@ -78,7 +78,7 @@ pub async fn read_temperature(i2c_bus: &'static I2c1Bus, board: Board) -> ! {
             // Handle the reading based on the range
             let value = match reading {
                 SensorValueRange::Critical(v) => {
-                    emergency!(can_sender, board);
+                    emergency!(this_board);
                     defmt::error!("Critical temperature reading: {:?}", v);
                     v
                 }
@@ -92,7 +92,7 @@ pub async fn read_temperature(i2c_bus: &'static I2c1Bus, board: Board) -> ! {
             let measurement_reading = MeasurementReading::new(
                 CanData::F32(value),
                 CanDataType::F32,
-                board,
+                this_board,
                 MeasurementId::Temperature,
             );
             let can_message = CanMessage::MeasurementReading(measurement_reading);

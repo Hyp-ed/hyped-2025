@@ -65,7 +65,7 @@ async fn check_heartbeats(this_board: Board) {
         // Check if any boards have not replied in MAX_HEARTBEAT_DELAY milliseconds
         let now = Instant::now().as_millis();
         if now - keyence_tester_last_ack > MAX_HEARTBEAT_DELAY {
-            emergency!(can_sender, this_board);
+            emergency!(this_board);
         }
     }
 }

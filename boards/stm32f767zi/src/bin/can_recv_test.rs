@@ -94,6 +94,9 @@ async fn main(_spawner: Spawner) {
                         state_transition_request.to_state
                     );
                 }
+                CanMessage::Heartbeat(heartbeat) => {
+                    defmt::info!("Received heartbeat over CAN: {:?}", heartbeat.from);
+                }
             }
 
             Timer::after(Duration::from_millis(100)).await
