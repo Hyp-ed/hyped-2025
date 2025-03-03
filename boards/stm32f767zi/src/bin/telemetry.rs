@@ -20,7 +20,7 @@ use embassy_stm32::{
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::{
     log::log,
-    tasks::{heartbeat::heartbeat, mqtt_recv::mqtt_recv_task, mqtt_send::mqtt_send_task},
+    tasks::{mqtt_heartbeat::heartbeat, mqtt_recv::mqtt_recv_task, mqtt_send::mqtt_send_task},
     telemetry_config::{BOARD_STATIC_ADDRESS, GATEWAY_IP},
 };
 use hyped_core::log_types::LogLevel;

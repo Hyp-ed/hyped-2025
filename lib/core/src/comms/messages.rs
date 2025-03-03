@@ -5,6 +5,7 @@ use crate::states::State;
 use super::{
     can_id::CanId,
     data::{CanData, CanDataType},
+    heartbeat::Heartbeat,
     identifier::MessageIdentifier,
     measurements::MeasurementReading,
     state_transition::StateTransition,
@@ -15,8 +16,10 @@ pub enum CanMessage {
     MeasurementReading(MeasurementReading),
     StateTransition(StateTransition),
     StateTransitionRequest(StateTransition),
+    Heartbeat(Heartbeat),
 }
 
+// Converts a CanMessage into a HypedCanFrame ready to be sent over the CAN bus
 impl From<CanMessage> for HypedCanFrame {
     fn from(val: CanMessage) -> Self {
         match val {
@@ -52,10 +55,19 @@ impl From<CanMessage> for HypedCanFrame {
                     CanData::State(state_transition.to_state.into()).into(),
                 )
             }
+            CanMessage::Heartbeat(heartbeat) => {
+                let can_id = CanId::new(
+                    heartbeat.from,
+                    CanDataType::Heartbeat,
+                    MessageIdentifier::Heartbeat,
+                );
+                HypedCanFrame::new(can_id.into(), CanData::Heartbeat(heartbeat.to).into())
+            }
         }
     }
 }
 
+// Converts an incoming HypedCanFrame read from the CAN bus into a CanMessage
 impl From<HypedCanFrame> for CanMessage {
     fn from(frame: HypedCanFrame) -> Self {
         let can_id: CanId = frame.can_id.into();
@@ -96,6 +108,16 @@ impl From<HypedCanFrame> for CanMessage {
                     _ => panic!("Invalid CanData for StateTransitionRequest"),
                 }
             }
+            MessageIdentifier::Heartbeat => {
+                let reading: CanData = frame.data.into();
+                match reading {
+                    CanData::Heartbeat(to) => {
+                        let heartbeat = Heartbeat::new(to, board);
+                        CanMessage::Heartbeat(heartbeat)
+                    }
+                    _ => panic!("Invalid CanData for Heartbeat"),
+                }
+            }
         }
     }
 }
@@ -108,6 +130,7 @@ mod tests {
         comms::{
             boards::Board,
             data::{CanData, CanDataType},
+            heartbeat::Heartbeat,
             measurements::{MeasurementId, MeasurementReading},
             messages::CanMessage,
             state_transition::StateTransition,
@@ -147,5 +170,13 @@ mod tests {
         let can_frame: HypedCanFrame = state_transition.clone().into();
         let can_message_from_frame: CanMessage = can_frame.into();
         assert_eq!(state_transition, can_message_from_frame)
+    }
+
+    #[test]
+    fn it_works_heartbeat() {
+        let heartbeat = CanMessage::Heartbeat(Heartbeat::new(Board::KeyenceTester, Board::Test));
+        let can_frame: HypedCanFrame = heartbeat.clone().into();
+        let can_message_from_frame: CanMessage = can_frame.into();
+        assert_eq!(heartbeat, can_message_from_frame)
     }
 }

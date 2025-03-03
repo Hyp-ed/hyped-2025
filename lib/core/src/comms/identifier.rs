@@ -5,12 +5,14 @@ pub enum MessageIdentifier {
     Measurement(MeasurementId),
     StateTransition,
     StateTransitionRequest,
+    Heartbeat,
 }
 
 impl From<MessageIdentifier> for u16 {
     fn from(val: MessageIdentifier) -> Self {
         match val {
             MessageIdentifier::Measurement(measurement_id) => measurement_id.into(),
+            MessageIdentifier::Heartbeat => 0xFD,
             MessageIdentifier::StateTransitionRequest => 0xFE,
             MessageIdentifier::StateTransition => 0xFF,
         }
@@ -22,6 +24,7 @@ impl From<u16> for MessageIdentifier {
         match id {
             0xFF => MessageIdentifier::StateTransition,
             0xFE => MessageIdentifier::StateTransitionRequest,
+            0xFD => MessageIdentifier::Heartbeat,
             _ => MessageIdentifier::Measurement(id.into()),
         }
     }

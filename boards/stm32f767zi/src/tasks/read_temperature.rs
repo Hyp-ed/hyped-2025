@@ -1,4 +1,4 @@
-use crate::{io::Stm32f767ziI2c, oh_god_oh_fuck};
+use crate::{emergency, io::Stm32f767ziI2c};
 use core::cell::RefCell;
 use defmt_rtt as _;
 use embassy_stm32::{i2c::I2c, mode::Blocking};
@@ -52,11 +52,11 @@ pub async fn read_temperature(i2c_bus: &'static I2c1Bus, board: Board) -> ! {
     loop {
         match temperature_sensor.check_status() {
             Status::TempOverUpperLimit => {
-                oh_god_oh_fuck!(can_sender, board);
+                emergency!(can_sender, board);
                 defmt::error!("Temperature is over the upper limit.");
             }
             Status::TempUnderLowerLimit => {
-                oh_god_oh_fuck!(can_sender, board);
+                emergency!(can_sender, board);
                 defmt::error!("Temperature is under the lower limit.");
             }
             Status::Busy => {
@@ -78,7 +78,7 @@ pub async fn read_temperature(i2c_bus: &'static I2c1Bus, board: Board) -> ! {
             // Handle the reading based on the range
             let value = match reading {
                 SensorValueRange::Critical(v) => {
-                    oh_god_oh_fuck!(can_sender, board);
+                    emergency!(can_sender, board);
                     defmt::error!("Critical temperature reading: {:?}", v);
                     v
                 }

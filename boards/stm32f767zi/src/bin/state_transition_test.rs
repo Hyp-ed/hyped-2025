@@ -13,7 +13,7 @@ use embassy_stm32::{
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::{
-    oh_god_oh_fuck, request_transition,
+    emergency, request_transition,
     tasks::{
         can_receiver::can_receiver,
         can_sender::{can_sender, CAN_SEND},
@@ -67,7 +67,7 @@ async fn main(spawner: Spawner) -> ! {
         Timer::after(Duration::from_secs(1)).await;
         request_transition!(State::Accelerate, can_sender, BOARD);
         Timer::after(Duration::from_secs(1)).await;
-        oh_god_oh_fuck!(can_sender, BOARD);
+        emergency!(can_sender, BOARD);
         Timer::after(Duration::from_secs(10)).await;
         panic!("End of test");
     }

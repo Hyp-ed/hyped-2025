@@ -13,7 +13,8 @@ use embassy_stm32::{
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::{
-    can_receiver::can_receiver, can_sender::can_sender, state_machine::state_machine,
+    can_receiver::can_receiver, can_sender::can_sender,
+    heartbeat_coordinator::heartbeat_coordinator, state_machine::state_machine,
 };
 use hyped_core::{comms::boards::Board, states::State};
 use static_cell::StaticCell;
@@ -51,6 +52,7 @@ async fn main(spawner: Spawner) -> ! {
         Board::TemperatureTester,
         CURRENT_STATE.sender(),
     ));
+    spawner.must_spawn(heartbeat_coordinator(_BOARD));
 
     loop {
         Timer::after(Duration::from_secs(1)).await;

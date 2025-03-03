@@ -1,10 +1,12 @@
 // CAN
 pub mod can_receiver;
 pub mod can_sender;
+pub mod heartbeat_coordinator;
+pub mod heartbeats_responder;
 
 // MQTT
 pub mod button;
-pub mod heartbeat;
+pub mod mqtt_heartbeat;
 pub mod mqtt_recv;
 pub mod mqtt_send;
 

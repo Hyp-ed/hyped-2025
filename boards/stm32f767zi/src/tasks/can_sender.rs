@@ -1,5 +1,6 @@
 use embassy_stm32::can::{CanTx, ExtendedId, Frame, Id};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
+use embassy_time::{Duration, Timer};
 use hyped_can::HypedCanFrame;
 use hyped_core::comms::messages::CanMessage;
 use {defmt_rtt as _, panic_probe as _};
@@ -22,5 +23,7 @@ pub async fn can_sender(mut tx: CanTx<'static>) {
         let frame: Frame = Frame::new_data(id, &data).unwrap();
 
         tx.write(&frame).await;
+
+        Timer::after(Duration::from_millis(10)).await;
     }
 }

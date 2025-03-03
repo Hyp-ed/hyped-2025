@@ -1,8 +1,10 @@
+use super::heartbeats_responder::INCOMING_HEARTBEATS;
 use embassy_stm32::can::{CanRx, Id};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
 use embassy_time::{Duration, Timer};
 use hyped_can::HypedCanFrame;
 use hyped_core::comms::{messages::CanMessage, state_transition::StateTransition};
+
 use {defmt_rtt as _, panic_probe as _};
 
 /// Stores incoming state transitions received from CAN.
@@ -25,7 +27,11 @@ pub async fn can_receiver(mut rx: CanRx<'static>) {
     let state_transition_sender = INCOMING_STATE_TRANSITIONS.sender();
     let state_transition_request_sender = INCOMING_STATE_TRANSITION_REQUESTS.sender();
 
+    let incoming_heartbeat_sender = INCOMING_HEARTBEATS.sender();
+
     loop {
+        defmt::info!("Waiting for CAN message");
+
         let envelope = rx.read().await;
         if envelope.is_err() {
             continue;
@@ -50,9 +56,13 @@ pub async fn can_receiver(mut rx: CanRx<'static>) {
             CanMessage::StateTransitionRequest(state_transition) => {
                 state_transition_request_sender.send(state_transition).await;
             }
+            CanMessage::Heartbeat(heartbeat) => {
+                defmt::info!("Received heartbeat: {:?}", heartbeat);
+                incoming_heartbeat_sender.send(heartbeat).await;
+            }
             _ => {}
         }
 
-        Timer::after(Duration::from_millis(100)).await;
+        Timer::after(Duration::from_millis(10)).await;
     }
 }

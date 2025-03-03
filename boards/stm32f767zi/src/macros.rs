@@ -1,5 +1,5 @@
 #[macro_export]
-macro_rules! oh_god_oh_fuck {
+macro_rules! emergency {
     ($can_sender:ident, $board:ident) => {
         let can_message =
             CanMessage::StateTransition(StateTransition::new($board, State::EmergencyBrake));

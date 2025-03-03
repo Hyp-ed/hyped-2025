@@ -1,5 +1,6 @@
 use super::{can_receiver::INCOMING_STATE_TRANSITION_REQUESTS, can_sender::CAN_SEND};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
+use embassy_time::{Duration, Timer};
 use hyped_core::{
     comms::{boards::Board, messages::CanMessage, state_transition::StateTransition},
     states::State,
@@ -45,5 +46,7 @@ pub async fn state_machine(
                 );
             }
         }
+
+        Timer::after(Duration::from_millis(10)).await;
     }
 }

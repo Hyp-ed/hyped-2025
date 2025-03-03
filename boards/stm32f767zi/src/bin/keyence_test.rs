@@ -15,6 +15,7 @@ use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use hyped_boards_stm32f767zi::tasks::{
     can_receiver::can_receiver,
     can_sender::can_sender,
+    heartbeats_responder::heartbeat_responder,
     read_keyence::{read_keyence, CURRENT_KEYENCE_STRIPE_COUNT},
     state_updater::state_updater,
 };
@@ -56,6 +57,7 @@ async fn main(spawner: Spawner) -> ! {
     spawner.must_spawn(can_receiver(rx));
     spawner.must_spawn(can_sender(tx));
     spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
+    spawner.must_spawn(heartbeat_responder(BOARD));
 
     loop {
         // Only prints when the stripe count changes.

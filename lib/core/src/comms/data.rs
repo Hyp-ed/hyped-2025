@@ -1,3 +1,5 @@
+use super::boards::Board;
+
 #[derive(Debug, Clone, Copy, PartialEq, defmt::Format)]
 pub enum CanData {
     Bool(bool),
@@ -5,6 +7,7 @@ pub enum CanData {
     F32(f32),
     State(u8),
     U32(u32),
+    Heartbeat(Board),
 }
 
 impl From<CanData> for u8 {
@@ -16,6 +19,7 @@ impl From<CanData> for u8 {
             CanData::F32(_) => 2,
             CanData::State(_) => 3,
             CanData::U32(_) => 4,
+            CanData::Heartbeat(_) => 5,
         }
     }
 }
@@ -29,6 +33,7 @@ impl From<u8> for CanData {
             2 => CanData::F32(0.0),
             3 => CanData::State(0),
             4 => CanData::U32(0),
+            5 => CanData::Heartbeat(Board::Test),
             _ => panic!("Invalid CanData index"),
         }
     }
@@ -74,6 +79,12 @@ impl From<CanData> for [u8; 8] {
                 data[1..5].copy_from_slice(&u32_bytes);
                 data
             }
+            CanData::Heartbeat(board) => {
+                let mut data: [u8; 8] = [0; 8];
+                data[0] = val.into();
+                data[1] = board.into();
+                data
+            }
         }
     }
 }
@@ -106,6 +117,7 @@ impl From<[u8; 8]> for CanData {
                 let u = u32::from_le_bytes(u32_bytes);
                 CanData::U32(u)
             }
+            CanData::Heartbeat(_) => CanData::Heartbeat(data[1].into()),
         }
     }
 }
@@ -117,6 +129,7 @@ pub enum CanDataType {
     F32,
     State,
     U32,
+    Heartbeat,
 }
 
 impl From<CanDataType> for u8 {
@@ -127,6 +140,7 @@ impl From<CanDataType> for u8 {
             CanDataType::F32 => 2,
             CanDataType::State => 3,
             CanDataType::U32 => 4,
+            CanDataType::Heartbeat => 5,
         }
     }
 }
@@ -139,6 +153,7 @@ impl From<u8> for CanDataType {
             2 => CanDataType::F32,
             3 => CanDataType::State,
             4 => CanDataType::U32,
+            5 => CanDataType::Heartbeat,
             _ => panic!("Invalid CanDataType index"),
         }
     }
@@ -152,6 +167,7 @@ impl From<CanData> for CanDataType {
             CanData::F32(_) => CanDataType::F32,
             CanData::State(_) => CanDataType::State,
             CanData::U32(_) => CanDataType::F32,
+            CanData::Heartbeat(_) => CanDataType::Heartbeat,
         }
     }
 }
@@ -164,6 +180,7 @@ impl From<CanDataType> for CanData {
             CanDataType::F32 => CanData::F32(0.0),
             CanDataType::State => CanData::State(0),
             CanDataType::U32 => CanData::U32(0),
+            CanDataType::Heartbeat => CanData::Heartbeat(Board::Test),
         }
     }
 }
