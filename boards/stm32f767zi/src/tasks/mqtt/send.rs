@@ -16,11 +16,10 @@ use {defmt_rtt as _, panic_probe as _};
 
 /// Channel for sending messages over MQTT.
 /// Any message sent to this channel will be sent to the MQTT broker by the `mqtt_send_task`
-pub static SEND_TO_MQTT_CHANNEL: Channel<ThreadModeRawMutex, MqttMessage, 128> = Channel::new();
+pub static MQTT_SEND: Channel<ThreadModeRawMutex, MqttMessage, 128> = Channel::new();
 
 /// Task for sending messages from `SEND_CHANNEL` to the MQTT broker
-#[embassy_executor::task]
-pub async fn mqtt_send_task(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) {
+pub async fn mqtt_send(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) {
     let mut rx_buffer: [u8; 4096] = [0; 4096];
     let mut tx_buffer: [u8; 4096] = [0; 4096];
     let mut socket = TcpSocket::new(stack, &mut rx_buffer, &mut tx_buffer);
@@ -56,10 +55,14 @@ pub async fn mqtt_send_task(stack: &'static Stack<Ethernet<'static, ETH, Generic
     mqtt_client.connect_to_broker().await;
 
     loop {
-        while !SEND_TO_MQTT_CHANNEL.is_empty() {
-            let message = SEND_TO_MQTT_CHANNEL.receive().await;
+        while !MQTT_SEND.is_empty() {
+            let message = MQTT_SEND.receive().await;
             mqtt_client
-                .send_message(message.topic.as_str(), message.payload.as_bytes(), false)
+                .send_message(
+                    message.topic.to_string().as_str(),
+                    message.payload.as_bytes(),
+                    false,
+                )
                 .await;
         }
         Timer::after(Duration::from_millis(100)).await;

@@ -1,4 +1,4 @@
-use super::can::INCOMING_STATE_TRANSITIONS;
+use crate::tasks::can::receive::INCOMING_STATE_TRANSITIONS;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
 use hyped_core::states::State;
 

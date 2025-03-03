@@ -1,4 +1,4 @@
-use crate::io::Stm32f767ziGpioInput;
+use crate::{io::Stm32f767ziGpioInput, tasks::can::send::CAN_SEND};
 use embassy_stm32::gpio::Input;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
@@ -9,8 +9,6 @@ use hyped_core::comms::{
     messages::CanMessage,
 };
 use hyped_sensors::keyence::Keyence;
-
-use super::can::CAN_SEND;
 
 /// Used to keep the latest temperature sensor value.
 pub static CURRENT_KEYENCE_STRIPE_COUNT: Watch<CriticalSectionRawMutex, u32, 1> = Watch::new();

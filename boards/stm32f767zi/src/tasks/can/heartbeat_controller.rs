@@ -1,6 +1,3 @@
-use crate::emergency;
-
-use super::can::CAN_SEND;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
 use embassy_time::{Duration, Instant, Timer};
 use hyped_core::{
@@ -10,6 +7,8 @@ use hyped_core::{
     },
     states::State,
 };
+
+use crate::{emergency, tasks::can::send::CAN_SEND};
 
 use {defmt_rtt as _, panic_probe as _};
 
@@ -21,7 +20,7 @@ static MAX_HEARTBEAT_DELAY: u64 = 1000;
 
 /// Task that responds to incoming heartbeat messages.
 #[embassy_executor::task]
-pub async fn heartbeat_coordinator(this_board: Board) {
+pub async fn heartbeat_controller(this_board: Board) {
     // Keep track of every board's status
     let mut keyence_tester_last_ack = 0;
 

@@ -1,7 +1,8 @@
-use super::can::CAN_SEND;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
 use embassy_time::{Duration, Timer};
 use hyped_core::comms::{boards::Board, heartbeat::Heartbeat, messages::CanMessage};
+
+use super::send::CAN_SEND;
 
 use {defmt_rtt as _, panic_probe as _};
 

@@ -10,7 +10,8 @@ use embassy_stm32::{
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::{
-    can::can, heartbeat_coordinator::heartbeat_coordinator, state_machine::state_machine,
+    can::{can, heartbeat_controller::heartbeat_controller},
+    state_machine::state_machine::state_machine,
 };
 use hyped_core::{comms::boards::Board, states::State};
 use {defmt_rtt as _, panic_probe as _};
@@ -35,7 +36,7 @@ async fn main(spawner: Spawner) -> ! {
         Board::TemperatureTester,
         CURRENT_STATE.sender(),
     ));
-    spawner.must_spawn(heartbeat_coordinator(_BOARD));
+    spawner.must_spawn(heartbeat_controller(_BOARD));
 
     loop {
         Timer::after(Duration::from_secs(1)).await;

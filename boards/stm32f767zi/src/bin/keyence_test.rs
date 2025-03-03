@@ -10,10 +10,9 @@ use embassy_stm32::{
 };
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use hyped_boards_stm32f767zi::tasks::{
-    can::can,
-    heartbeats_responder::heartbeat_responder,
-    read_keyence::{read_keyence, CURRENT_KEYENCE_STRIPE_COUNT},
-    state_updater::state_updater,
+    can::{can, heartbeats_responder::heartbeat_responder},
+    sensors::read_keyence::{read_keyence, CURRENT_KEYENCE_STRIPE_COUNT},
+    state_machine::state_updater::state_updater,
 };
 use hyped_core::{comms::boards::Board, states::State};
 use {defmt_rtt as _, panic_probe as _};

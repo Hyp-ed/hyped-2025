@@ -2,7 +2,6 @@
 #![no_main]
 
 use core::cell::RefCell;
-
 use embassy_executor::Spawner;
 use embassy_stm32::{
     bind_interrupts,
@@ -21,7 +20,8 @@ use embassy_sync::{
 };
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::{
-    can::can, read_temperature::read_temperature, state_updater::state_updater,
+    can::can, sensors::read_temperature::read_temperature,
+    state_machine::state_updater::state_updater,
 };
 use hyped_core::{comms::boards::Board, states::State};
 use static_cell::StaticCell;
@@ -38,6 +38,7 @@ type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
 /// The current state of the state machine.
 pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();
+
 static BOARD: Board = Board::TemperatureTester;
 
 #[embassy_executor::main]

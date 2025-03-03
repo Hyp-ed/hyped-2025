@@ -1,4 +1,4 @@
-use crate::{emergency, io::Stm32f767ziI2c};
+use crate::{emergency, io::Stm32f767ziI2c, tasks::can::send::CAN_SEND};
 use core::cell::RefCell;
 use defmt_rtt as _;
 use embassy_stm32::{i2c::I2c, mode::Blocking};
@@ -22,8 +22,6 @@ use hyped_core::{
 };
 use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 use hyped_sensors::SensorValueRange;
-
-use super::can::CAN_SEND;
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 

@@ -41,3 +41,7 @@ hyped_i2c = { path = "../../lib/io/hyped_i2c" }
 hyped_i2c_derive = { path = "../../lib/io/hyped_i2c/hyped_i2c_derive" }
 hyped_gpio = { path = "../../lib/io/hyped_gpio" }
 hyped_gpio_derive = { path = "../../lib/io/hyped_gpio/hyped_gpio_derive" }
+
+[[bin]]
+name = "telemetry"
+path = "src/bin/boards/telemetry.rs"

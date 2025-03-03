@@ -12,8 +12,8 @@ use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::{
     emergency, request_transition,
     tasks::{
-        can::{can, CAN_SEND},
-        state_updater::state_updater,
+        can::{can, send::CAN_SEND},
+        state_machine::state_updater::state_updater,
     },
 };
 use hyped_core::{

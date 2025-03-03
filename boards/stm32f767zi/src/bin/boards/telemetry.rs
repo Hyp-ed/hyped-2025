@@ -5,8 +5,7 @@ use defmt::*;
 use embassy_executor::Spawner;
 use embassy_net::{Stack, StackResources};
 use embassy_stm32::can::{
-    filter::Mask32, Can, CanRx, Fifo, Rx0InterruptHandler, Rx1InterruptHandler,
-    SceInterruptHandler, TxInterruptHandler,
+    Rx0InterruptHandler, Rx1InterruptHandler, SceInterruptHandler, TxInterruptHandler,
 };
 use embassy_stm32::peripherals::CAN1;
 use embassy_stm32::{
@@ -18,9 +17,10 @@ use embassy_stm32::{
     Config,
 };
 use embassy_time::{Duration, Timer};
+use hyped_boards_stm32f767zi::tasks::mqtt::heartbeat::heartbeat;
 use hyped_boards_stm32f767zi::{
     log::log,
-    tasks::{mqtt_heartbeat::heartbeat, mqtt_recv::mqtt_recv_task, mqtt_send::mqtt_send_task},
+    tasks::mqtt::mqtt,
     telemetry_config::{BOARD_STATIC_ADDRESS, GATEWAY_IP},
 };
 use hyped_core::log_types::LogLevel;
@@ -36,12 +36,6 @@ bind_interrupts!(struct Irqs {
     CAN1_SCE => SceInterruptHandler<CAN1>;
     CAN1_TX => TxInterruptHandler<CAN1>;
 });
-
-/// Task for running the network stack
-#[embassy_executor::task]
-pub async fn net_task(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) -> ! {
-    stack.run().await
-}
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -109,7 +103,7 @@ async fn main(spawner: Spawner) -> ! {
     ));
 
     // Launch network task
-    unwrap!(spawner.spawn(net_task(stack)));
+    spawner.spawn(net_task(stack)).unwrap();
 
     // Ensure DHCP configuration is up before trying connect
     stack.wait_config_up().await;
@@ -117,27 +111,16 @@ async fn main(spawner: Spawner) -> ! {
     log(LogLevel::Info, "Network stack initialized").await;
 
     // Launch MQTT send and receive tasks and heartbeat
-    unwrap!(spawner.spawn(mqtt_send_task(stack)));
-    unwrap!(spawner.spawn(mqtt_recv_task(stack)));
+    unwrap!(spawner.spawn(mqtt(stack)));
     unwrap!(spawner.spawn(heartbeat()));
-
-    static CAN: StaticCell<Can<'static>> = StaticCell::new();
-    let can = CAN.init(Can::new(p.CAN1, p.PD0, p.PD1, Irqs));
-    can.modify_filters()
-        .enable_bank(0, Fifo::Fifo0, Mask32::accept_all());
-    can.modify_config().set_bitrate(500_000);
-    can.enable().await;
-    println!("CAN enabled");
-
-    let (_tx, rx) = can.split();
-
-    static CAN_RX: StaticCell<CanRx<'static>> = StaticCell::new();
-    let _rx = CAN_RX.init(rx);
-
-    // Launch CAN receiver task
-    // unwrap!(spawner.spawn(can_receiver(rx)));
 
     loop {
         Timer::after(Duration::from_millis(1000)).await;
     }
+}
+
+/// Task for running the network stack
+#[embassy_executor::task]
+pub async fn net_task(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) -> ! {
+    stack.run().await
 }
