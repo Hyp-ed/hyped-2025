@@ -3,6 +3,7 @@ use crate::{HypedI2c, I2cError};
 #[derive(Debug)]
 pub enum I2cMuxError {
     InvalidChannel,
+    FailedToSelectChannel,
 }
 
 /// A struct that represents an I2C multiplexer. (TCA9548A Low-Voltage 8-channel I2C Switch with Reset.)
@@ -27,11 +28,16 @@ impl<T: HypedI2c> I2cMux<T> {
         if channel >= MAX_MUX_CHANNELS {
             return Err(I2cMuxError::InvalidChannel);
         }
-        Ok(Self {
+        let mut mux = Self {
             i2c,
             channel,
             mux_address,
-        })
+        };
+        match mux.select_channel() {
+            Ok(_) => {}
+            Err(_) => return Err(I2cMuxError::FailedToSelectChannel),
+        }
+        Ok(mux)
     }
 
     /// Selects the channel on the multiplexer by writing the channel number

@@ -10,3 +10,5 @@ pub mod mqtt_send;
 // Sensors
 pub mod read_keyence;
 pub mod read_temperature;
+
+pub mod read_temperature_mux_board;
