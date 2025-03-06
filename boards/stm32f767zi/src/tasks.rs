@@ -8,5 +8,6 @@ pub mod mqtt_recv;
 pub mod mqtt_send;
 
 // Sensors
+pub mod read_imd;
 pub mod read_keyence;
 pub mod read_temperature;
