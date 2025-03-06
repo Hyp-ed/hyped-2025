@@ -18,7 +18,6 @@ pub struct Pid {
     pub i_term: f32,
     pub pre_error: f32,
     pub current_filter: f32,
-    pub previous_filter: f32,
 }
 
 impl PidController for Pid {
@@ -29,9 +28,8 @@ impl PidController for Pid {
         Self {
             config,
             i_term: 0.0,
-            pre_error: f32::NAN,
+            pre_error: 0.0,
             current_filter: 0.0,
-            previous_filter: 0.0,
         }
     }
     fn update(&mut self, set_point: f32, actual: f32, dt: f32, filter_constant: f32) -> f32 {
@@ -39,18 +37,13 @@ impl PidController for Pid {
         let i_error = set_point - actual;
         let d_error = (set_point * self.config.d_reference_gain) - actual;
         self.i_term += i_error * dt;
-        let d_term = if self.pre_error.is_nan() {
-            0.0
-        } else {
-            let error_change = d_error - self.pre_error;
-            self.current_filter =
-                (filter_constant * self.previous_filter) + ((1.0 - filter_constant) * error_change);
-            self.previous_filter = self.current_filter;
-            self.current_filter / dt
-        };
-        let output =
-            self.config.kp * p_error + self.config.ki * self.i_term + self.config.kd * d_term;
+        let unfiltered_derivative = (d_error - self.pre_error) / dt;
+        self.current_filter += dt * filter_constant * (unfiltered_derivative - self.current_filter);
         self.pre_error = d_error;
+        let output = self.config.kp * p_error
+            + self.config.ki * self.i_term
+            + self.config.kd * self.current_filter;
+
         output // TOMaybeDO could restrict output by min value here instead of using .min()
     }
 }
