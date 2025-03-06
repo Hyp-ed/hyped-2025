@@ -622,8 +622,17 @@ dependencies = [
 name = "hyped_adc"
 version = "0.1.0"
 dependencies = [
- "embassy-sync 0.6.1",
+ "defmt",
+ "embassy-sync 0.6.2",
  "heapless",
+]
+
+[[package]]
+name = "hyped_adc_derive"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -644,6 +653,9 @@ dependencies = [
  "embassy-time",
  "embedded-hal 0.2.7",
  "embedded-storage",
+ "heapless",
+ "hyped_adc",
+ "hyped_adc_derive",
  "hyped_sensors",
  "panic-probe",
  "rand_core",
@@ -688,11 +700,23 @@ version = "0.1.0"
 dependencies = [
  "defmt",
  "embassy-sync 0.6.0",
+ "embassy-time",
  "heapless",
  "hyped_adc",
  "hyped_core",
  "hyped_gpio",
  "hyped_i2c",
+ "hyped_spi",
+]
+
+[[package]]
+name = "hyped_spi"
+version = "0.1.0"
+dependencies = [
+ "defmt",
+ "embassy-sync 0.6.0",
+ "heapless",
+ "hyped_gpio",
 ]
 
 [[package]]

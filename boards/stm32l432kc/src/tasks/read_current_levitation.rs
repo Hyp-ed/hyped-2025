@@ -1,15 +1,9 @@
-use embassy_stm32::adc::Adc;
-use embassy_time::Delay;
-use hyped_sensors::{current_levitation::CurrentLevitation, SensorValueRange::*};
+use crate::io::Stm32l432kcAdc;
 use defmt_rtt as _;
-use embassy_sync::{
-    blocking_mutex::{
-        raw::{CriticalSectionRawMutex, NoopRawMutex},
-        Mutex,
-    },
-    watch::Sender,
-};
-
+use embassy_stm32::adc::Adc;
+use embassy_stm32::adc::AdcChannel;
+use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
+use hyped_sensors::{current_levitation::CurrentLevitation, SensorValueRange};
 
 /// Test task that reads the current and sends it with the Watch Sender
 #[embassy_executor::task]
@@ -17,11 +11,13 @@ pub async fn read_current_levitation(
     sender: Sender<'static, CriticalSectionRawMutex, SensorValueRange<f32>, 1>,
 ) -> ! {
     let p = embassy_stm32::init(Default::default());
-    let adc = Adc::new(p.ADC1, Delay);
+    let adc = Adc::new(p.ADC1);
+    let pin = p.PA3; // Temporary pin until we know what our actual pin is
 
-    let mut current_levitation_sensor = CurrentLevitation::new(&mut adc);
+    let mut current_levitation_sensor =
+        CurrentLevitation::new(Stm32l432kcAdc::new(adc, pin.degrade_adc(), 5.0));
 
     loop {
-            sender.send(current_levitation_sensor.read())
-        }
+        sender.send(current_levitation_sensor.read())
     }
+}
