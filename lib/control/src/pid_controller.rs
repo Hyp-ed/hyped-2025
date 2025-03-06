@@ -43,7 +43,7 @@ impl PidController for Pid {
         self.config.kp * p_error
             + self.config.ki * self.i_term
             + self.config.kd * self.current_filter
-        // TODO Maybe could restrict output by min value here instead of using .min()
+        // TODOLater Maybe could restrict output by min value here instead of using .min()
     }
 }
 
