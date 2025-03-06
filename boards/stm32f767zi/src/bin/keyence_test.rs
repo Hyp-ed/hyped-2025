@@ -23,7 +23,7 @@ async fn main(spawner: Spawner) -> ! {
 
     // Only prints when the stripe count changes.
     loop {
-        let new_stripe_count = receiver.get().await;
+        let new_stripe_count = receiver.changed().await;
         defmt::info!("New stripe count: {}", new_stripe_count)
     }
 }

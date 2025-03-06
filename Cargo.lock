@@ -61,9 +61,9 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "config_to_rs"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fe59efedb5aea134ace7c79553989a92d26cfa8274a53062756d3270c1e8dba"
+checksum = "5da35144a4ae487e74f328e75a2a80f0b56156a6e3f1320be148dbcc9809a937"
 dependencies = [
  "convert_case",
  "hashlink",
@@ -174,6 +174,7 @@ source = "git+https://github.com/embassy-rs/embassy?rev=1c466b81e6af6b34b1f70631
 dependencies = [
  "cfg-if",
  "critical-section",
+ "defmt",
  "document-features",
  "embassy-time-driver",
  "embassy-time-queue-driver",
@@ -416,10 +417,22 @@ version = "0.1.0"
 dependencies = [
  "defmt",
  "embassy-sync",
+ "embassy-time",
  "heapless",
  "hyped_core",
  "hyped_gpio",
  "hyped_i2c",
+ "hyped_spi",
+]
+
+[[package]]
+name = "hyped_spi"
+version = "0.1.0"
+dependencies = [
+ "defmt",
+ "embassy-sync",
+ "heapless",
+ "hyped_gpio",
 ]
 
 [[package]]
@@ -637,18 +650,18 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.217"
+version = "1.0.218"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02fc4265df13d6fa1d00ecff087228cc0a2b5f3c0e87e258d8b94a156e984c70"
+checksum = "e8dfc9d19bdbf6d17e22319da49161d5d0108e4188e8b680aef6299eed22df60"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.217"
+version = "1.0.218"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a9bf7cf98d04a2b28aead066b7496853d4779c9cc183c440dbac457641e19a0"
+checksum = "f09503e191f4e797cb8aac08e9a4a4695c5edf6a2e70e376d961ddd5c969f82b"
 dependencies = [
  "proc-macro2",
  "quote",
