@@ -32,8 +32,9 @@ impl<T: HypedAdc> CurrentLevitation<T> {
     pub fn read(&mut self) -> SensorValueRange<f32> {
         let adc_reading = self.adc.read_value() as f32;
         let resolution = self.adc.get_resolution() as f32;
+        let v_ref = self.adc.get_reference_voltage();
         // Map the values we're reading in (currently 0-4096) into our voltage range
-        let voltage = ((adc_reading) / (resolution)) * V_REF;
+        let voltage = ((adc_reading) / (resolution)) * v_ref;
         (self.calculate_bounds)((voltage - OFFSET) / SENSITIVITY)
     }
 }
@@ -54,4 +55,3 @@ const MIN_AMPS: f32 = 10.0;
 const MAX_AMPS: f32 = -10.0;
 const WARN_AMPS_LOW: f32 = -8.0;
 const WARN_AMPS_HIGH: f32 = 8.0;
-const V_REF: f32 = 5.0;
