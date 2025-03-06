@@ -35,8 +35,8 @@ impl<'a, T: HypedCanTx> Imd<'a, T> {
     pub fn process_message(&mut self, frame: HypedCanFrame) {
         if frame.can_id == IMD_RETURN_DATA_CAN_ID {
             self.isolation_status = frame.data[1] & 3;
-            self.resistance_positive = (frame.data[2] as u16) << 8 | (frame.data[3] as u16);
-            self.resistance_negative = (frame.data[5] as u16) << 8 | (frame.data[6] as u16);
+            self.resistance_positive = ((frame.data[2] as u16) << 8) | (frame.data[3] as u16);
+            self.resistance_negative = ((frame.data[5] as u16) << 8) | (frame.data[6] as u16);
         }
     }
 
