@@ -5,9 +5,10 @@ edition = "2021"
 
 [dependencies]
 nalgebra = { version = "0.33.0", default-features = false, features = ["libm"]  }
-heapless = "0.8.0"
+
 libm = "0.2.11"
 defmt = "0.3"
+heapless = { version = "0.8", default-features = false, features = ["serde"]}
 
 [dev-dependencies]
 defmt = { version = "0.3", features = ["unstable-test"] }
