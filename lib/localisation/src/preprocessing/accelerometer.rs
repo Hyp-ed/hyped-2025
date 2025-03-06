@@ -2,6 +2,9 @@ use crate::types::{
     AccelerometerData, RawAccelerometerData, SensorChecks, NUM_ACCELEROMETERS,
     NUM_ALLOWED_ACCELEROMETER_OUTLIERS, NUM_AXIS,
 };
+
+/// For tests to work
+#[allow(unused_imports)]
 use heapless::Vec;
 #[cfg(test)]
 use libm;
