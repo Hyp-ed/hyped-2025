@@ -40,11 +40,10 @@ impl PidController for Pid {
         let unfiltered_derivative = (d_error - self.pre_error) / dt;
         self.current_filter += dt * filter_constant * (unfiltered_derivative - self.current_filter);
         self.pre_error = d_error;
-        let output = self.config.kp * p_error
+        self.config.kp * p_error
             + self.config.ki * self.i_term
-            + self.config.kd * self.current_filter;
-
-        output // TOMaybeDO could restrict output by min value here instead of using .min()
+            + self.config.kd * self.current_filter
+        // TODO Maybe could restrict output by min value here instead of using .min()
     }
 }
 
