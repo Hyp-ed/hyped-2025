@@ -1,7 +1,8 @@
-#![no_std]
+#![cfg_attr(not(test), no_std)]
 
 pub mod keyence;
 pub mod laser_triangulation;
+pub mod optical_flow;
 pub mod temperature;
 pub mod time_of_flight;
 

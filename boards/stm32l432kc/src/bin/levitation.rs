@@ -31,17 +31,16 @@ const GAIN_CURRENT: PidGain = PidGain {
     kd: 0.05,
 };
 
-
 /*
-For the lev control, we need to chain 2 PIDs together and output a PWM signal. The first one takes in a height and 
+For the lev control, we need to chain 2 PIDs together and output a PWM signal. The first one takes in a height and
 outputs a current, the second one takes in a current and outputs a voltage, which we the use to calculate duty cycle of
 the PWM signal. Outside the loop, we initialise the pids and the board pins for PWM. We also need max_duty to represent
-our voltage output as a fraction of the max duty cycle. In the loop, there is a timer which measures the time between 
-the signal being set and us taking readings from the sensors as part of the PID calculations. The PID calculations are 
+our voltage output as a fraction of the max duty cycle. In the loop, there is a timer which measures the time between
+the signal being set and us taking readings from the sensors as part of the PID calculations. The PID calculations are
 then performed, and the duty cycle is set, and timer restarted.
 */
 
-#[embassy_executor::main] 
+#[embassy_executor::main]
 async fn main(_spawner: Spawner) {
     let mut pid_height = Pid::new(GAIN_HEIGHT.into());
     let mut pid_current = Pid::new(GAIN_CURRENT.into());
@@ -50,10 +49,18 @@ async fn main(_spawner: Spawner) {
 
     let green_light = PwmPin::new_ch2(p.PB3, OutputType::PushPull); // TODOLater change to actual pin (this is just for testing)
 
-    let mut pwm = SimplePwm::new(p.TIM2, None, Some(green_light), None, None, hz(2000), CountingMode::EdgeAlignedUp); // TODOLater change to actual pin (this is just for testing)
-    
+    let mut pwm = SimplePwm::new(
+        p.TIM2,
+        None,
+        Some(green_light),
+        None,
+        None,
+        hz(2000),
+        CountingMode::EdgeAlignedUp,
+    ); // TODOLater change to actual pin (this is just for testing)
+
     let max_duty = pwm.get_max_duty() as f32;
-    
+
     pwm.enable(Channel::Ch2);
 
     let mut time_start = Instant::now().as_micros() as f32;
@@ -61,13 +68,14 @@ async fn main(_spawner: Spawner) {
     loop {
         let actual_height = 0.7; // TODOLater we'll get that from a sensor
 
-        let actual_current = 1.0; // TODOLater we'll get that from a sensor        
+        let actual_current = 1.0; // TODOLater we'll get that from a sensor
 
         let dt = (Instant::now().as_micros() as f32) - time_start; // this gets the timeframe between the last change in the pwm signal for the PID
 
         let target_current = (pid_height.update(TARGET_HEIGHT, actual_height, dt)).min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries)
 
-        let required_voltage = (pid_current.update(target_current, actual_current, dt)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries)
+        let required_voltage =
+            (pid_current.update(target_current, actual_current, dt)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries)
 
         let duty_cycle = max_duty * (required_voltage / MAX_VOLTAGE); // the duty cycle ranges from 0 to max_duty, so what fraction of that do we need
                                                                       // probably TODOLater update how this is calculated

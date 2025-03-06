@@ -9,10 +9,14 @@ use embassy_sync::{
     },
     watch::Sender,
 };
+use embassy_time::{Duration, Timer};
 use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 use hyped_sensors::SensorValueRange;
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
+
+/// The update frequency of the temperature sensor in Hz
+const UPDATE_FREQUENCY: u64 = 1000;
 
 /// Test task that just reads the temperature from the sensor and prints it to the console
 #[embassy_executor::task]
@@ -44,6 +48,7 @@ pub async fn read_temperature(
             Status::Ok => {}
         }
 
-        sender.send(temperature_sensor.read())
+        sender.send(temperature_sensor.read());
+        Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
     }
 }
