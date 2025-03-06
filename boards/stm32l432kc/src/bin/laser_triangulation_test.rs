@@ -44,8 +44,8 @@ async fn main(spawner: Spawner) -> {
                 Critical(value) => {
                     defmt::error!("Range: {} A (critical)", value)
                 }
-                None => (),
             }
+            None => (),
     }
     Timer::after(Duration::from_millis(100)).await;
     }
