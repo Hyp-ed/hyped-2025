@@ -19,7 +19,7 @@ static CURRENT_LEVITATION_READING: Watch<CriticalSectionRawMutex, SensorValueRan
     Watch::new();
 
 #[embassy_executor::main]
-async fn main(spawner: Spawner) -> {
+async fn main(spawner: Spawner) {
     let p = embassy_stm32::init(Default::default());
     let adc = Adc::new(p.ADC1, Delay);
 
