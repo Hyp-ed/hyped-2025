@@ -82,13 +82,8 @@ async fn main(_spawner: Spawner) {
 
         let dt = (Instant::now().as_micros() as f32) - time_start; // this gets the timeframe between the last change in the pwm signal for the PID
 
-        let target_current = (pid_height.update(
-            TARGET_HEIGHT,
-            actual_height,
-            dt,
-            FILTER_CONSTANT,
-        ))
-        .min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries) and uses low pass filter on derivative term
+        let target_current =
+            (pid_height.update(TARGET_HEIGHT, actual_height, dt, FILTER_CONSTANT)).min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries) and uses low pass filter on derivative term
 
         let target_voltage =
             (pi_current.update(target_current, actual_current, dt)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries) and ignores derivative term from output
