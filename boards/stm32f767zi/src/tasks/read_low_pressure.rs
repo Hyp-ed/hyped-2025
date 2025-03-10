@@ -13,7 +13,7 @@ use embassy_time::{Duration, Timer};
 use hyped_sensors::low_pressure::LowPressure;
 use hyped_sensors::SensorValueRange;
 
-type Adc1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static>>>;
+type Adc1Bus = Mutex<NoopRawMutex, RefCell<Adc<'static>>>;
 
 /// The update frequency of the temperature sensor in Hz
 const UPDATE_FREQUENCY: u64 = 10;
