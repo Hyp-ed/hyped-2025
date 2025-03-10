@@ -4,7 +4,7 @@
 use core::cell::RefCell;
 
 use embassy_executor::Spawner;
-use embassy_stm32::adc::Adc;
+use embassy_stm32::{adc::Adc, time::Hertz};
 use embassy_sync::{
     blocking_mutex::{
         raw::{CriticalSectionRawMutex, NoopRawMutex},
@@ -18,14 +18,14 @@ use hyped_sensors::SensorValueRange::{self, *};
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
 
-type Adc1Bus = Mutex<NoopRawMutex, RefCell<Adc<'static>>>;
+type Adc1Bus = Mutex<NoopRawMutex, RefCell<Adc<'static, T>>>;
 
 /// Used to keep the latest low pressure sensor value.
 static LOW_PRESSURE_READING: Watch<CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1> =
     Watch::new();
 
 #[embassy_executor::main]
-async fn main(spawner: Spawner) {
+async fn main(spawner: Spawner) -> ! {
     let p = embassy_stm32::init(Default::default());
     let mut adc = Adc::new(p.ADC1);
 
