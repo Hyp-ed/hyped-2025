@@ -16,7 +16,7 @@ use {defmt_rtt as _, panic_probe as _};
 const MAX_VOLTAGE: f32 = 500.0;
 const MAX_CURRENT: f32 = 5.0; // TODOLater check with lev
 const TARGET_HEIGHT: f32 = 15.0; // mm
-const LOW_PASS_FILTER_CONSTANT_HEIGHT: f32 = 0.2; // TO TUNE. A number between 0 and 1
+const FILTER_CONSTANT: f32 = 0.2; // TO TUNE. A number between 0 and 1
 
 const GAIN_HEIGHT: PidGain = PidGain {
     kp: 29497.7537305353,
@@ -37,6 +37,7 @@ const GAIN_VOLTAGE: PiGain = PiGain {
 };
 
 /*
+TODOLater: Update comment
 For the lev control, we need to chain 2 PIDs together and output a PWM signal. The first one takes in a height and
 outputs a current, the second one takes in a current and outputs a voltage, which we the use to calculate duty cycle of
 the PWM signal. Outside the loop, we initialise the pids and the board pins for PWM. We also need max_duty to represent
@@ -84,7 +85,7 @@ async fn main(_spawner: Spawner) {
             TARGET_HEIGHT,
             actual_height,
             dt,
-            LOW_PASS_FILTER_CONSTANT_HEIGHT,
+            FILTER_CONSTANT,
         ))
         .min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries) and uses low pass filter on derivative term
 
