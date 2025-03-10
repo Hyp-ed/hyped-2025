@@ -15,7 +15,7 @@ use hyped_sensors::SensorValueRange;
 
 type Adc1Bus = Mutex<NoopRawMutex, RefCell<Adc<'static>>>;
 
-/// The update frequency of the temperature sensor in Hz
+/// The update frequency of the low pressure sensor in Hz
 const UPDATE_FREQUENCY: u64 = 10;
 
 /// Test task that just reads the pressure from the low pressure sensor and prints it to the console
