@@ -13,7 +13,7 @@ use embassy_time::{Duration, Timer};
 use hyped_sensors::low_pressure::LowPressure;
 use hyped_sensors::SensorValueRange;
 
-type Adc1Bus = Mutex<NoopRawMutex, RefCell<Adc<'static, T>>>;
+type Adc1Bus = Mutex<NoopRawMutex, RefCell<Adc<'static, ADC1>>>;
 
 /// The update frequency of the low pressure sensor in Hz
 const UPDATE_FREQUENCY: u64 = 10;
@@ -24,12 +24,12 @@ pub async fn read_low_pressure(
     adc_bus: &'static Adc1Bus,
     sender: Sender<'static, CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1>,
 ) -> ! {
-    let mut hyped_adc = Stm32f767ziAdc::new(adc_bus);
+    let mut hyped_adc = Stm32f767ziAdc::new(adc_bus, /* channel */);
 
-    let mut low_pressure_sensor = LowPressure::new(hyped_adc);
+    let mut low_pressure_sensor = LowPressure::new(&mut hyped_adc);
 
     loop {
-        sender.send(low_pressure_sensor.read_low_pressure());
+        sender.send(low_pressure_sensor.read_pressure());
         Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
     }
 }
