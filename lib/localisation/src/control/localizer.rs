@@ -171,7 +171,6 @@ impl Localizer {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
