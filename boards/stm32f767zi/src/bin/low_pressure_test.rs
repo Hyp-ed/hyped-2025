@@ -13,14 +13,12 @@ use embassy_sync::{
     watch::Watch,
 };
 use embassy_time::{Duration, Timer};
-use hyped_adc::HypedAdc;
-use hyped_boards_stm32f767zi::io::Stm32f767ziAdc;
-use hyped_sensors::low_pressure::LowPressure;
+use hyped_boards_stm32f767zi::tasks::read_low_pressure;
 use hyped_sensors::SensorValueRange::{self, *};
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
 
-type Adc1Bus = Mutex<NoopRawMutex, RefCell<Adc<'static>>>;
+type Adc1Bus = Mutex<NoopRawMutex, RefCell<Adc<'static, T>>>;
 
 /// Used to keep the latest low pressure sensor value.
 static LOW_PRESSURE_READING: Watch<CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1> =
@@ -32,7 +30,7 @@ async fn main(spawner: Spawner) {
     let mut adc = Adc::new(p.ADC1);
 
     // Initialize the ADC and store it in a static cell so that it can be accessed from the tasks.
-    static ADC: StaticCell<Adc1BusBus> = StaticCell::new();
+    static ADC: StaticCell<Adc1Bus> = StaticCell::new();
     let adc_access = ADC.init(Mutex::new(RefCell::new(adc)));
 
     // Create a sender to pass to the low pressure reading task, and a receiver for reading the values back.
