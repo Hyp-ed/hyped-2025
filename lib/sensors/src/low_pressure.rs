@@ -29,7 +29,7 @@ impl<T: HypedAdc> LowPressure<T> {
         LowPressure {
             adc,
             calculate_bounds,
-        } 
+        }
     }
 
     /// Convert ADC reading to bar unit and return value to caller
