@@ -3,8 +3,7 @@ use hyped_adc::HypedAdc;
 use crate::SensorValueRange;
 
 /// The low pressure sensor (LPS) (model: SPAN-P10R-G18F-PNLK-PNVBA-L1) is able to detect
-/// pressure in range from 0 to 10 bar. The sensor utilises the ADC protocol to get the
-/// pressure value.
+/// pressure in range from 0 to 10 bar. The sensor is analogue.
 ///
 /// Links to datasheets
 ///     (https://www.festo.com/gb/en/a/download-document/datasheet/8134897)
@@ -15,8 +14,6 @@ pub struct LowPressure<T: HypedAdc> {
 }
 
 const MAX_PRESSURE: f32 = 10.0;
-const ADC_RESOLUTION: f32 = 4096.0;
-const GRADIENT_LOW: f32 = MAX_PRESSURE / ADC_RESOLUTION;
 
 impl<T: HypedAdc> LowPressure<T> {
     /// Create new low pressure sensor instance
@@ -40,16 +37,12 @@ impl<T: HypedAdc> LowPressure<T> {
     ///     pressure = (conversion gradient) * (ADC reading) + (minimum pressure value)
     ///     (y = mx + c0)
     /// where conversion gradient is
-    ///     (maximum pressure value - minimum pressure value) / (4096).
-    /// 4096 is the maximum ADC reading value.
-    /// Since LPS has a minimum pressure of 0 bar, c0 is 0 and was did not need to be included in
-    /// the source code.
-    /// wrapped in a SensorValueRange enum to indicate if the temperature is safe, warning, or critical.
+    ///     (maximum pressure value - minimum pressure value) / (maximum ADC reading value).
     pub fn read_pressure(&mut self) -> Option<SensorValueRange<f32>> {
         let adc_val = self.adc.read_value() as f32;
-
+        let adc_resolution: f32 = self.adc.get_resolution() as f32;
         // convert to bar unit
-        let bar_pressure_val: f32 = adc_val * GRADIENT_LOW;
+        let bar_pressure_val: f32 = adc_val * (MAX_PRESSURE / adc_resolution);
 
         Some((self.calculate_bounds)(
             bar_pressure_val
