@@ -21,9 +21,9 @@ const DELTA_T: f64 = 0.01;
 const STRIPE_WIDTH: f64 = 1.0;
 
 pub struct Localizer {
-    displacement: f64,
-    velocity: f64,
-    previous_velocity: f64,
+    pub displacement: f64,
+    pub velocity: f64,
+    pub previous_velocity: f64,
     acceleration: f64,
     kalman_filter: KalmanFilter,
     keyence_checker: KeyenceAgrees,
@@ -171,20 +171,6 @@ impl Localizer {
     }
 }
 
-// Getters
-impl Localizer {
-    pub fn displacement(&self) -> f64 {
-        self.displacement
-    }
-
-    pub fn velocity(&self) -> f64 {
-        self.velocity
-    }
-
-    pub fn acceleration(&self) -> f64 {
-        self.acceleration
-    }
-}
 
 #[cfg(test)]
 mod tests {
@@ -207,9 +193,9 @@ mod tests {
 
         localizer.iteration(optical_data, raw_keyence_data, raw_accelerometer_data)?;
 
-        assert_eq!(localizer.displacement(), 0.0);
-        assert_eq!(localizer.velocity(), 0.0);
-        assert_eq!(localizer.acceleration(), 0.0);
+        assert_eq!(localizer.displacement, 0.0);
+        assert_eq!(localizer.velocity, 0.0);
+        assert_eq!(localizer.acceleration, 0.0);
 
         Ok(())
     }
