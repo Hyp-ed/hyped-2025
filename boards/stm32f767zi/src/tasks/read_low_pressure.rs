@@ -9,10 +9,14 @@ use embassy_sync::{
     },
     watch::Sender,
 };
+use embassy_time::{Duration, Timer};
 use hyped_sensors::low_pressure::LowPressure;
 use hyped_sensors::SensorValueRange;
 
 type Adc1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static>>>;
+
+/// The update frequency of the temperature sensor in Hz
+const UPDATE_FREQUENCY: u64 = 10;
 
 /// Test task that just reads the pressure from the low pressure sensor and prints it to the console
 #[embassy_executor::task]
@@ -26,5 +30,6 @@ pub async fn read_low_pressure(
 
     loop {
         sender.send(low_pressure_sensor.read_low_pressure());
+        Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
     }
 }
