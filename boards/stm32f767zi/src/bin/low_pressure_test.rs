@@ -11,7 +11,7 @@ use embassy_sync::{
     },
     watch::Watch,
 };
-use embassy_time::Timer;
+use embassy_time::{Duration, Timer};
 use hyped_adc::HypedAdc;
 use hyped_boards_stm32f767zi::io::Stm32f767ziAdc;
 use hyped_sensors::low_pressure::LowPressure;
@@ -61,6 +61,6 @@ async fn main(_spawner: Spawner) {
             },
             None => (),
         }
-        Timer::after(Duration::from_millis(100)).await;
+        Timer::after(Duration::from_hz(100)).await;
     }
 }
