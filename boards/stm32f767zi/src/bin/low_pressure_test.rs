@@ -18,7 +18,7 @@ use hyped_sensors::SensorValueRange::{self, *};
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
 
-type Adc1Bus = Mutex<NoopRawMutex, RefCell<Adc<'static, T>>>;
+type Adc1Bus = Mutex<NoopRawMutex, RefCell<Adc<'static, ADC1>>>;
 
 /// Used to keep the latest low pressure sensor value.
 static LOW_PRESSURE_READING: Watch<CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1> =
