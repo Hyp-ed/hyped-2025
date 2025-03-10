@@ -17,7 +17,7 @@ const MAX_PRESSURE: f32 = 10.0;
 
 impl<T: HypedAdc> LowPressure<T> {
     /// Create new low pressure sensor instance
-    pub fn new(adc: T) -> LowPressure<T>{
+    pub fn new(adc: T) -> LowPressure<T> {
         Self::new_with_bounds(adc, default_calculate_bounds)
     }
 
