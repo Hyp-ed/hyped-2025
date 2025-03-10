@@ -44,9 +44,7 @@ impl<T: HypedAdc> LowPressure<T> {
         // convert to bar unit
         let bar_pressure_val: f32 = adc_val * (MAX_PRESSURE / adc_resolution);
 
-        Some((self.calculate_bounds)(
-            bar_pressure_val
-        ))
+        Some((self.calculate_bounds)(bar_pressure_val))
     }
 }
 
