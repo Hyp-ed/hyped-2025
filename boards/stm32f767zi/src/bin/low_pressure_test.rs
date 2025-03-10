@@ -4,6 +4,7 @@
 use core::cell::RefCell;
 
 use embassy_executor::Spawner;
+use embassy_stm32::adc::Adc;
 use embassy_sync::{
     blocking_mutex::{
         raw::{CriticalSectionRawMutex, NoopRawMutex},

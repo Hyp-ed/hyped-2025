@@ -1,4 +1,4 @@
-use crate::io::Stm32f767ziAdc;  // I'm assuming there exists an ADC crate for 67zi since I2C crate exists
+use crate::io::Stm32f767ziAdc;
 use core::cell::RefCell;
 use defmt_rtt as _;
 use embassy_stm32::adc::{Adc, AdcChannel};
