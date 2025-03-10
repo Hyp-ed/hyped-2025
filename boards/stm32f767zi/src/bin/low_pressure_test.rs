@@ -1,7 +1,8 @@
 #![no_std]
 #![no_main]
 
-use defmt::*;
+use core::cell::RefCell;
+
 use embassy_executor::Spawner;
 use embassy_stm32::adc::{Adc, AdcChannel};
 use embassy_sync::{
@@ -26,12 +27,12 @@ static LOW_PRESSURE_READING: Watch<CriticalSectionRawMutex, Option<SensorValueRa
     Watch::new();
 
 #[embassy_executor::main]
-async fn main(_spawner: Spawner) {
+async fn main(spawner: Spawner) {
     let p = embassy_stm32::init(Default::default());
     let mut adc = Adc::new(p.ADC1);
 
     // Initialize the ADC and store it in a static cell so that it can be accessed from the tasks.
-    static ADC: StaticCell<I2c1Bus> = StaticCell::new();
+    static ADC: StaticCell<Adc1BusBus> = StaticCell::new();
     let adc_access = ADC.init(Mutex::new(RefCell::new(adc)));
 
     // Create a sender to pass to the low pressure reading task, and a receiver for reading the values back.
