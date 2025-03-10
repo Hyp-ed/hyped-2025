@@ -37,12 +37,13 @@ const GAIN_VOLTAGE: PiGain = PiGain {
 };
 
 /*
-TODOLater: Update comment
-For the lev control, we need to chain 2 PIDs together and output a PWM signal. The first one takes in a height and
-outputs a current, the second one takes in a current and outputs a voltage, which we the use to calculate duty cycle of
-the PWM signal. Outside the loop, we initialise the pids and the board pins for PWM. We also need max_duty to represent
+For the lev control, we need to chain a PID controller with 2 PI controllers and output a PWM signal. The PID takes in 
+a height and outputs a current, the first PI takes in a current and outputs a voltage, which we the use to calculate 
+duty cycle of the PWM signal, which is the third PI. 
+
+Outside the loop, we initialise the PID/PIs and the board pins for PWM. We also need max_duty to represent
 our voltage output as a fraction of the max duty cycle. In the loop, there is a timer which measures the time between
-the signal being set and us taking readings from the sensors as part of the PID calculations. The PID calculations are
+the signal being set and us taking readings from the sensors as part of the control loop. The PID/PI calculations are
 then performed, and the duty cycle is set, and timer restarted.
 */
 
