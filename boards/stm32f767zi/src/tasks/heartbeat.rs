@@ -1,4 +1,4 @@
-use super::mqtt::SEND_CHANNEL;
+use super::mqtt_send::SEND_TO_MQTT_CHANNEL;
 use core::str::FromStr;
 use defmt::debug;
 use embassy_time::{Duration, Timer};
@@ -11,7 +11,7 @@ use {defmt_rtt as _, panic_probe as _};
 pub async fn heartbeat() {
     loop {
         debug!("Sending heartbeat...");
-        SEND_CHANNEL
+        SEND_TO_MQTT_CHANNEL
             .send(MqttMessage {
                 topic: MqttTopics::to_string(&MqttTopics::Heartbeat),
                 payload: String::<512>::from_str("").unwrap(),
