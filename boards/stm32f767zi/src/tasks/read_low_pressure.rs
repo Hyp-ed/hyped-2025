@@ -13,7 +13,7 @@ use embassy_time::{Duration, Timer};
 use hyped_sensors::low_pressure::LowPressure;
 use hyped_sensors::SensorValueRange;
 
-type Adc1Bus = Mutex<NoopRawMutex, RefCell<Adc<'static, ADC1>>>;
+type Adc1Bus = Mutex<NoopRawMutex, RefCell<Adc<'static, T>>>;
 
 /// The update frequency of the low pressure sensor in Hz
 const UPDATE_FREQUENCY: u64 = 10;
