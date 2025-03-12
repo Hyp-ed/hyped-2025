@@ -11,6 +11,20 @@ jobs:
       - name: Run clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
 
+  rust-clippy-boards:
+    name: Run clippy (boards)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        board:
+          - stm32l476rg
+          - stm32f767zi
+          - stm32l432kc
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run clippy
+        run: cd boards/${{ matrix.board }} && cargo clippy --all-features -- -D warnings
+
   rust-fmt:
     name: Run rustfmt
     runs-on: ubuntu-latest
@@ -51,4 +65,3 @@ jobs:
           else
             echo "All good"
           fi
-      
