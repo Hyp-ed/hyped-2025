@@ -41,8 +41,8 @@ async fn main(spawner: Spawner) -> ! {
 
     // Every 100ms we read for the latest value from the temperature sensor.
     loop {
-        match temp_reading_receiver.try_changed() {
-            Some(reading) => match reading {
+        if let Some(reading) = temp_reading_receiver.try_changed() {
+            match reading {
                 Some(reading) => match reading {
                     Safe(temp) => {
                         defmt::info!("Temperature: {}°C (safe)", temp);
@@ -55,8 +55,7 @@ async fn main(spawner: Spawner) -> ! {
                     }
                 },
                 None => defmt::warn!("No temperature reading available."),
-            },
-            None => (),
+            }
         }
         Timer::after(Duration::from_millis(100)).await;
     }

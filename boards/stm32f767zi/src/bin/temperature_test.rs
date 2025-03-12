@@ -55,6 +55,22 @@ async fn main(spawner: Spawner) -> ! {
     spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
 
     loop {
+        if let Some(reading) = temp_reading_receiver.try_changed() {
+            match reading {
+                Some(reading) => match reading {
+                    Safe(temp) => {
+                        defmt::info!("Temperature: {}°C (safe)", temp);
+                    }
+                    Warning(temp) => {
+                        defmt::warn!("Temperature: {}°C (warning)", temp);
+                    }
+                    Critical(temp) => {
+                        defmt::error!("Temperature: {}°C (critical)", temp);
+                    }
+                },
+                None => defmt::warn!("No temperature reading available."),
+            }
+        }
         Timer::after(Duration::from_millis(100)).await;
     }
 }
