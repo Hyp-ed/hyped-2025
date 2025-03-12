@@ -39,6 +39,8 @@ async fn main(spawner: Spawner) -> ! {
 
     spawner.must_spawn(read_temperature(i2c_bus, temp_reading_sender));
 
+    let not_used = 10;
+
     // Every 100ms we read for the latest value from the temperature sensor.
     loop {
         if let Some(reading) = temp_reading_receiver.try_changed() {
