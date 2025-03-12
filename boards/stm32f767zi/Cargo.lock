@@ -732,6 +732,7 @@ dependencies = [
  "hyped_i2c",
  "hyped_i2c_derive",
  "hyped_sensors",
+ "hyped_state_machine",
  "hyped_spi",
  "hyped_spi_derive",
  "panic-probe",
@@ -770,6 +771,7 @@ dependencies = [
  "embassy-net",
  "embedded-io-async",
  "heapless 0.8.0",
+ "hyped_can",
  "rand_core",
  "rust-mqtt",
  "serde",
@@ -839,6 +841,17 @@ version = "0.1.0"
 dependencies = [
  "quote",
  "syn",
+]
+
+[[package]]
+name = "hyped_state_machine"
+version = "0.1.0"
+dependencies = [
+ "defmt",
+ "embassy-net",
+ "heapless 0.8.0",
+ "hyped_core",
+ "rust-mqtt",
 ]
 
 [[package]]

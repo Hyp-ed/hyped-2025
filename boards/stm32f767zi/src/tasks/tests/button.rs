@@ -1,9 +1,9 @@
-use super::mqtt_send::SEND_TO_MQTT_CHANNEL;
+use crate::tasks::mqtt::send::MQTT_SEND;
 use core::str::FromStr;
 use embassy_stm32::gpio::{AnyPin, Input, Pull};
 use embassy_time::{Duration, Timer};
 use heapless::String;
-use hyped_core::{mqtt::MqttMessage, mqtt_topics::MqttTopics};
+use hyped_core::{mqtt::MqttMessage, mqtt_topics::MqttTopic};
 use serde::{Deserialize, Serialize};
 use typenum::consts::*;
 use {defmt_rtt as _, panic_probe as _};
@@ -20,9 +20,9 @@ pub struct ButtonMqttMessage {
 pub async fn button_task(pin: AnyPin) {
     let button = Input::new(pin, Pull::Down);
     loop {
-        SEND_TO_MQTT_CHANNEL
+        MQTT_SEND
             .send(MqttMessage {
-                topic: MqttTopics::to_string(&MqttTopics::Debug),
+                topic: MqttTopic::Debug,
                 payload: String::<512>::from_str(
                     serde_json_core::to_string::<U512, ButtonMqttMessage>(&ButtonMqttMessage {
                         status: button.is_high(),

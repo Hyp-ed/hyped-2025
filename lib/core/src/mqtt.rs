@@ -1,4 +1,7 @@
-use crate::logging::{info, warn};
+use crate::{
+    logging::{info, warn},
+    mqtt_topics::MqttTopic,
+};
 use embassy_net::tcp::TcpSocket;
 use heapless::String;
 use rust_mqtt::{
@@ -11,12 +14,12 @@ use rust_mqtt::{
 };
 
 pub struct MqttMessage {
-    pub topic: String<48>,
+    pub topic: MqttTopic,
     pub payload: String<512>,
 }
 
 impl MqttMessage {
-    pub fn new(topic: String<48>, payload: String<512>) -> Self {
+    pub fn new(topic: MqttTopic, payload: String<512>) -> Self {
         MqttMessage { topic, payload }
     }
 }
