@@ -24,10 +24,10 @@ fn impl_hyped_adc(ast: &syn::DeriveInput) -> TokenStream {
                 /// STM32 boards have a resolution of 12 bits
                 4096
             }
-        }
 
-        fn get_reference_voltage(&self) -> f32 {
-            self.v_ref
+            fn get_reference_voltage(&self) -> f32 {
+                self.v_ref
+            }
         }
 
         impl #impl_generics #name #ty_generics {

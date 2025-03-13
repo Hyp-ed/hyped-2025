@@ -1,1 +1,1 @@
-pub mod laser_triangulation;
+pub mod read_laser_triangulation;
