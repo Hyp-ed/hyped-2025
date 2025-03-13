@@ -1,5 +1,5 @@
 use embassy_stm32::adc::Adc;
-use embassy_time::Delay;
+use embassy_time::{Duration, Timer};
 use hyped_sensors::{laser_triangulation::LaserTriangulation, SensorValueRange::*};
 use defmt_rtt as _;
 use embassy_sync::{
@@ -9,6 +9,9 @@ use embassy_sync::{
     },
     watch::Sender,
 };
+
+/// The update frequency of the laser triangulation sensor in Hz
+const UPDATE_FREQUENCY: u64 = 1000;
 
 
 /// Test task that reads the distance by laser triangulation and sends it with the Watch Sender
@@ -22,6 +25,7 @@ pub async fn read_laser_triangulation_distance(
     let mut laser_triangulation_sensor = LaserTriangulation::new(&mut adc);
 
     loop {
-            sender.send(laser_triangulation_sensor.read())
+            sender.send(laser_triangulation_sensor.read());
+            Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
         }
     }
