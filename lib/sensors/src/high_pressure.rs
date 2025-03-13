@@ -1,4 +1,5 @@
-use hyped_adc::HypedAdc;
+use hyped_core::types::DigitalSignal;
+use hyped_gpio::HypedGpioInputPin;
 
 use crate::SensorValueRange;
 
@@ -9,23 +10,23 @@ use crate::SensorValueRange;
 ///     (https://www.festo.com/media/catalog/203715_documentation.pdf)
 ///     (https://ftp.festo.com/public/PNEUMATIC/SOFTWARE_SERVICE/DataSheet/EN_GB/8022773.pdf)
 
-pub struct HighPressure<T: HypedAdc> {
-    adc: T,
+pub struct HighPressure<T: HypedGpioInputPin> {
+    gpio: T,
     calculate_bounds: fn(f32) -> SensorValueRange<f32>,
 }
-impl<T: HypedAdc> HighPressure<T> {
+impl<T: HypedGpioInputPin> HighPressure<T> {
     /// Create new high pressure sensor instance
-    pub fn new(adc: T) -> HighPressure<T> {
-        Self::new_with_bounds(adc, default_calculate_bounds)
+    pub fn new(gpio: T) -> HighPressure<T> {
+        Self::new_with_bounds(gpio, default_calculate_bounds)
     }
 
     /// Create new low pressure sensor instance with specified bounds 
     pub fn new_with_bounds(
-        adc: T,
+        gpio: T,
         calculate_bounds: fn(f32) -> SensorValueRange<f32>,
     ) -> HighPressure<T> {
         HighPressure {
-            adc,
+            gpio,
             calculate_bounds,
         }
     }
@@ -37,13 +38,7 @@ impl<T: HypedAdc> HighPressure<T> {
     /// where conversion gradient is
     ///     (maximum pressure value - minimum pressure value) / (maximum adc reading value).
     pub fn read_pressure(&mut self) -> Option<SensorValueRange<f32>> {
-        let adc_reading = self.adc.read_value() as f32;
-        let adc_resolution = self.adc.get_resolution() as f32;
-
-        // Calculate the pressure in bar
-        let pressure_bar: f32 = adc_reading * (MAX_PRESSURE / adc_resolution) + PRESSURE_OFFSET;
-
-        Some((self.calculate_bounds)(pressure_bar))
+        //
     }
 }
 
