@@ -1,16 +1,10 @@
 use crate::io::Stm32l432kcAdc;
+use defmt_rtt as _;
 use embassy_stm32::adc::Adc;
 use embassy_stm32::adc::AdcChannel;
+use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
 use embassy_time::{Duration, Timer};
-use hyped_sensors::{laser_triangulation::LaserTriangulation, SensorValueRange::*};
-use defmt_rtt as _;
-use embassy_sync::{
-    blocking_mutex::{
-        raw::{CriticalSectionRawMutex, NoopRawMutex},
-        Mutex,
-    },
-    watch::Sender,
-};
+use hyped_sensors::{laser_triangulation::LaserTriangulation, SensorValueRange};
 
 /// The update frequency of the laser triangulation sensor in Hz
 const UPDATE_FREQUENCY: u64 = 1000;
@@ -25,12 +19,12 @@ pub async fn read_laser_triangulation_distance(
     let p = embassy_stm32::init(Default::default());
     let adc = Adc::new(p.ADC1);
     let pin = p.PA3; // Temporary pin until we know what our actual pin is
-    
-    let hyped_adc = Stm32f767ziAdc::new(adc, pin.degrade_adc(), V_REF);
-    let mut laser_triangulation_sensor = LaserTriangulation::new(hyped_adc);
+
+    let mut laser_triangulation_sensor =
+        LaserTriangulation::new(Stm32l432kcAdc::new(adc, pin.degrade_adc(), V_REF));
 
     loop {
-            sender.send(laser_triangulation_sensor.read());
-            Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
-        }
+        sender.send(laser_triangulation_sensor.read());
+        Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
     }
+}

@@ -2,16 +2,9 @@
 #![no_main]
 
 use embassy_executor::Spawner;
-use embassy_stm32::adc::Adc;
-use embassy_sync::{
-    blocking_mutex::{
-        raw::{CriticalSectionRawMutex, NoopRawMutex},
-        Mutex,
-    },
-    watch::Watch,
-};
+use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
-use hyped_boards_stm32l432kc::tasks::laser_triangulation::read_laser_triangulation_distance;
+use hyped_boards_stm32l432kc::tasks::read_laser_triangulation::read_laser_triangulation_distance;
 use hyped_sensors::SensorValueRange;
 use hyped_sensors::SensorValueRange::*;
 use {defmt_rtt as _, panic_probe as _};
@@ -20,14 +13,15 @@ static LASER_TRIANGULATION_READING: Watch<CriticalSectionRawMutex, SensorValueRa
     Watch::new();
 
 #[embassy_executor::main]
-async fn main(spawner: Spawner) -> {
-
+async fn main(spawner: Spawner) {
     // Create a sender to pass to the laser triangulation sensor reading task, and a receiver for reading the values back.
     let laser_triangulation_reading_sender = LASER_TRIANGULATION_READING.sender();
     let mut laser_triangulation_reading_receiver = LASER_TRIANGULATION_READING.receiver().unwrap();
 
     spawner
-        .spawn(read_laser_triangulation_distance(laser_triangulation_reading_sender))
+        .spawn(read_laser_triangulation_distance(
+            laser_triangulation_reading_sender,
+        ))
         .unwrap();
 
     // Every 100ms we read for the latest value from the laser triangulation sensor.
@@ -43,9 +37,9 @@ async fn main(spawner: Spawner) -> {
                 Critical(value) => {
                     defmt::error!("Range: {} mm (critical)", value)
                 }
-            }
+            },
             None => (),
-    }
-    Timer::after(Duration::from_millis(100)).await;
+        }
+        Timer::after(Duration::from_millis(100)).await;
     }
 }
