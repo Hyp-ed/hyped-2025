@@ -8,8 +8,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run clippy
-        run: cargo clippy --all-targets --all-features -- -D warnings
+      - uses: giraffate/clippy-action@v1
+        with:
+          reporter: 'github-pr-check'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          clippy_flags: --all-targets --all-features -- -Dwarnings
+
+  rust-clippy-boards:
+    name: Run clippy (boards)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        board:
+          - stm32l476rg
+          - stm32f767zi
+          - stm32l432kc
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup target add thumbv7em-none-eabihf
+      - uses: giraffate/clippy-action@v1
+        with:
+          reporter: 'github-pr-check'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workdir: boards/${{ matrix.board }}
+          clippy_flags: --all-features -- -Dwarnings
 
   rust-fmt:
     name: Run rustfmt
@@ -51,4 +73,3 @@ jobs:
           else
             echo "All good"
           fi
-      
