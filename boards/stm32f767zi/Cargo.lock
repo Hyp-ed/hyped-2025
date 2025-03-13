@@ -817,6 +817,7 @@ dependencies = [
  "embassy-sync 0.6.0",
  "embassy-time",
  "heapless 0.8.0",
+ "hyped_adc",
  "hyped_core",
  "hyped_gpio",
  "hyped_i2c",
