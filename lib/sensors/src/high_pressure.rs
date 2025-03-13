@@ -42,6 +42,8 @@ impl<T: HypedAdc> HighPressure<T> {
 
         // Calculate the pressure in bar
         let pressure_bar: f32 = adc_reading * (MAX_PRESSURE / adc_resolution) + PRESSURE_OFFSET;
+
+        Some((self.calculate_bounds)(pressure_bar))
     }
 }
 
