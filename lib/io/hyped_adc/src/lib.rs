@@ -8,6 +8,8 @@ pub trait HypedAdc {
     fn get_resolution(&self) -> u16;
     /// Get reference voltage of ADC pin
     fn get_reference_voltage(&self) -> f32;
+    /// Get voltage of the ADC pin
+    fn get_voltage(&mut self) -> f32;
 }
 
 pub mod mock_adc {
@@ -34,6 +36,13 @@ pub mod mock_adc {
 
         fn get_reference_voltage(&self) -> f32 {
             self.v_ref
+        }
+
+        fn get_voltage(&mut self) -> f32 {
+            let adc_reading = self.read_value() as f32;
+            let resolution = self.get_resolution() as f32;
+            let v_ref = self.get_reference_voltage();
+            (adc_reading / resolution) * v_ref
         }
     }
 

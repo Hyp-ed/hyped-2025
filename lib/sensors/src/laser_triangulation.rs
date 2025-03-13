@@ -33,11 +33,9 @@ impl<T: HypedAdc> LaserTriangulation<T> {
     /// the MEASURE_RANGE and BASE_DISTANCE values accordingly. You can find different configuration settings
     /// in the data sheet.
     pub fn read(&mut self) -> SensorValueRange<f32> {
-        let adc_reading = self.adc.read_value() as f32;
-        let resolution = self.adc.get_resolution() as f32;
+        let voltage = self.adc.get_voltage();
         let v_ref = self.adc.get_reference_voltage();
-        let voltage = (adc_reading / resolution) * v_ref;
-        let result = (voltage / v_ref) * (MEASURE_RANGE + BASE_DISTANCE);
+        let result = (voltage / v_ref) * MEASURE_RANGE + BASE_DISTANCE;
         (self.calculate_bounds)(result)
     }
 }
