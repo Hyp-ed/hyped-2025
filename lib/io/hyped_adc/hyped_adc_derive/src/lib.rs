@@ -26,9 +26,14 @@ fn impl_hyped_adc(ast: &syn::DeriveInput) -> TokenStream {
             }
         }
 
+        fn get_reference_voltage(&self) -> f32 {
+            self.v_ref
+        }
+
         impl #impl_generics #name #ty_generics {
-            pub fn new(adc: Adc<'d, T>, channel: AnyAdcChannel<T>) -> Self {
-                Self { adc, channel }
+            /// Create a new instance of our ADC implementation for the STM32L476RG
+            pub fn new(adc: Adc<'d, T>, channel: AnyAdcChannel<T>, v_ref: f32) -> Self {
+                Self { adc, channel, v_ref }
             }
         }
     };

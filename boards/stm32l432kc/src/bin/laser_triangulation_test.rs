@@ -12,7 +12,8 @@ use embassy_sync::{
 };
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32l432kc::tasks::laser_triangulation::read_laser_triangulation_distance;
-use hyped_sensors::{laser_triangulation::LaserTriangulation, SensorValueRange::*};
+use hyped_sensors::SensorValueRange;
+use hyped_sensors::SensorValueRange::*;
 use {defmt_rtt as _, panic_probe as _};
 
 static LASER_TRIANGULATION_READING: Watch<CriticalSectionRawMutex, SensorValueRange<f32>, 1> =
@@ -20,8 +21,6 @@ static LASER_TRIANGULATION_READING: Watch<CriticalSectionRawMutex, SensorValueRa
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> {
-    let p = embassy_stm32::init(Default::default());
-    let adc = Adc::new(p.ADC1, Delay);
 
     // Create a sender to pass to the laser triangulation sensor reading task, and a receiver for reading the values back.
     let laser_triangulation_reading_sender = LASER_TRIANGULATION_READING.sender();
@@ -42,7 +41,7 @@ async fn main(spawner: Spawner) -> {
                     defmt::warning!("Range: {} mm (warning)", value)
                 }
                 Critical(value) => {
-                    defmt::error!("Range: {} A (critical)", value)
+                    defmt::error!("Range: {} mm (critical)", value)
                 }
             }
             None => (),
