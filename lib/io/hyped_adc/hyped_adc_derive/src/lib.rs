@@ -28,6 +28,13 @@ fn impl_hyped_adc(ast: &syn::DeriveInput) -> TokenStream {
             fn get_reference_voltage(&self) -> f32 {
                 self.v_ref
             }
+
+            fn get_voltage(&self) -> f32 {
+                let adc_reading = self.read_value() as f32;
+                let resolution = self.get_resolution() as f32;
+                let v_ref = self.get_reference_voltage();
+                (adc_reading / resolution) * v_ref
+            }
         }
 
         impl #impl_generics #name #ty_generics {
