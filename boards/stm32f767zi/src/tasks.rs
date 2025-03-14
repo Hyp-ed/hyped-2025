@@ -11,3 +11,5 @@ pub mod mqtt_send;
 pub mod read_keyence;
 pub mod read_low_pressure;
 pub mod read_temperature;
+
+pub mod read_temperature_mux_board;
