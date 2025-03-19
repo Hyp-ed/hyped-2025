@@ -60,12 +60,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
+name = "communications"
+version = "0.1.0"
+dependencies = [
+ "hyped_measurement_ids",
+]
+
+[[package]]
 name = "config_to_rs"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5da35144a4ae487e74f328e75a2a80f0b56156a6e3f1320be148dbcc9809a937"
 dependencies = [
- "convert_case",
+ "convert_case 0.7.1",
  "hashlink",
  "proc-macro2",
  "quote",
@@ -78,6 +85,15 @@ name = "convert_case"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bb402b8d4c85569410425650ce3eddc7d698ed96d39a73f941b08fb63082f1e7"
+dependencies = [
+ "unicode-segmentation",
+]
+
+[[package]]
+name = "convert_case"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "baaaa0ecca5b51987b9423ccdc971514dd8b0bb7b4060b983d3664dad3f1f89f"
 dependencies = [
  "unicode-segmentation",
 ]
@@ -137,7 +153,7 @@ dependencies = [
  "defmt",
  "document-features",
  "embassy-net-driver",
- "embassy-sync",
+ "embassy-sync 0.6.0",
  "embassy-time",
  "embedded-io-async",
  "embedded-nal-async",
@@ -163,6 +179,20 @@ dependencies = [
  "critical-section",
  "defmt",
  "embedded-io-async",
+ "futures-util",
+ "heapless",
+]
+
+[[package]]
+name = "embassy-sync"
+version = "0.6.2"
+source = "git+https://github.com/embassy-rs/embassy#81e90935071e6d6a5ce4786a2e94c66fbadbe979"
+dependencies = [
+ "cfg-if",
+ "critical-section",
+ "defmt",
+ "embedded-io-async",
+ "futures-sink",
  "futures-util",
  "heapless",
 ]
@@ -275,6 +305,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "05f29059c0c2090612e8d742178b0580d2dc940c837851ad723096f87af6663e"
 
 [[package]]
+name = "futures-sink"
+version = "0.3.31"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e575fab7d1e0dcb8d0c7bcf9a63ee213816ab51902e6d244a95819acacf1d4f7"
+
+[[package]]
 name = "futures-task"
 version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -333,11 +369,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_adc"
+version = "0.1.0"
+dependencies = [
+ "defmt",
+ "embassy-sync 0.6.2",
+ "heapless",
+]
+
+[[package]]
 name = "hyped_can"
 version = "0.1.0"
 dependencies = [
  "defmt",
- "embassy-sync",
+ "embassy-sync 0.6.0",
  "embassy-time",
  "heapless",
 ]
@@ -346,7 +391,7 @@ dependencies = [
 name = "hyped_control"
 version = "0.1.0"
 dependencies = [
- "embassy-sync",
+ "embassy-sync 0.6.0",
  "embassy-time",
  "heapless",
  "hyped_core",
@@ -385,7 +430,7 @@ name = "hyped_i2c"
 version = "0.1.0"
 dependencies = [
  "defmt",
- "embassy-sync",
+ "embassy-sync 0.6.0",
  "heapless",
 ]
 
@@ -400,11 +445,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_measurement_ids"
+version = "0.1.0"
+dependencies = [
+ "convert_case 0.8.0",
+ "quote",
+ "saphyr",
+]
+
+[[package]]
 name = "hyped_motors"
 version = "0.1.0"
 dependencies = [
  "defmt",
- "embassy-sync",
+ "embassy-sync 0.6.0",
  "embassy-time",
  "heapless",
  "hyped_can",
@@ -417,7 +471,7 @@ name = "hyped_sensors"
 version = "0.1.0"
 dependencies = [
  "defmt",
- "embassy-sync",
+ "embassy-sync 0.6.0",
  "embassy-time",
  "heapless",
  "hyped_core",
@@ -431,7 +485,7 @@ name = "hyped_spi"
 version = "0.1.0"
 dependencies = [
  "defmt",
- "embassy-sync",
+ "embassy-sync 0.6.0",
  "heapless",
  "hyped_gpio",
 ]
@@ -445,6 +499,15 @@ dependencies = [
  "heapless",
  "hyped_core",
  "rust-mqtt",
+]
+
+[[package]]
+name = "hyped_uart"
+version = "0.1.0"
+dependencies = [
+ "defmt",
+ "embassy-sync 0.6.2",
+ "heapless",
 ]
 
 [[package]]
@@ -601,9 +664,9 @@ dependencies = [
 
 [[package]]
 name = "quote"
-version = "1.0.38"
+version = "1.0.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e4dccaaaf89514f546c693ddc140f729f958c247918a13380cccc6078391acc"
+checksum = "1885c039570dc00dcb4ff087a89e185fd56bae234ddc7f056a945bf36467248d"
 dependencies = [
  "proc-macro2",
 ]

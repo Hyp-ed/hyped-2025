@@ -1,0 +1,7 @@
+[package]
+name = "communications"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hyped_measurement_ids = { path = "./measurement_ids" }
