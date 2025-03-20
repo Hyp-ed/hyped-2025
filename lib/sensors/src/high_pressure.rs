@@ -66,7 +66,7 @@ const MAX_PRESSURE: f32 = 25.0;
 
 /// Represents the possible state of the high pressure sensor
 pub enum State {
-    SP1,
-    SP2,
-    SP1n2,
+    State1,
+    State2,
+    State3
 }
