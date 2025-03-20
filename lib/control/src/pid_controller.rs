@@ -5,7 +5,7 @@ pub trait PidController {
 
 #[derive(Debug, Clone)]
 pub struct PidGain {
-    pub kp: f32,
+    kp: f32,
     pub ki: f32,
     pub kd: f32,
     pub p_reference_gain: f32,
@@ -14,10 +14,10 @@ pub struct PidGain {
 }
 #[derive(Debug, Clone)]
 pub struct Pid {
-    pub config: PidGain,
-    pub integral_term: f32,
-    pub pre_error: f32,
-    pub current_filter: f32,
+    config: PidGain,
+    integral_term: f32,
+    pre_error: f32,
+    current_filter: f32,
 }
 
 impl PidController for Pid {

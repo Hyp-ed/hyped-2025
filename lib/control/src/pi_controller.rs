@@ -11,9 +11,9 @@ pub struct PiGain {
 
 #[derive(Debug, Clone)]
 pub struct Pi {
-    pub config: PiGain,
-    pub i_term: f32,
-    pub pre_error: f32,
+    config: PiGain,
+    i_term: f32,
+    pre_error: f32,
 }
 
 impl PiController for Pi {
