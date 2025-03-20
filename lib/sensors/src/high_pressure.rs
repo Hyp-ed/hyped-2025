@@ -1,8 +1,6 @@
 use hyped_core::types::DigitalSignal;
 use hyped_gpio::HypedGpioInputPin;
 
-use crate::SensorValueRange;
-
 /// The high pressure sensor (SPAW-P25R-G12M-2N-M12) is able to detect pressure in range
 /// from 0 to 25 bar.
 /// 
@@ -11,51 +9,47 @@ use crate::SensorValueRange;
 ///     (https://ftp.festo.com/public/PNEUMATIC/SOFTWARE_SERVICE/DataSheet/EN_GB/8022773.pdf)
 
 pub struct HighPressure<T: HypedGpioInputPin> {
-    gpio: T,
+    sp1_gpio: T,
+    sp2_gpio: T,
     calculate_bounds: fn(f32) -> SensorValueRange<f32>,
 }
 impl<T: HypedGpioInputPin> HighPressure<T> {
     /// Create new high pressure sensor instance
-    pub fn new(gpio: T) -> HighPressure<T> {
-        Self::new_with_bounds(gpio, default_calculate_bounds)
+    pub fn new(
+        sp1_gpio: T,
+        sp2_gpio: T,
+    ) -> HighPressure<T> {
+        Self::new_with_bounds(sp1_gpio, sp2_gpio, default_calculate_bounds)
     }
 
     /// Create new low pressure sensor instance with specified bounds 
     pub fn new_with_bounds(
-        gpio: T,
+        sp1_gpio: T,
+        sp2_gpio: T,
         calculate_bounds: fn(f32) -> SensorValueRange<f32>,
     ) -> HighPressure<T> {
         HighPressure {
-            gpio,
+            sp1_gpio,
+            sp2_gpio,
             calculate_bounds,
         }
     }
 
-    /// Read pressure (in bar) from high pressure sensor using the ADC.
-    /// The conversion rate is expressed a a linear function of:
-    ///     pressure = (conversion gradient) * (ADC reading) + (minimum pressure value)
-    ///     (y = mx + c0)
-    /// where conversion gradient is
-    ///     (maximum pressure value - minimum pressure value) / (maximum adc reading value).
-    pub fn read_pressure(&mut self) -> Option<SensorValueRange<f32>> {
-        // get pressure from BOTH gpio pins
+    /// Read SP1 and SP2 GPIO pin values and bit OR them. Return state of high pressure sensor based on value of OR'd value.
+    pub fn get_high_pressure_state(&mut self) -> State {
+        // get pressure from BOTHHH gpio pins
         // return enum variant corresponding to which 3 states its in
         // states are affected by which pins are past their thresholds
-        
-    }
-}
+        let sp1 = self.sp1_gpio.is_high() as u8;
+        let sp2 = (self.sp2_gpio.is_high() as u8) << 1;
 
-/// Default calculation of the bounds for the high pressure sensor. The bounds are set to:
-/// - Safe: 10.0 to 15.0 bar
-/// - Warning: 5.0 to 10.0 and 15.0 to 20.0 bar
-/// - Critical: below 5.0 and above 20.0 bar
-pub fn default_calculate_bounds(value: f32) -> SensorValueRange<f32> {
-    if value <= 5.0 || value >= 20.0 {
-        SensorValueRange::Critical(value)
-    } else if value <= 10.0 || value >= 15.0 {
-        SensorValueRange::Warning(value)
-    } else {
-        SensorValueRange::Safe(value)
+        let pres_state = sp1 | sp2;
+
+        match pres_state {
+            0 => State::Off,
+            1 => State::State2,
+            3 => State::State3,
+        }
     }
 }
 
@@ -66,7 +60,7 @@ const MAX_PRESSURE: f32 = 25.0;
 
 /// Represents the possible state of the high pressure sensor
 pub enum State {
-    State1,
+    Off,
     State2,
     State3
 }
