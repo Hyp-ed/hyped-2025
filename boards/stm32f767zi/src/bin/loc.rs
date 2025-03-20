@@ -4,15 +4,12 @@
 use defmt::*;
 use embassy_executor::Spawner;
 use embassy_stm32::{
-    gpio::{Input, Output, Level, Pull, Speed},
+    gpio::{Input, Level, Output, Pull, Speed},
     init,
     spi::{self, BitOrder, Spi},
     time::khz,
 };
-use embassy_sync::{
-    blocking_mutex::raw::CriticalSectionRawMutex,
-    watch::Watch,
-};
+use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
 use heapless::Vec;
 use hyped_boards_stm32f767zi::{
@@ -77,8 +74,7 @@ async fn main(spawner: Spawner) -> ! {
         let stripe_count2 = receiver2.get().await;
 
         let flow = optical_flow.get_motion().await.unwrap();
-        let optical_data: Vec<f64, 2> = Vec::from_slice(&[flow.x as f64, flow.y as f64])
-            .unwrap();
+        let optical_data: Vec<f64, 2> = Vec::from_slice(&[flow.x as f64, flow.y as f64]).unwrap();
 
         defmt::info!(
             "New Keyence stripe counts: sensor1 = {}, sensor2 = {}",
