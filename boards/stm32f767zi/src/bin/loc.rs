@@ -101,9 +101,9 @@ async fn main(spawner: Spawner) -> ! {
             Ok(()) => {
                 defmt::info!(
                     "Iteration OK: displacement = {} m, velocity = {} m/s, acceleration = {} m/s**2",
-                    localizer.displacement(),
-                    localizer.velocity(),
-                    localizer.acceleration()
+                    localizer.displacement,
+                    localizer.velocity,
+                    localizer.acceleration
                 );
             }
             Err(e) => {
