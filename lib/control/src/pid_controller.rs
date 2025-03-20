@@ -4,6 +4,40 @@ pub trait PidController {
 }
 
 #[derive(Debug, Clone)]
+struct FilteredDerivative {
+    b0: f32,
+    b1: f32,
+    a1: f32,
+    previous_error: f32,
+    previous_output: f32,
+}
+
+impl FilteredDerivative {
+    fn new(kd: f32, tau: f32, sampling_period: f32) -> Self {
+        let denominator = sampling_period * (tau + sampling_period) + 2.0;
+
+        FilteredDerivative {
+            b0: 2.0 * kd / denominator,
+            b1: -2.0 * kd / denominator,
+            a1: 2.0 * sampling_period / denominator,
+            previous_error: 0.0,
+            previous_output: 0.0,
+        }
+    }
+
+    fn update(&mut self, error: f32) -> f32 {
+        let output =
+            self.b0 * error + self.b1 * self.previous_error - self.a1 * self.previous_output;
+
+        // Update previous values for the next iteration
+        self.previous_error = error;
+        self.previous_output = output;
+
+        output
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct PidGain {
     kp: f32,
     pub ki: f32,
@@ -15,18 +49,19 @@ pub struct PidGain {
 #[derive(Debug, Clone)]
 pub struct Pid {
     config: PidGain,
+    filter: FilteredDerivative,
     integral_term: f32,
-    pre_error: f32,
-    current_filter: f32,
 }
 
 impl PidController for Pid {
     fn new(config: PidGain) -> Self {
+        let filter =
+            FilteredDerivative::new(config.kd as f32, 1.0 / config.filter_constant as f32, 0.01);
+
         Self {
             config,
+            filter,
             integral_term: 0.0,
-            pre_error: 0.0,
-            current_filter: 0.0,
         }
     }
 
@@ -38,13 +73,8 @@ impl PidController for Pid {
         let i_error = set_point - actual;
         let d_error = (set_point * self.config.d_reference_gain) - actual;
         self.integral_term += i_error * dt;
-        let unfiltered_derivative = (d_error - self.pre_error) / dt;
-        self.current_filter +=
-            dt * self.config.filter_constant * (unfiltered_derivative - self.current_filter);
-        self.pre_error = d_error;
-        self.config.kp * p_error
-            + self.config.ki * self.integral_term
-            + self.config.kd * self.current_filter
+        let d_filtered = self.filter.update(d_error);
+        self.config.kp * p_error + self.config.ki * self.integral_term + self.config.kd * d_filtered
         // TODOLater Maybe could restrict output by min value here instead of using .min()
     }
 }

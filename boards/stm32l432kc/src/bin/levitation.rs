@@ -18,14 +18,15 @@ const MAX_VOLTAGE: f32 = 500.0;
 const MAX_CURRENT: f32 = 5.0; // TODOLater check with lev
 const TARGET_HEIGHT: f32 = 15.0; // mm
 const FILTER_CONSTANT: f32 = 0.2; // TO TUNE. A number between 0 and 1
+const SAMPLING_PERIOD: f32 = 0.01; // TODOLater see how long this takes to run and go based on that
 
 const GAIN_HEIGHT: PidGain = PidGain {
-    kp: 29497.7537305353,
-    ki: 262105.664028736,
-    kd: 815.114265452965,
+    kp: 22058.3927852622,
+    ki: 194432.490685545,
+    kd: 614.513502234539,
     p_reference_gain: 0.873451984,
     d_reference_gain: 0.705728005,
-    filter_constant: FILTER_CONSTANT,
+    filter_constant: 1026.87023225348,
 };
 
 const GAIN_CURRENT: PiGain = PiGain {
@@ -73,33 +74,30 @@ async fn main(_spawner: Spawner) {
 
     pwm.enable(Channel::Ch2);
 
-    let mut time_start = Instant::now().as_micros() as f32;
-
     loop {
+        loop_start = Instant::now().as_micros();
+
         let actual_height = 0.7; // TODOLater we'll get that from a sensor
-
         let actual_current = 1.0; // TODOLater we'll get that from a sensor
-
         let actual_voltage = 0.8; // TODOLater we'll get that from a sensor
-
-        let dt = (Instant::now().as_micros() as f32) - time_start; // this gets the timeframe between the last change in the pwm signal for the PID
-
+        
         let target_current =
-            (pid_height.update(TARGET_HEIGHT, actual_height, dt)).min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries) and uses filtered derivative
-
+            (pid_height.update(TARGET_HEIGHT, actual_height, SAMPLING_PERIOD)).min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries) and uses filtered derivative
         let target_voltage =
-            (pi_current.update(target_current, actual_current, dt)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries)
-
-        let duty_cycle = pi_voltage.update(target_voltage, actual_voltage, dt).min(max_duty); // takes in voltage -> outputs duty cycle (within boundaries)
-
+            (pi_current.update(target_current, actual_current, SAMPLING_PERIOD)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries)
+        let duty_cycle = pi_voltage.update(target_voltage, actual_voltage, SAMPLING_PERIOD).min(max_duty); // takes in voltage -> outputs duty cycle (within boundaries)
         let duty_cycle = duty_cycle * max_duty; // the duty cycle ranges from 0 to max_duty, so what fraction of that do we need
 
         pwm.set_duty(Channel::Ch2, duty_cycle as u32);
 
-        time_start = Instant::now().as_micros() as f32;
-
         info!("height = {}", actual_height);
         info!("v_out = {}", target_voltage);
         info!("duty_cycle = {}", duty_cycle);
+
+        let elapsed = loop_start.elapsed().as_micros() as u64;
+        if elapsed < SAMPLING_PERIOD {
+            let remaining_time = SAMPLING_PERIOD - elapsed;
+            Timer::after(Duration::from_micros(remaining_time)).await;
+        }
     }
 }
