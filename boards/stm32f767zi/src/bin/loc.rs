@@ -86,7 +86,7 @@ async fn main(spawner: Spawner) -> ! {
             stripe_count2
         );
 
-        // Create the sensor data. (accelerometer data is simulated.)
+        // Create the sensor data. (no accelerometer data)
         let keyence_data: Vec<u32, 2> = Vec::from_slice(&[stripe_count1, stripe_count2]).unwrap();
         let accelerometer_data: RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS> =
             RawAccelerometerData::from_slice(&[
