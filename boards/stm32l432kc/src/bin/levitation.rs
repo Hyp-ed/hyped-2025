@@ -25,6 +25,7 @@ const GAIN_HEIGHT: PidGain = PidGain {
     kd: 815.114265452965,
     p_reference_gain: 0.873451984,
     d_reference_gain: 0.705728005,
+    filter_constant: FILTER_CONSTANT,
 };
 
 const GAIN_CURRENT: PiGain = PiGain {
@@ -84,15 +85,14 @@ async fn main(_spawner: Spawner) {
         let dt = (Instant::now().as_micros() as f32) - time_start; // this gets the timeframe between the last change in the pwm signal for the PID
 
         let target_current =
-            (pid_height.update(TARGET_HEIGHT, actual_height, dt, FILTER_CONSTANT)).min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries) and uses low pass filter on derivative term
+            (pid_height.update(TARGET_HEIGHT, actual_height, dt)).min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries) and uses filtered derivative
 
         let target_voltage =
-            (pi_current.update(target_current, actual_current, dt)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries) and ignores derivative term from output
+            (pi_current.update(target_current, actual_current, dt)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries)
 
-        let duty_cycle = pi_voltage.update(target_voltage, actual_voltage, dt); // TODOLater include .min(max_duty) if max_duty given
+        let duty_cycle = pi_voltage.update(target_voltage, actual_voltage, dt).min(max_duty); // takes in voltage -> outputs duty cycle (within boundaries)
 
         let duty_cycle = duty_cycle * max_duty; // the duty cycle ranges from 0 to max_duty, so what fraction of that do we need
-                                                // probably TODOLater update how this is calculated
 
         pwm.set_duty(Channel::Ch2, duty_cycle as u32);
 
