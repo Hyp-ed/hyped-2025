@@ -12,6 +12,7 @@ embassy-time = { version = "0.3.1", features = ["defmt", "defmt-timestamp-uptime
 hyped_core = { path = "../core" }
 hyped_i2c = { path = "../io/hyped_i2c" }
 hyped_gpio = { path = "../io/hyped_gpio" }
+hyped_adc = { path = "../io/hyped_adc" }
 hyped_spi = { path = "../io/hyped_spi" }
 
 [dev-dependencies]
