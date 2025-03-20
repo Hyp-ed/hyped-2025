@@ -38,7 +38,10 @@ impl<T: HypedGpioInputPin> HighPressure<T> {
     /// where conversion gradient is
     ///     (maximum pressure value - minimum pressure value) / (maximum adc reading value).
     pub fn read_pressure(&mut self) -> Option<SensorValueRange<f32>> {
-        //
+        // get pressure from BOTH gpio pins
+        // return enum variant corresponding to which 3 states its in
+        // states are affected by which pins are past their thresholds
+        
     }
 }
 
@@ -60,3 +63,10 @@ pub fn default_calculate_bounds(value: f32) -> SensorValueRange<f32> {
 const PRESSURE_OFFSET: f32 = 0.0;
 
 const MAX_PRESSURE: f32 = 25.0;
+
+/// Represents the possible state of the high pressure sensor
+pub enum State {
+    SP1,
+    SP2,
+    SP1n2,
+}
