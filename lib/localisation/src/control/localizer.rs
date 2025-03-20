@@ -24,7 +24,7 @@ pub struct Localizer {
     pub displacement: f64,
     pub velocity: f64,
     pub previous_velocity: f64,
-    acceleration: f64,
+    pub acceleration: f64,
     kalman_filter: KalmanFilter,
     keyence_checker: KeyenceAgrees,
     keyence_val: f64,
