@@ -1,5 +1,5 @@
 pub trait ControllerTrait {
-    fn update(&mut self, set_point: f32, actual: f32, dt: f32) -> f32;
+    fn update(&mut self, set_point: f32, actual: f32, dt: u64) -> f32;
 }
 
 #[derive(Debug, Clone)]
@@ -23,6 +23,17 @@ impl PiController {
     }
 }
 
+impl ControllerTrait for PiController {
+    /// Updates the `Pi` controller, ignoring D.
+    /// Returns the controller output.
+    fn update(&mut self, set_point: f32, actual: f32, dt: u64) -> f32 {
+        let error = set_point - actual;
+        self.integral_term += error * dt as f32;
+        self.config.kp * error + self.config.ki * self.integral_term // removed the derivative term
+                                                                     // TODOLater could restrict output by min value here instead of using .min()
+    }
+}
+
 #[derive(Debug, Clone)]
 struct FilteredDerivative {
     b0: f32,
@@ -33,7 +44,8 @@ struct FilteredDerivative {
 }
 
 impl FilteredDerivative {
-    fn new(kd: f32, tau: f32, sampling_period: f32) -> Self {
+    fn new(kd: f32, tau: f32, sampling_period: u64) -> Self {
+        let sampling_period = sampling_period as f32;
         let denominator = sampling_period * (tau + sampling_period) + 2.0;
 
         FilteredDerivative {
@@ -57,17 +69,6 @@ impl FilteredDerivative {
     }
 }
 
-impl ControllerTrait for PiController {
-    /// Updates the `Pi` controller, ignoring D.
-    /// Returns the controller output.
-    fn update(&mut self, set_point: f32, actual: f32, dt: f32) -> f32 {
-        let error = set_point - actual;
-        self.integral_term += error * dt;
-        self.config.kp * error + self.config.ki * self.integral_term // removed the derivative term
-                                                                     // TODOLater could restrict output by min value here instead of using .min()
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct PidGain {
     pub kp: f32,
@@ -75,7 +76,7 @@ pub struct PidGain {
     pub kd: f32,
     pub p_reference_gain: f32,
     pub d_reference_gain: f32,
-    pub filter_constant: f32,
+    pub filter_coefficient: f32,
 }
 
 #[derive(Debug, Clone)]
@@ -88,7 +89,7 @@ pub struct PidController {
 impl PidController {
     pub fn new(config: PidGain) -> Self {
         let filter =
-            FilteredDerivative::new(config.kd as f32, 1.0 / config.filter_constant as f32, 0.01); // TODOLater sub with SAMPLING PERIOD CONSTANT in .yaml file
+            FilteredDerivative::new(config.kd as f32, 1.0 / config.filter_coefficient as f32, 1); // TODOLater sub with SAMPLING PERIOD CONSTANT in .yaml file
 
         Self {
             config,
@@ -99,11 +100,11 @@ impl PidController {
 }
 
 impl ControllerTrait for PidController {
-    fn update(&mut self, set_point: f32, actual: f32, dt: f32) -> f32 {
+    fn update(&mut self, set_point: f32, actual: f32, dt: u64) -> f32 {
         let p_error = (set_point * self.config.p_reference_gain) - actual;
         let i_error = set_point - actual;
         let d_error = (set_point * self.config.d_reference_gain) - actual;
-        self.integral_term += i_error * dt;
+        self.integral_term += i_error * dt as f32;
         let d_filtered = self.filter.update(d_error);
         self.config.kp * p_error + self.config.ki * self.integral_term + self.config.kd * d_filtered
         // TODOLater Maybe could restrict output by min value here instead of using .min()
@@ -120,7 +121,7 @@ mod tests {
         let mut pi = PiController::new(config);
         let set_point = 0.0;
         let actual = 0.0;
-        let dt = 0.1;
+        let dt = 1;
         let output = pi.update(set_point, actual, dt);
         assert_eq!(output, 0.0);
     }
@@ -133,12 +134,12 @@ mod tests {
             kd: 0.0,
             p_reference_gain: 1.0,
             d_reference_gain: 1.0,
-            filter_constant: 0.1,
+            filter_coefficient: 0.1,
         };
         let mut pid = PidController::new(config);
         let set_point = 0.0;
         let actual = 0.0;
-        let dt = 0.1;
+        let dt = 1;
         let output = pid.update(set_point, actual, dt);
         assert_eq!(output, 0.0);
     }
