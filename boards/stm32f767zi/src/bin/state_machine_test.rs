@@ -13,7 +13,8 @@ use hyped_boards_stm32f767zi::tasks::{
     can::{can, heartbeat_controller::heartbeat_controller},
     state_machine::state_machine::state_machine,
 };
-use hyped_core::{comms::boards::Board, states::State};
+use hyped_communications::boards::Board;
+use hyped_state_machine::states::State;
 use {defmt_rtt as _, panic_probe as _};
 
 bind_interrupts!(struct Irqs {

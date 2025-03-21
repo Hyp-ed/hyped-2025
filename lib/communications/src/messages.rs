@@ -1,6 +1,5 @@
 use hyped_can::HypedCanFrame;
-
-use crate::states::State;
+use hyped_state_machine::states::State;
 
 use super::{
     can_id::CanId,
@@ -28,7 +27,7 @@ impl From<CanMessage> for HypedCanFrame {
                     MessageIdentifier::Measurement(measurement_reading.measurement_id);
                 let can_id = CanId::new(
                     measurement_reading.board,
-                    measurement_reading.can_data_type,
+                    measurement_reading.reading.into(),
                     message_identifier,
                 );
                 HypedCanFrame::new(can_id.into(), measurement_reading.reading.into())
@@ -73,14 +72,12 @@ impl From<HypedCanFrame> for CanMessage {
         let can_id: CanId = frame.can_id.into();
         let message_identifier = can_id.message_identifier;
         let board = can_id.board;
-        let can_data_type = can_id.message_type;
 
         match message_identifier {
             MessageIdentifier::Measurement(measurement_id) => {
                 let reading: CanData = frame.data.into();
                 let measurement_reading = MeasurementReading {
                     reading,
-                    can_data_type,
                     board,
                     measurement_id,
                 };
@@ -125,26 +122,23 @@ impl From<HypedCanFrame> for CanMessage {
 #[cfg(test)]
 mod tests {
     use hyped_can::HypedCanFrame;
+    use hyped_state_machine::states::State;
 
     use crate::{
-        comms::{
-            boards::Board,
-            data::{CanData, CanDataType},
-            heartbeat::Heartbeat,
-            measurements::{MeasurementId, MeasurementReading},
-            messages::CanMessage,
-            state_transition::StateTransition,
-        },
-        states::State,
+        boards::Board,
+        data::CanData,
+        heartbeat::Heartbeat,
+        measurements::{MeasurementId, MeasurementReading},
+        messages::CanMessage,
+        state_transition::StateTransition,
     };
 
     #[test]
     fn it_works() {
         let measurement_reading = MeasurementReading::new(
             CanData::F32(0.0),
-            CanDataType::F32,
             Board::Telemetry,
-            MeasurementId::Temperature,
+            MeasurementId::Acceleration,
         );
         let can_message = CanMessage::MeasurementReading(measurement_reading);
 

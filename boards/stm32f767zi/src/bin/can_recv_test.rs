@@ -3,6 +3,7 @@
 
 use defmt::*;
 use embassy_executor::Spawner;
+use embassy_net::tcp::State;
 use embassy_stm32::bind_interrupts;
 use embassy_stm32::can::filter::Mask32;
 use embassy_stm32::can::{
@@ -14,9 +15,8 @@ use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
 use embassy_sync::watch::Watch;
 use embassy_time::{Duration, Timer};
 use hyped_can::HypedCanFrame;
-use hyped_core::comms::measurements::MeasurementId;
-use hyped_core::comms::messages::CanMessage;
-use hyped_core::states::State;
+use hyped_communications::measurements::MeasurementId;
+use hyped_communications::messages::CanMessage;
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
 
@@ -61,26 +61,10 @@ async fn main(_spawner: Spawner) {
                 CanMessage::MeasurementReading(measurement_reading) => {
                     let measurement_id = measurement_reading.measurement_id;
 
-                    match measurement_id {
-                        MeasurementId::Temperature => {
-                            defmt::info!(
-                                "Received temperature reading over CAN: {:?}",
-                                measurement_reading.reading,
-                            );
-                        }
-                        MeasurementId::Test => {
-                            defmt::info!(
-                                "Received test reading over CAN: {:?}",
-                                measurement_reading
-                            )
-                        }
-                        MeasurementId::KeyenceStripeCount => {
-                            defmt::info!(
-                                "Received keyence stripe count reading over CAN: {:?}",
-                                measurement_reading
-                            )
-                        }
-                    }
+                    defmt::info!(
+                        "Received measurement reading over CAN: {:?}",
+                        measurement_id
+                    );
                 }
                 CanMessage::StateTransition(state_transition) => {
                     defmt::info!(

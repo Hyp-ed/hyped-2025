@@ -1,7 +1,5 @@
-use hyped_core::{
-    logging::{info, warn},
-    states::State,
-};
+use crate::states::State;
+use hyped_core::logging::{info, warn};
 
 pub struct StateMachine {
     pub current_state: State,

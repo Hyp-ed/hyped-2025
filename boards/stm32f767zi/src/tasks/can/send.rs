@@ -2,7 +2,7 @@ use embassy_stm32::can::{CanTx, ExtendedId, Frame, Id};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
 use embassy_time::{Duration, Timer};
 use hyped_can::HypedCanFrame;
-use hyped_core::comms::messages::CanMessage;
+use hyped_communications::messages::CanMessage;
 
 /// Channel for sending CAN messages.
 pub static CAN_SEND: Channel<CriticalSectionRawMutex, CanMessage, 10> = Channel::new();

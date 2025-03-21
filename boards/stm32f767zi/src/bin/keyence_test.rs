@@ -14,7 +14,8 @@ use hyped_boards_stm32f767zi::tasks::{
     sensors::read_keyence::{read_keyence, CURRENT_KEYENCE_STRIPE_COUNT},
     state_machine::state_updater::state_updater,
 };
-use hyped_core::{comms::boards::Board, states::State};
+use hyped_communications::{boards::Board, measurements::MeasurementId};
+use hyped_state_machine::states::State;
 use {defmt_rtt as _, panic_probe as _};
 
 bind_interrupts!(struct Irqs {
@@ -36,7 +37,7 @@ async fn main(spawner: Spawner) -> ! {
     // Create a sender to pass to the temperature reading task, and a receiver for reading the values back.
     let mut receiver = CURRENT_KEYENCE_STRIPE_COUNT.receiver().unwrap();
 
-    spawner.must_spawn(read_keyence(gpio_pin, BOARD));
+    spawner.must_spawn(read_keyence(gpio_pin, BOARD, MeasurementId::Keyence1));
     spawner.must_spawn(can(Can::new(p.CAN1, p.PD0, p.PD1, Irqs)));
     spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
     spawner.must_spawn(heartbeat_responder(BOARD));

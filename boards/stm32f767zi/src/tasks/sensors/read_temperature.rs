@@ -10,18 +10,16 @@ use embassy_sync::{
     watch::Watch,
 };
 use embassy_time::{Duration, Timer};
-use hyped_core::{
-    comms::{
-        boards::Board,
-        data::{CanData, CanDataType},
-        measurements::{MeasurementId, MeasurementReading},
-        messages::CanMessage,
-        state_transition::StateTransition,
-    },
-    states::State,
+use hyped_communications::{
+    boards::Board,
+    data::CanData,
+    measurements::{MeasurementId, MeasurementReading},
+    messages::CanMessage,
+    state_transition::StateTransition,
 };
 use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 use hyped_sensors::SensorValueRange;
+use hyped_state_machine::states::State;
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
@@ -37,7 +35,11 @@ const UPDATE_FREQUENCY: u64 = 1000;
 
 /// Test task that just reads the temperature from the sensor and prints it to the console
 #[embassy_executor::task]
-pub async fn read_temperature(i2c_bus: &'static I2c1Bus, this_board: Board) -> ! {
+pub async fn read_temperature(
+    i2c_bus: &'static I2c1Bus,
+    this_board: Board,
+    measurement_id: MeasurementId,
+) -> ! {
     let latest_temperature_reading_sender = LATEST_TEMPERATURE_READING.sender();
     let can_sender = CAN_SEND.sender();
 
@@ -87,12 +89,8 @@ pub async fn read_temperature(i2c_bus: &'static I2c1Bus, this_board: Board) -> !
                 SensorValueRange::Safe(v) => v,
             };
 
-            let measurement_reading = MeasurementReading::new(
-                CanData::F32(value),
-                CanDataType::F32,
-                this_board,
-                MeasurementId::Temperature,
-            );
+            let measurement_reading =
+                MeasurementReading::new(CanData::F32(value), this_board, measurement_id);
             let can_message = CanMessage::MeasurementReading(measurement_reading);
 
             can_sender.send(can_message).await;

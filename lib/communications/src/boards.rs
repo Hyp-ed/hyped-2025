@@ -1,3 +1,5 @@
+// TODO: macro man this
+
 #[derive(Debug, Clone, Copy, PartialEq, defmt::Format)]
 pub enum Board {
     Telemetry,

@@ -1,6 +1,5 @@
-use crate::states::State;
-
-use super::boards::Board;
+use crate::boards::Board;
+use hyped_state_machine::states::State;
 
 #[derive(Debug, PartialEq, Clone, defmt::Format)]
 pub struct StateTransition {

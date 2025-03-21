@@ -10,3 +10,4 @@ proc-macro = true
 convert_case = "0.8.0"
 quote = "1.0.40"
 saphyr = "0.0.3"
+heapless = "0.8"

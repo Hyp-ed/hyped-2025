@@ -1,9 +1,9 @@
+use super::heartbeats_responder::INCOMING_HEARTBEATS;
 use embassy_stm32::can::{Can, CanRx, Id};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
 use embassy_time::{Duration, Timer};
 use hyped_can::HypedCanFrame;
-use hyped_core::comms::{messages::CanMessage, state_transition::StateTransition};
-use super::heartbeats_responder::INCOMING_HEARTBEATS;
+use hyped_communications::{messages::CanMessage, state_transition::StateTransition};
 
 use {defmt_rtt as _, panic_probe as _};
 

@@ -60,13 +60,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
-name = "communications"
-version = "0.1.0"
-dependencies = [
- "hyped_measurement_ids",
-]
-
-[[package]]
 name = "config_to_rs"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -388,6 +381,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_communications"
+version = "0.1.0"
+dependencies = [
+ "defmt",
+ "heapless",
+ "hyped_can",
+ "hyped_core",
+ "hyped_measurement_ids",
+ "hyped_state_machine",
+]
+
+[[package]]
 name = "hyped_control"
 version = "0.1.0"
 dependencies = [
@@ -449,6 +454,7 @@ name = "hyped_measurement_ids"
 version = "0.1.0"
 dependencies = [
  "convert_case 0.8.0",
+ "heapless",
  "quote",
  "saphyr",
 ]

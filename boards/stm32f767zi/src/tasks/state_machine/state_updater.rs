@@ -1,6 +1,6 @@
 use crate::tasks::can::receive::INCOMING_STATE_TRANSITIONS;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
-use hyped_core::states::State;
+use hyped_state_machine::states::State;
 
 use {defmt_rtt as _, panic_probe as _};
 

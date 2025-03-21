@@ -1,7 +1,13 @@
 [package]
-name = "communications"
+name = "hyped_communications"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+defmt = "0.3"
+heapless = "0.8"
+
 hyped_measurement_ids = { path = "./measurement_ids" }
+hyped_can = { path = "../io/hyped_can" }
+hyped_core = { path = "../core" }
+hyped_state_machine = { path = "../state_machine" }

@@ -20,10 +20,14 @@ use embassy_sync::{
 };
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::{
-    can::can, sensors::read_temperature::read_temperature,
+    can::can,
+    sensors::read_temperature::{read_temperature, LATEST_TEMPERATURE_READING},
     state_machine::state_updater::state_updater,
 };
-use hyped_core::{comms::boards::Board, states::State};
+use hyped_communications::boards::Board;
+use hyped_communications::measurements::MeasurementId;
+use hyped_sensors::SensorValueRange::{Critical, Safe, Warning};
+use hyped_state_machine::states::State;
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
 
@@ -51,8 +55,12 @@ async fn main(spawner: Spawner) -> ! {
     let i2c_bus = I2C_BUS.init(Mutex::new(RefCell::new(i2c)));
 
     spawner.must_spawn(can(Can::new(p.CAN1, p.PD0, p.PD1, Irqs)));
-    spawner.must_spawn(read_temperature(i2c_bus, BOARD));
+
+    spawner.must_spawn(read_temperature(i2c_bus, BOARD, MeasurementId::Thermistor1));
+
     spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
+
+    let mut temp_reading_receiver = LATEST_TEMPERATURE_READING.receiver().unwrap();
 
     loop {
         if let Some(reading) = temp_reading_receiver.try_changed() {

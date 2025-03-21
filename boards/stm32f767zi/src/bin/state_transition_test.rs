@@ -16,10 +16,10 @@ use hyped_boards_stm32f767zi::{
         state_machine::state_updater::state_updater,
     },
 };
-use hyped_core::{
-    comms::{boards::Board, messages::CanMessage, state_transition::StateTransition},
-    states::State,
+use hyped_communications::{
+    boards::Board, messages::CanMessage, state_transition::StateTransition,
 };
+use hyped_state_machine::states::State;
 use {defmt_rtt as _, panic_probe as _};
 
 bind_interrupts!(struct Irqs {

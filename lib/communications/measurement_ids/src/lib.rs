@@ -19,7 +19,8 @@ pub fn gen_measurement_ids(args: TokenStream) -> TokenStream {
     let measurement_ids = get_measurement_ids(yaml_path, pod_id);
 
     // Actual enum
-    let mut enum_str = String::from("#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]\n");
+    let mut enum_str =
+        String::from("#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, defmt::Format)]\n");
     enum_str.push_str("pub enum MeasurementId {\n");
     for id in measurement_ids.clone() {
         enum_str.push_str(&format!("    {},\n", id));
@@ -28,11 +29,11 @@ pub fn gen_measurement_ids(args: TokenStream) -> TokenStream {
 
     // to_string and from_string
     enum_str.push_str("\nimpl MeasurementId {\n");
-    enum_str.push_str("    pub fn to_string(&self) -> String {\n");
+    enum_str.push_str("    pub fn to_string(&self) -> String<50> {\n");
     enum_str.push_str("        match self {\n");
     for id in measurement_ids.clone() {
         enum_str.push_str(&format!(
-            "            MeasurementId::{} => \"{}\".to_string(),\n",
+            "            MeasurementId::{} => String::<50>::from_str(\"{}\").unwrap(),\n",
             id,
             id.to_case(Case::Snake)
         ));
@@ -54,9 +55,9 @@ pub fn gen_measurement_ids(args: TokenStream) -> TokenStream {
     enum_str.push_str("    }\n");
     enum_str.push_str("}\n");
 
-    // Into<u8>
-    enum_str.push_str("\nimpl Into<u8> for MeasurementId {\n");
-    enum_str.push_str("    fn into(self) -> u8 {\n");
+    // Into<u16>
+    enum_str.push_str("\nimpl Into<u16> for MeasurementId {\n");
+    enum_str.push_str("    fn into(self) -> u16 {\n");
     enum_str.push_str("        match self {\n");
     for (i, id) in measurement_ids.clone().into_iter().enumerate() {
         enum_str.push_str(&format!("            MeasurementId::{} => {},\n", id, i));
@@ -65,9 +66,9 @@ pub fn gen_measurement_ids(args: TokenStream) -> TokenStream {
     enum_str.push_str("    }\n");
     enum_str.push_str("}\n");
 
-    // From<u8>
-    enum_str.push_str("\nimpl From<u8> for MeasurementId {\n");
-    enum_str.push_str("    fn from(enum_str: u8) -> MeasurementId {\n");
+    // From<u16>
+    enum_str.push_str("\nimpl From<u16> for MeasurementId {\n");
+    enum_str.push_str("    fn from(enum_str: u16) -> MeasurementId {\n");
     enum_str.push_str("        match enum_str {\n");
     for (i, id) in measurement_ids.clone().into_iter().enumerate() {
         enum_str.push_str(&format!("            {} => MeasurementId::{},\n", i, id));

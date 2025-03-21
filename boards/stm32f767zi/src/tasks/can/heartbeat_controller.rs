@@ -1,12 +1,9 @@
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
 use embassy_time::{Duration, Instant, Timer};
-use hyped_core::{
-    comms::{
-        boards::Board, heartbeat::Heartbeat, messages::CanMessage,
-        state_transition::StateTransition,
-    },
-    states::State,
+use hyped_communications::{
+    boards::Board, heartbeat::Heartbeat, messages::CanMessage, state_transition::StateTransition,
 };
+use hyped_state_machine::states::State;
 
 use crate::{emergency, tasks::can::send::CAN_SEND};
 
