@@ -88,8 +88,7 @@ pub struct PidController {
 
 impl PidController {
     pub fn new(config: PidGain) -> Self {
-        let filter =
-            FilteredDerivative::new(config.kd as f32, 1.0 / config.filter_coefficient as f32, 1); // TODOLater sub with SAMPLING PERIOD CONSTANT in .yaml file
+        let filter = FilteredDerivative::new(config.kd, 1.0 / config.filter_coefficient, 1); // TODOLater sub with SAMPLING PERIOD CONSTANT in .yaml file
 
         Self {
             config,
