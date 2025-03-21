@@ -23,13 +23,6 @@ use hyped_state_machine::states::State;
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
-/// Used to keep the latest temperature sensor value.
-pub static LATEST_TEMPERATURE_READING: Watch<
-    CriticalSectionRawMutex,
-    Option<SensorValueRange<f32>>,
-    1,
-> = Watch::new();
-
 /// The update frequency of the temperature sensor in Hz
 const UPDATE_FREQUENCY: u64 = 1000;
 
@@ -39,8 +32,13 @@ pub async fn read_temperature(
     i2c_bus: &'static I2c1Bus,
     this_board: Board,
     measurement_id: MeasurementId,
+    latest_temperature_reading_sender: Sender<
+        '_,
+        CriticalSectionRawMutex,
+        Option<SensorValueRange<f32>>,
+        1,
+    >,
 ) -> ! {
-    let latest_temperature_reading_sender = LATEST_TEMPERATURE_READING.sender();
     let can_sender = CAN_SEND.sender();
 
     let mut hyped_i2c = Stm32f767ziI2c::new(i2c_bus);
@@ -89,11 +87,13 @@ pub async fn read_temperature(
                 SensorValueRange::Safe(v) => v,
             };
 
-            let measurement_reading =
-                MeasurementReading::new(CanData::F32(value), this_board, measurement_id);
-            let can_message = CanMessage::MeasurementReading(measurement_reading);
-
-            can_sender.send(can_message).await;
+            can_sender
+                .send(CanMessage::MeasurementReading(MeasurementReading::new(
+                    CanData::F32(value),
+                    this_board,
+                    measurement_id,
+                )))
+                .await;
         }
 
         Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;

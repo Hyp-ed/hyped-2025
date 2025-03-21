@@ -11,3 +11,6 @@ hyped_measurement_ids = { path = "./measurement_ids" }
 hyped_can = { path = "../io/hyped_can" }
 hyped_core = { path = "../core" }
 hyped_state_machine = { path = "../state_machine" }
+
+[dev-dependencies]
+defmt = { version = "0.3", features = ["unstable-test"] }

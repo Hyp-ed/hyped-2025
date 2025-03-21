@@ -27,6 +27,10 @@ bind_interrupts!(struct Irqs {
 
 /// The current state of the state machine.
 pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();
+
+/// Used to keep the latest stripe count from the Keyence sensor.
+pub static CURRENT_KEYENCE_STRIPE_COUNT: Watch<CriticalSectionRawMutex, u32, 1> = Watch::new();
+
 static BOARD: Board = Board::KeyenceTester;
 
 #[embassy_executor::main]
@@ -37,7 +41,12 @@ async fn main(spawner: Spawner) -> ! {
     // Create a sender to pass to the temperature reading task, and a receiver for reading the values back.
     let mut receiver = CURRENT_KEYENCE_STRIPE_COUNT.receiver().unwrap();
 
-    spawner.must_spawn(read_keyence(gpio_pin, BOARD, MeasurementId::Keyence1));
+    spawner.must_spawn(read_keyence(
+        gpio_pin,
+        BOARD,
+        MeasurementId::Keyence1,
+        CURRENT_KEYENCE_STRIPE_COUNT.sender(),
+    ));
     spawner.must_spawn(can(Can::new(p.CAN1, p.PD0, p.PD1, Irqs)));
     spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
     spawner.must_spawn(heartbeat_responder(BOARD));

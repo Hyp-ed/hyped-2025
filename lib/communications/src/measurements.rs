@@ -4,7 +4,7 @@ use hyped_measurement_ids::gen_measurement_ids;
 
 use super::{boards::Board, data::CanData};
 
-gen_measurement_ids!("../../config/pods.yaml", "poddington");
+gen_measurement_ids!("config/pods.yaml", "poddington");
 
 #[derive(Debug, PartialEq, Clone, defmt::Format)]
 pub struct MeasurementReading {
@@ -15,7 +15,6 @@ pub struct MeasurementReading {
 
 impl MeasurementReading {
     pub fn new(reading: CanData, board: Board, measurement_id: MeasurementId) -> Self {
-        let new = Mea
         MeasurementReading {
             reading,
             board,

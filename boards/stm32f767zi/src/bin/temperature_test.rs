@@ -43,6 +43,13 @@ type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 /// The current state of the state machine.
 pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();
 
+/// Used to keep the latest temperature sensor value.
+pub static LATEST_TEMPERATURE_READING: Watch<
+    CriticalSectionRawMutex,
+    Option<SensorValueRange<f32>>,
+    1,
+> = Watch::new();
+
 static BOARD: Board = Board::TemperatureTester;
 
 #[embassy_executor::main]
@@ -56,7 +63,12 @@ async fn main(spawner: Spawner) -> ! {
 
     spawner.must_spawn(can(Can::new(p.CAN1, p.PD0, p.PD1, Irqs)));
 
-    spawner.must_spawn(read_temperature(i2c_bus, BOARD, MeasurementId::Thermistor1));
+    spawner.must_spawn(read_temperature(
+        i2c_bus,
+        BOARD,
+        MeasurementId::Thermistor1,
+        LATEST_TEMPERATURE_READING.sender(),
+    ));
 
     spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
 
