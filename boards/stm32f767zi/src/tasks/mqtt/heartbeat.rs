@@ -8,7 +8,7 @@ use {defmt_rtt as _, panic_probe as _};
 
 /// Sends a heartbeat message to the MQTT broker every second.
 #[embassy_executor::task]
-pub async fn heartbeat() {
+pub async fn base_station_heartbeat() {
     loop {
         MQTT_SEND
             .send(MqttMessage::new(
@@ -17,6 +17,6 @@ pub async fn heartbeat() {
             ))
             .await;
         debug!("Sent heartbeat message");
-        Timer::after(Duration::from_secs(1)).await;
+        Timer::after(Duration::from_millis(100)).await;
     }
 }

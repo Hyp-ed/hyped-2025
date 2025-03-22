@@ -16,20 +16,18 @@ pub async fn heartbeat_responder(this_board: Board) {
     let can_sender = CAN_SEND.sender();
 
     loop {
-        defmt::info!("Waiting...");
-
         // Wait for an incoming heartbeat message
         let heartbeat = INCOMING_HEARTBEATS.receive().await;
         if heartbeat.to == this_board {
             // We received a heartbeat message meant for us, so we should respond to it
-            // Send it back!
-            defmt::info!("Responding to heartbeat from {:?}", heartbeat.from);
-            let heartbeat_response = Heartbeat::new(heartbeat.from, this_board);
+            defmt::debug!("Responding to heartbeat from {:?}", heartbeat.from);
             can_sender
-                .send(CanMessage::Heartbeat(heartbeat_response))
+                .send(CanMessage::Heartbeat(Heartbeat::new(
+                    heartbeat.from,
+                    this_board,
+                )))
                 .await;
         }
-        // Otherwise, ignore the message
 
         Timer::after(Duration::from_millis(10)).await;
     }

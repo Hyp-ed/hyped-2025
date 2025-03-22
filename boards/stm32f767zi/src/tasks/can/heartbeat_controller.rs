@@ -1,5 +1,5 @@
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
-use embassy_time::{Duration, Instant, Timer};
+use embassy_time::{with_timeout, Duration, Instant, Timer};
 use hyped_communications::{
     boards::Board, heartbeat::Heartbeat, messages::CanMessage, state_transition::StateTransition,
 };
@@ -13,55 +13,47 @@ use {defmt_rtt as _, panic_probe as _};
 /// This is populated by the CAN receiver task.
 pub static INCOMING_HEARTBEATS: Channel<CriticalSectionRawMutex, Heartbeat, 10> = Channel::new();
 
-static MAX_HEARTBEAT_DELAY: u64 = 1000;
+static HEARTBEAT_FREQUENCY: u64 = 10; // in Hz
+static HEARTBEAT_MAX_LATENCY: u64 = 500; // in ms
 
-/// Task that responds to incoming heartbeat messages.
+/// Task that sends heartbeats to other boards and checks if they are still alive.
+/// If a board does not respond in time, an emergency stop is triggered.
 #[embassy_executor::task]
-pub async fn heartbeat_controller(this_board: Board) {
+pub async fn heartbeat_controller(this_board: Board, target_board: Board) {
     // Keep track of every board's status
-    let mut keyence_tester_last_ack = 0;
+    let mut last_ack = 0;
+    let mut latency = 0;
 
     // Send initial messages
-    let heartbeat = Heartbeat::new(Board::KeyenceTester, this_board);
+    let heartbeat = Heartbeat::new(target_board, this_board);
     defmt::info!("Sending initial heartbeat: {:?}", heartbeat);
     CAN_SEND.send(CanMessage::Heartbeat(heartbeat)).await;
 
     loop {
-        // Wait for an incoming heartbeat message
-        let heartbeat = INCOMING_HEARTBEATS.receive().await;
-        if heartbeat.to == this_board {
-            match heartbeat.from {
-                Board::KeyenceTester => {
-                    defmt::info!("Received heartbeat from KeyenceTester");
-                    keyence_tester_last_ack = Instant::now().as_millis();
+        // Wait for an incoming heartbeat message from the target board
+        with_timeout(Duration::from_hz(HEARTBEAT_MAX_LATENCY), {
+            loop {
+                // Only return when we receive a heartbeat message
+                let heartbeat = INCOMING_HEARTBEATS.receive().await;
+                if heartbeat.to == this_board && heartbeat.from == target_board {
+                    return;
                 }
-                _ => {}
             }
-        }
-
-        Timer::after(Duration::from_millis(10)).await;
-    }
-}
-
-async fn check_heartbeats(this_board: Board) {
-    // Keep track of every board's status
-    let mut keyence_tester_last_ack = 0;
-
-    let can_sender = CAN_SEND.sender();
-
-    loop {
-        // Check if we need to send a new heartbeat message
-        let now = Instant::now().as_millis();
-        if now - keyence_tester_last_ack > MAX_HEARTBEAT_DELAY / 2 {
-            defmt::info!("Sending heartbeat");
-            let heartbeat = Heartbeat::new(this_board, Board::KeyenceTester);
-            CAN_SEND.send(CanMessage::Heartbeat(heartbeat)).await;
-        }
-
-        // Check if any boards have not replied in MAX_HEARTBEAT_DELAY milliseconds
-        let now = Instant::now().as_millis();
-        if now - keyence_tester_last_ack > MAX_HEARTBEAT_DELAY {
+        })
+        .await
+        // trigger emergency stop if we don't receive a heartbeat in time
+        .unwrap_or_else(async |_| {
+            defmt::error!(
+                "Emergency stop triggered due to missing heartbeat from board {:?}",
+                target_board
+            );
             emergency!(this_board);
-        }
+        });
+
+        // Update the last time we received a heartbeat from the target board
+        latency = Instant::now().as_millis() - last_ack;
+        last_ack = Instant::now().as_millis();
+
+        Timer::after(Duration::from_hz(HEARTBEAT_FREQUENCY)).await;
     }
 }
