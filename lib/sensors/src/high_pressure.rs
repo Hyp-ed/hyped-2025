@@ -39,11 +39,6 @@ impl<T: HypedGpioInputPin> HighPressure<T> {
     }
 }
 
-// Offset for pressure value (bar) read from sensor
-const PRESSURE_OFFSET: f32 = 0.0;
-
-const MAX_PRESSURE: f32 = 25.0;
-
 /// Represents the possible state of the high pressure sensor
 pub enum State {
     Off,
