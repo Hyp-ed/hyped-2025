@@ -69,7 +69,7 @@ async fn main(spawner: Spawner) -> ! {
     let mut localizer = Localizer::new();
 
     loop {
-        // Wait for a new Keyence stripe count.
+        // Wait for new Keyence stripe count.
         let stripe_count1 = receiver1.get().await;
         let stripe_count2 = receiver2.get().await;
 
