@@ -10,8 +10,8 @@ use embassy_stm32::{
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::{
-    can::{can, heartbeat_controller::heartbeat_controller},
-    state_machine::state_machine::state_machine,
+    can::{heartbeat::heartbeat_controller, receive::can_receiver, send::can_sender},
+    state_machine::state_machine,
 };
 use hyped_communications::boards::Board;
 use hyped_state_machine::states::State;
@@ -24,20 +24,25 @@ bind_interrupts!(struct Irqs {
     CAN1_TX => TxInterruptHandler<CAN1>;
 });
 
-/// The current state of the state machine.
 pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();
-static _BOARD: Board = Board::StateMachineTester;
+static BOARD: Board = Board::StateMachineTester;
+pub static EMERGENCY: Watch<CriticalSectionRawMutex, bool, 1> = Watch::new();
+
+pub static TARGET_BOARD: Board = Board::Test;
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
     let p = embassy_stm32::init(Default::default());
 
-    spawner.must_spawn(can(Can::new(p.CAN1, p.PD0, p.PD1, Irqs)));
+    let (can_tx, can_rx) = Can::new(p.CAN1, p.PD0, p.PD1, Irqs).split();
+    spawner.must_spawn(can_receiver(can_rx, EMERGENCY.sender()));
+    spawner.must_spawn(can_sender(can_tx));
+
     spawner.must_spawn(state_machine(
         Board::TemperatureTester,
         CURRENT_STATE.sender(),
     ));
-    spawner.must_spawn(heartbeat_controller(_BOARD));
+    spawner.must_spawn(heartbeat_controller(BOARD, TARGET_BOARD));
 
     loop {
         Timer::after(Duration::from_secs(1)).await;

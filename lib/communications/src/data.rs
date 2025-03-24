@@ -1,3 +1,5 @@
+use crate::emergency::Reason;
+
 use super::boards::Board;
 
 #[derive(Debug, Clone, Copy, PartialEq, defmt::Format)]
@@ -8,6 +10,7 @@ pub enum CanData {
     State(u8),
     U32(u32),
     Heartbeat(Board),
+    Emergency(Reason),
 }
 
 impl From<CanData> for u8 {
@@ -20,6 +23,7 @@ impl From<CanData> for u8 {
             CanData::State(_) => 3,
             CanData::U32(_) => 4,
             CanData::Heartbeat(_) => 5,
+            CanData::Emergency(_) => 6,
         }
     }
 }
@@ -34,6 +38,7 @@ impl From<u8> for CanData {
             3 => CanData::State(0),
             4 => CanData::U32(0),
             5 => CanData::Heartbeat(Board::Test),
+            6 => CanData::Emergency(Reason::Unknown),
             _ => panic!("Invalid CanData index"),
         }
     }
@@ -85,6 +90,12 @@ impl From<CanData> for [u8; 8] {
                 data[1] = board.into();
                 data
             }
+            CanData::Emergency(reason) => {
+                let mut data: [u8; 8] = [0; 8];
+                data[0] = val.into();
+                data[1] = reason.into();
+                data
+            }
         }
     }
 }
@@ -118,6 +129,7 @@ impl From<[u8; 8]> for CanData {
                 CanData::U32(u)
             }
             CanData::Heartbeat(_) => CanData::Heartbeat(data[1].into()),
+            CanData::Emergency(_) => CanData::Emergency(data[1].into()),
         }
     }
 }
@@ -130,6 +142,7 @@ pub enum CanDataType {
     State,
     U32,
     Heartbeat,
+    Emergency,
 }
 
 impl From<CanDataType> for u8 {
@@ -141,6 +154,7 @@ impl From<CanDataType> for u8 {
             CanDataType::State => 3,
             CanDataType::U32 => 4,
             CanDataType::Heartbeat => 5,
+            CanDataType::Emergency => 6,
         }
     }
 }
@@ -154,6 +168,7 @@ impl From<u8> for CanDataType {
             3 => CanDataType::State,
             4 => CanDataType::U32,
             5 => CanDataType::Heartbeat,
+            6 => CanDataType::Emergency,
             _ => panic!("Invalid CanDataType index"),
         }
     }
@@ -168,6 +183,7 @@ impl From<CanData> for CanDataType {
             CanData::State(_) => CanDataType::State,
             CanData::U32(_) => CanDataType::F32,
             CanData::Heartbeat(_) => CanDataType::Heartbeat,
+            CanData::Emergency(_) => CanDataType::Emergency,
         }
     }
 }
@@ -181,6 +197,7 @@ impl From<CanDataType> for CanData {
             CanDataType::State => CanData::State(0),
             CanDataType::U32 => CanData::U32(0),
             CanDataType::Heartbeat => CanData::Heartbeat(Board::Test),
+            CanDataType::Emergency => CanData::Emergency(Reason::Unknown),
         }
     }
 }

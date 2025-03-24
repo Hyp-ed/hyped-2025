@@ -1,9 +1,6 @@
 use crate::{io::Stm32f767ziGpioInput, tasks::can::send::CAN_SEND};
 use embassy_stm32::gpio::Input;
-use embassy_sync::{
-    blocking_mutex::raw::CriticalSectionRawMutex,
-    watch::{Sender, Watch},
-};
+use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
 use embassy_time::{Duration, Timer};
 use hyped_communications::{
     boards::Board,
@@ -23,7 +20,7 @@ pub async fn read_keyence(
     gpio_pin: Input<'static>,
     this_board: Board,
     measurement_id: MeasurementId,
-    latest_stripe_count_sender: Sender<'_, CriticalSectionRawMutex, u32, 1>,
+    latest_stripe_count_sender: Sender<'static, CriticalSectionRawMutex, u32, 1>,
 ) -> ! {
     let can_sender = CAN_SEND.sender();
 

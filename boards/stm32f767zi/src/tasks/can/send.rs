@@ -8,6 +8,7 @@ use hyped_communications::messages::CanMessage;
 pub static CAN_SEND: Channel<CriticalSectionRawMutex, CanMessage, 10> = Channel::new();
 
 /// Task that sends CAN messages from a channel.
+#[embassy_executor::task]
 pub async fn can_sender(mut tx: CanTx<'static>) {
     let can_sender = CAN_SEND.receiver();
 

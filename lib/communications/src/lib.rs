@@ -3,6 +3,7 @@
 pub mod boards;
 pub mod can_id;
 pub mod data;
+pub mod emergency;
 pub mod heartbeat;
 pub mod identifier;
 pub mod measurements;

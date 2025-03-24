@@ -20,13 +20,11 @@ use embassy_sync::{
 };
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::{
-    can::can,
-    sensors::read_temperature::{read_temperature, LATEST_TEMPERATURE_READING},
-    state_machine::state_updater::state_updater,
+    can::{receive::can_receiver, send::can_sender}, sensors::read_temperature::read_temperature, state_machine::state_updater
 };
 use hyped_communications::boards::Board;
 use hyped_communications::measurements::MeasurementId;
-use hyped_sensors::SensorValueRange::{Critical, Safe, Warning};
+use hyped_sensors::SensorValueRange::{self, Critical, Safe, Warning};
 use hyped_state_machine::states::State;
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
@@ -51,6 +49,7 @@ pub static LATEST_TEMPERATURE_READING: Watch<
 > = Watch::new();
 
 static BOARD: Board = Board::TemperatureTester;
+pub static EMERGENCY: Watch<CriticalSectionRawMutex, bool, 1> = Watch::new();
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -61,7 +60,9 @@ async fn main(spawner: Spawner) -> ! {
     static I2C_BUS: StaticCell<I2c1Bus> = StaticCell::new();
     let i2c_bus = I2C_BUS.init(Mutex::new(RefCell::new(i2c)));
 
-    spawner.must_spawn(can(Can::new(p.CAN1, p.PD0, p.PD1, Irqs)));
+    let (can_tx, can_rx) = Can::new(p.CAN1, p.PD0, p.PD1, Irqs).split();
+    spawner.must_spawn(can_receiver(can_rx, EMERGENCY.sender()));
+    spawner.must_spawn(can_sender(can_tx));
 
     spawner.must_spawn(read_temperature(
         i2c_bus,

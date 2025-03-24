@@ -10,9 +10,9 @@ use embassy_stm32::{
 };
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use hyped_boards_stm32f767zi::tasks::{
-    can::{can, heartbeats_responder::heartbeat_responder},
-    sensors::read_keyence::{read_keyence, CURRENT_KEYENCE_STRIPE_COUNT},
-    state_machine::state_updater::state_updater,
+    can::{heartbeat::heartbeat_responder, receive::can_receiver, send::can_sender},
+    sensors::read_keyence::read_keyence,
+    state_machine::state_updater,
 };
 use hyped_communications::{boards::Board, measurements::MeasurementId};
 use hyped_state_machine::states::State;
@@ -25,18 +25,21 @@ bind_interrupts!(struct Irqs {
     CAN1_TX => TxInterruptHandler<CAN1>;
 });
 
-/// The current state of the state machine.
 pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();
+static BOARD: Board = Board::KeyenceTester;
+pub static EMERGENCY: Watch<CriticalSectionRawMutex, bool, 1> = Watch::new();
 
 /// Used to keep the latest stripe count from the Keyence sensor.
 pub static CURRENT_KEYENCE_STRIPE_COUNT: Watch<CriticalSectionRawMutex, u32, 1> = Watch::new();
-
-static BOARD: Board = Board::KeyenceTester;
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
     let p = embassy_stm32::init(Default::default());
     let gpio_pin = Input::new(p.PC13, Pull::Down);
+
+    let (can_tx, can_rx) = Can::new(p.CAN1, p.PD0, p.PD1, Irqs).split();
+    spawner.must_spawn(can_receiver(can_rx, EMERGENCY.sender()));
+    spawner.must_spawn(can_sender(can_tx));
 
     // Create a sender to pass to the temperature reading task, and a receiver for reading the values back.
     let mut receiver = CURRENT_KEYENCE_STRIPE_COUNT.receiver().unwrap();
@@ -47,7 +50,6 @@ async fn main(spawner: Spawner) -> ! {
         MeasurementId::Keyence1,
         CURRENT_KEYENCE_STRIPE_COUNT.sender(),
     ));
-    spawner.must_spawn(can(Can::new(p.CAN1, p.PD0, p.PD1, Irqs)));
     spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
     spawner.must_spawn(heartbeat_responder(BOARD));
 

@@ -12,12 +12,16 @@ use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::{
     emergency, request_transition,
     tasks::{
-        can::{can, send::CAN_SEND},
-        state_machine::state_updater::state_updater,
+        can::{
+            receive::can_receiver,
+            send::{can_sender, CAN_SEND},
+        },
+        state_machine::state_updater,
     },
 };
 use hyped_communications::{
-    boards::Board, messages::CanMessage, state_transition::StateTransition,
+    boards::Board, emergency::Reason, messages::CanMessage,
+    state_transition::StateTransitionRequest,
 };
 use hyped_state_machine::states::State;
 use {defmt_rtt as _, panic_probe as _};
@@ -32,24 +36,27 @@ bind_interrupts!(struct Irqs {
 /// The current state of the state machine.
 pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();
 pub static BOARD: Board = Board::StateMachineTester;
+pub static EMERGENCY: Watch<CriticalSectionRawMutex, bool, 1> = Watch::new();
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
     let p = embassy_stm32::init(Default::default());
 
-    spawner.must_spawn(can(Can::new(p.CAN1, p.PD0, p.PD1, Irqs)));
+    let (can_tx, can_rx) = Can::new(p.CAN1, p.PD0, p.PD1, Irqs).split();
+    spawner.must_spawn(can_receiver(can_rx, EMERGENCY.sender()));
+    spawner.must_spawn(can_sender(can_tx));
+
     spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
 
-    loop {
-        Timer::after(Duration::from_secs(1)).await;
-        request_transition!(State::Calibrate);
-        Timer::after(Duration::from_secs(1)).await;
-        request_transition!(State::Precharge);
-        Timer::after(Duration::from_secs(1)).await;
-        request_transition!(State::Accelerate);
-        Timer::after(Duration::from_secs(1)).await;
-        emergency!();
-        Timer::after(Duration::from_secs(10)).await;
-        panic!("End of test");
-    }
+    Timer::after(Duration::from_secs(1)).await;
+    request_transition!(State::Calibrate);
+    Timer::after(Duration::from_secs(1)).await;
+    request_transition!(State::Precharge);
+    Timer::after(Duration::from_secs(1)).await;
+    request_transition!(State::Accelerate);
+    Timer::after(Duration::from_secs(1)).await;
+    emergency!();
+    Timer::after(Duration::from_secs(10)).await;
+
+    panic!("End of test");
 }

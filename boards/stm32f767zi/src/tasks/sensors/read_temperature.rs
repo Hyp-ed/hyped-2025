@@ -7,19 +7,18 @@ use embassy_sync::{
         raw::{CriticalSectionRawMutex, NoopRawMutex},
         Mutex,
     },
-    watch::Watch,
+    watch::Sender,
 };
 use embassy_time::{Duration, Timer};
 use hyped_communications::{
     boards::Board,
     data::CanData,
+    emergency::Reason,
     measurements::{MeasurementId, MeasurementReading},
     messages::CanMessage,
-    state_transition::StateTransition,
 };
 use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 use hyped_sensors::SensorValueRange;
-use hyped_state_machine::states::State;
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
@@ -33,7 +32,7 @@ pub async fn read_temperature(
     this_board: Board,
     measurement_id: MeasurementId,
     latest_temperature_reading_sender: Sender<
-        '_,
+        'static,
         CriticalSectionRawMutex,
         Option<SensorValueRange<f32>>,
         1,

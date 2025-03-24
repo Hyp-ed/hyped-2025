@@ -6,6 +6,7 @@ pub enum MessageIdentifier {
     StateTransitionCommand,
     StateTransitionRequest,
     Heartbeat,
+    Emergency,
 }
 
 impl From<MessageIdentifier> for u16 {
@@ -15,6 +16,7 @@ impl From<MessageIdentifier> for u16 {
             MessageIdentifier::Heartbeat => 0xFD,
             MessageIdentifier::StateTransitionRequest => 0xFE,
             MessageIdentifier::StateTransitionCommand => 0xFF,
+            MessageIdentifier::Emergency => 0xFC,
         }
     }
 }
@@ -25,6 +27,7 @@ impl From<u16> for MessageIdentifier {
             0xFF => MessageIdentifier::StateTransitionCommand,
             0xFE => MessageIdentifier::StateTransitionRequest,
             0xFD => MessageIdentifier::Heartbeat,
+            0xFC => MessageIdentifier::Emergency,
             _ => MessageIdentifier::Measurement(id.into()),
         }
     }

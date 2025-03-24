@@ -1,7 +1,7 @@
 use hyped_can::HypedCanFrame;
 use hyped_state_machine::states::State;
 
-use crate::state_transition::StateTransitionCommand;
+use crate::{boards::Board, emergency::Reason, state_transition::StateTransitionCommand};
 
 use super::{
     can_id::CanId,
@@ -18,6 +18,7 @@ pub enum CanMessage {
     StateTransitionCommand(StateTransitionCommand),
     StateTransitionRequest(StateTransitionRequest),
     Heartbeat(Heartbeat),
+    Emergency(Board, Reason),
 }
 
 // Converts a CanMessage into a HypedCanFrame ready to be sent over the CAN bus
@@ -63,6 +64,11 @@ impl From<CanMessage> for HypedCanFrame {
                     MessageIdentifier::Heartbeat,
                 );
                 HypedCanFrame::new(can_id.into(), CanData::Heartbeat(heartbeat.to).into())
+            }
+            CanMessage::Emergency(board, reason) => {
+                let can_id =
+                    CanId::new(board, CanDataType::Emergency, MessageIdentifier::Emergency);
+                HypedCanFrame::new(can_id.into(), CanData::Emergency(reason).into())
             }
         }
     }
@@ -115,6 +121,13 @@ impl From<HypedCanFrame> for CanMessage {
                         CanMessage::Heartbeat(heartbeat)
                     }
                     _ => panic!("Invalid CanData for Heartbeat"),
+                }
+            }
+            MessageIdentifier::Emergency => {
+                let reading: CanData = frame.data.into();
+                match reading {
+                    CanData::Emergency(reason) => CanMessage::Emergency(board, reason),
+                    _ => panic!("Invalid CanData for Emergency"),
                 }
             }
         }

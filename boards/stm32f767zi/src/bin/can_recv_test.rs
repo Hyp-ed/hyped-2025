@@ -15,7 +15,6 @@ use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
 use embassy_sync::watch::Watch;
 use embassy_time::{Duration, Timer};
 use hyped_can::HypedCanFrame;
-use hyped_communications::measurements::MeasurementId;
 use hyped_communications::messages::CanMessage;
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
@@ -80,6 +79,13 @@ async fn main(_spawner: Spawner) {
                 }
                 CanMessage::Heartbeat(heartbeat) => {
                     defmt::info!("Received heartbeat over CAN: {:?}", heartbeat.from);
+                }
+                CanMessage::Emergency(board, reason) => {
+                    defmt::info!(
+                        "Received emergency from board {:?} over CAN: {:?}",
+                        board,
+                        reason
+                    );
                 }
             }
 
