@@ -2,7 +2,9 @@ use crate::tasks::can::{receive::INCOMING_STATE_TRANSITION_REQUESTS, send::CAN_S
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
 use embassy_time::{Duration, Timer};
 use hyped_communications::{
-    boards::Board, messages::CanMessage, state_transition::StateTransition,
+    boards::Board,
+    messages::CanMessage,
+    state_transition::{StateTransition, StateTransitionCommand},
 };
 use hyped_state_machine::state_machine::StateMachine;
 use hyped_state_machine::states::State;
@@ -11,7 +13,7 @@ use {defmt_rtt as _, panic_probe as _};
 /// Handles the state machine logic by receiving state transition requests and sending new states.
 #[embassy_executor::task]
 pub async fn state_machine(
-    board: Board,
+    this_board: Board,
     state_sender: Sender<'static, CriticalSectionRawMutex, State, 1>,
 ) {
     // Initialise the state machine with the initial state
@@ -34,7 +36,9 @@ pub async fn state_machine(
                 state_sender.send(state);
 
                 // Send the new state to the CAN bus
-                let can_message = CanMessage::StateTransition(StateTransition::new(board, state));
+                let can_message = CanMessage::StateTransitionCommand(StateTransitionCommand::new(
+                    this_board, state,
+                ));
                 can_sender.send(can_message).await;
             }
             None => {

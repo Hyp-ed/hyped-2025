@@ -2,13 +2,9 @@ use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channe
 use embassy_time::{Duration, Timer};
 use hyped_communications::{boards::Board, heartbeat::Heartbeat, messages::CanMessage};
 
-use super::send::CAN_SEND;
+use super::{receive::INCOMING_HEARTBEATS, send::CAN_SEND};
 
 use {defmt_rtt as _, panic_probe as _};
-
-/// Stores heartbeat messages coming in from other boards that we need to respond to.
-/// This is populated by the CAN receiver task.
-pub static INCOMING_HEARTBEATS: Channel<CriticalSectionRawMutex, Heartbeat, 10> = Channel::new();
 
 /// Task that responds to incoming heartbeat messages
 #[embassy_executor::task]

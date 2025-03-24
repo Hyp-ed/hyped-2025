@@ -66,7 +66,7 @@ async fn main(_spawner: Spawner) {
                         measurement_id
                     );
                 }
-                CanMessage::StateTransition(state_transition) => {
+                CanMessage::StateTransitionCommand(state_transition) => {
                     defmt::info!(
                         "Received state transition over CAN: {:?}",
                         state_transition.to_state

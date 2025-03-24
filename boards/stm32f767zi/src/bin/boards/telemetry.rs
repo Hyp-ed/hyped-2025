@@ -20,6 +20,7 @@ use hyped_boards_stm32f767zi::{
         can::{can, heartbeat_controller::heartbeat_controller},
         mqtt::heartbeat::base_station_heartbeat,
         network::net_task,
+        state_machine::state_machine::state_machine,
         tasks::mqtt::mqtt,
     },
     telemetry_config::{BOARD_STATIC_ADDRESS, GATEWAY_IP},
@@ -39,6 +40,8 @@ bind_interrupts!(struct Irqs {
     CAN1_TX => TxInterruptHandler<CAN1>;
 });
 
+const BOARD: Board = Board::Telemetry;
+
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
     let mut config = Config::default();
@@ -46,13 +49,16 @@ async fn main(spawner: Spawner) -> ! {
     let p = embassy_stm32::init(config);
     set_up_network_stack!(p, config, stack, spawner);
 
+    // Network tasks: MQTT and base station heartbeat
     spawner.must_spawn(mqtt(stack));
     spawner.must_spawn(base_station_heartbeat());
-    spawner.must_spawn(can(Can::new(p.CAN1, p.PD0, p.PD1, Irqs)));
 
+    // CAN tasks: CAN send/receive, heartbeat controller, and state machine
+    spawner.must_spawn(can(Can::new(p.CAN1, p.PD0, p.PD1, Irqs)));
     // Spawn a task for each board we want to keep track of
-    spawner.must_spawn(heartbeat_controller(this_board, Board::Navigation));
+    spawner.must_spawn(heartbeat_controller(BOARD, Board::Navigation));
     // ... add more boards here
+    spawner.must_spawn(state_machine(BOARD, state_sender));
 
     loop {
         Timer::after(Duration::from_millis(1000)).await;

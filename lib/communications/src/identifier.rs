@@ -3,7 +3,7 @@ use super::measurements::MeasurementId;
 #[derive(Debug, PartialEq, Clone)]
 pub enum MessageIdentifier {
     Measurement(MeasurementId),
-    StateTransition,
+    StateTransitionCommand,
     StateTransitionRequest,
     Heartbeat,
 }
@@ -14,7 +14,7 @@ impl From<MessageIdentifier> for u16 {
             MessageIdentifier::Measurement(measurement_id) => measurement_id.into(),
             MessageIdentifier::Heartbeat => 0xFD,
             MessageIdentifier::StateTransitionRequest => 0xFE,
-            MessageIdentifier::StateTransition => 0xFF,
+            MessageIdentifier::StateTransitionCommand => 0xFF,
         }
     }
 }
@@ -22,7 +22,7 @@ impl From<MessageIdentifier> for u16 {
 impl From<u16> for MessageIdentifier {
     fn from(id: u16) -> Self {
         match id {
-            0xFF => MessageIdentifier::StateTransition,
+            0xFF => MessageIdentifier::StateTransitionCommand,
             0xFE => MessageIdentifier::StateTransitionRequest,
             0xFD => MessageIdentifier::Heartbeat,
             _ => MessageIdentifier::Measurement(id.into()),
@@ -41,7 +41,7 @@ mod tests {
         let message_identifier: u16 = message_identifier.into();
         assert_eq!(message_identifier, 0x00);
 
-        let message_identifier = MessageIdentifier::StateTransition;
+        let message_identifier = MessageIdentifier::StateTransitionCommand;
         let message_identifier: u16 = message_identifier.into();
         assert_eq!(message_identifier, 0xFF);
     }
@@ -51,7 +51,7 @@ mod tests {
         let message_identifier = MessageIdentifier::Measurement(MeasurementId::Acceleration);
         assert_eq!(MessageIdentifier::from(0x00), message_identifier);
 
-        let message_identifier = MessageIdentifier::StateTransition;
+        let message_identifier = MessageIdentifier::StateTransitionCommand;
         assert_eq!(MessageIdentifier::from(0xFF), message_identifier);
     }
 }

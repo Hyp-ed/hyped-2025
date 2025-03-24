@@ -1,20 +1,22 @@
 use hyped_can::HypedCanFrame;
 use hyped_state_machine::states::State;
 
+use crate::state_transition::StateTransitionCommand;
+
 use super::{
     can_id::CanId,
     data::{CanData, CanDataType},
     heartbeat::Heartbeat,
     identifier::MessageIdentifier,
     measurements::MeasurementReading,
-    state_transition::StateTransition,
+    state_transition::StateTransitionRequest,
 };
 
 #[derive(PartialEq, Debug, Clone, defmt::Format)]
 pub enum CanMessage {
     MeasurementReading(MeasurementReading),
-    StateTransition(StateTransition),
-    StateTransitionRequest(StateTransition),
+    StateTransitionCommand(StateTransitionCommand),
+    StateTransitionRequest(StateTransitionRequest),
     Heartbeat(Heartbeat),
 }
 
@@ -32,11 +34,11 @@ impl From<CanMessage> for HypedCanFrame {
                 );
                 HypedCanFrame::new(can_id.into(), measurement_reading.reading.into())
             }
-            CanMessage::StateTransition(state_transition) => {
+            CanMessage::StateTransitionCommand(state_transition) => {
                 let can_id = CanId::new(
-                    state_transition.board,
+                    state_transition.from_board,
                     CanDataType::State,
-                    MessageIdentifier::StateTransition,
+                    MessageIdentifier::StateTransitionCommand,
                 );
                 HypedCanFrame::new(
                     can_id.into(),
@@ -45,7 +47,7 @@ impl From<CanMessage> for HypedCanFrame {
             }
             CanMessage::StateTransitionRequest(state_transition) => {
                 let can_id = CanId::new(
-                    state_transition.board,
+                    state_transition.requesting_board,
                     CanDataType::State,
                     MessageIdentifier::StateTransitionRequest,
                 );
@@ -83,13 +85,13 @@ impl From<HypedCanFrame> for CanMessage {
                 };
                 CanMessage::MeasurementReading(measurement_reading)
             }
-            MessageIdentifier::StateTransition => {
+            MessageIdentifier::StateTransitionCommand => {
                 let reading: CanData = frame.data.into();
                 match reading {
                     CanData::State(state) => {
                         let to_state: State = state.into();
-                        let state_transition = StateTransition::new(board, to_state);
-                        CanMessage::StateTransition(state_transition)
+                        let state_transition = StateTransitionCommand::new(board, to_state);
+                        CanMessage::StateTransitionCommand(state_transition)
                     }
                     _ => panic!("Invalid CanData for StateTransition"),
                 }
@@ -99,7 +101,7 @@ impl From<HypedCanFrame> for CanMessage {
                 match reading {
                     CanData::State(state) => {
                         let to_state: State = state.into();
-                        let state_transition = StateTransition::new(board, to_state);
+                        let state_transition = StateTransitionRequest::new(board, to_state);
                         CanMessage::StateTransitionRequest(state_transition)
                     }
                     _ => panic!("Invalid CanData for StateTransitionRequest"),
@@ -130,7 +132,7 @@ mod tests {
         heartbeat::Heartbeat,
         measurements::{MeasurementId, MeasurementReading},
         messages::CanMessage,
-        state_transition::StateTransition,
+        state_transition::{StateTransitionCommand, StateTransitionRequest},
     };
 
     #[test]
@@ -149,9 +151,9 @@ mod tests {
     }
 
     #[test]
-    fn it_works_state_transition() {
-        let state_transition = StateTransition::new(Board::Test, State::EmergencyBrake);
-        let state_transition = CanMessage::StateTransition(state_transition);
+    fn it_works_state_transition_command() {
+        let state_transition = StateTransitionCommand::new(Board::Test, State::EmergencyBrake);
+        let state_transition = CanMessage::StateTransitionCommand(state_transition);
         let can_frame: HypedCanFrame = state_transition.clone().into();
         let can_message_from_frame: CanMessage = can_frame.into();
         assert_eq!(state_transition, can_message_from_frame)
@@ -159,7 +161,7 @@ mod tests {
 
     #[test]
     fn it_works_state_transition_request() {
-        let state_transition = StateTransition::new(Board::Test, State::EmergencyBrake);
+        let state_transition = StateTransitionRequest::new(Board::Test, State::EmergencyBrake);
         let state_transition = CanMessage::StateTransitionRequest(state_transition);
         let can_frame: HypedCanFrame = state_transition.clone().into();
         let can_message_from_frame: CanMessage = can_frame.into();

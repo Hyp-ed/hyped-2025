@@ -55,14 +55,14 @@ mod tests {
         let can_id = CanId::new(
             Board::Test,
             CanDataType::State,
-            MessageIdentifier::StateTransition,
+            MessageIdentifier::StateTransitionCommand,
         );
         let id: u32 = can_id.clone().into();
 
         assert_eq!(can_id, CanId::from(id));
         assert_eq!(
             CanId::from(id).message_identifier,
-            MessageIdentifier::StateTransition
+            MessageIdentifier::StateTransitionCommand
         );
     }
 }

@@ -40,7 +40,7 @@ pub fn gen_measurement_ids(args: TokenStream) -> TokenStream {
     }
     enum_str.push_str("        }\n");
     enum_str.push_str("    }\n");
-    enum_str.push_str("\n");
+    enum_str.push('\n');
     enum_str.push_str("    pub fn from_string(enum_str: &str) -> MeasurementId {\n");
     enum_str.push_str("        match enum_str {\n");
     for id in measurement_ids.clone() {

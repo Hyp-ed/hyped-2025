@@ -5,13 +5,12 @@ use hyped_communications::{
 };
 use hyped_state_machine::states::State;
 
-use crate::{emergency, tasks::can::send::CAN_SEND};
+use crate::{
+    emergency,
+    tasks::can::{receive::INCOMING_HEARTBEATS, send::CAN_SEND},
+};
 
 use {defmt_rtt as _, panic_probe as _};
-
-/// Stores heartbeat messages coming in from other boards that we need to respond to.
-/// This is populated by the CAN receiver task.
-pub static INCOMING_HEARTBEATS: Channel<CriticalSectionRawMutex, Heartbeat, 10> = Channel::new();
 
 static HEARTBEAT_FREQUENCY: u64 = 10; // in Hz
 static HEARTBEAT_MAX_LATENCY: u64 = 500; // in ms
