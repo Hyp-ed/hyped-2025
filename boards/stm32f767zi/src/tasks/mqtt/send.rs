@@ -5,7 +5,6 @@ use embassy_stm32::{
     peripherals::ETH,
 };
 use embassy_sync::{blocking_mutex::raw::ThreadModeRawMutex, channel::Channel};
-use embassy_time::{Duration, Timer};
 use hyped_core::{
     format,
     format_string::show,
@@ -55,16 +54,13 @@ pub async fn mqtt_send(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>
     mqtt_client.connect_to_broker().await;
 
     loop {
-        while !MQTT_SEND.is_empty() {
-            let message = MQTT_SEND.receive().await;
-            mqtt_client
-                .send_message(
-                    message.topic.to_string().as_str(),
-                    message.payload.as_bytes(),
-                    false,
-                )
-                .await;
-        }
-        Timer::after(Duration::from_millis(100)).await;
+        let message = MQTT_SEND.receive().await;
+        mqtt_client
+            .send_message(
+                message.topic.to_string().as_str(),
+                message.payload.as_bytes(),
+                false,
+            )
+            .await;
     }
 }

@@ -149,6 +149,12 @@ impl State {
     }
 }
 
+impl From<&str> for State {
+    fn from(value: &str) -> Self {
+        State::from_string(value).unwrap()
+    }
+}
+
 pub enum MacroState {
     Idle,
     Active,

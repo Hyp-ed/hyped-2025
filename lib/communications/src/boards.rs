@@ -7,6 +7,7 @@ pub enum Board {
     TemperatureTester,
     KeyenceTester,
     StateMachineTester,
+    Mqtt,
 }
 
 impl From<Board> for u8 {
@@ -19,6 +20,7 @@ impl From<Board> for u8 {
             Board::TemperatureTester => 4,
             Board::KeyenceTester => 5,
             Board::StateMachineTester => 6,
+            Board::Mqtt => 7,
         }
     }
 }
@@ -33,6 +35,7 @@ impl From<u8> for Board {
             4 => Board::TemperatureTester,
             5 => Board::KeyenceTester,
             6 => Board::StateMachineTester,
+            7 => Board::Mqtt,
             _ => panic!("Invalid Board index: {:?}", index),
         }
     }

@@ -4,6 +4,7 @@ use embassy_time::{Duration, Timer};
 use hyped_can::HypedCanFrame;
 use hyped_communications::{
     heartbeat::Heartbeat,
+    measurements::MeasurementReading,
     messages::CanMessage,
     state_transition::{StateTransitionCommand, StateTransitionRequest},
 };
@@ -28,6 +29,10 @@ pub static INCOMING_STATE_TRANSITION_REQUESTS: Channel<
 
 /// Stores heartbeat messages coming in from other boards that we need to respond to.
 pub static INCOMING_HEARTBEATS: Channel<CriticalSectionRawMutex, Heartbeat, 10> = Channel::new();
+
+/// Stores measurement readings coming in from other boards.
+pub static INCOMING_MEASUREMENTS: Channel<CriticalSectionRawMutex, MeasurementReading, 10> =
+    Channel::new();
 
 /// Task that receives CAN messages and puts them into a channel.
 /// Currently only supports `StateTransitionCommand`, `StateTransitionRequest` and `Heartbeat` messages.
@@ -79,7 +84,9 @@ pub async fn can_receiver(
                 emergency_sender.send(true);
                 defmt::warn!("Emergency message from board {}: {}", board, reason);
             }
-            _ => {}
+            CanMessage::MeasurementReading(measurement_reading) => {
+                INCOMING_MEASUREMENTS.send(measurement_reading).await;
+            }
         }
 
         Timer::after(Duration::from_millis(10)).await;

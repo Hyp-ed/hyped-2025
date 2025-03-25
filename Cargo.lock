@@ -388,7 +388,6 @@ dependencies = [
  "heapless",
  "hyped_can",
  "hyped_core",
- "hyped_measurement_ids",
  "hyped_state_machine",
 ]
 
@@ -416,6 +415,7 @@ dependencies = [
  "embedded-io-async",
  "heapless",
  "hyped_can",
+ "hyped_measurement_ids",
  "log",
  "rand_core",
  "rust-mqtt",

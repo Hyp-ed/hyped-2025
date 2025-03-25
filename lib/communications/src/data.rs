@@ -1,3 +1,5 @@
+use core::fmt::Display;
+
 use crate::emergency::Reason;
 
 use super::boards::Board;
@@ -11,6 +13,20 @@ pub enum CanData {
     U32(u32),
     Heartbeat(Board),
     Emergency(Reason),
+}
+
+impl Display for CanData {
+    fn fmt(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            CanData::Bool(b) => write!(formatter, "{}", b),
+            CanData::TwoU16(u16s) => write!(formatter, "{:?}", u16s),
+            CanData::F32(f) => write!(formatter, "{}", f),
+            CanData::State(s) => write!(formatter, "{}", s),
+            CanData::U32(u) => write!(formatter, "{}", u),
+            CanData::Heartbeat(board) => write!(formatter, "{:?}", board),
+            CanData::Emergency(reason) => write!(formatter, "{:?}", reason),
+        }
+    }
 }
 
 impl From<CanData> for u8 {

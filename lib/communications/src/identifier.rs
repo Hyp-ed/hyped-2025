@@ -1,4 +1,4 @@
-use super::measurements::MeasurementId;
+use hyped_core::config::MeasurementId;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum MessageIdentifier {

@@ -137,13 +137,14 @@ impl From<HypedCanFrame> for CanMessage {
 #[cfg(test)]
 mod tests {
     use hyped_can::HypedCanFrame;
+    use hyped_core::config::MeasurementId;
     use hyped_state_machine::states::State;
 
     use crate::{
         boards::Board,
         data::CanData,
         heartbeat::Heartbeat,
-        measurements::{MeasurementId, MeasurementReading},
+        measurements::MeasurementReading,
         messages::CanMessage,
         state_transition::{StateTransitionCommand, StateTransitionRequest},
     };

@@ -14,7 +14,8 @@ use hyped_boards_stm32f767zi::tasks::{
     sensors::read_keyence::read_keyence,
     state_machine::state_updater,
 };
-use hyped_communications::{boards::Board, measurements::MeasurementId};
+use hyped_communications::boards::Board;
+use hyped_core::config::MeasurementId;
 use hyped_state_machine::states::State;
 use {defmt_rtt as _, panic_probe as _};
 

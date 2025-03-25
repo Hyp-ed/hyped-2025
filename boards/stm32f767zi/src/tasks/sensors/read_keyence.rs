@@ -3,12 +3,9 @@ use embassy_stm32::gpio::Input;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
 use embassy_time::{Duration, Timer};
 use hyped_communications::{
-    boards::Board,
-    data::CanData,
-    measurements::{MeasurementId, MeasurementReading},
-    messages::CanMessage,
+    boards::Board, data::CanData, measurements::MeasurementReading, messages::CanMessage,
 };
-use hyped_core::types::DigitalSignal;
+use hyped_core::{config::MeasurementId, types::DigitalSignal};
 use hyped_sensors::keyence::Keyence;
 
 /// The update frequency of the Keyence sensor in Hz

@@ -11,12 +11,10 @@ use embassy_sync::{
 };
 use embassy_time::{Duration, Timer};
 use hyped_communications::{
-    boards::Board,
-    data::CanData,
-    emergency::Reason,
-    measurements::{MeasurementId, MeasurementReading},
+    boards::Board, data::CanData, emergency::Reason, measurements::MeasurementReading,
     messages::CanMessage,
 };
+use hyped_core::config::MeasurementId;
 use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 use hyped_sensors::SensorValueRange;
 

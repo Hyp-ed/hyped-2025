@@ -23,7 +23,7 @@ use {defmt_rtt as _, panic_probe as _};
 pub static MQTT_RECEIVE: Channel<ThreadModeRawMutex, MqttMessage, 128> = Channel::new();
 
 /// Task for receiving messages from the MQTT broker
-pub async fn mqtt_recv(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) {
+pub async fn mqtt_receive(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) {
     let mut rx_buffer: [u8; 4096] = [0; 4096];
     let mut tx_buffer: [u8; 4096] = [0; 4096];
     let mut socket = TcpSocket::new(stack, &mut rx_buffer, &mut tx_buffer);

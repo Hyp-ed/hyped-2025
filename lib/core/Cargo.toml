@@ -14,6 +14,7 @@ defmt = "0.3"
 config_to_rs = "0.2.1"
 
 hyped_can = { path = "../io/hyped_can" }
+hyped_measurement_ids = { path = "../measurement_ids" }
 
 [dev-dependencies]
 log = { version = "0.4", default-features = false }
