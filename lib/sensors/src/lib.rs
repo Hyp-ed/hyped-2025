@@ -1,7 +1,9 @@
-#![no_std]
+#![cfg_attr(not(test), no_std)]
 
 pub mod accelerometer;
 pub mod keyence;
+pub mod low_pressure;
+pub mod optical_flow;
 pub mod temperature;
 pub mod time_of_flight;
 

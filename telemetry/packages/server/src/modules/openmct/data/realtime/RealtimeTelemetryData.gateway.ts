@@ -1,5 +1,5 @@
 import { Logger } from '@/modules/logger/Logger.decorator';
-import type { MeasurementReading } from '@/modules/measurement/MeasurementReading.types';
+import type { MeasurementReading } from '@/modules/telemetry/MeasurementReading.types';
 import { socket as socketConstants } from '@hyped/telemetry-constants';
 import type { LoggerService } from '@nestjs/common';
 import {

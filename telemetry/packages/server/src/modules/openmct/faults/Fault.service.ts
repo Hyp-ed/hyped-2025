@@ -1,19 +1,22 @@
 import type { InfluxService } from '@/modules/influx/Influx.service';
 import { Logger } from '@/modules/logger/Logger.decorator';
-import type { MeasurementReading } from '@/modules/measurement/MeasurementReading.types';
+import type { MeasurementReading } from '@/modules/telemetry/MeasurementReading.types';
 import type { FaultLevel } from '@hyped/telemetry-constants';
-import type { OpenMctFault, Unpacked } from '@hyped/telemetry-types';
+import type {
+	Measurement,
+	OpenMctFault,
+	Unpacked,
+} from '@hyped/telemetry-types';
 import type { HistoricalFaults } from '@hyped/telemetry-types/dist/openmct/openmct-fault.types';
-import type { RangeMeasurement } from '@hyped/telemetry-types/dist/pods/pods.types';
 import { Point } from '@influxdata/influxdb-client';
 import { Injectable, type LoggerService } from '@nestjs/common';
 import type { HistoricalFaultDataService } from './data/historical/HistoricalFaultData.service';
 import type { RealtimeFaultDataGateway } from './data/realtime/RealtimeFaultData.gateway';
-import { convertToOpenMctFault } from './utils/convertToOpenMctFault';
+import { convertToOpenMctFault } from './utils/convert-to-openmct-fault';
 
 export type Fault = {
 	level: FaultLevel;
-	measurement: RangeMeasurement;
+	measurement: Measurement;
 	tripReading: MeasurementReading;
 };
 
@@ -37,7 +40,7 @@ export class FaultService {
 		const possibleExistingFaults =
 			await this.historicalService.getHistoricalFaults({
 				podId: tripReading.podId,
-				measurementKey: measurement.key,
+				measurementKey: measurement.id,
 			});
 
 		// If there's an existing fault, update it instead of creating a new one
@@ -203,7 +206,7 @@ export class FaultService {
 			.timestamp(tripReading.timestamp)
 			.tag('faultId', openMctFault.fault.id)
 			.tag('podId', tripReading.podId)
-			.tag('measurementKey', measurement.key)
+			.tag('measurementKey', measurement.id)
 			// is influx the right choice? probably not - but we're already using it for telemetry
 			.stringField('fault', JSON.stringify(openMctFault));
 
