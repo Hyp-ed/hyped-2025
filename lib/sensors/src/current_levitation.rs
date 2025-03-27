@@ -30,11 +30,7 @@ impl<T: HypedAdc> CurrentLevitation<T> {
     /// by the supply voltage divided by 2, so if you change the supply voltage, you'll have to change the offset that we subtract
     /// in the read function accordingly.
     pub fn read(&mut self) -> SensorValueRange<f32> {
-        let adc_reading = self.adc.read_value() as f32;
-        let resolution = self.adc.get_resolution() as f32;
-        let v_ref = self.adc.get_reference_voltage();
-        // Map the values we're reading in (currently 0-4096) into our voltage range
-        let voltage = ((adc_reading) / (resolution)) * v_ref;
+        let voltage = self.adc.get_voltage();
         (self.calculate_bounds)((voltage - OFFSET) / SENSITIVITY)
     }
 }
