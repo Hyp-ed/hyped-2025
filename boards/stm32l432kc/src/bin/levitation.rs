@@ -18,7 +18,6 @@ use {defmt_rtt as _, panic_probe as _};
 const MAX_VOLTAGE: f32 = 500.0;
 const MAX_CURRENT: f32 = 5.0; // TODOLater check with lev
 const TARGET_HEIGHT: f32 = 15.0; // mm
-const FILTER_COEFFICIENT: f32 = 1026.87023225348; // TO TUNE. A number between 0 and 1
 const SAMPLING_PERIOD: u64 = 1; // (decide units) TODOLater see how long this takes to run and go based on that
 
 const GAIN_HEIGHT: PidGain = PidGain {
@@ -27,7 +26,7 @@ const GAIN_HEIGHT: PidGain = PidGain {
     kd: 614.513502234539,
     p_reference_gain: 0.873451984,
     d_reference_gain: 0.705728005,
-    filter_coefficient: FILTER_COEFFICIENT,
+    filter_coefficient: 1026.87023225348, // TO TUNE. A number between 0 and 1
 };
 
 const GAIN_CURRENT: PiGain = PiGain {
