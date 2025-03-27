@@ -1,5 +1,6 @@
 #![cfg_attr(not(test), no_std)]
 
+pub mod current_levitation;
 pub mod keyence;
 pub mod low_pressure;
 pub mod optical_flow;
