@@ -75,9 +75,9 @@ impl<'a, T: HypedI2c> Accelerometer<'a, T> {
         let z_low_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Z_L)?;
         let z_high_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_Z_H)?;
 
-        let mut x_combined = ((x_high_byte as u16) << 8 | x_low_byte as u16) as f32;
-        let mut y_combined = ((y_high_byte as u16) << 8 | y_low_byte as u16) as f32;
-        let mut z_combined = ((z_high_byte as u16) << 8 | z_low_byte as u16) as f32;
+        let mut x_combined = (((x_high_byte as u16) << 8) | x_low_byte as u16) as f32;
+        let mut y_combined = (((y_high_byte as u16) << 8) | y_low_byte as u16) as f32;
+        let mut z_combined = (((z_high_byte as u16) << 8) | z_low_byte as u16) as f32;
 
         // Convert accelerations to to negative values if necessary.
         if x_combined >= TWO_POWER_15 {
