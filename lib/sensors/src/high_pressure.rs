@@ -1,3 +1,4 @@
+use hyped_core::types::DigitalSignal;
 use hyped_gpio::HypedGpioInputPin;
 
 /// The high pressure sensor (SPAW-P25R-G12M-2N-M12) is able to detect pressure in range
@@ -44,6 +45,7 @@ impl<T: HypedGpioInputPin> HighPressure<T> {
 }
 
 /// Represents the possible state of the high pressure sensor
+#[derive(PartialEq, Debug)]
 pub enum State {
     Off,
     State2,
@@ -52,5 +54,17 @@ pub enum State {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use heapless::Vec;
+    use hyped_gpio::mock_gpio::MockGpioInput;
 
+    #[test]
+    fn test_high_pres_new() {
+        let sp1 = MockGpioInput::new(Vec::from_slice(&[DigitalSignal::Low]).unwrap());
+        let sp2 = MockGpioInput::new(Vec::from_slice(&[DigitalSignal::Low]).unwrap());
+
+        let mut high_pres = HighPressure::new(sp1, sp2);
+
+        assert_eq!(high_pres.get_high_pressure_state(), Ok(State::Off));
+    }
 }
