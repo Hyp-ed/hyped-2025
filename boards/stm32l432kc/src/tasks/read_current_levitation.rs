@@ -2,8 +2,8 @@ use crate::io::Stm32l432kcAdc;
 use defmt_rtt as _;
 use embassy_stm32::adc::Adc;
 use embassy_stm32::adc::AdcChannel;
-use embassy_time::{Duration, Timer};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
+use embassy_time::{Duration, Timer};
 use hyped_sensors::{current_levitation::CurrentLevitation, SensorValueRange};
 
 /// The update frequency of the current levitation sensor in Hz

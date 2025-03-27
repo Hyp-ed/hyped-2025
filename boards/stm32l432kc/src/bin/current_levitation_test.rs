@@ -18,9 +18,7 @@ async fn main(spawner: Spawner) {
     let current_levitation_reading_sender = CURRENT_LEVITATION_READING.sender();
     let mut current_levitation_reading_receiver = CURRENT_LEVITATION_READING.receiver().unwrap();
 
-    spawner.must_spawn(read_current_levitation(
-        current_levitation_reading_sender,
-    ));
+    spawner.must_spawn(read_current_levitation(current_levitation_reading_sender));
 
     // Every 100ms we read for the latest value from the current levitation sensor.
     loop {
