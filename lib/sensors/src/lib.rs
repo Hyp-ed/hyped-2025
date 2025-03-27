@@ -2,6 +2,7 @@
 
 pub mod current_levitation;
 pub mod keyence;
+pub mod low_pressure;
 pub mod optical_flow;
 pub mod temperature;
 pub mod time_of_flight;

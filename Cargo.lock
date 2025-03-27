@@ -170,7 +170,7 @@ dependencies = [
 [[package]]
 name = "embassy-sync"
 version = "0.6.2"
-source = "git+https://github.com/embassy-rs/embassy#d378dca352914fd3c1efea57e02dfce4106952d0"
+source = "git+https://github.com/embassy-rs/embassy#05c664097ddb333c4bfba685ae48f1862e0d5485"
 dependencies = [
  "cfg-if",
  "critical-section",
