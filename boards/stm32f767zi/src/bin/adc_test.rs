@@ -10,6 +10,9 @@ use hyped_adc::HypedAdc;
 use hyped_boards_stm32f767zi::io::Stm32f767ziAdc;
 use {defmt_rtt as _, panic_probe as _};
 
+/// Reference Voltage constant so we can test ADC
+const V_REF: f32 = 5.0;
+
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) {
     let p = embassy_stm32::init(Default::default());
@@ -27,7 +30,6 @@ async fn main(_spawner: Spawner) {
 
         (u32::from(sample) * VREFINT_MV / u32::from(vrefint_sample)) as u16
     };
-    const V_REF: f32 = 5.0;
     let mut hyped_adc = Stm32f767ziAdc::new(adc, pin.degrade_adc(), V_REF);
 
     loop {
