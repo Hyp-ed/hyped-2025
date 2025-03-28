@@ -1,23 +1,34 @@
 use crate::io::Stm32f767ziI2c;
 use core::cell::RefCell;
 use defmt_rtt as _;
-use embassy_stm32::time::Hertz;
 use embassy_stm32::{i2c::I2c, mode::Blocking};
-use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
-use hyped_sensors::{
-    accelerometer::{Accelerometer, AccelerometerAddresses, Status},
-    SensorValueRange::*,
+use embassy_sync::blocking_mutex::{
+    raw::{CriticalSectionRawMutex, NoopRawMutex},
+    Mutex,
 };
-use static_cell::StaticCell;
+use embassy_sync::watch::Sender;
+use embassy_time::{Duration, Timer};
+use hyped_sensors::{
+    accelerometer::{AccelerationValues, Accelerometer, AccelerometerAddresses, Status},
+    SensorValueRange,
+};
+
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
+
+/// Update frequency of accelerometer in Hz
+const UPDATE_FREQUENCY: u64 = 200;
 
 /// Test task that reads the acceleration from the sensor and prints it to the console.
 #[embassy_executor::task]
-pub async fn read_acceleration() -> ! {
-    let p = embassy_stm32::init(Default::default());
-    let i2c = I2c::new_blocking(p.I2C1, p.PB8, p.PB9, Hertz(200_000), Default::default());
-    static I2C_BUS: StaticCell<I2c1Bus> = StaticCell::new();
-    let i2c_bus = I2C_BUS.init(Mutex::new(RefCell::new(i2c)));
+pub async fn read_accelerometer(
+    i2c_bus: &'static I2c1Bus,
+    sender: Sender<
+        'static,
+        CriticalSectionRawMutex,
+        Option<SensorValueRange<AccelerationValues>>,
+        1,
+    >,
+) -> ! {
     let mut hyped_i2c = Stm32f767ziI2c::new(i2c_bus);
 
     let mut accelerometer = Accelerometer::new(&mut hyped_i2c, AccelerometerAddresses::Address1d)
@@ -36,36 +47,7 @@ pub async fn read_acceleration() -> ! {
             Status::Ok => {}
         }
 
-        match accelerometer.read() {
-            Some(accel_values) => match accel_values {
-                Safe(accel_values) => {
-                    defmt::info!(
-                        "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (safe)",
-                        accel_values.x,
-                        accel_values.y,
-                        accel_values.z
-                    );
-                }
-                Warning(accel_values) => {
-                    defmt::info!(
-                        "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (unsafe)",
-                        accel_values.x,
-                        accel_values.y,
-                        accel_values.z
-                    );
-                }
-                Critical(accel_values) => {
-                    defmt::info!(
-                        "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (critical)",
-                        accel_values.x,
-                        accel_values.y,
-                        accel_values.z
-                    );
-                }
-            },
-            None => {
-                defmt::info!("Failed to read acceleration values.")
-            }
-        }
+        sender.send(accelerometer.read());
+        Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
     }
 }

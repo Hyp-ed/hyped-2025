@@ -104,7 +104,7 @@ impl<'a, T: HypedI2c> Accelerometer<'a, T> {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct AccelerationValues {
     pub x: f32,
     pub y: f32,
