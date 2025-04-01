@@ -18,16 +18,32 @@ impl StateMachine {
         }
     }
 
+    /// Handles a transition from the current state to the given state.
+    /// If the state transition is valid, the state machine will transition to the new state.
     pub fn handle_transition(&mut self, to_state: &State) -> Option<State> {
-        let transition = State::transition(&self.current_state, to_state);
-        match transition {
-            Some(transition) => {
+        let new_state = match (self.current_state, to_state) {
+            (State::Idle, State::Calibrate) => Some(State::Calibrate),
+            (State::Calibrate, State::Precharge) => Some(State::Precharge),
+            (State::Precharge, State::ReadyForLevitation) => Some(State::ReadyForLevitation),
+            (State::ReadyForLevitation, State::BeginLevitation) => Some(State::BeginLevitation),
+            (State::BeginLevitation, State::Ready) => Some(State::Ready),
+            (State::Ready, State::Accelerate) => Some(State::Accelerate),
+            (State::Accelerate, State::Brake) => Some(State::Brake),
+            (State::Accelerate, State::Emergency) => Some(State::Emergency),
+            (State::Brake, State::StopLevitation) => Some(State::StopLevitation),
+            (State::StopLevitation, State::Stopped) => Some(State::Stopped),
+            (State::Stopped, State::Idle) => Some(State::Idle),
+            _ => None,
+        };
+
+        match new_state {
+            Some(new_state) => {
                 info!(
                     "Transitioning from {:?} to {:?}",
-                    self.current_state, transition
+                    self.current_state, new_state
                 );
-                self.current_state = transition;
-                Some(transition)
+                self.current_state = new_state;
+                Some(new_state)
             }
             None => {
                 warn!(

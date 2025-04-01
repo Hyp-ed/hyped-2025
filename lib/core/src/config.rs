@@ -19,7 +19,7 @@ pub struct Config;
 // TODOLater: this should be in a config
 pub static POD_NAME: &str = "poddington";
 
-gen_measurement_ids!("../../config/pods.yaml", "poddington");
+gen_measurement_ids!("config/pods.yaml", "poddington");
 
 mod test {
     #[test]
