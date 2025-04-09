@@ -32,21 +32,30 @@ impl<T: HypedAdc> LaserTriangulation<T> {
     /// If we change configuration (e.g. different base distance & measuring distance), you'll have to change
     /// the MEASURE_RANGE and BASE_DISTANCE values accordingly. You can find different configuration settings
     /// in the data sheet.
-    pub fn read(&mut self) -> SensorValueRange<f32> {
+    pub fn read(&mut self) -> Result<SensorValueRange<f32>, LaserTriangulationError> {
         let voltage = self.adc.get_voltage();
         let v_ref = self.adc.get_reference_voltage();
-        let result = (voltage / v_ref) * MEASURE_RANGE + BASE_DISTANCE;
-        (self.calculate_bounds)(result)
+        if voltage - ZERO_OFFSET < 0.1 {
+            return Err(LaserTriangulationError::OutOfRange);
+        }
+        let result =
+            ((voltage - ZERO_OFFSET) / (v_ref - ZERO_OFFSET)) * MEASURE_RANGE + BASE_DISTANCE;
+        Ok((self.calculate_bounds)(result))
     }
 }
 
 pub fn default_calculate_bounds(value: f32) -> SensorValueRange<f32> {
-    if value <= BASE_DISTANCE || value >= (BASE_DISTANCE + MEASURE_RANGE) {
-        SensorValueRange::Critical(value)
+    if value <= BASE_DISTANCE + 1.0 || value >= (BASE_DISTANCE + MEASURE_RANGE) - 1.0 {
+        SensorValueRange::Warning(value)
     } else {
         SensorValueRange::Safe(value)
     }
 }
 
+pub enum LaserTriangulationError {
+    OutOfRange,
+}
+
 const BASE_DISTANCE: f32 = 20.0;
 const MEASURE_RANGE: f32 = 25.0;
+const ZERO_OFFSET: f32 = 0.638;
