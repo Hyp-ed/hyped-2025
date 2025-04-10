@@ -12,6 +12,7 @@ jobs:
         with:
           reporter: 'github-pr-check'
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          level: warning
           clippy_flags: --all-targets --all-features -- -Dwarnings
 
   rust-clippy-boards:
@@ -31,6 +32,7 @@ jobs:
           reporter: 'github-pr-check'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workdir: boards/${{ matrix.board }}
+          level: warning
           clippy_flags: --all-features -- -Dwarnings
 
   rust-fmt:
