@@ -28,6 +28,7 @@ jobs:
     name: Cargo Build (boards)
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         board:
           - stm32l476rg
