@@ -8,12 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: giraffate/clippy-action@v1
-        with:
-          reporter: 'github-pr-check'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          level: warning
-          clippy_flags: --all-targets --all-features -- -Dwarnings
+      - name: Run clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
 
   rust-clippy-boards:
     name: Run clippy (boards)
@@ -26,14 +22,8 @@ jobs:
           - stm32l432kc
     steps:
       - uses: actions/checkout@v4
-      - run: rustup target add thumbv7em-none-eabihf
-      - uses: giraffate/clippy-action@v1
-        with:
-          reporter: 'github-pr-check'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          workdir: boards/${{ matrix.board }}
-          level: warning
-          clippy_flags: --all-features -- -Dwarnings
+      - name: Run clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
 
   rust-fmt:
     name: Run rustfmt
