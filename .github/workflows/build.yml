@@ -35,9 +35,9 @@ jobs:
           - stm32l432kc
     steps:
       - uses: actions/checkout@v4
-      - run: rustup target add thumbv7em-none-eabihf
       - uses: Swatinem/rust-cache@v2
         with:
           key: ${{ matrix.board }}
+      - run: rustup target add thumbv7em-none-eabihf
       - run: cargo build --verbose
         working-directory: boards/${{ matrix.board }}

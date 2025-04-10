@@ -26,6 +26,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           key: ${{ matrix.board }}
+      - run: rustup target add thumbv7em-none-eabihf
       - name: Run clippy
         run: cd boards/${{ matrix.board }} && cargo clippy --all-features -- -D warnings
 
