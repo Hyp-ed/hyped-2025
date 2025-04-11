@@ -10,8 +10,8 @@ use crate::{
 
 use {defmt_rtt as _, panic_probe as _};
 
-static HEARTBEAT_FREQUENCY: u64 = 10; // in Hz
-static HEARTBEAT_MAX_LATENCY: u64 = 500; // in ms
+static HEARTBEAT_FREQUENCY: u64 = 5; // in Hz
+static HEARTBEAT_MAX_LATENCY: u64 = 10000000; // in ms
 
 /// Task that sends heartbeats to other boards and checks if they are still alive.
 /// If a board does not respond in time, an emergency stop is triggered.
@@ -24,7 +24,7 @@ pub async fn heartbeat_controller(this_board: Board, target_board: Board) {
 
     loop {
         // Wait for an incoming heartbeat message from the target board
-        match with_timeout(Duration::from_hz(HEARTBEAT_MAX_LATENCY), async {
+        match with_timeout(Duration::from_millis(HEARTBEAT_MAX_LATENCY), async {
             loop {
                 // Only return when we receive a heartbeat message
                 let heartbeat = INCOMING_HEARTBEATS.receive().await;

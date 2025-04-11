@@ -82,6 +82,7 @@ impl Into<String<20>> for State {
 
 impl TryFrom<&str> for State {
     type Error = ();
+    /// Convert a string into a State. Returns an error if the string is not a valid State.
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
             "idle" => Ok(State::Idle),

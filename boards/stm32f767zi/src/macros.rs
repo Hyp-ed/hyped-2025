@@ -6,11 +6,13 @@ macro_rules! emergency {
         let can_sender = CAN_SEND.sender();
         let can_message = CanMessage::Emergency(BOARD, Reason::Unknown);
         can_sender.send(can_message).await;
+        panic!("Emergency stop triggered");
     };
     ($board:ident) => {
         let can_sender = CAN_SEND.sender();
         let can_message = CanMessage::Emergency($board, Reason::Unknown);
         can_sender.send(can_message).await;
+        panic!("Emergency stop triggered");
     };
 }
 

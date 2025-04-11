@@ -13,6 +13,7 @@ use rust_mqtt::{
     utils::rng_generator::CountingRng,
 };
 
+#[derive(defmt::Format)]
 pub struct MqttMessage {
     pub topic: MqttTopic,
     pub payload: String<512>,
@@ -93,6 +94,9 @@ impl<T: embedded_io_async::Read + embedded_io_async::Write, R: rand_core::RngCor
             Err(mqtt_error) => match mqtt_error {
                 ReasonCode::NetworkError => {
                     info!("MQTT Network Error");
+                }
+                ReasonCode::NoMatchingSubscribers => {
+                    warn!("Is the base station subscribed to this topic?");
                 }
                 _ => {
                     warn!("Other MQTT Error: {:?}", mqtt_error);

@@ -1,3 +1,5 @@
+use core::str::FromStr;
+
 use crate::{log::log, telemetry_config::MQTT_BROKER_ADDRESS};
 use embassy_net::{tcp::TcpSocket, Stack};
 use embassy_stm32::{
@@ -5,11 +7,13 @@ use embassy_stm32::{
     peripherals::ETH,
 };
 use embassy_sync::{blocking_mutex::raw::ThreadModeRawMutex, channel::Channel};
+use heapless::String;
 use hyped_core::{
     format,
     format_string::show,
     log_types::LogLevel,
     mqtt::{HypedMqttClient, MqttMessage},
+    mqtt_topics::MqttTopic,
 };
 use {defmt_rtt as _, panic_probe as _};
 
@@ -53,8 +57,18 @@ pub async fn mqtt_send(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>
 
     mqtt_client.connect_to_broker().await;
 
+    defmt::info!("Connected to MQTT broker");
+
+    MQTT_SEND
+        .send(MqttMessage::new(
+            MqttTopic::Test,
+            String::from_str("Hello from telemetry board!").unwrap(),
+        ))
+        .await;
+
     loop {
         let message = MQTT_SEND.receive().await;
+        defmt::info!("Sending MQTT message");
         mqtt_client
             .send_message(
                 message.topic.to_string().as_str(),

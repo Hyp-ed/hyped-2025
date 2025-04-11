@@ -19,19 +19,19 @@ pub enum MqttTopic {
 
 impl MqttTopic {
     /// Convert an `MqttTopics` enum variant to a string
-    pub fn to_string(&self) -> String<48> {
+    pub fn to_string(&self) -> String<100> {
         match self {
-            MqttTopic::State => String::<48>::from_str("hyped/poddington/state/state").unwrap(),
+            MqttTopic::State => String::<100>::from_str("hyped/poddington/state/state").unwrap(),
             MqttTopic::StateRequest => {
-                String::<48>::from_str("hyped/podpoddington_2025/state/state_request").unwrap()
+                String::<100>::from_str("hyped/podpoddington_2025/state/state_request").unwrap()
             }
-            MqttTopic::Heartbeat => String::<48>::from_str("hyped/poddington/heartbeat").unwrap(),
-            MqttTopic::Logs => String::<48>::from_str("hyped/poddington/logs").unwrap(),
-            MqttTopic::Debug => String::<48>::from_str("debug").unwrap(),
-            MqttTopic::Test => String::<48>::from_str("test").unwrap(),
+            MqttTopic::Heartbeat => String::<100>::from_str("hyped/poddington/heartbeat").unwrap(),
+            MqttTopic::Logs => String::<100>::from_str("hyped/poddington/logs").unwrap(),
+            MqttTopic::Debug => String::<100>::from_str("debug").unwrap(),
+            MqttTopic::Test => String::<100>::from_str("test").unwrap(),
             MqttTopic::Measurement(measurement_id) => {
                 let measurement_id_string = measurement_id.to_string();
-                let mut topic = String::<48>::from_str("hyped/poddington/measurement/").unwrap();
+                let mut topic = String::<100>::from_str("hyped/poddington/measurement/").unwrap();
                 topic.push_str(measurement_id_string.as_str()).unwrap();
                 topic
             }
@@ -66,7 +66,10 @@ impl FromStr for MqttTopic {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match MqttTopic::from_string(s) {
             Some(topic) => Ok(topic),
-            None => Err(()),
+            None => {
+                defmt::error!("Failed to parse MQTT topic: {}", s);
+                Err(())
+            }
         }
     }
 }

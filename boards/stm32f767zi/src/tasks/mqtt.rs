@@ -14,6 +14,5 @@ use send::mqtt_send;
 /// Split up the CAN peripheral into a sender and receiver.
 #[embassy_executor::task]
 pub async fn mqtt(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) {
-    defmt::info!("MQTT enabled");
     join(mqtt_send(stack), mqtt_receive(stack)).await;
 }

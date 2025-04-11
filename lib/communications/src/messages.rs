@@ -95,7 +95,7 @@ impl From<HypedCanFrame> for CanMessage {
                 let reading: CanData = frame.data.into();
                 match reading {
                     CanData::State(state) => {
-                        let to_state: State = state.into();
+                        let to_state: State = state.try_into().expect("Invalid State!");
                         let state_transition = StateTransitionCommand::new(board, to_state);
                         CanMessage::StateTransitionCommand(state_transition)
                     }
@@ -106,7 +106,7 @@ impl From<HypedCanFrame> for CanMessage {
                 let reading: CanData = frame.data.into();
                 match reading {
                     CanData::State(state) => {
-                        let to_state: State = state.into();
+                        let to_state: State = state.try_into().expect("Invalid State!");
                         let state_transition = StateTransitionRequest::new(board, to_state);
                         CanMessage::StateTransitionRequest(state_transition)
                     }
@@ -166,7 +166,7 @@ mod tests {
 
     #[test]
     fn it_works_state_transition_command() {
-        let state_transition = StateTransitionCommand::new(Board::Test, State::EmergencyBrake);
+        let state_transition = StateTransitionCommand::new(Board::Test, State::Emergency);
         let state_transition = CanMessage::StateTransitionCommand(state_transition);
         let can_frame: HypedCanFrame = state_transition.clone().into();
         let can_message_from_frame: CanMessage = can_frame.into();
@@ -175,7 +175,7 @@ mod tests {
 
     #[test]
     fn it_works_state_transition_request() {
-        let state_transition = StateTransitionRequest::new(Board::Test, State::EmergencyBrake);
+        let state_transition = StateTransitionRequest::new(Board::Test, State::Emergency);
         let state_transition = CanMessage::StateTransitionRequest(state_transition);
         let can_frame: HypedCanFrame = state_transition.clone().into();
         let can_message_from_frame: CanMessage = can_frame.into();

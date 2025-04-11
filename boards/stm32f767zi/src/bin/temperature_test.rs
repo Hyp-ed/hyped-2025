@@ -5,7 +5,10 @@ use core::cell::RefCell;
 use embassy_executor::Spawner;
 use embassy_stm32::{
     bind_interrupts,
-    can::{Can, Rx0InterruptHandler, Rx1InterruptHandler, SceInterruptHandler, TxInterruptHandler},
+    can::{
+        filter::Mask32, Can, Fifo, Rx0InterruptHandler, Rx1InterruptHandler, SceInterruptHandler,
+        TxInterruptHandler,
+    },
     i2c::I2c,
     mode::Blocking,
     peripherals::CAN1,
@@ -62,9 +65,18 @@ async fn main(spawner: Spawner) -> ! {
     static I2C_BUS: StaticCell<I2c1Bus> = StaticCell::new();
     let i2c_bus = I2C_BUS.init(Mutex::new(RefCell::new(i2c)));
 
-    let (can_tx, can_rx) = Can::new(p.CAN1, p.PD0, p.PD1, Irqs).split();
+    let mut can = Can::new(p.CAN1, p.PD0, p.PD1, Irqs);
+    can.modify_filters()
+        .enable_bank(0, Fifo::Fifo0, Mask32::accept_all());
+    can.modify_config().set_bitrate(500_000);
+    can.enable().await;
+    let (can_tx, can_rx) = can.split();
     spawner.must_spawn(can_receiver(can_rx, EMERGENCY.sender()));
     spawner.must_spawn(can_sender(can_tx));
+
+    Timer::after(Duration::from_secs(2)).await;
+
+    spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
 
     spawner.must_spawn(read_temperature(
         i2c_bus,
@@ -73,27 +85,21 @@ async fn main(spawner: Spawner) -> ! {
         LATEST_TEMPERATURE_READING.sender(),
     ));
 
-    spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
-
     let mut temp_reading_receiver = LATEST_TEMPERATURE_READING.receiver().unwrap();
 
     loop {
-        if let Some(reading) = temp_reading_receiver.try_changed() {
+        if let Some(reading) = temp_reading_receiver.changed().await {
             match reading {
-                Some(reading) => match reading {
-                    Safe(temp) => {
-                        defmt::info!("Temperature: {}°C (safe)", temp);
-                    }
-                    Warning(temp) => {
-                        defmt::warn!("Temperature: {}°C (warning)", temp);
-                    }
-                    Critical(temp) => {
-                        defmt::error!("Temperature: {}°C (critical)", temp);
-                    }
-                },
-                None => defmt::warn!("No temperature reading available."),
+                Safe(temp) => {
+                    defmt::info!("Temperature: {}°C (safe)", temp);
+                }
+                Warning(temp) => {
+                    defmt::warn!("Temperature: {}°C (warning)", temp);
+                }
+                Critical(temp) => {
+                    defmt::error!("Temperature: {}°C (critical)", temp);
+                }
             }
         }
-        Timer::after(Duration::from_millis(100)).await;
     }
 }

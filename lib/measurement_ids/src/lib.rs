@@ -93,8 +93,12 @@ fn get_measurement_ids(yaml_path: String, pod_id: String) -> Vec<String> {
 }
 
 fn get_yaml(yaml_path: String) -> Option<Yaml> {
-    match std::fs::read_to_string(yaml_path.clone()) {
+    let path_to_use = match std::env::current_dir().unwrap().ends_with("lib/core") {
+        true => "../../".to_string() + &yaml_path,
+        false => yaml_path,
+    };
+    match std::fs::read_to_string(path_to_use.clone()) {
         Ok(file) => Some(Yaml::load_from_str(&file).unwrap()[0].clone()),
-        Err(_) => panic!("Failed to read file: {}", yaml_path),
+        Err(_) => panic!("Failed to open file: {}", path_to_use),
     }
 }

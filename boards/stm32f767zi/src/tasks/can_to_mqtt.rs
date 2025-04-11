@@ -47,6 +47,8 @@ pub async fn send_can_state_transition_command_to_mqtt() {
 pub async fn send_can_measurement_to_mqtt() {
     let measurements_receiver = INCOMING_MEASUREMENTS.receiver();
 
+    defmt::info!("Task started: send_can_measurement_to_mqtt");
+
     loop {
         let measurement = measurements_receiver.receive().await;
 
@@ -61,6 +63,9 @@ pub async fn send_can_measurement_to_mqtt() {
             String::from_str(format!(&mut [0u8; 1024], "{}", measurement.reading).unwrap())
                 .unwrap(),
         );
+
+        defmt::info!("Sending CAN measurement to MQTT: {:?}", message);
+
         MQTT_SEND.send(message).await;
     }
 }
@@ -73,8 +78,11 @@ pub async fn send_mqtt_state_transition_requests_to_can() {
         let mqtt_message = mqtt_receive_receiver.receive().await;
         match mqtt_message.topic {
             MqttTopic::StateRequest => {
-                let state: State = mqtt_message.payload.as_str().into();
-
+                let state: State = mqtt_message
+                    .payload
+                    .as_str()
+                    .try_into()
+                    .expect("Failed to parse state");
                 let can_message = CanMessage::StateTransitionRequest(StateTransitionRequest::new(
                     Board::Mqtt,
                     state,

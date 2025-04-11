@@ -21,7 +21,7 @@ use hyped_sensors::SensorValueRange;
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
 /// The update frequency of the temperature sensor in Hz
-const UPDATE_FREQUENCY: u64 = 1000;
+const UPDATE_FREQUENCY: u64 = 1;
 
 /// Test task that just reads the temperature from the sensor and prints it to the console
 #[embassy_executor::task]
@@ -47,12 +47,12 @@ pub async fn read_temperature(
     loop {
         match temperature_sensor.check_status() {
             Status::TempOverUpperLimit => {
-                emergency!(this_board);
                 defmt::error!("Temperature is over the upper limit.");
+                emergency!(this_board);
             }
             Status::TempUnderLowerLimit => {
-                emergency!(this_board);
                 defmt::error!("Temperature is under the lower limit.");
+                emergency!(this_board);
             }
             Status::Busy => {
                 defmt::warn!("Temperature sensor is busy.");
@@ -73,9 +73,8 @@ pub async fn read_temperature(
             // Handle the reading based on the range
             let value = match reading {
                 SensorValueRange::Critical(v) => {
-                    emergency!(this_board);
                     defmt::error!("Critical temperature reading: {:?}", v);
-                    v
+                    emergency!(this_board);
                 }
                 SensorValueRange::Warning(v) => {
                     defmt::warn!("Warning temperature reading: {:?}", v);
@@ -84,6 +83,7 @@ pub async fn read_temperature(
                 SensorValueRange::Safe(v) => v,
             };
 
+            defmt::info!("Sending temperature reading over CAN");
             can_sender
                 .send(CanMessage::MeasurementReading(MeasurementReading::new(
                     CanData::F32(value),
