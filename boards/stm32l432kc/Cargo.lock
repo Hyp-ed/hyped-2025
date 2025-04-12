@@ -619,6 +619,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_adc"
+version = "0.1.0"
+dependencies = [
+ "defmt",
+ "embassy-sync 0.6.2",
+ "heapless",
+]
+
+[[package]]
+name = "hyped_adc_derive"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "hyped_boards_stm32l432kc"
 version = "0.1.0"
 dependencies = [
@@ -636,6 +653,9 @@ dependencies = [
  "embassy-time",
  "embedded-hal 0.2.7",
  "embedded-storage",
+ "heapless",
+ "hyped_adc",
+ "hyped_adc_derive",
  "hyped_sensors",
  "panic-probe",
  "rand_core",
@@ -682,6 +702,7 @@ dependencies = [
  "embassy-sync 0.6.0",
  "embassy-time",
  "heapless",
+ "hyped_adc",
  "hyped_core",
  "hyped_gpio",
  "hyped_i2c",
