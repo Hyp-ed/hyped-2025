@@ -29,8 +29,8 @@ async fn main(spawner: Spawner) -> ! {
 
     // Every 100ms we read for the latest value from the low pressure sensor.
     loop {
-        match low_pressure_reading_receiver.try_changed() {
-            Some(reading) => match reading {
+        if let Some(reading) = low_pressure_reading_receiver.try_changed() {
+            match reading {
                 Some(reading) => match reading {
                     Safe(low_pres) => {
                         defmt::info!("Pressure: {} bar (safe)", low_pres);
@@ -42,9 +42,8 @@ async fn main(spawner: Spawner) -> ! {
                         defmt::error!("Pressure: {} bar (critical)", low_pres);
                     }
                 },
-                None => defmt::warn!("No low pressure reading available."),
-            },
-            None => (),
+                None => defmt::warn!("No low pressure reading available"),
+            }
         }
         Timer::after(Duration::from_millis(100)).await;
     }
