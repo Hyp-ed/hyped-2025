@@ -83,7 +83,7 @@ version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0fe59efedb5aea134ace7c79553989a92d26cfa8274a53062756d3270c1e8dba"
 dependencies = [
- "convert_case",
+ "convert_case 0.7.1",
  "hashlink",
  "proc-macro2",
  "quote",
@@ -96,6 +96,15 @@ name = "convert_case"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bb402b8d4c85569410425650ce3eddc7d698ed96d39a73f941b08fb63082f1e7"
+dependencies = [
+ "unicode-segmentation",
+]
+
+[[package]]
+name = "convert_case"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "baaaa0ecca5b51987b9423ccdc971514dd8b0bb7b4060b983d3664dad3f1f89f"
 dependencies = [
  "unicode-segmentation",
 ]
@@ -719,6 +728,8 @@ dependencies = [
  "embassy-net",
  "embedded-io-async",
  "heapless",
+ "hyped_can",
+ "hyped_measurement_ids",
  "rand_core",
  "rust-mqtt",
  "serde",
@@ -756,6 +767,16 @@ version = "0.1.0"
 dependencies = [
  "quote",
  "syn",
+]
+
+[[package]]
+name = "hyped_measurement_ids"
+version = "0.1.0"
+dependencies = [
+ "convert_case 0.8.0",
+ "heapless",
+ "quote",
+ "saphyr",
 ]
 
 [[package]]
@@ -906,9 +927,9 @@ dependencies = [
 
 [[package]]
 name = "quote"
-version = "1.0.38"
+version = "1.0.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e4dccaaaf89514f546c693ddc140f729f958c247918a13380cccc6078391acc"
+checksum = "1885c039570dc00dcb4ff087a89e185fd56bae234ddc7f056a945bf36467248d"
 dependencies = [
  "proc-macro2",
 ]

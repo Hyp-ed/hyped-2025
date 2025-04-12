@@ -74,9 +74,9 @@ impl State {
     }
 }
 
-impl Into<String<20>> for State {
-    fn into(self) -> String<20> {
-        self.to_string()
+impl From<State> for String<20> {
+    fn from(val: State) -> Self {
+        val.to_string()
     }
 }
 

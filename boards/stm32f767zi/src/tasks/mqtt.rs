@@ -1,4 +1,4 @@
-pub mod heartbeat;
+pub mod base_station_heartbeat;
 pub mod receive;
 pub mod send;
 

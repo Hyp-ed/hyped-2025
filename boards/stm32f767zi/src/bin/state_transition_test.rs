@@ -56,7 +56,4 @@ async fn main(spawner: Spawner) -> ! {
     request_transition!(State::Accelerate);
     Timer::after(Duration::from_secs(1)).await;
     emergency!();
-    Timer::after(Duration::from_secs(10)).await;
-
-    panic!("End of test");
 }

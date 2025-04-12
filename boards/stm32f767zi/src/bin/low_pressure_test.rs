@@ -5,7 +5,7 @@ use embassy_executor::Spawner;
 use embassy_stm32::adc::{Adc, AdcChannel};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
-use hyped_boards_stm32f767zi::tasks::read_low_pressure::read_low_pressure;
+use hyped_boards_stm32f767zi::tasks::sensors::read_low_pressure::read_low_pressure;
 use hyped_sensors::SensorValueRange::{self, *};
 use {defmt_rtt as _, panic_probe as _};
 

@@ -6,7 +6,7 @@ use heapless::String;
 use crate::config::MeasurementId;
 
 /// Enum representing all MQTT topics used by the pod
-#[derive(Debug, defmt::Format)]
+#[derive(Debug, defmt::Format, PartialEq, Eq)]
 pub enum MqttTopic {
     Measurement(MeasurementId),
     State,

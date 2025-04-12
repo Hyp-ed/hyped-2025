@@ -24,9 +24,9 @@ use hyped_boards_stm32f767zi::{
     log::log,
     set_up_network_stack,
     tasks::{
-        can::{heartbeat::heartbeat_controller, receive::can_receiver, send::can_sender},
+        can::{board_heartbeat::heartbeat_controller, receive::can_receiver, send::can_sender},
         can_to_mqtt::can_to_mqtt,
-        mqtt::{heartbeat::base_station_heartbeat, mqtt},
+        mqtt::{base_station_heartbeat::base_station_heartbeat, mqtt},
         network::net_task,
         state_machine::state_machine,
     },
@@ -63,7 +63,7 @@ async fn main(spawner: Spawner) -> ! {
     // Network tasks: MQTT and base station heartbeat
     spawner.must_spawn(mqtt(stack));
     Timer::after(Duration::from_secs(2)).await;
-    // spawner.must_spawn(base_station_heartbeat());
+    spawner.must_spawn(base_station_heartbeat());
 
     // CAN tasks: CAN send/receive, heartbeat controller, and state machine
     defmt::info!("Setting up CAN...");
@@ -80,7 +80,7 @@ async fn main(spawner: Spawner) -> ! {
     spawner.must_spawn(can_to_mqtt());
 
     // Spawn a task for each board we want to keep track of
-    // spawner.must_spawn(heartbeat_controller(BOARD, Board::TemperatureTester));
+    spawner.must_spawn(heartbeat_controller(BOARD, Board::TemperatureTester));
     // ... add more boards here
     spawner.must_spawn(state_machine(BOARD, CURRENT_STATE.sender()));
 

@@ -10,7 +10,7 @@ use embassy_stm32::{
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::{
-    can::{heartbeat::heartbeat_controller, receive::can_receiver, send::can_sender},
+    can::{board_heartbeat::heartbeat_controller, receive::can_receiver, send::can_sender},
     state_machine::state_machine,
 };
 use hyped_communications::boards::Board;
