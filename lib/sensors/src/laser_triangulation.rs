@@ -2,9 +2,9 @@ use crate::SensorValueRange;
 use hyped_adc::HypedAdc;
 
 /// laser_triangulation implements the logic to read current from the RF602 Series Laser Triangulation
-/// sensor using the Hyped ADC trait
+/// sensor using the Hyped ADC trait.
 ///
-/// Data sheet: https://riftek.com/upload/iblock/61a/zx30dssln4kfve1yaxgwdqnd66bcacw3/Laser_Triangulation_Sensors_RF602_Series_eng.pdf
+/// Data sheet PDF is in the HYPED Slack and Google Drive (no longer available online).
 pub struct LaserTriangulation<T: HypedAdc> {
     adc: T,
     calculate_bounds: fn(f32) -> SensorValueRange<f32>,
