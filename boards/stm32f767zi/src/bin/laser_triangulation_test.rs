@@ -18,21 +18,18 @@ async fn main(spawner: Spawner) {
     let mut laser_triangulation_reading_receiver = LASER_TRIANGULATION_READING.receiver().unwrap();
 
     spawner.must_spawn(read_laser_triangulation(laser_triangulation_reading_sender));
-    // Every 100ms we read for the latest value from the laser triangulation sensor.
+
     loop {
-        match laser_triangulation_reading_receiver.try_changed() {
-            Some(reading) => match reading {
-                Safe(value) => {
-                    defmt::info!("Range: {} mm (safe)", value)
-                }
-                Warning(value) => {
-                    defmt::warn!("Range: {} mm (warning)", value)
-                }
-                Critical(value) => {
-                    defmt::error!("Range: {} mm (critical)", value)
-                }
-            },
-            None => (),
+        match laser_triangulation_reading_receiver.changed().await {
+            Safe(value) => {
+                defmt::info!("Range: {} mm (safe)", value)
+            }
+            Warning(value) => {
+                defmt::warn!("Range: {} mm (warning)", value)
+            }
+            Critical(value) => {
+                defmt::error!("Range: {} mm (critical)", value)
+            }
         }
     }
 }
