@@ -8,8 +8,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
       - name: Run clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
+
+  rust-clippy-boards:
+    name: Run clippy (boards)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        board:
+          - stm32l476rg
+          - stm32f767zi
+          - stm32l432kc
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.board }}
+      - run: rustup target add thumbv7em-none-eabihf
+      - name: Run clippy
+        run: cd boards/${{ matrix.board }} && cargo clippy --all-features -- -D warnings
 
   rust-fmt:
     name: Run rustfmt
@@ -51,4 +71,3 @@ jobs:
           else
             echo "All good"
           fi
-      
