@@ -34,8 +34,8 @@ impl From<CanId> for u32 {
 
 impl From<u32> for CanId {
     fn from(id: u32) -> Self {
-        let board: Board = (((id >> 24) & 0xFF) as u8).into();
-        let message_type: CanDataType = (((id >> 16) & 0xFF) as u8).into();
+        let board: Board = (((id >> 24) & 0xFF) as u8).try_into().unwrap();
+        let message_type: CanDataType = (((id >> 16) & 0xFF) as u8).try_into().unwrap();
         let message_identifier: MessageIdentifier = (((id) & 0xFFFF) as u16).into();
 
         CanId {

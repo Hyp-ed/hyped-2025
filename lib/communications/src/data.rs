@@ -144,48 +144,43 @@ impl From<[u8; 8]> for CanData {
                 let u = u32::from_le_bytes(u32_bytes);
                 CanData::U32(u)
             }
-            CanData::Heartbeat(_) => CanData::Heartbeat(data[1].into()),
+            CanData::Heartbeat(_) => CanData::Heartbeat(data[1].try_into().unwrap()),
             CanData::Emergency(_) => CanData::Emergency(data[1].try_into().unwrap()),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, defmt::Format)]
+#[repr(u8)]
 pub enum CanDataType {
-    Bool,
-    TwoU16,
-    F32,
-    State,
-    U32,
-    Heartbeat,
-    Emergency,
+    Bool = 0,
+    TwoU16 = 1,
+    F32 = 2,
+    State = 3,
+    U32 = 4,
+    Heartbeat = 5,
+    Emergency = 6,
 }
 
 impl From<CanDataType> for u8 {
-    fn from(val: CanDataType) -> Self {
-        match val {
-            CanDataType::Bool => 0,
-            CanDataType::TwoU16 => 1,
-            CanDataType::F32 => 2,
-            CanDataType::State => 3,
-            CanDataType::U32 => 4,
-            CanDataType::Heartbeat => 5,
-            CanDataType::Emergency => 6,
-        }
+    fn from(v: CanDataType) -> Self {
+        v as u8
     }
 }
 
-impl From<u8> for CanDataType {
-    fn from(index: u8) -> Self {
+impl TryFrom<u8> for CanDataType {
+    type Error = &'static str;
+
+    fn try_from(index: u8) -> Result<Self, Self::Error> {
         match index {
-            0 => CanDataType::Bool,
-            1 => CanDataType::TwoU16,
-            2 => CanDataType::F32,
-            3 => CanDataType::State,
-            4 => CanDataType::U32,
-            5 => CanDataType::Heartbeat,
-            6 => CanDataType::Emergency,
-            _ => panic!("Invalid CanDataType index"),
+            0 => Ok(CanDataType::Bool),
+            1 => Ok(CanDataType::TwoU16),
+            2 => Ok(CanDataType::F32),
+            3 => Ok(CanDataType::State),
+            4 => Ok(CanDataType::U32),
+            5 => Ok(CanDataType::Heartbeat),
+            6 => Ok(CanDataType::Emergency),
+            _ => Err("Invalid CanDataType index"),
         }
     }
 }

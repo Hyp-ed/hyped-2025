@@ -1,9 +1,8 @@
 // TODOLater: pod name
 
+use crate::config::MeasurementId;
 use core::str::FromStr;
 use heapless::String;
-
-use crate::config::MeasurementId;
 
 pub const MQTT_MEASUREMENT_TOPIC_PREFIX: &str = "hyped/poddington/measurement/";
 
@@ -19,60 +18,47 @@ pub enum MqttTopic {
     Test,
 }
 
-impl MqttTopic {
-    /// Convert an `MqttTopics` enum variant to a string
-    pub fn to_string(&self) -> String<100> {
-        match self {
-            MqttTopic::State => String::<100>::from_str("hyped/poddington/state/state").unwrap(),
-            MqttTopic::StateRequest => {
-                String::<100>::from_str("hyped/podpoddington_2025/state/state_request").unwrap()
-            }
-            MqttTopic::Heartbeat => String::<100>::from_str("hyped/poddington/heartbeat").unwrap(),
-            MqttTopic::Logs => String::<100>::from_str("hyped/poddington/logs").unwrap(),
-            MqttTopic::Debug => String::<100>::from_str("debug").unwrap(),
-            MqttTopic::Test => String::<100>::from_str("test").unwrap(),
-            MqttTopic::Measurement(measurement_id) => {
-                let measurement_id_string: String<50> = (*measurement_id).into();
-                let mut topic = String::<100>::from_str("hyped/poddington/measurement/").unwrap();
-                topic.push_str(measurement_id_string.as_str()).unwrap();
-                topic
-            }
-        }
-    }
+impl FromStr for MqttTopic {
+    type Err = &'static str;
 
-    /// Get an `MqttTopics` enum variant from a string
-    pub fn from_string(topic: &str) -> Option<MqttTopic> {
-        match topic {
-            "hyped/poddington/state/state" => Some(MqttTopic::State),
-            "hyped/poddington/state/state_request" => Some(MqttTopic::StateRequest),
-            "hyped/poddington/heartbeat" => Some(MqttTopic::Heartbeat),
-            "hyped/poddington/logs" => Some(MqttTopic::Logs),
-            "debug" => Some(MqttTopic::Debug),
-            "test" => Some(MqttTopic::Test),
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "hyped/poddington/state/state" => Ok(MqttTopic::State),
+            "hyped/poddington/state/state_request" => Ok(MqttTopic::StateRequest),
+            "hyped/poddington/heartbeat" => Ok(MqttTopic::Heartbeat),
+            "hyped/poddington/logs" => Ok(MqttTopic::Logs),
+            "debug" => Ok(MqttTopic::Debug),
+            "test" => Ok(MqttTopic::Test),
             _ => {
-                if topic.starts_with(MQTT_MEASUREMENT_TOPIC_PREFIX) {
-                    let measurement_id_string =
-                        &topic[MQTT_MEASUREMENT_TOPIC_PREFIX.len()..topic.len()];
+                if s.starts_with(MQTT_MEASUREMENT_TOPIC_PREFIX) {
+                    let measurement_id_string = &s[MQTT_MEASUREMENT_TOPIC_PREFIX.len()..s.len()];
                     let measurement_id = measurement_id_string.into();
-                    Some(MqttTopic::Measurement(measurement_id))
+                    Ok(MqttTopic::Measurement(measurement_id))
                 } else {
-                    None
+                    Err("Invalid topic")
                 }
             }
         }
     }
 }
 
-impl FromStr for MqttTopic {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match MqttTopic::from_string(s) {
-            Some(topic) => Ok(topic),
-            None => {
-                defmt::error!("Failed to parse MQTT topic: {}", s);
-                Err(())
+impl From<MqttTopic> for String<100> {
+    fn from(v: MqttTopic) -> Self {
+        let mut topic = String::<100>::new();
+        match v {
+            MqttTopic::State => topic.push_str("hyped/poddington/state/state").unwrap(),
+            MqttTopic::StateRequest => topic
+                .push_str("hyped/poddington/state/state_request")
+                .unwrap(),
+            MqttTopic::Heartbeat => topic.push_str("hyped/poddington/heartbeat").unwrap(),
+            MqttTopic::Logs => topic.push_str("hyped/poddington/logs").unwrap(),
+            MqttTopic::Debug => topic.push_str("debug").unwrap(),
+            MqttTopic::Test => topic.push_str("test").unwrap(),
+            MqttTopic::Measurement(measurement_id) => {
+                topic.push_str(MQTT_MEASUREMENT_TOPIC_PREFIX).unwrap();
+                topic.push_str(measurement_id.into()).unwrap();
             }
         }
+        topic
     }
 }

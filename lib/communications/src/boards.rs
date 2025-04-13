@@ -1,42 +1,35 @@
 #[derive(Debug, Clone, Copy, PartialEq, defmt::Format)]
 pub enum Board {
-    Telemetry,
-    Navigation,
-    Pneumatics,
-    Test,
-    TemperatureTester,
-    KeyenceTester,
-    StateMachineTester,
-    Mqtt,
+    Telemetry = 0,
+    Navigation = 1,
+    Pneumatics = 2,
+    Test = 3,
+    TemperatureTester = 4,
+    KeyenceTester = 5,
+    StateMachineTester = 6,
+    Mqtt = 7,
 }
 
 impl From<Board> for u8 {
-    fn from(val: Board) -> Self {
-        match val {
-            Board::Telemetry => 0,
-            Board::Navigation => 1,
-            Board::Pneumatics => 2,
-            Board::Test => 3,
-            Board::TemperatureTester => 4,
-            Board::KeyenceTester => 5,
-            Board::StateMachineTester => 6,
-            Board::Mqtt => 7,
-        }
+    fn from(board: Board) -> Self {
+        board as u8
     }
 }
 
-impl From<u8> for Board {
-    fn from(index: u8) -> Self {
+impl TryFrom<u8> for Board {
+    type Error = &'static str;
+
+    fn try_from(index: u8) -> Result<Self, Self::Error> {
         match index {
-            0 => Board::Telemetry,
-            1 => Board::Navigation,
-            2 => Board::Pneumatics,
-            3 => Board::Test,
-            4 => Board::TemperatureTester,
-            5 => Board::KeyenceTester,
-            6 => Board::StateMachineTester,
-            7 => Board::Mqtt,
-            _ => panic!("Invalid Board index: {:?}", index),
+            0 => Ok(Board::Telemetry),
+            1 => Ok(Board::Navigation),
+            2 => Ok(Board::Pneumatics),
+            3 => Ok(Board::Test),
+            4 => Ok(Board::TemperatureTester),
+            5 => Ok(Board::KeyenceTester),
+            6 => Ok(Board::StateMachineTester),
+            7 => Ok(Board::Mqtt),
+            _ => Err("Invalid Board index"),
         }
     }
 }

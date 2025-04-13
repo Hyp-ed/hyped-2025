@@ -12,7 +12,7 @@ pub enum Reason {
 }
 
 impl TryFrom<u8> for Reason {
-    type Error = ();
+    type Error = &'static str;
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
@@ -23,7 +23,7 @@ impl TryFrom<u8> for Reason {
             5 => Ok(Reason::MissingHeartbeat),
             6 => Ok(Reason::TemperatureUpperLimitFailure),
             7 => Ok(Reason::TemperatureLowerLimitFailure),
-            _ => Err(()),
+            _ => Err("Invalid reason for emergency stop"),
         }
     }
 }

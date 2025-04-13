@@ -42,7 +42,7 @@ pub async fn send_can_state_transition_command_to_mqtt() {
 
         let message = MqttMessage::new(
             MqttTopic::State,
-            String::from_str(state_transition_command.to_state.to_string().as_str()).unwrap(),
+            String::from_str(state_transition_command.to_state.into()).unwrap(),
         );
         MQTT_SEND.send(message).await;
     }
@@ -91,7 +91,7 @@ pub async fn send_mqtt_state_transition_requests_to_can() {
             let state: State = mqtt_message
                 .payload
                 .as_str()
-                .try_into()
+                .parse()
                 .expect("Failed to parse state");
             let can_message =
                 CanMessage::StateTransitionRequest(StateTransitionRequest::new(Board::Mqtt, state));

@@ -63,13 +63,13 @@ pub async fn mqtt_receive(stack: &'static Stack<Ethernet<'static, ETH, GenericSM
     loop {
         match mqtt_client.receive_message().await {
             Ok((topic_str, message)) => {
-                let topic = MqttTopic::from_string(topic_str);
+                let topic: Result<MqttTopic, &str> = topic_str.parse();
 
                 match topic {
                     // Ignore heartbeat and log messages
-                    Some(MqttTopic::Heartbeat) => {}
-                    Some(MqttTopic::Logs) => {}
-                    Some(topic) => {
+                    Ok(MqttTopic::Heartbeat) => {}
+                    Ok(MqttTopic::Logs) => {}
+                    Ok(topic) => {
                         // Send message to channel so that it can be consumed by other tasks
                         MQTT_RECEIVE
                             .send(MqttMessage::new(
@@ -79,7 +79,7 @@ pub async fn mqtt_receive(stack: &'static Stack<Ethernet<'static, ETH, GenericSM
                             ))
                             .await;
                     }
-                    None => {
+                    Err(_) => {
                         // Log warning for unknown topic
                         log(
                             LogLevel::Warn,
