@@ -5,6 +5,8 @@ use heapless::String;
 
 use crate::config::MeasurementId;
 
+pub const MQTT_MEASUREMENT_TOPIC_PREFIX: &str = "hyped/poddington/measurement/";
+
 /// Enum representing all MQTT topics used by the pod
 #[derive(Debug, defmt::Format, PartialEq, Eq)]
 pub enum MqttTopic {
@@ -30,7 +32,7 @@ impl MqttTopic {
             MqttTopic::Debug => String::<100>::from_str("debug").unwrap(),
             MqttTopic::Test => String::<100>::from_str("test").unwrap(),
             MqttTopic::Measurement(measurement_id) => {
-                let measurement_id_string = measurement_id.to_string();
+                let measurement_id_string: String<50> = measurement_id.clone().into();
                 let mut topic = String::<100>::from_str("hyped/poddington/measurement/").unwrap();
                 topic.push_str(measurement_id_string.as_str()).unwrap();
                 topic
@@ -48,9 +50,10 @@ impl MqttTopic {
             "debug" => Some(MqttTopic::Debug),
             "test" => Some(MqttTopic::Test),
             _ => {
-                if topic.starts_with("hyped/poddington/measurement/") {
-                    let measurement_id_string = &topic[26..];
-                    let measurement_id = MeasurementId::from_string(measurement_id_string);
+                if topic.starts_with(MQTT_MEASUREMENT_TOPIC_PREFIX) {
+                    let measurement_id_string =
+                        &topic[MQTT_MEASUREMENT_TOPIC_PREFIX.len()..topic.len()];
+                    let measurement_id = measurement_id_string.into();
                     Some(MqttTopic::Measurement(measurement_id))
                 } else {
                     None

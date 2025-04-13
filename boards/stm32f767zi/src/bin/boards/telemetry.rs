@@ -20,7 +20,7 @@ use embassy_stm32::{
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::{
-    configure_networking,
+    configure_networking, default_can_config,
     log::log,
     set_up_network_stack,
     tasks::{
@@ -68,9 +68,7 @@ async fn main(spawner: Spawner) -> ! {
     // CAN tasks: CAN send/receive, heartbeat controller, and state machine
     defmt::info!("Setting up CAN...");
     let mut can = Can::new(p.CAN1, p.PD0, p.PD1, Irqs);
-    can.modify_filters()
-        .enable_bank(0, Fifo::Fifo0, Mask32::accept_all());
-    can.modify_config().set_bitrate(500_000);
+    default_can_config!(can);
     can.enable().await;
     let (can_tx, can_rx) = can.split();
     spawner.must_spawn(can_receiver(can_rx, EMERGENCY.sender()));
@@ -80,7 +78,7 @@ async fn main(spawner: Spawner) -> ! {
     spawner.must_spawn(can_to_mqtt());
 
     // Spawn a task for each board we want to keep track of
-    spawner.must_spawn(heartbeat_controller(BOARD, Board::TemperatureTester));
+    // spawner.must_spawn(heartbeat_controller(BOARD, Board::TemperatureTester));
     // ... add more boards here
     spawner.must_spawn(state_machine(BOARD, CURRENT_STATE.sender()));
 

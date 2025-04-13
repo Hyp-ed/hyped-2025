@@ -68,7 +68,7 @@ pub async fn mqtt_send(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>
 
     loop {
         let message = MQTT_SEND.receive().await;
-        defmt::info!("Sending MQTT message");
+        defmt::debug!("Sending MQTT message: {}", message);
         mqtt_client
             .send_message(
                 message.topic.to_string().as_str(),

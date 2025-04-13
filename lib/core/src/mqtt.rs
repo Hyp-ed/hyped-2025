@@ -96,7 +96,10 @@ impl<T: embedded_io_async::Read + embedded_io_async::Write, R: rand_core::RngCor
                     info!("MQTT Network Error");
                 }
                 ReasonCode::NoMatchingSubscribers => {
-                    warn!("Is the base station subscribed to this topic?");
+                    warn!(
+                        "Is the base station subscribed to this topic? Topic: {}",
+                        topic
+                    );
                 }
                 _ => {
                     warn!("Other MQTT Error: {:?}", mqtt_error);

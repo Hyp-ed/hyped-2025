@@ -4,7 +4,12 @@ use heapless::String;
 use hyped_communications::{
     boards::Board, messages::CanMessage, state_transition::StateTransitionRequest,
 };
-use hyped_core::{format, format_string::show, mqtt::MqttMessage, mqtt_topics::MqttTopic};
+use hyped_core::{
+    format,
+    format_string::show,
+    mqtt::MqttMessage,
+    mqtt_topics::{MqttTopic, MQTT_MEASUREMENT_TOPIC_PREFIX},
+};
 use hyped_state_machine::states::State;
 
 use super::{
@@ -47,24 +52,30 @@ pub async fn send_can_state_transition_command_to_mqtt() {
 pub async fn send_can_measurement_to_mqtt() {
     let measurements_receiver = INCOMING_MEASUREMENTS.receiver();
 
-    defmt::info!("Task started: send_can_measurement_to_mqtt");
+    defmt::debug!("Task started: send_can_measurement_to_mqtt");
 
     loop {
         let measurement = measurements_receiver.receive().await;
 
-        let topic = measurement
-            .measurement_id
-            .to_string()
+        let mut topic_string = String::<100>::new();
+        topic_string
+            .push_str(MQTT_MEASUREMENT_TOPIC_PREFIX)
+            .unwrap();
+        topic_string
+            .push_str(measurement.measurement_id.into())
+            .unwrap();
+
+        let topic = topic_string
             .parse()
             .expect("Failed to parse measurement ID from CAN bus");
 
-        let message = MqttMessage::new(
-            topic,
+        let payload =
             String::from_str(format!(&mut [0u8; 1024], "{}", measurement.reading).unwrap())
-                .unwrap(),
-        );
+                .unwrap();
 
-        defmt::info!("Sending CAN measurement to MQTT: {:?}", message);
+        let message = MqttMessage::new(topic, payload);
+
+        defmt::debug!("Sending CAN measurement to MQTT: {:?}", message);
 
         MQTT_SEND.send(message).await;
     }

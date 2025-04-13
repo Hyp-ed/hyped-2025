@@ -19,7 +19,7 @@ pub async fn can_sender(mut tx: CanTx<'static>) {
     loop {
         let message = can_sender.receive().await;
 
-        defmt::info!("Sending CAN message: {:?}", message);
+        defmt::debug!("Sending CAN message: {:?}", message);
 
         let can_frame: HypedCanFrame = message.into();
 
@@ -29,7 +29,7 @@ pub async fn can_sender(mut tx: CanTx<'static>) {
         let frame = Frame::new_data(id, &data).unwrap();
 
         tx.write(&frame).await;
-        defmt::info!("CAN message sent: {:?}", frame);
+        defmt::debug!("CAN message sent: {:?}", frame);
 
         Timer::after(Duration::from_millis(10)).await;
     }

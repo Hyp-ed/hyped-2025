@@ -26,3 +26,13 @@ macro_rules! request_transition {
         can_sender.send(can_message).await;
     };
 }
+
+/// Perform default CAN configuration.
+#[macro_export]
+macro_rules! default_can_config {
+    ($can:ident) => {
+        $can.modify_filters()
+            .enable_bank(0, Fifo::Fifo0, Mask32::accept_all());
+        $can.modify_config().set_bitrate(500_000);
+    };
+}

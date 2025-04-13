@@ -72,18 +72,14 @@ pub async fn read_temperature(
         if let Some(reading) = reading {
             // Handle the reading based on the range
             let value = match reading {
-                SensorValueRange::Critical(v) => {
-                    defmt::error!("Critical temperature reading: {:?}", v);
+                SensorValueRange::Critical(_) => {
                     emergency!(this_board);
                 }
-                SensorValueRange::Warning(v) => {
-                    defmt::warn!("Warning temperature reading: {:?}", v);
-                    v
-                }
+                SensorValueRange::Warning(v) => v,
                 SensorValueRange::Safe(v) => v,
             };
 
-            defmt::info!("Sending temperature reading over CAN");
+            defmt::debug!("Sending temperature reading over CAN");
             can_sender
                 .send(CanMessage::MeasurementReading(MeasurementReading::new(
                     CanData::F32(value),

@@ -46,7 +46,7 @@ pub async fn can_receiver(
     let incoming_heartbeat_sender = INCOMING_HEARTBEATS.sender();
 
     loop {
-        defmt::info!("Waiting for CAN message");
+        defmt::debug!("Waiting for CAN message");
 
         let envelope = rx.read().await;
         if envelope.is_err() {
@@ -63,7 +63,7 @@ pub async fn can_receiver(
         let can_frame = HypedCanFrame::new(can_id, data);
 
         let can_message: CanMessage = can_frame.into();
-        defmt::info!("Received CAN message: {:?}", can_message);
+        defmt::debug!("Received CAN message: {:?}", can_message);
 
         match can_message {
             CanMessage::StateTransitionCommand(state_transition_command) => {
@@ -78,7 +78,7 @@ pub async fn can_receiver(
                     .await;
             }
             CanMessage::Heartbeat(heartbeat) => {
-                defmt::info!("Received heartbeat: {:?}", heartbeat);
+                defmt::debug!("Received heartbeat: {:?}", heartbeat);
                 incoming_heartbeat_sender.send(heartbeat).await;
             }
             CanMessage::Emergency(board, reason) => {
@@ -86,7 +86,7 @@ pub async fn can_receiver(
                 defmt::warn!("Emergency message from board {}: {}", board, reason);
             }
             CanMessage::MeasurementReading(measurement_reading) => {
-                defmt::info!("Received measurement reading: {:?}", measurement_reading);
+                defmt::debug!("Received measurement reading: {:?}", measurement_reading);
                 INCOMING_MEASUREMENTS.send(measurement_reading).await;
             }
         }

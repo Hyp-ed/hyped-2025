@@ -69,6 +69,6 @@ pub async fn heartbeat_responder(this_board: Board) {
                 .await;
         }
 
-        Timer::after(Duration::from_millis(10)).await;
+        Timer::after(Duration::from_millis(100)).await;
     }
 }

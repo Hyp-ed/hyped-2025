@@ -27,38 +27,88 @@ pub fn gen_measurement_ids(args: TokenStream) -> TokenStream {
     }
     enum_str.push_str("}\n");
 
-    // to_string and from_string
-    enum_str.push_str("\nimpl MeasurementId {\n");
-    enum_str.push_str("    pub fn to_string(&self) -> String<50> {\n");
+    // impl Display for MeasurementId
+    enum_str.push_str("\nimpl core::fmt::Display for MeasurementId {\n");
+    enum_str
+        .push_str("    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {\n");
     enum_str.push_str("        match self {\n");
     for id in measurement_ids.clone() {
         enum_str.push_str(&format!(
-            "            MeasurementId::{} => String::<50>::from_str(\"{}\").unwrap(),\n",
+            "            MeasurementId::{} => write!(f, \"{}\"),\n",
             id,
-            id.to_case(Case::Snake)
-        ));
-    }
-    enum_str.push_str("        }\n");
-    enum_str.push_str("    }\n");
-    enum_str.push('\n');
-    enum_str.push_str("    pub fn from_string(enum_str: &str) -> MeasurementId {\n");
-    enum_str.push_str("        match enum_str {\n");
-    for id in measurement_ids.clone() {
-        enum_str.push_str(&format!(
-            "            \"{}\" => MeasurementId::{},\n",
             id.to_case(Case::Snake),
-            id
         ));
     }
-    enum_str.push_str("            _ => panic!(\"Failed to parse enum\"),\n");
     enum_str.push_str("        }\n");
     enum_str.push_str("    }\n");
     enum_str.push_str("}\n");
 
-    // Into<u16>
-    enum_str.push_str("\nimpl Into<u16> for MeasurementId {\n");
-    enum_str.push_str("    fn into(self) -> u16 {\n");
+    // From<MeasurementId> for String<50>
+    enum_str.push_str("\nimpl From<MeasurementId> for String<50> {\n");
+    enum_str.push_str("    fn from(measurement_id: MeasurementId) -> String<50> {\n");
+    enum_str.push_str("        match measurement_id {\n");
+    for id in measurement_ids.clone() {
+        enum_str.push_str(&format!(
+            "            MeasurementId::{} => String::<50>::from_str(\"{}\").unwrap(),\n",
+            id,
+            id.to_case(Case::Snake),
+        ));
+    }
+    enum_str.push_str("        }\n");
+    enum_str.push_str("    }\n");
+    enum_str.push_str("}\n");
+
+    // Into<MeasurementId> for &str
+    enum_str.push_str("\nimpl Into<MeasurementId> for &str {\n");
+    enum_str.push_str("    fn into(self) -> MeasurementId {\n");
     enum_str.push_str("        match self {\n");
+    for id in measurement_ids.clone() {
+        enum_str.push_str(&format!(
+            "            \"{}\" => MeasurementId::{},\n",
+            id.to_case(Case::Snake),
+            id,
+        ));
+    }
+    enum_str.push_str("            _ => panic!(\"Failed to parse enum Into<&str>, {}\", self),\n");
+    enum_str.push_str("        }\n");
+    enum_str.push_str("    }\n");
+    enum_str.push_str("}\n");
+
+    // From<MeasurementId> for &str
+    enum_str.push_str("\nimpl From<MeasurementId> for &str {\n");
+    enum_str.push_str("    fn from(measurement_id: MeasurementId) -> &'static str {\n");
+    enum_str.push_str("        match measurement_id {\n");
+    for id in measurement_ids.clone() {
+        enum_str.push_str(&format!(
+            "            MeasurementId::{} => \"{}\",\n",
+            id,
+            id.to_case(Case::Snake),
+        ));
+    }
+    enum_str.push_str("        }\n");
+    enum_str.push_str("    }\n");
+    enum_str.push_str("}\n");
+
+    // From<String<50>> for MeasurementId
+    enum_str.push_str("\nimpl From<String<50>> for MeasurementId {\n");
+    enum_str.push_str("    fn from(measurement_id: String<50>) -> MeasurementId {\n");
+    enum_str.push_str("        match measurement_id.as_str() {\n");
+    for id in measurement_ids.clone() {
+        enum_str.push_str(&format!(
+            "            \"{}\" => MeasurementId::{},\n",
+            id.to_case(Case::Snake),
+            id,
+        ));
+    }
+    enum_str.push_str("            _ => panic!(\"Failed to parse enum From<String<50>>\"),\n");
+    enum_str.push_str("        }\n");
+    enum_str.push_str("    }\n");
+    enum_str.push_str("}\n");
+
+    // From<MeasurementId> for u16
+    enum_str.push_str("\nimpl From<MeasurementId> for u16 {\n");
+    enum_str.push_str("    fn from(measurement_id: MeasurementId) -> u16 {\n");
+    enum_str.push_str("        match measurement_id {\n");
     for (i, id) in measurement_ids.clone().into_iter().enumerate() {
         enum_str.push_str(&format!("            MeasurementId::{} => {},\n", id, i));
     }
@@ -66,19 +116,19 @@ pub fn gen_measurement_ids(args: TokenStream) -> TokenStream {
     enum_str.push_str("    }\n");
     enum_str.push_str("}\n");
 
-    // From<u16>
+    // From<u16> for MeasurementId
     enum_str.push_str("\nimpl From<u16> for MeasurementId {\n");
     enum_str.push_str("    fn from(enum_str: u16) -> MeasurementId {\n");
     enum_str.push_str("        match enum_str {\n");
     for (i, id) in measurement_ids.clone().into_iter().enumerate() {
         enum_str.push_str(&format!("            {} => MeasurementId::{},\n", i, id));
     }
-    enum_str.push_str("            _ => panic!(\"Failed to parse enum\"),\n");
+    enum_str.push_str("            _ => panic!(\"Failed to parse enum From<u16>\"),\n");
     enum_str.push_str("        }\n");
     enum_str.push_str("    }\n");
     enum_str.push_str("}\n");
 
-    enum_str.parse().expect("Failed to parse enum")
+    enum_str.parse().expect("Failed to parse enum END")
 }
 
 fn get_measurement_ids(yaml_path: String, pod_id: String) -> Vec<String> {
