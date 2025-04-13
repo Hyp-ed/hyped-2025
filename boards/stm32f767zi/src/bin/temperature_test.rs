@@ -22,10 +22,17 @@ use embassy_sync::{
     watch::Watch,
 };
 use embassy_time::{Duration, Timer};
-use hyped_boards_stm32f767zi::tasks::{
-    can::{receive::can_receiver, send::can_sender},
-    sensors::read_temperature::read_temperature,
-    state_machine::state_updater,
+use hyped_boards_stm32f767zi::{
+    default_can_config,
+    tasks::{
+        can::{
+            board_heartbeat::{heartbeat_listener, send_heartbeat},
+            receive::can_receiver,
+            send::can_sender,
+        },
+        sensors::read_temperature::read_temperature,
+        state_machine::state_updater,
+    },
 };
 use hyped_communications::boards::Board;
 use hyped_core::config::MeasurementId;
@@ -66,16 +73,14 @@ async fn main(spawner: Spawner) -> ! {
     let i2c_bus = I2C_BUS.init(Mutex::new(RefCell::new(i2c)));
 
     let mut can = Can::new(p.CAN1, p.PD0, p.PD1, Irqs);
-    can.modify_filters()
-        .enable_bank(0, Fifo::Fifo0, Mask32::accept_all());
-    can.modify_config().set_bitrate(500_000);
+    default_can_config!(can);
     can.enable().await;
     let (can_tx, can_rx) = can.split();
     spawner.must_spawn(can_receiver(can_rx, EMERGENCY.sender()));
     spawner.must_spawn(can_sender(can_tx));
 
-    Timer::after(Duration::from_secs(2)).await;
-
+    spawner.must_spawn(send_heartbeat(BOARD, Board::Telemetry));
+    spawner.must_spawn(heartbeat_listener(BOARD, Board::Telemetry));
     spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
 
     spawner.must_spawn(read_temperature(
