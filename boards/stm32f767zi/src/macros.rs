@@ -2,17 +2,12 @@
 /// Will cause all boards to transition to the Emergency state.
 #[macro_export]
 macro_rules! emergency {
-    () => {
+    ($reason:expr) => {
         let can_sender = CAN_SEND.sender();
-        let can_message = CanMessage::Emergency(BOARD, Reason::Unknown);
+        let can_message = CanMessage::Emergency(THIS_BOARD.get().await.clone(), $reason);
         can_sender.send(can_message).await;
-        panic!("Emergency stop triggered");
-    };
-    ($board:ident) => {
-        let can_sender = CAN_SEND.sender();
-        let can_message = CanMessage::Emergency($board, Reason::Unknown);
-        can_sender.send(can_message).await;
-        panic!("Emergency stop triggered");
+        let emergency_sender = EMERGENCY.sender();
+        emergency_sender.send(true);
     };
 }
 
@@ -21,8 +16,10 @@ macro_rules! emergency {
 macro_rules! request_transition {
     ($state:expr) => {
         let can_sender = CAN_SEND.sender();
-        let can_message =
-            CanMessage::StateTransitionRequest(StateTransitionRequest::new(BOARD, $state));
+        let can_message = CanMessage::StateTransitionRequest(StateTransitionRequest::new(
+            THIS_BOARD.get().await.clone(),
+            $state,
+        ));
         can_sender.send(can_message).await;
     };
 }

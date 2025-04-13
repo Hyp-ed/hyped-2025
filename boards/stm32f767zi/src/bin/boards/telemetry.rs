@@ -17,9 +17,9 @@ use embassy_stm32::{
     time::Hertz,
     Config,
 };
-use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::{
+    board_state::{CURRENT_STATE, EMERGENCY, THIS_BOARD},
     configure_networking, default_can_config,
     log::log,
     set_up_network_stack,
@@ -52,13 +52,12 @@ bind_interrupts!(struct Irqs {
     CAN1_TX => TxInterruptHandler<CAN1>;
 });
 
-// All boards should have these:
-const BOARD: Board = Board::Telemetry;
-pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();
-pub static EMERGENCY: Watch<CriticalSectionRawMutex, bool, 1> = Watch::new();
-
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
+    THIS_BOARD
+        .init(Board::Telemetry)
+        .expect("Failed to initialize board");
+
     let mut config = Config::default();
     configure_networking!(config);
     let p = embassy_stm32::init(config);
@@ -75,26 +74,35 @@ async fn main(spawner: Spawner) -> ! {
     default_can_config!(can);
     can.enable().await;
     let (can_tx, can_rx) = can.split();
-    spawner.must_spawn(can_receiver(can_rx, EMERGENCY.sender()));
+    spawner.must_spawn(can_receiver(can_rx));
     spawner.must_spawn(can_sender(can_tx));
     defmt::info!("CAN setup complete");
 
     spawner.must_spawn(can_to_mqtt());
-
-    // Spawn a task for each board we want to keep track of
-    spawner.must_spawn(heartbeat_listener(BOARD, Board::TemperatureTester));
+    spawner.must_spawn(emergency_handler());
+    spawner.must_spawn(heartbeat_listener(Board::TemperatureTester));
+    spawner.must_spawn(send_heartbeat(Board::TemperatureTester));
     // ... add more boards here
-    spawner.must_spawn(send_heartbeat(BOARD, Board::TemperatureTester));
-    spawner.must_spawn(state_machine(BOARD, CURRENT_STATE.sender()));
+    spawner.must_spawn(state_machine());
 
+    loop {
+        Timer::after(Duration::from_secs(1)).await;
+    }
+}
+
+#[embassy_executor::task]
+async fn emergency_handler() {
     let current_state_sender = CURRENT_STATE.sender();
 
     loop {
         // All main loops should have logic to handle an emergency signal...
         if EMERGENCY.receiver().unwrap().get().await {
+            defmt::error!("Emergency signal received! Cleaning up...");
             // ... and take appropriate action
             current_state_sender.send(State::Emergency);
-            panic!("Emergency signal received");
+            // Wait for the emergency signal to be sent
+            Timer::after(Duration::from_secs(1)).await;
+            panic!("Terminating due to emergency signal!");
         }
     }
 }

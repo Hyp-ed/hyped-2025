@@ -1,10 +1,8 @@
-use crate::{io::Stm32f767ziGpioInput, tasks::can::send::CAN_SEND};
+use crate::{board_state::THIS_BOARD, io::Stm32f767ziGpioInput, tasks::can::send::CAN_SEND};
 use embassy_stm32::gpio::Input;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
 use embassy_time::{Duration, Timer};
-use hyped_communications::{
-    boards::Board, data::CanData, measurements::MeasurementReading, messages::CanMessage,
-};
+use hyped_communications::{data::CanData, measurements::MeasurementReading, messages::CanMessage};
 use hyped_core::{config::MeasurementId, types::DigitalSignal};
 use hyped_sensors::keyence::Keyence;
 
@@ -15,7 +13,6 @@ const UPDATE_FREQUENCY: u64 = 10;
 #[embassy_executor::task]
 pub async fn read_keyence(
     gpio_pin: Input<'static>,
-    this_board: Board,
     measurement_id: MeasurementId,
     latest_stripe_count_sender: Sender<'static, CriticalSectionRawMutex, u32, 1>,
 ) -> ! {
@@ -43,7 +40,7 @@ pub async fn read_keyence(
         can_sender
             .send(CanMessage::MeasurementReading(MeasurementReading::new(
                 CanData::U32(new_stripe_count),
-                this_board,
+                *THIS_BOARD.get().await,
                 measurement_id,
             )))
             .await;

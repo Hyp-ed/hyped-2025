@@ -109,7 +109,7 @@ impl From<CanData> for [u8; 8] {
             CanData::Emergency(reason) => {
                 let mut data: [u8; 8] = [0; 8];
                 data[0] = val.into();
-                data[1] = reason.into();
+                data[1] = reason as u8;
                 data
             }
         }
@@ -145,7 +145,7 @@ impl From<[u8; 8]> for CanData {
                 CanData::U32(u)
             }
             CanData::Heartbeat(_) => CanData::Heartbeat(data[1].into()),
-            CanData::Emergency(_) => CanData::Emergency(data[1].into()),
+            CanData::Emergency(_) => CanData::Emergency(data[1].try_into().unwrap()),
         }
     }
 }

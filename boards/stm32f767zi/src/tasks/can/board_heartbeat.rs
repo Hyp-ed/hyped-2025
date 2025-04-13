@@ -4,6 +4,7 @@ use hyped_communications::{
 };
 
 use crate::{
+    board_state::{EMERGENCY, THIS_BOARD},
     emergency,
     tasks::can::{receive::INCOMING_HEARTBEATS, send::CAN_SEND},
 };
@@ -19,8 +20,8 @@ const STARTUP_TIMEOUT: u64 = 30000; // in ms
 /// For the controller boards, this should be spawned once for every other board.
 /// For all other boards, this should be spawned once for the controller board.
 #[embassy_executor::task]
-pub async fn heartbeat_listener(this_board: Board, from_board: Board) {
-    match wait_for_first_heartbeat(this_board, from_board).await {
+pub async fn heartbeat_listener(from_board: Board) {
+    match wait_for_first_heartbeat(from_board).await {
         Ok(_) => {
             defmt::info!("Board {:?} is alive!", from_board,);
         }
@@ -29,7 +30,7 @@ pub async fn heartbeat_listener(this_board: Board, from_board: Board) {
                 "Failed to receive first heartbeat from board {:?}",
                 from_board,
             );
-            emergency!(this_board);
+            emergency!(Reason::NoInitialHeartbeat);
         }
     }
 
@@ -39,8 +40,8 @@ pub async fn heartbeat_listener(this_board: Board, from_board: Board) {
             loop {
                 // Only return when we receive a heartbeat message
                 let heartbeat = INCOMING_HEARTBEATS.receive().await;
-                if heartbeat.to == this_board && heartbeat.from == from_board {
-                    defmt::info!(
+                if heartbeat.to == *THIS_BOARD.get().await && heartbeat.from == from_board {
+                    defmt::debug!(
                         "Received heartbeat from board {:?}",
                         from_board,
                     );
@@ -57,19 +58,19 @@ pub async fn heartbeat_listener(this_board: Board, from_board: Board) {
                     "Emergency stop triggered due to missing heartbeat from board {:?}",
                     from_board
                 );
-                emergency!(this_board);
+                emergency!(Reason::MissingHeartbeat);
             }
         }
     }
 }
 
 /// Gives the boards a chance to wake up at the start.
-pub async fn wait_for_first_heartbeat(this_board: Board, target_board: Board) -> Result<(), ()> {
+pub async fn wait_for_first_heartbeat(target_board: Board) -> Result<(), ()> {
     match with_timeout(Duration::from_millis(STARTUP_TIMEOUT), async {
         loop {
             // Only return when we receive a heartbeat message
             let heartbeat = INCOMING_HEARTBEATS.receive().await;
-            if heartbeat.to == this_board && heartbeat.from == target_board {
+            if heartbeat.to == *THIS_BOARD.get().await && heartbeat.from == target_board {
                 break;
             }
         }
@@ -85,13 +86,13 @@ pub async fn wait_for_first_heartbeat(this_board: Board, target_board: Board) ->
 /// For the controller board, this should be spawned once for every other board.
 /// For all other boards, this should be spawned once for the controller board.
 #[embassy_executor::task]
-pub async fn send_heartbeat(this_board: Board, to_board: Board) {
+pub async fn send_heartbeat(to_board: Board) {
     let can_sender = CAN_SEND.sender();
 
     loop {
         // Send a hearbeat to the controller board every 100ms
-        let heartbeat = Heartbeat::new(to_board, this_board);
-        defmt::info!("Sending heartbeat: {:?}", heartbeat);
+        let heartbeat = Heartbeat::new(to_board, *THIS_BOARD.get().await);
+        defmt::debug!("Sending heartbeat: {:?}", heartbeat);
         can_sender.send(CanMessage::Heartbeat(heartbeat)).await;
         Timer::after(Duration::from_hz(HEARTBEAT_FREQUENCY)).await;
     }

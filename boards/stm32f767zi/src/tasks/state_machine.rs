@@ -1,24 +1,22 @@
 use super::can::receive::INCOMING_STATE_TRANSITION_COMMANDS;
-use crate::tasks::can::{receive::INCOMING_STATE_TRANSITION_REQUESTS, send::CAN_SEND};
-use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
-use embassy_time::{Duration, Timer};
-use hyped_communications::{
-    boards::Board, messages::CanMessage, state_transition::StateTransitionCommand,
+use crate::{
+    board_state::{CURRENT_STATE, THIS_BOARD},
+    tasks::can::{receive::INCOMING_STATE_TRANSITION_REQUESTS, send::CAN_SEND},
 };
+use embassy_time::{Duration, Timer};
+use hyped_communications::{messages::CanMessage, state_transition::StateTransitionCommand};
 use hyped_state_machine::state_machine::StateMachine;
-use hyped_state_machine::states::State;
 
 use {defmt_rtt as _, panic_probe as _};
 
 /// Handles the state machine logic by receiving state transition requests and sending new states.
 /// Should only be run on one board.
 #[embassy_executor::task]
-pub async fn state_machine(
-    this_board: Board,
-    state_sender: Sender<'static, CriticalSectionRawMutex, State, 1>,
-) {
+pub async fn state_machine() {
     // Initialise the state machine with the initial state
     let mut state_machine = StateMachine::new();
+
+    let state_sender = CURRENT_STATE.sender();
 
     let incoming_state_transition_requests = INCOMING_STATE_TRANSITION_REQUESTS.receiver();
     let can_sender = CAN_SEND.sender();
@@ -38,7 +36,8 @@ pub async fn state_machine(
 
                 // Send the new state to the CAN bus
                 let can_message = CanMessage::StateTransitionCommand(StateTransitionCommand::new(
-                    this_board, state,
+                    *THIS_BOARD.get().await,
+                    state,
                 ));
                 can_sender.send(can_message).await;
             }
@@ -58,7 +57,8 @@ pub async fn state_machine(
 /// Task that updates the current state of the system by receiving state transitions from the CAN.
 /// Should be run on all boards except the one running the state machine task.
 #[embassy_executor::task]
-pub async fn state_updater(state_updater: Sender<'static, CriticalSectionRawMutex, State, 1>) {
+pub async fn state_updater() {
+    let state_updater = CURRENT_STATE.sender();
     let incoming_state_transitions = INCOMING_STATE_TRANSITION_COMMANDS.receiver();
 
     loop {

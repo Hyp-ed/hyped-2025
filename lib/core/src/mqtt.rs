@@ -1,5 +1,5 @@
 use crate::{
-    logging::{info, warn},
+    logging::{debug, info, warn},
     mqtt_topics::MqttTopic,
 };
 use embassy_net::tcp::TcpSocket;
@@ -96,7 +96,7 @@ impl<T: embedded_io_async::Read + embedded_io_async::Write, R: rand_core::RngCor
                     info!("MQTT Network Error");
                 }
                 ReasonCode::NoMatchingSubscribers => {
-                    warn!(
+                    debug!(
                         "Is the base station subscribed to this topic? Topic: {}",
                         topic
                     );

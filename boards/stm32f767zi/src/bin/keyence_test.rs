@@ -9,18 +9,20 @@ use embassy_stm32::{
     peripherals::CAN1,
 };
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
-use hyped_boards_stm32f767zi::tasks::{
-    can::{
-        board_heartbeat::{heartbeat_listener, send_heartbeat},
-        receive::can_receiver,
-        send::can_sender,
+use hyped_boards_stm32f767zi::{
+    board_state::THIS_BOARD,
+    tasks::{
+        can::{
+            board_heartbeat::{heartbeat_listener, send_heartbeat},
+            receive::can_receiver,
+            send::can_sender,
+        },
+        sensors::read_keyence::read_keyence,
+        state_machine::state_updater,
     },
-    sensors::read_keyence::read_keyence,
-    state_machine::state_updater,
 };
 use hyped_communications::boards::Board;
 use hyped_core::config::MeasurementId;
-use hyped_state_machine::states::State;
 use {defmt_rtt as _, panic_probe as _};
 
 bind_interrupts!(struct Irqs {
@@ -30,20 +32,20 @@ bind_interrupts!(struct Irqs {
     CAN1_TX => TxInterruptHandler<CAN1>;
 });
 
-pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();
-static BOARD: Board = Board::KeyenceTester;
-pub static EMERGENCY: Watch<CriticalSectionRawMutex, bool, 1> = Watch::new();
-
 /// Used to keep the latest stripe count from the Keyence sensor.
 pub static CURRENT_KEYENCE_STRIPE_COUNT: Watch<CriticalSectionRawMutex, u32, 1> = Watch::new();
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
+    THIS_BOARD
+        .init(Board::KeyenceTester)
+        .expect("Failed to initialize board");
+
     let p = embassy_stm32::init(Default::default());
     let gpio_pin = Input::new(p.PC13, Pull::Down);
 
     let (can_tx, can_rx) = Can::new(p.CAN1, p.PD0, p.PD1, Irqs).split();
-    spawner.must_spawn(can_receiver(can_rx, EMERGENCY.sender()));
+    spawner.must_spawn(can_receiver(can_rx));
     spawner.must_spawn(can_sender(can_tx));
 
     // Create a sender to pass to the temperature reading task, and a receiver for reading the values back.
@@ -51,13 +53,12 @@ async fn main(spawner: Spawner) -> ! {
 
     spawner.must_spawn(read_keyence(
         gpio_pin,
-        BOARD,
         MeasurementId::Keyence1,
         CURRENT_KEYENCE_STRIPE_COUNT.sender(),
     ));
-    spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
-    spawner.must_spawn(heartbeat_listener(BOARD, Board::Telemetry));
-    spawner.must_spawn(send_heartbeat(BOARD, Board::Telemetry));
+    spawner.must_spawn(state_updater());
+    spawner.must_spawn(heartbeat_listener(Board::Telemetry));
+    spawner.must_spawn(send_heartbeat(Board::Telemetry));
 
     loop {
         // Only prints when the stripe count changes.

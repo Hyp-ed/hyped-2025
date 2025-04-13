@@ -1,4 +1,9 @@
-use crate::{emergency, io::Stm32f767ziI2c, tasks::can::send::CAN_SEND};
+use crate::{
+    board_state::{EMERGENCY, THIS_BOARD},
+    emergency,
+    io::Stm32f767ziI2c,
+    tasks::can::send::CAN_SEND,
+};
 use core::cell::RefCell;
 use defmt_rtt as _;
 use embassy_stm32::{i2c::I2c, mode::Blocking};
@@ -11,8 +16,7 @@ use embassy_sync::{
 };
 use embassy_time::{Duration, Timer};
 use hyped_communications::{
-    boards::Board, data::CanData, emergency::Reason, measurements::MeasurementReading,
-    messages::CanMessage,
+    data::CanData, emergency::Reason, measurements::MeasurementReading, messages::CanMessage,
 };
 use hyped_core::config::MeasurementId;
 use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
@@ -27,7 +31,6 @@ const UPDATE_FREQUENCY: u64 = 1;
 #[embassy_executor::task]
 pub async fn read_temperature(
     i2c_bus: &'static I2c1Bus,
-    this_board: Board,
     measurement_id: MeasurementId,
     latest_temperature_reading_sender: Sender<
         'static,
@@ -48,11 +51,11 @@ pub async fn read_temperature(
         match temperature_sensor.check_status() {
             Status::TempOverUpperLimit => {
                 defmt::error!("Temperature is over the upper limit.");
-                emergency!(this_board);
+                emergency!(Reason::TemperatureUpperLimitFailure);
             }
             Status::TempUnderLowerLimit => {
                 defmt::error!("Temperature is under the lower limit.");
-                emergency!(this_board);
+                emergency!(Reason::TemperatureLowerLimitFailure);
             }
             Status::Busy => {
                 defmt::warn!("Temperature sensor is busy.");
@@ -72,8 +75,9 @@ pub async fn read_temperature(
         if let Some(reading) = reading {
             // Handle the reading based on the range
             let value = match reading {
-                SensorValueRange::Critical(_) => {
-                    emergency!(this_board);
+                SensorValueRange::Critical(v) => {
+                    emergency!(Reason::CriticalTemperatureLimit);
+                    v
                 }
                 SensorValueRange::Warning(v) => v,
                 SensorValueRange::Safe(v) => v,
@@ -83,7 +87,7 @@ pub async fn read_temperature(
             can_sender
                 .send(CanMessage::MeasurementReading(MeasurementReading::new(
                     CanData::F32(value),
-                    this_board,
+                    *THIS_BOARD.get().await,
                     measurement_id,
                 )))
                 .await;

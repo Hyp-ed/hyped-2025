@@ -21,19 +21,21 @@ use embassy_sync::{
     },
     watch::Watch,
 };
+use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::{
-    default_can_config,
+    board_state::{CURRENT_STATE, EMERGENCY, THIS_BOARD},
+    default_can_config, emergency,
     tasks::{
         can::{
             board_heartbeat::{heartbeat_listener, send_heartbeat},
             receive::can_receiver,
-            send::can_sender,
+            send::{can_sender, CAN_SEND},
         },
         sensors::read_temperature::read_temperature,
         state_machine::state_updater,
     },
 };
-use hyped_communications::boards::Board;
+use hyped_communications::{boards::Board, emergency::Reason, messages::CanMessage};
 use hyped_core::config::MeasurementId;
 use hyped_sensors::SensorValueRange::{self, Critical, Safe, Warning};
 use hyped_state_machine::states::State;
@@ -49,9 +51,6 @@ bind_interrupts!(struct Irqs {
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
-/// The current state of the state machine.
-pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();
-
 /// Used to keep the latest temperature sensor value.
 pub static LATEST_TEMPERATURE_READING: Watch<
     CriticalSectionRawMutex,
@@ -59,11 +58,12 @@ pub static LATEST_TEMPERATURE_READING: Watch<
     1,
 > = Watch::new();
 
-static BOARD: Board = Board::TemperatureTester;
-pub static EMERGENCY: Watch<CriticalSectionRawMutex, bool, 1> = Watch::new();
-
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
+    THIS_BOARD
+        .init(Board::TemperatureTester)
+        .expect("Failed to initialize board");
+
     let p = embassy_stm32::init(Default::default());
     let i2c = I2c::new_blocking(p.I2C1, p.PB8, p.PB9, Hertz(100_000), Default::default());
 
@@ -75,16 +75,16 @@ async fn main(spawner: Spawner) -> ! {
     default_can_config!(can);
     can.enable().await;
     let (can_tx, can_rx) = can.split();
-    spawner.must_spawn(can_receiver(can_rx, EMERGENCY.sender()));
+    spawner.must_spawn(can_receiver(can_rx));
     spawner.must_spawn(can_sender(can_tx));
 
-    spawner.must_spawn(send_heartbeat(BOARD, Board::Telemetry));
-    spawner.must_spawn(heartbeat_listener(BOARD, Board::Telemetry));
-    spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
+    spawner.must_spawn(emergency_handler());
+    spawner.must_spawn(send_heartbeat(Board::Telemetry));
+    spawner.must_spawn(heartbeat_listener(Board::Telemetry));
+    spawner.must_spawn(state_updater());
 
     spawner.must_spawn(read_temperature(
         i2c_bus,
-        BOARD,
         MeasurementId::Thermistor1,
         LATEST_TEMPERATURE_READING.sender(),
     ));
@@ -104,6 +104,23 @@ async fn main(spawner: Spawner) -> ! {
                     defmt::error!("Temperature: {}°C (critical)", temp);
                 }
             }
+        }
+    }
+}
+
+#[embassy_executor::task]
+async fn emergency_handler() {
+    let current_state_sender = CURRENT_STATE.sender();
+
+    loop {
+        // All main loops should have logic to handle an emergency signal...
+        if EMERGENCY.receiver().unwrap().get().await {
+            defmt::error!("Emergency signal received! Cleaning up...");
+            // ... and take appropriate action
+            current_state_sender.send(State::Emergency);
+            // Wait for the emergency signal to be sent
+            Timer::after(Duration::from_secs(1)).await;
+            panic!("Terminating due to emergency signal!");
         }
     }
 }
