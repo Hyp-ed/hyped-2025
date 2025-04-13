@@ -10,7 +10,11 @@ use embassy_stm32::{
 };
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use hyped_boards_stm32f767zi::tasks::{
-    can::{board_heartbeat::heartbeat_responder, receive::can_receiver, send::can_sender},
+    can::{
+        board_heartbeat::{heartbeat_listener, send_heartbeat},
+        receive::can_receiver,
+        send::can_sender,
+    },
     sensors::read_keyence::read_keyence,
     state_machine::state_updater,
 };
@@ -52,7 +56,8 @@ async fn main(spawner: Spawner) -> ! {
         CURRENT_KEYENCE_STRIPE_COUNT.sender(),
     ));
     spawner.must_spawn(state_updater(CURRENT_STATE.sender()));
-    spawner.must_spawn(heartbeat_responder(BOARD));
+    spawner.must_spawn(heartbeat_listener(BOARD, Board::Telemetry));
+    spawner.must_spawn(send_heartbeat(BOARD, Board::Telemetry));
 
     loop {
         // Only prints when the stripe count changes.

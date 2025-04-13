@@ -21,7 +21,6 @@ use embassy_sync::{
     },
     watch::Watch,
 };
-use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::{
     default_can_config,
     tasks::{

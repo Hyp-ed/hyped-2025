@@ -2,7 +2,6 @@ use embassy_time::{with_timeout, Duration, Timer};
 use hyped_communications::{
     boards::Board, emergency::Reason, heartbeat::Heartbeat, messages::CanMessage,
 };
-use hyped_core::{format, format_string::show};
 
 use crate::{
     emergency,
@@ -21,15 +20,18 @@ const STARTUP_TIMEOUT: u64 = 30000; // in ms
 /// For all other boards, this should be spawned once for the controller board.
 #[embassy_executor::task]
 pub async fn heartbeat_listener(this_board: Board, from_board: Board) {
-    wait_for_first_heartbeat(this_board, from_board)
-        .await
-        .expect(
-            format!(
-                &mut [0u8; 1024],
-                "Failed to receive first heartbeat from board {:?}", from_board
-            )
-            .unwrap(),
-        );
+    match wait_for_first_heartbeat(this_board, from_board).await {
+        Ok(_) => {
+            defmt::info!("Board {:?} is alive!", from_board,);
+        }
+        Err(_) => {
+            defmt::error!(
+                "Failed to receive first heartbeat from board {:?}",
+                from_board,
+            );
+            emergency!(this_board);
+        }
+    }
 
     loop {
         // Wait for an incoming heartbeat message from the target board
