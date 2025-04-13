@@ -32,7 +32,7 @@ impl MqttTopic {
             MqttTopic::Debug => String::<100>::from_str("debug").unwrap(),
             MqttTopic::Test => String::<100>::from_str("test").unwrap(),
             MqttTopic::Measurement(measurement_id) => {
-                let measurement_id_string: String<50> = measurement_id.clone().into();
+                let measurement_id_string: String<50> = (*measurement_id).into();
                 let mut topic = String::<100>::from_str("hyped/poddington/measurement/").unwrap();
                 topic.push_str(measurement_id_string.as_str()).unwrap();
                 topic

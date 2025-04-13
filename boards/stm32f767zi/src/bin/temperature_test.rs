@@ -24,18 +24,18 @@ use embassy_sync::{
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::{
     board_state::{CURRENT_STATE, EMERGENCY, THIS_BOARD},
-    default_can_config, emergency,
+    default_can_config,
     tasks::{
         can::{
             board_heartbeat::{heartbeat_listener, send_heartbeat},
             receive::can_receiver,
-            send::{can_sender, CAN_SEND},
+            send::can_sender,
         },
         sensors::read_temperature::read_temperature,
         state_machine::state_updater,
     },
 };
-use hyped_communications::{boards::Board, emergency::Reason, messages::CanMessage};
+use hyped_communications::boards::Board;
 use hyped_core::config::MeasurementId;
 use hyped_sensors::SensorValueRange::{self, Critical, Safe, Warning};
 use hyped_state_machine::states::State;
