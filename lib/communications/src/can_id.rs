@@ -2,20 +2,37 @@ use super::{boards::Board, data::CanDataType, identifier::MessageIdentifier};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct CanId {
+    pub priority: bool,
     pub board: Board,
-    pub message_type: CanDataType,
+    pub message_data_type: CanDataType,
     pub message_identifier: MessageIdentifier,
 }
 
 impl CanId {
+    /// Creates a new `CanId` with the given parameters. Defaults to standard priority.
     pub fn new(
         board: Board,
         message_type: CanDataType,
         message_identifier: MessageIdentifier,
     ) -> Self {
         CanId {
+            priority: false,
             board,
-            message_type,
+            message_data_type: message_type,
+            message_identifier,
+        }
+    }
+
+    /// Creates a new `CanId` with the given parameters. Sets the priority to high.
+    pub fn new_high_priority(
+        board: Board,
+        message_type: CanDataType,
+        message_identifier: MessageIdentifier,
+    ) -> Self {
+        CanId {
+            priority: true,
+            board,
+            message_data_type: message_type,
             message_identifier,
         }
     }
@@ -23,24 +40,34 @@ impl CanId {
 
 impl From<CanId> for u32 {
     fn from(val: CanId) -> Self {
-        let board: u8 = val.board.into();
-        let message_type: u8 = val.message_type.into();
-        let message_identifier: u16 = val.message_identifier.into();
+        let priority: u32 = if val.priority { 1 } else { 0 };
+        let board: u32 = u8::from(val.board) as u32;
+        let message_type: u32 = u8::from(val.message_data_type) as u32;
+        let message_identifier: u32 = u16::from(val.message_identifier) as u32;
 
-        // Format: board message_type message_identifier
-        ((board as u32) << 24) | ((message_type as u32) << 16) | (message_identifier as u32)
+        // Make sure that measurement_identifier is 13 bits
+        assert!(message_identifier < (1 << 13));
+
+        // Format: priority (1 bit) | message_type (8 bits) | message_identifier (13 bits) | board (8 bits) = 29 bits
+        ((priority as u32) << 28)
+            | ((message_type as u32) << 20)
+            | ((message_identifier as u32) << 8)
+            | (board as u32)
     }
 }
 
 impl From<u32> for CanId {
     fn from(id: u32) -> Self {
-        let board: Board = (((id >> 24) & 0xFF) as u8).try_into().unwrap();
-        let message_type: CanDataType = (((id >> 16) & 0xFF) as u8).try_into().unwrap();
-        let message_identifier: MessageIdentifier = (((id) & 0xFFFF) as u16).into();
+        let priority = (id >> 28) & 0x1 == 1;
+        let board: Board = Board::try_from((id & 0xFF) as u8).expect("Invalid board ID");
+        let message_type =
+            CanDataType::try_from(((id >> 20) & 0xFF) as u8).expect("Invalid message type");
+        let message_identifier = MessageIdentifier::from(((id >> 8) & 0x1FFF) as u16);
 
         CanId {
+            priority,
             board,
-            message_type,
+            message_data_type: message_type,
             message_identifier,
         }
     }

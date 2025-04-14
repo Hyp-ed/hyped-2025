@@ -152,6 +152,7 @@ impl From<[u8; 8]> for CanData {
 
 #[derive(Debug, Clone, Copy, PartialEq, defmt::Format)]
 #[repr(u8)]
+/// Enum representing the data type of the CAN message's data.
 pub enum CanDataType {
     Bool = 0,
     TwoU16 = 1,
