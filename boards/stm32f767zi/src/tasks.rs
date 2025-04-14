@@ -8,6 +8,8 @@ pub mod mqtt_recv;
 pub mod mqtt_send;
 
 // Sensors
+pub mod read_accelerometer;
+pub mod read_accelerometer_from_mux;
 pub mod read_keyence;
 pub mod read_laser_triangulation;
 pub mod read_low_pressure;
