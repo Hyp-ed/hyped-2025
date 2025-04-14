@@ -1,4 +1,7 @@
 use config_to_rs::config_to_rs;
+use core::str::FromStr;
+use heapless::String;
+use hyped_measurement_ids::gen_measurement_ids;
 
 /// Configuration for the pods
 /// The configuration is loaded from the `config/pods.yaml` file, and can be read using standard
@@ -12,6 +15,11 @@ use config_to_rs::config_to_rs;
 /// ````
 #[config_to_rs(yaml)]
 pub struct Config;
+
+// TODOLater: this should be in a config
+pub static POD_NAME: &str = "poddington";
+
+gen_measurement_ids!("config/pods.yaml", "poddington");
 
 mod test {
     #[test]

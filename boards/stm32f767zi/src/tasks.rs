@@ -1,14 +1,6 @@
-// CAN
-pub mod can_receiver;
-
-// MQTT
-pub mod button;
-pub mod heartbeat;
-pub mod mqtt_recv;
-pub mod mqtt_send;
-
-// Sensors
-pub mod read_keyence;
-pub mod read_laser_triangulation;
-pub mod read_low_pressure;
-pub mod read_temperature;
+pub mod can;
+pub mod can_to_mqtt;
+pub mod mqtt;
+pub mod network;
+pub mod sensors;
+pub mod state_machine;

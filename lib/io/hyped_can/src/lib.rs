@@ -25,7 +25,7 @@ pub enum CanError {
     InvalidCanId,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, defmt::Format)]
 pub struct HypedCanFrame {
     pub can_id: u32,   // 32 bit CAN_ID + EFF/RTR/ERR flags
     pub data: [u8; 8], // data that is sent over CAN, split into bytes

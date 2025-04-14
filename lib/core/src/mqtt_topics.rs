@@ -1,71 +1,64 @@
+// TODOLater: pod name
+
+use crate::config::MeasurementId;
 use core::str::FromStr;
 use heapless::String;
 
+pub const MQTT_MEASUREMENT_TOPIC_PREFIX: &str = "hyped/poddington/measurement/";
+
 /// Enum representing all MQTT topics used by the pod
-pub enum MqttTopics {
+#[derive(Debug, defmt::Format, PartialEq, Eq)]
+pub enum MqttTopic {
+    Measurement(MeasurementId),
     State,
     StateRequest,
-    Accelerometer,
-    OpticalFlow,
-    Keyence,
-    Displacement,
-    Velocity,
-    Acceleration,
     Heartbeat,
     Logs,
     Debug,
     Test,
 }
 
-impl MqttTopics {
-    /// Convert an `MqttTopics` enum variant to a string
-    pub fn to_string(&self) -> String<48> {
-        match self {
-            MqttTopics::State => String::<48>::from_str("hyped/pod_2025/state/state").unwrap(),
-            MqttTopics::StateRequest => {
-                String::<48>::from_str("hyped/pod_2025/state/state_request").unwrap()
+impl FromStr for MqttTopic {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "hyped/poddington/state/state" => Ok(MqttTopic::State),
+            "hyped/poddington/state/state_request" => Ok(MqttTopic::StateRequest),
+            "hyped/poddington/heartbeat" => Ok(MqttTopic::Heartbeat),
+            "hyped/poddington/logs" => Ok(MqttTopic::Logs),
+            "debug" => Ok(MqttTopic::Debug),
+            "test" => Ok(MqttTopic::Test),
+            _ => {
+                if s.starts_with(MQTT_MEASUREMENT_TOPIC_PREFIX) {
+                    let measurement_id_string = &s[MQTT_MEASUREMENT_TOPIC_PREFIX.len()..s.len()];
+                    let measurement_id = measurement_id_string.into();
+                    Ok(MqttTopic::Measurement(measurement_id))
+                } else {
+                    Err("Invalid topic")
+                }
             }
-            MqttTopics::Accelerometer => {
-                String::<48>::from_str("hyped/pod_2025/measurement/accelerometer").unwrap()
-            }
-            MqttTopics::OpticalFlow => {
-                String::<48>::from_str("hyped/pod_2025/measurement/optical_flow").unwrap()
-            }
-            MqttTopics::Keyence => {
-                String::<48>::from_str("hyped/pod_2025/measurement/keyence").unwrap()
-            }
-            MqttTopics::Displacement => {
-                String::<48>::from_str("hyped/pod_2025/navigation/displacement").unwrap()
-            }
-            MqttTopics::Velocity => {
-                String::<48>::from_str("hyped/pod_2025/navigation/velocity").unwrap()
-            }
-            MqttTopics::Acceleration => {
-                String::<48>::from_str("hyped/pod_2025/navigation/acceleration").unwrap()
-            }
-            MqttTopics::Heartbeat => String::<48>::from_str("hyped/pod_2025/heartbeat").unwrap(),
-            MqttTopics::Logs => String::<48>::from_str("hyped/pod_2025/logs").unwrap(),
-            MqttTopics::Debug => String::<48>::from_str("debug").unwrap(),
-            MqttTopics::Test => String::<48>::from_str("test").unwrap(),
         }
     }
+}
 
-    /// Get an `MqttTopics` enum variant from a string
-    pub fn from_string(topic: &str) -> Option<MqttTopics> {
-        match topic {
-            "hyped/pod_2025/state/state" => Some(MqttTopics::State),
-            "hyped/pod_2025/state/state_request" => Some(MqttTopics::StateRequest),
-            "hyped/pod_2025/measurement/accelerometer" => Some(MqttTopics::Accelerometer),
-            "hyped/pod_2025/measurement/optical_flow" => Some(MqttTopics::OpticalFlow),
-            "hyped/pod_2025/measurement/keyence" => Some(MqttTopics::Keyence),
-            "hyped/pod_2025/navigation/displacement" => Some(MqttTopics::Displacement),
-            "hyped/pod_2025/navigation/velocity" => Some(MqttTopics::Velocity),
-            "hyped/pod_2025/navigation/acceleration" => Some(MqttTopics::Acceleration),
-            "hyped/pod_2025/heartbeat" => Some(MqttTopics::Heartbeat),
-            "hyped/pod_2025/logs" => Some(MqttTopics::Logs),
-            "debug" => Some(MqttTopics::Debug),
-            "test" => Some(MqttTopics::Test),
-            _ => None,
+impl From<MqttTopic> for String<100> {
+    fn from(v: MqttTopic) -> Self {
+        let mut topic = String::<100>::new();
+        match v {
+            MqttTopic::State => topic.push_str("hyped/poddington/state/state").unwrap(),
+            MqttTopic::StateRequest => topic
+                .push_str("hyped/poddington/state/state_request")
+                .unwrap(),
+            MqttTopic::Heartbeat => topic.push_str("hyped/poddington/heartbeat").unwrap(),
+            MqttTopic::Logs => topic.push_str("hyped/poddington/logs").unwrap(),
+            MqttTopic::Debug => topic.push_str("debug").unwrap(),
+            MqttTopic::Test => topic.push_str("test").unwrap(),
+            MqttTopic::Measurement(measurement_id) => {
+                topic.push_str(MQTT_MEASUREMENT_TOPIC_PREFIX).unwrap();
+                topic.push_str(measurement_id.into()).unwrap();
+            }
         }
+        topic
     }
 }
