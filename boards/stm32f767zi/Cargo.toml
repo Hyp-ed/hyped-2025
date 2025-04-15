@@ -13,6 +13,7 @@ embassy-futures = { version = "0.1.0", git = "https://github.com/embassy-rs/emba
 
 defmt = "0.3"
 defmt-rtt = "0.4"
+heapless = "0.8.0"
 
 cortex-m = { version = "0.7.6", features = ["inline-asm", "critical-section-single-core"] }
 cortex-m-rt = "0.7.0"
@@ -23,7 +24,6 @@ critical-section = "1.1"
 embedded-storage = "0.3.1"
 static_cell = "2"
 
-heapless = { version = "0.8", default-features = false, features = ["serde"]}
 rust-mqtt = { version = "0.3.0", default-features = false, features = ["defmt"] }
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 serde-json-core = "0.1.0"
@@ -31,6 +31,7 @@ typenum = "1.17.0"
 
 hyped_core = { path = "../../lib/core" }
 hyped_sensors = { path = "../../lib/sensors" }
+hyped_localisation = { path = "../../lib/localisation" }
 
 hyped_adc = { path = "../../lib/io/hyped_adc" }
 hyped_adc_derive = { path = "../../lib/io/hyped_adc/hyped_adc_derive" }
