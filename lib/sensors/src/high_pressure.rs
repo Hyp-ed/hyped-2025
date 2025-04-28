@@ -16,14 +16,8 @@ pub struct HighPressure<T: HypedGpioInputPin> {
 }
 impl<T: HypedGpioInputPin> HighPressure<T> {
     /// Create new low pressure sensor instance
-    pub fn new(
-        sp1_gpio: T,
-        sp2_gpio: T,
-    ) -> HighPressure<T> {
-        HighPressure {
-            sp1_gpio,
-            sp2_gpio,
-        }
+    pub fn new(sp1_gpio: T, sp2_gpio: T) -> HighPressure<T> {
+        HighPressure { sp1_gpio, sp2_gpio }
     }
 
     /// Read SP1 and SP2 GPIO pin values and bitwise OR them. Return state of high pressure sensor based on value of OR'd value.
@@ -35,7 +29,7 @@ impl<T: HypedGpioInputPin> HighPressure<T> {
             (false, false) => Ok(State::LowRange),
             (true, false) => Ok(State::MidRange),
             (true, true) => Ok(State::HighRange),
-            _ => Err("ERROR??"),   // any other case - should never be possible
+            _ => Err("ERROR??"), // any other case - should never be possible
         }
     }
 }
@@ -45,7 +39,7 @@ impl<T: HypedGpioInputPin> HighPressure<T> {
 pub enum State {
     LowRange,
     MidRange,
-    HighRange
+    HighRange,
 }
 
 #[cfg(test)]
