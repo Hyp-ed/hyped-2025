@@ -8,7 +8,7 @@ use hyped_sensors::high_pressure::HighPressure;
 pub async fn read_high_pressure(
     sp1_pin: Input<'static>,
     sp2_pin: Input<'static>,
-    sender: Sender<'static, CriticalSectionRawMutex, u32, 1>,
+    sender: Sender<'static, CriticalSectionRawMutex, Result<State, &'static str>, 1>,
 ) -> ! {
     let mut high_pressure_sensor = HighPressure::new(Stm32f767ziGpioInput::new(sp1_pin), Stm32f767ziGpioInput::new(sp2_pin));
 
