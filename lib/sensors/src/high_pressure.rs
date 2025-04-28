@@ -6,7 +6,7 @@ use hyped_gpio::HypedGpioInputPin;
 ///     Off: Both SP1 and SP2 are LOW
 ///     2. SP1 is HIGH and SP2 is LOW
 ///     3. Both SP1 and SP2 are HIGH
-/// 
+///
 /// Links to datasheets
 ///     (https://www.festo.com/media/catalog/203715_documentation.pdf)
 ///     (https://ftp.festo.com/public/PNEUMATIC/SOFTWARE_SERVICE/DataSheet/EN_GB/8022773.pdf)
