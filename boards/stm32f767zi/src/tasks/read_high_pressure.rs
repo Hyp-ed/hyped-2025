@@ -12,7 +12,7 @@ pub async fn read_high_pressure(
 ) -> ! {
     let mut high_pressure_sensor = HighPressure::new(
         Stm32f767ziGpioInput::new(sp1_pin),
-        Stm32f767ziGpioInput::new(sp2_pin)
+        Stm32f767ziGpioInput::new(sp2_pin),
     );
 
     // update frequency of high pressure sensor in hz
