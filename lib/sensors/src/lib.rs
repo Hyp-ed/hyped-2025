@@ -1,9 +1,9 @@
 #![no_std]
 
+pub mod high_pressure;
 pub mod keyence;
 pub mod temperature;
 pub mod time_of_flight;
-pub mod high_pressure;
 
 #[must_use]
 #[derive(PartialEq, Debug, Clone)]
