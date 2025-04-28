@@ -10,10 +10,16 @@ pub async fn read_high_pressure(
     sp2_pin: Input<'static>,
     sender: Sender<'static, CriticalSectionRawMutex, u32, 1>,
 ) -> ! {
-    let mut high_pressure_sensor = HIghPressure::new(Stm32f767ziGpioInput::new(sp1_pin), Stm32f767ziGpioInput::new(sp2_pin));
+    let mut high_pressure_sensor = HighPressure::new(Stm32f767ziGpioInput::new(sp1_pin), Stm32f767ziGpioInput::new(sp2_pin));
+
+    // update frequency of high pressure sensor in hz
+    const UPDATE_FREQUENCY: u64 = 1000;
 
     loop {
-        
-        Timer::after(Duration::from_millis(100)).await;
+        match high_pressure_sensor.get_high_pressure_state() {
+            Ok(high_pressure_state) => Sender.send(high_pressure_state),
+            Err(e) => Sender.send(e),
+        }
+        Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
     }
 }
