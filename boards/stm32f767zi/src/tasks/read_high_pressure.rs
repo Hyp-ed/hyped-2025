@@ -2,7 +2,7 @@ use crate::io::Stm32f767ziGpioInput;
 use embassy_stm32::gpio::Input;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
 use embassy_time::{Duration, Timer};
-use hyped_sensors::high_pressure::HighPressure;
+use hyped_sensors::high_pressure::{HighPressure, State};
 
 #[embassy_executor::task]
 pub async fn read_high_pressure(
@@ -20,8 +20,8 @@ pub async fn read_high_pressure(
 
     loop {
         match high_pressure_sensor.get_high_pressure_state() {
-            Ok(high_pressure_state) => Sender.send(high_pressure_state),
-            Err(e) => Sender.send(e),
+            Ok(high_pressure_state) => sender.send(high_pressure_state),
+            Err(e) => sender.send(e),
         }
         Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
     }
