@@ -8,7 +8,8 @@ use hyped_boards_stm32f767zi::tasks::read_high_pressure::read_high_pressure;
 use {defmt_rtt as _, panic_probe as _};
 
 /// used to store latest high pressure sensor value
-static HIGH_PRESSURE_SENSOR_VALUE: Watch<CriticalSectionRawMutex, Result<State, &'static str>, 1> = Watch::new();
+static HIGH_PRESSURE_SENSOR_VALUE: Watch<CriticalSectionRawMutex, Result<State, &'static str>, 1> =
+    Watch::new();
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -20,7 +21,9 @@ async fn main(spawner: Spawner) -> ! {
     let sender = HIGH_PRESSURE_SENSOR_VALUE.sender();
     let mut receiver = HIGH_PRESSURE_SENSOR_VALUE.receiver().unwrap();
 
-    spawner.spawn(read_high_pressure(gpio1, gpio2, sender)).unwrap();
+    spawner
+        .spawn(read_high_pressure(gpio1, gpio2, sender))
+        .unwrap();
 
     // only prints when high pressure value updates
     loop {
