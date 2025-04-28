@@ -13,7 +13,7 @@ pub async fn read_high_pressure(
     let mut high_pressure_sensor = HIghPressure::new(Stm32f767ziGpioInput::new(sp1_pin), Stm32f767ziGpioInput::new(sp2_pin));
 
     loop {
-        sender.send();  // match get high pressure results
+        
         Timer::after(Duration::from_millis(100)).await;
     }
 }
