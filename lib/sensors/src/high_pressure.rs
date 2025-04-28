@@ -10,7 +10,6 @@ use hyped_gpio::HypedGpioInputPin;
 /// Links to datasheets
 ///     (https://www.festo.com/media/catalog/203715_documentation.pdf)
 ///     (https://ftp.festo.com/public/PNEUMATIC/SOFTWARE_SERVICE/DataSheet/EN_GB/8022773.pdf)
-
 pub struct HighPressure<T: HypedGpioInputPin> {
     sp1_gpio: T,
     sp2_gpio: T,
