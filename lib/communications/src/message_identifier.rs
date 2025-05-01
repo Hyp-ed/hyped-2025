@@ -13,10 +13,10 @@ impl From<MessageIdentifier> for u16 {
     fn from(val: MessageIdentifier) -> Self {
         match val {
             MessageIdentifier::Measurement(measurement_id) => measurement_id.into(),
+            MessageIdentifier::Emergency => 0xFC,
             MessageIdentifier::Heartbeat => 0xFD,
             MessageIdentifier::StateTransitionRequest => 0xFE,
             MessageIdentifier::StateTransitionCommand => 0xFF,
-            MessageIdentifier::Emergency => 0xFC,
         }
     }
 }

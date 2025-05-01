@@ -1,4 +1,4 @@
-use super::{boards::Board, data::CanDataType, identifier::MessageIdentifier};
+use super::{boards::Board, data::CanDataType, message_identifier::MessageIdentifier};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct CanId {
