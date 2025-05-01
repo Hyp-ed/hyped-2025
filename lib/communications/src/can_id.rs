@@ -49,10 +49,7 @@ impl From<CanId> for u32 {
         assert!(message_identifier < (1 << 13));
 
         // Format: priority (1 bit) | message_type (8 bits) | message_identifier (13 bits) | board (8 bits) = 29 bits
-        ((priority as u32) << 28)
-            | ((message_type as u32) << 20)
-            | ((message_identifier as u32) << 8)
-            | (board as u32)
+        ((priority) << 28) | ((message_type) << 20) | ((message_identifier) << 8) | (board)
     }
 }
 

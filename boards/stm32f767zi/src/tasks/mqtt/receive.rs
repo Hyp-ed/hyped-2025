@@ -6,7 +6,6 @@ use embassy_stm32::{
     peripherals::ETH,
 };
 use embassy_sync::{blocking_mutex::raw::ThreadModeRawMutex, channel::Channel};
-use embassy_time::{Duration, Timer};
 use heapless::String;
 use hyped_core::{
     format,

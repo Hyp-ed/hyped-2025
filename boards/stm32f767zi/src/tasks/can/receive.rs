@@ -1,6 +1,5 @@
 use embassy_stm32::can::{CanRx, Id};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, channel::Channel};
-use embassy_time::{Duration, Timer};
 use hyped_can::HypedCanFrame;
 use hyped_communications::{
     heartbeat::Heartbeat,

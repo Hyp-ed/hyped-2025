@@ -7,7 +7,7 @@ use hyped_core::{config::MeasurementId, types::DigitalSignal};
 use hyped_sensors::keyence::Keyence;
 
 /// The update frequency of the Keyence sensor
-const UPDATE_FREQUENCY: Duration = Duration::from(10);
+const UPDATE_FREQUENCY: Duration = Duration::from_hz(10);
 
 /// Test task that just continually updates the stripe count from the Keyence sensor (or other GPIO pin input)
 #[embassy_executor::task]

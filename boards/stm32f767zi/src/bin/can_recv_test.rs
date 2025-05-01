@@ -13,7 +13,6 @@ use embassy_stm32::can::{
 use embassy_stm32::peripherals::CAN1;
 use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
 use embassy_sync::watch::Watch;
-use embassy_time::{Duration, Timer};
 use hyped_can::HypedCanFrame;
 use hyped_communications::messages::CanMessage;
 use static_cell::StaticCell;
