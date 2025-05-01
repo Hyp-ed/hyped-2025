@@ -116,14 +116,19 @@ pub fn gen_measurement_ids(args: TokenStream) -> TokenStream {
     enum_str.push_str("    }\n");
     enum_str.push_str("}\n");
 
-    // From<u16> for MeasurementId
-    enum_str.push_str("\nimpl From<u16> for MeasurementId {\n");
-    enum_str.push_str("    fn from(enum_str: u16) -> MeasurementId {\n");
+    // TryFrom<u16> for MeasurementId
+    enum_str.push_str("\nimpl TryFrom<u16> for MeasurementId {\n");
+    enum_str.push_str("    type Error = &'static str;\n");
+
+    enum_str.push_str("    fn try_from(enum_str: u16) -> Result<Self, Self::Error> {\n");
     enum_str.push_str("        match enum_str {\n");
     for (i, id) in measurement_ids.clone().into_iter().enumerate() {
-        enum_str.push_str(&format!("            {} => MeasurementId::{},\n", i, id));
+        enum_str.push_str(&format!(
+            "            {} => Ok(MeasurementId::{}),\n",
+            i, id,
+        ));
     }
-    enum_str.push_str("            _ => panic!(\"Failed to parse enum From<u16>\"),\n");
+    enum_str.push_str("            _ => Err(\"Failed to parse enum TryFrom<u16>\"),\n");
     enum_str.push_str("        }\n");
     enum_str.push_str("    }\n");
     enum_str.push_str("}\n");

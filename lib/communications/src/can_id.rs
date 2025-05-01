@@ -59,7 +59,8 @@ impl From<u32> for CanId {
         let board: Board = Board::try_from((id & 0xFF) as u8).expect("Invalid board ID");
         let message_type =
             CanDataType::try_from(((id >> 20) & 0xFF) as u8).expect("Invalid message type");
-        let message_identifier = MessageIdentifier::from(((id >> 8) & 0x1FFF) as u16);
+        let message_identifier = MessageIdentifier::try_from(((id >> 8) & 0x1FFF) as u16)
+            .expect("Invalid message identifier");
 
         CanId {
             priority,

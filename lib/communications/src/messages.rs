@@ -7,8 +7,8 @@ use super::{
     can_id::CanId,
     data::{CanData, CanDataType},
     heartbeat::Heartbeat,
-    message_identifier::MessageIdentifier,
     measurements::MeasurementReading,
+    message_identifier::MessageIdentifier,
     state_transition::StateTransitionRequest,
 };
 

@@ -21,14 +21,19 @@ impl From<MessageIdentifier> for u16 {
     }
 }
 
-impl From<u16> for MessageIdentifier {
-    fn from(id: u16) -> Self {
+impl TryFrom<u16> for MessageIdentifier {
+    type Error = &'static str;
+
+    fn try_from(id: u16) -> Result<Self, Self::Error> {
         match id {
-            0xFF => MessageIdentifier::StateTransitionCommand,
-            0xFE => MessageIdentifier::StateTransitionRequest,
-            0xFD => MessageIdentifier::Heartbeat,
-            0xFC => MessageIdentifier::Emergency,
-            _ => MessageIdentifier::Measurement(id.into()),
+            0xFF => Ok(MessageIdentifier::StateTransitionCommand),
+            0xFE => Ok(MessageIdentifier::StateTransitionRequest),
+            0xFD => Ok(MessageIdentifier::Heartbeat),
+            0xFC => Ok(MessageIdentifier::Emergency),
+            _ => match id.try_into() {
+                Ok(measurement_id) => Ok(measurement_id),
+                Err(_) => Err("Failed to parse MessageIdentifier"),
+            },
         }
     }
 }
