@@ -30,8 +30,8 @@ impl TryFrom<u16> for MessageIdentifier {
             0xFE => Ok(MessageIdentifier::StateTransitionRequest),
             0xFD => Ok(MessageIdentifier::Heartbeat),
             0xFC => Ok(MessageIdentifier::Emergency),
-            _ => match id.try_into() {
-                Ok(measurement_id) => Ok(measurement_id),
+            _ => match MeasurementId::try_from(id) {
+                Ok(measurement_id) => Ok(MessageIdentifier::Measurement(measurement_id)),
                 Err(_) => Err("Failed to parse MessageIdentifier"),
             },
         }
