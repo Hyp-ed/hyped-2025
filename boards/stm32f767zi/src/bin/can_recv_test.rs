@@ -88,8 +88,6 @@ async fn main(_spawner: Spawner) {
                     );
                 }
             }
-
-            Timer::after(Duration::from_millis(100)).await
         }
     }
 }

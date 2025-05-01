@@ -30,7 +30,5 @@ pub async fn can_sender(mut tx: CanTx<'static>) {
 
         tx.write(&frame).await;
         defmt::debug!("CAN message sent: {:?}", frame);
-
-        Timer::after(Duration::from_millis(10)).await;
     }
 }

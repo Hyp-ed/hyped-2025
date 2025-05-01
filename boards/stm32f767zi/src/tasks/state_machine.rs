@@ -3,7 +3,6 @@ use crate::{
     board_state::{CURRENT_STATE, THIS_BOARD},
     tasks::can::{receive::INCOMING_STATE_TRANSITION_REQUESTS, send::CAN_SEND},
 };
-use embassy_time::{Duration, Timer};
 use hyped_communications::{messages::CanMessage, state_transition::StateTransitionCommand};
 use hyped_state_machine::state_machine::StateMachine;
 
@@ -49,8 +48,6 @@ pub async fn state_machine() {
                 );
             }
         }
-
-        Timer::after(Duration::from_millis(10)).await;
     }
 }
 

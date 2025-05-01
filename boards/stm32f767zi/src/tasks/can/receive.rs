@@ -90,7 +90,5 @@ pub async fn can_receiver(mut rx: CanRx<'static>) {
                 INCOMING_MEASUREMENTS.send(measurement_reading).await;
             }
         }
-
-        Timer::after(Duration::from_millis(100)).await;
     }
 }

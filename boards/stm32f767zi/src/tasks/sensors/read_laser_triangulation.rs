@@ -8,7 +8,7 @@ use hyped_sensors::laser_triangulation::LaserTriangulationError;
 use hyped_sensors::{laser_triangulation::LaserTriangulation, SensorValueRange};
 
 /// The update frequency of the laser triangulation sensor in Hz
-const UPDATE_FREQUENCY: u64 = 1000;
+const UPDATE_FREQUENCY: Duration = Duration::from_hz(1000);
 /// Reference voltage for the laser triangulation sensor
 const V_REF: f32 = 3.22;
 
@@ -36,6 +36,6 @@ pub async fn read_laser_triangulation(
                 }
             },
         }
-        Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
+        Timer::after(UPDATE_FREQUENCY).await;
     }
 }

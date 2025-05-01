@@ -21,7 +21,7 @@ use {defmt_rtt as _, panic_probe as _};
 /// Any message sent to this channel will be sent to the MQTT broker by the `mqtt_send_task`
 pub static MQTT_SEND: Channel<ThreadModeRawMutex, MqttMessage, 128> = Channel::new();
 
-/// Task for sending messages from `SEND_CHANNEL` to the MQTT broker
+/// Sends messages from `SEND_CHANNEL` to the MQTT broker
 pub async fn mqtt_send(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) {
     let mut rx_buffer: [u8; 4096] = [0; 4096];
     let mut tx_buffer: [u8; 4096] = [0; 4096];

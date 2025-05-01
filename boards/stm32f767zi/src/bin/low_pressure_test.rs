@@ -9,6 +9,8 @@ use hyped_boards_stm32f767zi::tasks::sensors::read_low_pressure::read_low_pressu
 use hyped_sensors::SensorValueRange::{self, *};
 use {defmt_rtt as _, panic_probe as _};
 
+/// The update frequency of the low pressure sensor
+const UPDATE_FREQUENCY: Duration = Duration::from_hz(10);
 /// Used to keep the latest low pressure sensor value.
 static LOW_PRESSURE_READING: Watch<CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1> =
     Watch::new();
@@ -27,7 +29,7 @@ async fn main(spawner: Spawner) -> ! {
 
     spawner.must_spawn(read_low_pressure(adc, pin, low_pressure_reading_sender));
 
-    // Every 100ms we read for the latest value from the low pressure sensor.
+    // Every `UPDATE_FREQUENCY` we read for the latest value from the low pressure sensor.
     loop {
         if let Some(reading) = low_pressure_reading_receiver.try_changed() {
             match reading {
@@ -45,6 +47,6 @@ async fn main(spawner: Spawner) -> ! {
                 None => defmt::warn!("No low pressure reading available"),
             }
         }
-        Timer::after(Duration::from_millis(100)).await;
+        Timer::after(UPDATE_FREQUENCY).await;
     }
 }

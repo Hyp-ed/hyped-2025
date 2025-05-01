@@ -11,9 +11,9 @@ use crate::{
 
 use {defmt_rtt as _, panic_probe as _};
 
-const HEARTBEAT_FREQUENCY: u64 = 5; // in Hz
-const HEARTBEAT_MAX_LATENCY: u64 = 500; // in ms
-const STARTUP_TIMEOUT: u64 = 30000; // in ms
+const HEARTBEAT_FREQUENCY: Duration = Duration::from_hz(5);
+const HEARTBEAT_MAX_LATENCY: Duration = Duration::from_millis(100);
+const STARTUP_TIMEOUT: Duration = Duration::from_secs(30);
 
 /// Task that listens for incoming heartbeat messages from the target board
 /// and triggers an emergency stop if the target board does not respond in time.
@@ -36,7 +36,7 @@ pub async fn heartbeat_listener(from_board: Board) {
 
     loop {
         // Wait for an incoming heartbeat message from the target board
-        match with_timeout(Duration::from_millis(HEARTBEAT_MAX_LATENCY), async {
+        match with_timeout(HEARTBEAT_MAX_LATENCY, async {
             loop {
                 // Only return when we receive a heartbeat message
                 let heartbeat = INCOMING_HEARTBEATS.receive().await;
@@ -66,7 +66,7 @@ pub async fn heartbeat_listener(from_board: Board) {
 
 /// Gives the boards a chance to wake up at the start.
 pub async fn wait_for_first_heartbeat(target_board: Board) -> Result<(), ()> {
-    match with_timeout(Duration::from_millis(STARTUP_TIMEOUT), async {
+    match with_timeout(STARTUP_TIMEOUT, async {
         loop {
             // Only return when we receive a heartbeat message
             let heartbeat = INCOMING_HEARTBEATS.receive().await;
@@ -94,6 +94,6 @@ pub async fn send_heartbeat(to_board: Board) {
         let heartbeat = Heartbeat::new(to_board, *THIS_BOARD.get().await);
         defmt::debug!("Sending heartbeat: {:?}", heartbeat);
         can_sender.send(CanMessage::Heartbeat(heartbeat)).await;
-        Timer::after(Duration::from_hz(HEARTBEAT_FREQUENCY)).await;
+        Timer::after(HEARTBEAT_FREQUENCY).await;
     }
 }
