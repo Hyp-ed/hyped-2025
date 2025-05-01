@@ -1,3 +1,5 @@
+use core::str::FromStr;
+
 use crate::{log::log, telemetry_config::MQTT_BROKER_ADDRESS};
 use embassy_net::{tcp::TcpSocket, Stack};
 use embassy_stm32::{
@@ -5,22 +7,22 @@ use embassy_stm32::{
     peripherals::ETH,
 };
 use embassy_sync::{blocking_mutex::raw::ThreadModeRawMutex, channel::Channel};
-use embassy_time::{Duration, Timer};
+use heapless::String;
 use hyped_core::{
     format,
     format_string::show,
     log_types::LogLevel,
     mqtt::{HypedMqttClient, MqttMessage},
+    mqtt_topics::MqttTopic,
 };
 use {defmt_rtt as _, panic_probe as _};
 
 /// Channel for sending messages over MQTT.
 /// Any message sent to this channel will be sent to the MQTT broker by the `mqtt_send_task`
-pub static SEND_TO_MQTT_CHANNEL: Channel<ThreadModeRawMutex, MqttMessage, 128> = Channel::new();
+pub static MQTT_SEND: Channel<ThreadModeRawMutex, MqttMessage, 128> = Channel::new();
 
-/// Task for sending messages from `SEND_CHANNEL` to the MQTT broker
-#[embassy_executor::task]
-pub async fn mqtt_send_task(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) {
+/// Sends messages from `SEND_CHANNEL` to the MQTT broker
+pub async fn mqtt_send(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) {
     let mut rx_buffer: [u8; 4096] = [0; 4096];
     let mut tx_buffer: [u8; 4096] = [0; 4096];
     let mut socket = TcpSocket::new(stack, &mut rx_buffer, &mut tx_buffer);
@@ -55,13 +57,21 @@ pub async fn mqtt_send_task(stack: &'static Stack<Ethernet<'static, ETH, Generic
 
     mqtt_client.connect_to_broker().await;
 
+    defmt::info!("Connected to MQTT broker");
+
+    MQTT_SEND
+        .send(MqttMessage::new(
+            MqttTopic::Test,
+            String::from_str("Hello from telemetry board!").unwrap(),
+        ))
+        .await;
+
     loop {
-        while !SEND_TO_MQTT_CHANNEL.is_empty() {
-            let message = SEND_TO_MQTT_CHANNEL.receive().await;
-            mqtt_client
-                .send_message(message.topic.as_str(), message.payload.as_bytes(), false)
-                .await;
-        }
-        Timer::after(Duration::from_millis(100)).await;
+        let message = MQTT_SEND.receive().await;
+        defmt::debug!("Sending MQTT message: {}", message);
+        let topic_string: String<100> = message.topic.into();
+        mqtt_client
+            .send_message(topic_string.as_str(), message.payload.as_bytes(), false)
+            .await;
     }
 }

@@ -10,7 +10,7 @@ use hyped_sensors::low_pressure::LowPressure;
 use hyped_sensors::SensorValueRange;
 
 /// The update frequency of the low pressure sensor in Hz
-const UPDATE_FREQUENCY: u64 = 10;
+const UPDATE_FREQUENCY: Duration = Duration::from_hz(10);
 /// Reference voltage for the low pressure sensor
 const V_REF: f32 = 5.0;
 
@@ -26,6 +26,6 @@ pub async fn read_low_pressure(
 
     loop {
         sender.send(low_pressure_sensor.read_pressure());
-        Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
+        Timer::after(UPDATE_FREQUENCY).await;
     }
 }
