@@ -35,7 +35,7 @@ impl<T: HypedGpioInputPin> HighPressure<T> {
 }
 
 /// Represents the possible state of the high pressure sensor
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum State {
     LowRange,
     MidRange,
