@@ -1,6 +1,5 @@
-use hyped_gpio::HypedGpioInputPin;
 use defmt::Format;
-
+use hyped_gpio::HypedGpioInputPin;
 
 /// The high pressure sensor (SPAW-P25R-G12M-2N-M12) is able to detect pressure in range
 /// from 0 to 25 bar. The high pressure sensor has 2 switching outputs, SP1 and SP2. SP2
