@@ -33,3 +33,39 @@ impl TryFrom<u8> for Board {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_board_conversion() {
+        assert_eq!(
+            Board::Telemetry,
+            Board::try_from(Board::Telemetry as u8).unwrap()
+        );
+        assert_eq!(
+            Board::Navigation,
+            Board::try_from(Board::Navigation as u8).unwrap()
+        );
+        assert_eq!(
+            Board::Pneumatics,
+            Board::try_from(Board::Pneumatics as u8).unwrap()
+        );
+        assert_eq!(Board::Test, Board::try_from(Board::Test as u8).unwrap());
+        assert_eq!(
+            Board::TemperatureTester,
+            Board::try_from(Board::TemperatureTester as u8).unwrap()
+        );
+        assert_eq!(
+            Board::KeyenceTester,
+            Board::try_from(Board::KeyenceTester as u8).unwrap()
+        );
+        assert_eq!(
+            Board::StateMachineTester,
+            Board::try_from(Board::StateMachineTester as u8).unwrap()
+        );
+        assert_eq!(Board::Mqtt, Board::try_from(Board::Mqtt as u8).unwrap());
+        assert_eq!(Board::try_from(8), Err("Invalid Board index"));
+    }
+}

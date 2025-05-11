@@ -48,19 +48,25 @@ impl From<CanId> for u32 {
         // Make sure that measurement_identifier is 13 bits
         assert!(message_identifier < (1 << 13));
 
-        // Format: priority (1 bit) | message_type (8 bits) | message_identifier (13 bits) | board (8 bits) = 29 bits
-        ((priority) << 28) | ((message_type) << 20) | ((message_identifier) << 8) | (board)
+        // Format: priority (1 bit) | message_type (8 bits) | message_identifier (12 bits) | board (8 bits) = 29 bits
+        (priority << 28) | (message_type << 20) | (message_identifier << 8) | board
     }
+}
+
+macro_rules! extract_bits {
+    ($id:expr, $start:expr, $end:expr) => {
+        ($id >> $start) & ((1 << ($end - $start)) - 1)
+    };
 }
 
 impl From<u32> for CanId {
     fn from(id: u32) -> Self {
-        let priority = (id >> 28) & 0x1 == 1;
-        let board: Board = Board::try_from((id & 0xFF) as u8).expect("Invalid board ID");
-        let message_type =
-            CanDataType::try_from(((id >> 20) & 0xFF) as u8).expect("Invalid message type");
-        let message_identifier = MessageIdentifier::try_from(((id >> 8) & 0x1FFF) as u16)
-            .expect("Invalid message identifier");
+        let priority = extract_bits!(id, 28, 29) == 1;
+        let message_type = CanDataType::try_from(extract_bits!(id, 20, 28) as u8)
+            .expect("Failed to decode message type");
+        let message_identifier = MessageIdentifier::try_from(extract_bits!(id, 8, 20) as u16)
+            .expect("Failed to decode message identifier");
+        let board = Board::try_from(extract_bits!(id, 0, 8) as u8).expect("Failed to decode board");
 
         CanId {
             priority,
@@ -77,17 +83,25 @@ mod tests {
 
     #[test]
     fn it_works() {
+        let can_id = CanId::new_high_priority(
+            Board::Test,
+            CanDataType::State,
+            MessageIdentifier::StateTransitionCommand,
+        );
+        let encoded_can_id: u32 = can_id.clone().into();
+
+        assert_eq!(can_id, CanId::from(encoded_can_id));
+    }
+
+    #[test]
+    fn it_works_with_low_priority() {
         let can_id = CanId::new(
             Board::Test,
             CanDataType::State,
             MessageIdentifier::StateTransitionCommand,
         );
-        let id: u32 = can_id.clone().into();
+        let encoded_can_id: u32 = can_id.clone().into();
 
-        assert_eq!(can_id, CanId::from(id));
-        assert_eq!(
-            CanId::from(id).message_identifier,
-            MessageIdentifier::StateTransitionCommand
-        );
+        assert_eq!(can_id, CanId::from(encoded_can_id));
     }
 }
