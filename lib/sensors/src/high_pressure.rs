@@ -43,6 +43,12 @@ pub enum State {
     HighRange,
 }
 
+/// Represents possible errors for high pressure sensor
+#[derive(Debug)]
+pub enum HighPressureError {
+    InvalidState,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
