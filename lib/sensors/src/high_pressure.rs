@@ -22,7 +22,7 @@ impl<T: HypedGpioInputPin> HighPressure<T> {
     }
 
     /// Read SP1 and SP2 GPIO pin values and bitwise OR them. Return state of high pressure sensor based on value of OR'd value.
-    pub fn get_high_pressure_state(&mut self) -> Result<State, &'static str> {
+    pub fn get_high_pressure_state(&mut self) -> Result<State, HighPressureError> {
         let sp1 = self.sp1_gpio.is_high();
         let sp2 = self.sp2_gpio.is_high();
 
@@ -30,7 +30,7 @@ impl<T: HypedGpioInputPin> HighPressure<T> {
             (false, false) => Ok(State::LowRange),
             (true, false) => Ok(State::MidRange),
             (true, true) => Ok(State::HighRange),
-            _ => Err("ERROR??"), // any other case - should never be possible
+            _ => Err(HighPressureError::InvalidState),  // any other case - should never be possible
         }
     }
 }
