@@ -93,6 +93,6 @@ mod tests {
 
         let mut high_pres = HighPressure::new(sp1, sp2);
 
-        assert_eq!(high_pres.get_high_pressure_state(), Err("ERROR??"));
+        assert_eq!(high_pres.get_high_pressure_state(), Err(HighPressureError::InvalidState));
     }
 }
