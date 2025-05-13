@@ -11,8 +11,8 @@ use crate::{
 
 use {defmt_rtt as _, panic_probe as _};
 
-const HEARTBEAT_FREQUENCY: Duration = Duration::from_hz(5);
-const HEARTBEAT_MAX_LATENCY: Duration = Duration::from_millis(100);
+const HEARTBEAT_FREQUENCY: Duration = Duration::from_hz(10);
+const HEARTBEAT_MAX_LATENCY: Duration = Duration::from_millis(200);
 const STARTUP_TIMEOUT: Duration = Duration::from_secs(30);
 
 /// Task that listens for incoming heartbeat messages from the target board
