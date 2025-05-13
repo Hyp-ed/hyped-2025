@@ -2,13 +2,14 @@
 members = [
   "lib/core",
   "lib/control",
+  "lib/io/*",
   "lib/localisation",
   "lib/motors",
   "lib/sensors",
   "lib/state_machine",
+  "lib/communications",
 ]
 exclude = [
-  "lib/io/*",
   "boards/stm32l476rg",
   "boards/stm32f767zi",
   "boards/stm32l432kc",

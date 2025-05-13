@@ -11,6 +11,9 @@ use hyped_sensors::optical_flow::OpticalFlow;
 use hyped_spi::HypedSpiCsPin;
 use {defmt_rtt as _, panic_probe as _};
 
+/// The frequency at which the optical flow sensor is read.
+const UPDATE_FREQUENCY: Duration = Duration::from_hz(100);
+
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) -> ! {
     let p = embassy_stm32::init(Default::default());
@@ -37,6 +40,6 @@ async fn main(_spawner: Spawner) -> ! {
     loop {
         let flow = optical_flow.get_motion().await.unwrap();
         defmt::info!("x: {:?}, y: {:?}", flow.x, flow.y);
-        Timer::after(Duration::from_millis(10)).await;
+        Timer::after(UPDATE_FREQUENCY).await;
     }
 }

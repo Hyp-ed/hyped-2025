@@ -3,7 +3,7 @@
 
 use embassy_executor::Spawner;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
-use hyped_boards_stm32f767zi::tasks::read_laser_triangulation::read_laser_triangulation;
+use hyped_boards_stm32f767zi::tasks::sensors::read_laser_triangulation::read_laser_triangulation;
 use hyped_sensors::SensorValueRange;
 use hyped_sensors::SensorValueRange::*;
 use {defmt_rtt as _, panic_probe as _};
