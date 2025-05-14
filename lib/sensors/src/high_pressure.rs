@@ -30,7 +30,7 @@ impl<T: HypedGpioInputPin> HighPressure<T> {
             (false, false) => Ok(State::LowRange),
             (true, false) => Ok(State::MidRange),
             (true, true) => Ok(State::HighRange),
-            _ => Err(HighPressureError::InvalidState),  // any other case - should never be possible
+            _ => Err(HighPressureError::InvalidState), // any other case - should never be possible
         }
     }
 }
@@ -96,6 +96,9 @@ mod tests {
 
         let mut high_pres = HighPressure::new(sp1, sp2);
 
-        assert_eq!(high_pres.get_high_pressure_state(), Err(HighPressureError::InvalidState));
+        assert_eq!(
+            high_pres.get_high_pressure_state(),
+            Err(HighPressureError::InvalidState)
+        );
     }
 }
