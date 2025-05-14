@@ -1,6 +1,6 @@
-use crate::{log::log, telemetry_config::MQTT_BROKER_ADDRESS};
+use crate::log::log;
 use core::str::FromStr;
-use embassy_net::{tcp::TcpSocket, Stack};
+use embassy_net::{tcp::TcpSocket, Ipv4Address, Stack};
 use embassy_stm32::{
     eth::{generic_smi::GenericSMI, Ethernet},
     peripherals::ETH,
@@ -22,14 +22,17 @@ use {defmt_rtt as _, panic_probe as _};
 pub static MQTT_RECEIVE: Channel<ThreadModeRawMutex, MqttMessage, 128> = Channel::new();
 
 /// Receives messages from the MQTT broker and sends them to the `MQTT_RECEIVE` channel.
-pub async fn mqtt_receive(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) {
+pub async fn mqtt_receive(
+    stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>,
+    mqtt_broker_address: (Ipv4Address, u16),
+) {
     let mut rx_buffer: [u8; 4096] = [0; 4096];
     let mut tx_buffer: [u8; 4096] = [0; 4096];
     let mut socket = TcpSocket::new(stack, &mut rx_buffer, &mut tx_buffer);
 
     log(LogLevel::Info, "Connecting to Receive Socket...").await;
 
-    match socket.connect(MQTT_BROKER_ADDRESS).await {
+    match socket.connect(mqtt_broker_address).await {
         Ok(()) => {
             log(LogLevel::Info, "Connected to Receive!").await;
         }

@@ -1,0 +1,10 @@
+networking:
+  board:
+    ip: '192.168.0.66'
+    subnet_mask: 24
+  gateway:
+    ip: '192.168.0.1'
+mqtt:
+  broker:
+    ip: '192.168.0.65'
+    port: 1883
