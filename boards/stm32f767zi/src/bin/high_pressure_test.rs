@@ -10,11 +10,11 @@ use {defmt_rtt as _, panic_probe as _};
 
 /// used to store latest high pressure sensor value
 static HIGH_PRESSURE_SENSOR_VALUE: Watch<
-CriticalSectionRawMutex,
-Result<State,
-HighPressureError>,
-1> =
-Watch::new();
+    CriticalSectionRawMutex,
+    Result<State,
+    HighPressureError>,
+    1>
+= Watch::new();
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
