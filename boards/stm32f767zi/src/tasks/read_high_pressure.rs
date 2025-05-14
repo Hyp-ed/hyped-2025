@@ -15,9 +15,6 @@ pub async fn read_high_pressure(
         Stm32f767ziGpioInput::new(sp2_pin),
     );
 
-    // update frequency of high pressure sensor in hz
-    const UPDATE_FREQUENCY: u64 = 1000;
-
     loop {
         match high_pressure_sensor.get_high_pressure_state() {
             Ok(high_pressure_state) => sender.send(Ok(high_pressure_state)),
