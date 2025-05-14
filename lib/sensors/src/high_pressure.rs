@@ -44,7 +44,7 @@ pub enum State {
 }
 
 /// Represents possible errors for high pressure sensor
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum HighPressureError {
     InvalidState,
 }
