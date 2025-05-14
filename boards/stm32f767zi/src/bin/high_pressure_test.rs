@@ -12,7 +12,7 @@ use {defmt_rtt as _, panic_probe as _};
 static HIGH_PRESSURE_SENSOR_VALUE: Watch<
     CriticalSectionRawMutex,
     Result<State, HighPressureError>,
-    1
+    1,
 > = Watch::new();
 
 #[embassy_executor::main]
