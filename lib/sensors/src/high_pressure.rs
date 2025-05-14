@@ -50,7 +50,7 @@ pub enum HighPressureError {
 }
 
 /// update frequency of high pressure sensor in hz
-const UPDATE_FREQUENCY: u64 = 1000;
+pub const UPDATE_FREQUENCY: u64 = 1000;
 
 #[cfg(test)]
 mod tests {
