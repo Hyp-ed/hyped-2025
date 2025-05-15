@@ -453,6 +453,7 @@ dependencies = [
 name = "hyped_localisation"
 version = "0.1.0"
 dependencies = [
+ "config_to_rs",
  "defmt 0.3.100",
  "heapless",
  "libm",

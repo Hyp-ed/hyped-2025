@@ -1,11 +1,12 @@
 use crate::{
+    config::{NUM_ACCELEROMETERS, NUM_AXIS},
     filtering::kalman_filter::KalmanFilter,
     preprocessing::{
         accelerometer::AccelerometerPreprocessor,
         keyence::{KeyenceAgrees, SensorChecks},
         optical::process_optical_data,
     },
-    types::{RawAccelerometerData, NUM_ACCELEROMETERS, NUM_AXIS},
+    types::RawAccelerometerData,
 };
 
 use heapless::Vec;
