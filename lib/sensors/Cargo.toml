@@ -14,6 +14,7 @@ hyped_i2c = { path = "../io/hyped_i2c" }
 hyped_gpio = { path = "../io/hyped_gpio" }
 hyped_adc = { path = "../io/hyped_adc" }
 hyped_spi = { path = "../io/hyped_spi" }
+config_to_rs = { version = "0.2.2", features = ["relative-to-macro"]}
 
 [dev-dependencies]
 # Fix from: https://github.com/embassy-rs/embassy/pull/2727

@@ -1,0 +1,11 @@
+sensors:
+  laser_triangulation:
+    base_distance: 20.0
+    measure_range: 25.0
+    zero_offset: 0.638
+  low_pressure:
+    max_pressure: 10.0
+    pressure_offset: 0.0
+  optical_flow:
+    timeout_s: 5
+    retry_duration_ms: 10

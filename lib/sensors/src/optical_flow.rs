@@ -3,6 +3,8 @@ use embassy_time::{Duration, Instant, Timer};
 use hyped_gpio::HypedGpioOutputPin;
 use hyped_spi::{HypedSpi, HypedSpiCsPin, SpiError};
 
+use crate::config::SENSORS;
+
 /// Optical flow implements the logic to interact with the PMW3901MB-TXQT: Optical Motion Tracking Chip
 ///
 /// This implementation is directly coming from https://github.com/pimoroni/pmw3901-python/blob/main/pmw3901/__init__.py
@@ -349,6 +351,7 @@ const WAIT: u8 = 0xFF;
 // Timing constants
 
 /// The timeout duration for reading motion data
-const TIMEOUT: Duration = Duration::from_secs(5);
+const TIMEOUT: Duration = Duration::from_secs(SENSORS.sensors.optical_flow.timeout_s as u64);
 /// The duration to wait before retrying to read motion data
-const RETRY_DURATION: Duration = Duration::from_millis(10);
+const RETRY_DURATION: Duration =
+    Duration::from_millis(SENSORS.sensors.optical_flow.retry_duration_ms as u64);
