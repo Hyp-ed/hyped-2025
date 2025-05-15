@@ -5,15 +5,12 @@ use hyped_communications::{
 
 use crate::{
     board_state::{EMERGENCY, THIS_BOARD},
+    config::HEARTBEATS,
     emergency,
     tasks::can::{receive::INCOMING_HEARTBEATS, send::CAN_SEND},
 };
 
 use {defmt_rtt as _, panic_probe as _};
-
-const HEARTBEAT_FREQUENCY: Duration = Duration::from_hz(10);
-const HEARTBEAT_MAX_LATENCY: Duration = Duration::from_millis(200);
-const STARTUP_TIMEOUT: Duration = Duration::from_secs(30);
 
 /// Task that listens for incoming heartbeat messages from the target board
 /// and triggers an emergency stop if the target board does not respond in time.
@@ -36,7 +33,7 @@ pub async fn heartbeat_listener(from_board: Board) {
 
     loop {
         // Wait for an incoming heartbeat message from the target board
-        match with_timeout(HEARTBEAT_MAX_LATENCY, async {
+        match with_timeout(Duration::from_millis(HEARTBEATS.boards.max_latency), async {
             loop {
                 // Only return when we receive a heartbeat message
                 let heartbeat = INCOMING_HEARTBEATS.receive().await;
@@ -66,15 +63,18 @@ pub async fn heartbeat_listener(from_board: Board) {
 
 /// Gives the boards a chance to wake up at the start.
 pub async fn wait_for_first_heartbeat(target_board: Board) -> Result<(), ()> {
-    match with_timeout(STARTUP_TIMEOUT, async {
-        loop {
-            // Only return when we receive a heartbeat message
-            let heartbeat = INCOMING_HEARTBEATS.receive().await;
-            if heartbeat.to == *THIS_BOARD.get().await && heartbeat.from == target_board {
-                break;
+    match with_timeout(
+        Duration::from_secs(HEARTBEATS.boards.startup_timeout),
+        async {
+            loop {
+                // Only return when we receive a heartbeat message
+                let heartbeat = INCOMING_HEARTBEATS.receive().await;
+                if heartbeat.to == *THIS_BOARD.get().await && heartbeat.from == target_board {
+                    break;
+                }
             }
-        }
-    })
+        },
+    )
     .await
     {
         Ok(_) => Ok(()),
@@ -94,6 +94,7 @@ pub async fn send_heartbeat(to_board: Board) {
         let heartbeat = Heartbeat::new(to_board, *THIS_BOARD.get().await);
         defmt::debug!("Sending heartbeat: {:?}", heartbeat);
         can_sender.send(CanMessage::Heartbeat(heartbeat)).await;
-        Timer::after(HEARTBEAT_FREQUENCY).await;
+
+        Timer::after(Duration::from_hz(HEARTBEATS.boards.frequency)).await;
     }
 }

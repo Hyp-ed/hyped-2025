@@ -1,10 +1,10 @@
 #![no_std]
 #![no_main]
 
-use core::panic;
+use core::{panic, str::FromStr};
 
 use embassy_executor::Spawner;
-use embassy_net::{Stack, StackResources};
+use embassy_net::{Ipv4Address, Ipv4Cidr, Stack, StackResources, StaticConfigV4};
 use embassy_stm32::{
     bind_interrupts,
     can::{
@@ -20,6 +20,7 @@ use embassy_stm32::{
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::{
     board_state::{CURRENT_STATE, EMERGENCY, THIS_BOARD},
+    config::TELEMETRY,
     configure_networking, default_can_config,
     log::log,
     set_up_network_stack,
@@ -34,7 +35,6 @@ use hyped_boards_stm32f767zi::{
         network::net_task,
         state_machine::state_machine,
     },
-    telemetry_config::{BOARD_STATIC_ADDRESS, GATEWAY_IP},
 };
 use hyped_communications::boards::Board;
 use hyped_core::log_types::LogLevel;

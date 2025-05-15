@@ -1,6 +1,6 @@
 use hyped_adc::HypedAdc;
 
-use crate::SensorValueRange;
+use crate::{config::SENSORS, SensorValueRange};
 
 /// The low pressure sensor (LPS) (model: SPAN-P10R-G18F-PNLK-PNVBA-L1) is able to detect
 /// pressure in range from 0 to 10 bar.
@@ -12,8 +12,6 @@ pub struct LowPressure<T: HypedAdc> {
     adc: T,
     calculate_bounds: fn(f32) -> SensorValueRange<f32>,
 }
-
-const MAX_PRESSURE: f32 = 10.0;
 
 impl<T: HypedAdc> LowPressure<T> {
     /// Create new low pressure sensor instance
@@ -64,4 +62,5 @@ pub fn default_calculate_bounds(value: f32) -> SensorValueRange<f32> {
 }
 
 /// The offset for the pressure value (in bar) read from the sensor.
-const PRESSURE_OFFSET: f32 = 0.0;
+const PRESSURE_OFFSET: f32 = SENSORS.sensors.low_pressure.pressure_offset as f32;
+const MAX_PRESSURE: f32 = SENSORS.sensors.low_pressure.max_pressure as f32;

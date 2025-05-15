@@ -1,5 +1,6 @@
 use crate::{
     board_state::{EMERGENCY, THIS_BOARD},
+    config::{Sensors, SENSORS},
     emergency,
     io::Stm32f767ziI2c,
     tasks::can::send::CAN_SEND,
@@ -23,9 +24,6 @@ use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
 use hyped_sensors::SensorValueRange;
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
-
-/// The update frequency of the temperature sensor in Hz
-const UPDATE_FREQUENCY: Duration = Duration::from_hz(1);
 
 /// Test task that just reads the temperature from the sensor and prints it to the console
 #[embassy_executor::task]
@@ -93,6 +91,9 @@ pub async fn read_temperature(
                 .await;
         }
 
-        Timer::after(UPDATE_FREQUENCY).await;
+        Timer::after(Duration::from_hz(
+            SENSORS.sensors.temperature.update_frequency,
+        ))
+        .await;
     }
 }

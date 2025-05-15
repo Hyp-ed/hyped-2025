@@ -1,4 +1,4 @@
-use crate::SensorValueRange;
+use crate::{config::SENSORS, SensorValueRange};
 use hyped_adc::HypedAdc;
 
 /// laser_triangulation implements the logic to read current from the RF602 Series Laser Triangulation
@@ -56,6 +56,6 @@ pub enum LaserTriangulationError {
     OutOfRange,
 }
 
-const BASE_DISTANCE: f32 = 20.0;
-const MEASURE_RANGE: f32 = 25.0;
-const ZERO_OFFSET: f32 = 0.638;
+const BASE_DISTANCE: f32 = SENSORS.sensors.laser_triangulation.base_distance as f32;
+const MEASURE_RANGE: f32 = SENSORS.sensors.laser_triangulation.measure_range as f32;
+const ZERO_OFFSET: f32 = SENSORS.sensors.laser_triangulation.zero_offset as f32;

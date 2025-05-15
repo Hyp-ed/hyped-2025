@@ -1,10 +1,5 @@
 use heapless::Vec;
 
-pub const NUM_ACCELEROMETERS: usize = 4;
-pub const NUM_AXIS: usize = 3;
-pub const NUM_ALLOWED_ACCELEROMETER_OUTLIERS: usize = 2;
-pub const NUM_OPTICAL_SENSORS: usize = 1;
-
 #[derive(PartialEq)]
 pub enum SensorChecks {
     Unacceptable,
