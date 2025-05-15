@@ -1,6 +1,6 @@
 use core::str::FromStr;
 
-use crate::log::log;
+use crate::{config::TELEMETRY, log::log};
 use embassy_net::{tcp::TcpSocket, Ipv4Address, Stack};
 use embassy_stm32::{
     eth::{generic_smi::GenericSMI, Ethernet},
@@ -55,7 +55,7 @@ pub async fn mqtt_send(
         RECV_BUFFER_LEN,
         &mut recv_buffer,
         WRITE_BUFFER_LEN,
-        "telemetry_board_sender",
+        TELEMETRY.mqtt.sender.client_id,
     );
 
     mqtt_client.connect_to_broker().await;

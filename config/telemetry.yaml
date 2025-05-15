@@ -8,3 +8,8 @@ mqtt:
   broker:
     ip: '192.168.0.65'
     port: 1883
+  receiver:
+    client_id: 'telemetry_receiver'
+    subscribe_topic: 'hyped/pod_2025/#'
+  sender:
+    client_id: 'telemetry_sender'

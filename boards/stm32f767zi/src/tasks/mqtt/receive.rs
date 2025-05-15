@@ -1,4 +1,4 @@
-use crate::log::log;
+use crate::{config::TELEMETRY, log::log};
 use core::str::FromStr;
 use embassy_net::{tcp::TcpSocket, Ipv4Address, Stack};
 use embassy_stm32::{
@@ -56,11 +56,13 @@ pub async fn mqtt_receive(
         RECV_BUFFER_LEN,
         &mut recv_buffer,
         WRITE_BUFFER_LEN,
-        "telemetry_board_receiver",
+        TELEMETRY.mqtt.receiver.client_id,
     );
 
     mqtt_client.connect_to_broker().await;
-    mqtt_client.subscribe("hyped/pod_2025/#").await;
+    mqtt_client
+        .subscribe(TELEMETRY.mqtt.receiver.subscribe_topic)
+        .await;
 
     loop {
         match mqtt_client.receive_message().await {
