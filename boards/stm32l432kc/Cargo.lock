@@ -665,6 +665,7 @@ dependencies = [
  "heapless",
  "hyped_adc",
  "hyped_adc_derive",
+ "hyped_control",
  "hyped_sensors",
  "panic-probe",
  "rand_core",
@@ -679,6 +680,19 @@ dependencies = [
  "embassy-sync 0.6.0",
  "embassy-time",
  "heapless",
+]
+
+[[package]]
+name = "hyped_control"
+version = "0.1.0"
+dependencies = [
+ "embassy-sync 0.6.0",
+ "embassy-time",
+ "heapless",
+ "hyped_core",
+ "hyped_gpio",
+ "hyped_i2c",
+ "hyped_sensors",
 ]
 
 [[package]]
