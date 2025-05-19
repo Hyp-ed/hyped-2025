@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: rustup update
       - uses: Swatinem/rust-cache@v2
       - name: Run clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
@@ -24,10 +25,10 @@ jobs:
           - stm32l432kc
     steps:
       - uses: actions/checkout@v4
+      - run: rustup update
       - uses: Swatinem/rust-cache@v2
         with:
           key: ${{ matrix.board }}
-      - run: rustup target add thumbv7em-none-eabihf
       - name: Run clippy
         run: cd boards/${{ matrix.board }} && cargo clippy --all-features -- -D warnings
 
