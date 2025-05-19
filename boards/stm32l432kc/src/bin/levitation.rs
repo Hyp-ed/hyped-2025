@@ -3,42 +3,24 @@
 
 use defmt::info;
 use embassy_executor::Spawner;
-use embassy_stm32::gpio::OutputType;
-use embassy_stm32::time::hz;
-use embassy_stm32::timer::low_level::CountingMode;
-use embassy_stm32::timer::simple_pwm::{PwmPin, SimplePwm};
-use embassy_stm32::timer::Channel;
+use embassy_stm32::{
+    gpio::OutputType,
+    time::hz,
+    timer::{
+        low_level::CountingMode,
+        simple_pwm::{PwmPin, SimplePwm},
+        Channel,
+    },
+};
 use embassy_time::{Duration, Instant, Timer};
-use hyped_control::lev_controllers::{
-    ControllerTrait, PiController, PiGain, PidController, PidGain,
+use hyped_boards_stm32l432kc::config::CONFIG;
+use hyped_control::{
+    config::*,
+    lev_controllers::{ControllerTrait, PiController, PiGain, PidController, PidGain},
 };
 
 use defmt_rtt as _;
 use panic_probe as _;
-
-const MAX_VOLTAGE: f32 = 500.0;
-const MAX_CURRENT: f32 = 5.0; // TODOLater check with lev
-const TARGET_HEIGHT: f32 = 15.0; // mm
-const SAMPLING_PERIOD: u64 = 1; // (decide units) TODOLater see how long this takes to run and go based on that
-
-const GAIN_HEIGHT: PidGain = PidGain {
-    kp: 22058.3927852622,
-    ki: 194432.490685545,
-    kd: 614.513502234539,
-    p_reference_gain: 0.873451984,
-    d_reference_gain: 0.705728005,
-    filter_coefficient: 1026.87023225348, // TO TUNE. A number between 0 and 1
-};
-
-const GAIN_CURRENT: PiGain = PiGain {
-    kp: 1000.0,
-    ki: 5_000_000.0,
-};
-
-const GAIN_VOLTAGE: PiGain = PiGain {
-    kp: 50.0,
-    ki: 10_000_000.0,
-};
 
 /*
 For the lev control, we need to chain a PID controller with 2 PI controllers and output a PWM signal. The PID takes in
@@ -82,10 +64,10 @@ async fn main(_spawner: Spawner) {
         let actual_current = 1.0; // TODOLater we'll get that from a sensor
         let actual_voltage = 0.8; // TODOLater we'll get that from a sensor
 
-        let target_current =
-            (pid_height.update(TARGET_HEIGHT, actual_height, SAMPLING_PERIOD)).min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries) and uses filtered derivative
-        let target_voltage =
-            (pi_current.update(target_current, actual_current, SAMPLING_PERIOD)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries)
+        let target_current = (pid_height.update(TARGET_HEIGHT, actual_height, SAMPLING_PERIOD))
+            .min(CONFIG.max_current_a as f32); // takes in height -> outputs current target (within boundaries) and uses filtered derivative
+        let target_voltage = (pi_current.update(target_current, actual_current, SAMPLING_PERIOD))
+            .min(CONFIG.max_voltage_v as f32); // takes in current -> outputs voltage (within boundaries)
         let duty_cycle = pi_voltage
             .update(target_voltage, actual_voltage, SAMPLING_PERIOD)
             .min(max_duty); // takes in voltage -> outputs duty cycle (within boundaries)

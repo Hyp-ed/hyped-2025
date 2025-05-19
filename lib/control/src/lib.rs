@@ -3,3 +3,4 @@
 pub mod hp_relay;
 pub mod lev_controllers;
 pub mod pneumatics;
+pub mod config;
