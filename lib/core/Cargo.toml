@@ -3,6 +3,9 @@ name = "hyped_core"
 version = "0.1.0"
 edition = "2021"
 
+[lints]
+workspace = true
+
 [dependencies]
 heapless = { version = "0.8", default-features = false, features = ["serde"] }
 rust-mqtt = { version = "0.3.0", default-features = false, features = ["defmt"] }
@@ -17,5 +20,5 @@ hyped_can = { path = "../io/hyped_can" }
 hyped_measurement_ids = { path = "../measurement_ids" }
 
 [dev-dependencies]
-log = { version = "0.4", default-features = false }
+log = { version = "0.4.27", default-features = false }
 defmt = { version = "0.3", features = ["unstable-test"] }
