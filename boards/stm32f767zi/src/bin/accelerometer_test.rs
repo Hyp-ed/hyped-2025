@@ -79,7 +79,7 @@ async fn main(spawner: Spawner) -> ! {
                     defmt::info!("Failed to read acceleration values.")
                 }
             }
-            Timer::after(Duration::from_millis(100)).await;
         }
+        Timer::after(Duration::from_millis(100)).await;
     }
 }
