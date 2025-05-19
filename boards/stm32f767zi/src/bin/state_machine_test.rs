@@ -1,6 +1,7 @@
 #![no_std]
 #![no_main]
 
+use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_stm32::{
     bind_interrupts,
@@ -13,7 +14,7 @@ use hyped_boards_stm32f767zi::tasks::{
     state_machine::state_machine,
 };
 use hyped_communications::boards::Board;
-use {defmt_rtt as _, panic_probe as _};
+use panic_probe as _;
 
 bind_interrupts!(struct Irqs {
     CAN1_RX0 => Rx0InterruptHandler<CAN1>;

@@ -23,7 +23,7 @@ pub fn gen_measurement_ids(args: TokenStream) -> TokenStream {
         String::from("#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, defmt::Format)]\n");
     enum_str.push_str("pub enum MeasurementId {\n");
     for id in measurement_ids.clone() {
-        enum_str.push_str(&format!("    {},\n", id));
+        enum_str.push_str(&format!("    {id},\n"));
     }
     enum_str.push_str("}\n");
 
@@ -110,7 +110,7 @@ pub fn gen_measurement_ids(args: TokenStream) -> TokenStream {
     enum_str.push_str("    fn from(measurement_id: MeasurementId) -> u16 {\n");
     enum_str.push_str("        match measurement_id {\n");
     for (i, id) in measurement_ids.clone().into_iter().enumerate() {
-        enum_str.push_str(&format!("            MeasurementId::{} => {},\n", id, i));
+        enum_str.push_str(&format!("            MeasurementId::{id} => {i},\n"));
     }
     enum_str.push_str("        }\n");
     enum_str.push_str("    }\n");
@@ -122,10 +122,7 @@ pub fn gen_measurement_ids(args: TokenStream) -> TokenStream {
     enum_str.push_str("    fn try_from(id: u16) -> Result<Self, Self::Error> {\n");
     enum_str.push_str("        match id {\n");
     for (i, id) in measurement_ids.clone().into_iter().enumerate() {
-        enum_str.push_str(&format!(
-            "            {} => Ok(MeasurementId::{}),\n",
-            i, id,
-        ));
+        enum_str.push_str(&format!("            {i} => Ok(MeasurementId::{id}),\n"));
     }
     enum_str.push_str("            _ => Err(\"Failed to parse enum TryFrom<u16>\"),\n");
     enum_str.push_str("        }\n");
@@ -137,7 +134,7 @@ pub fn gen_measurement_ids(args: TokenStream) -> TokenStream {
 
 fn get_measurement_ids(yaml_path: String, pod_id: String) -> Vec<String> {
     let yaml =
-        get_yaml(yaml_path.clone()).unwrap_or_else(|| panic!("Failed to load yaml: {}", yaml_path));
+        get_yaml(yaml_path.clone()).unwrap_or_else(|| panic!("Failed to load yaml: {yaml_path}"));
     let mut measurement_ids = Vec::new();
     let measurements = yaml["pods"][pod_id.clone().as_str()]["measurements"].clone();
     for key in measurements.as_hash().unwrap().keys() {
@@ -153,6 +150,6 @@ fn get_yaml(yaml_path: String) -> Option<Yaml> {
     };
     match std::fs::read_to_string(path_to_use.clone()) {
         Ok(file) => Some(Yaml::load_from_str(&file).unwrap()[0].clone()),
-        Err(_) => panic!("Failed to open file: {}", path_to_use),
+        Err(_) => panic!("Failed to open file: {path_to_use}"),
     }
 }

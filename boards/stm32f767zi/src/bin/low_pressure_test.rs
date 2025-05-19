@@ -1,13 +1,14 @@
 #![no_std]
 #![no_main]
 
+use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_stm32::adc::{Adc, AdcChannel};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::sensors::read_low_pressure::read_low_pressure;
 use hyped_sensors::SensorValueRange::{self, *};
-use {defmt_rtt as _, panic_probe as _};
+use panic_probe as _;
 
 /// The update frequency of the low pressure sensor
 const UPDATE_FREQUENCY: Duration = Duration::from_hz(10);

@@ -39,7 +39,7 @@ gen_measurement_ids!("config/pods.yaml", "poddington");
 mod test {
     #[test]
     fn test_config() {
-        let pod_name = super::CONFIG.pods.poddington.label;
+        let pod_name = super::PODS_CONFIG.pods.poddington.label;
         assert_eq!(pod_name, "Poddington");
     }
 }

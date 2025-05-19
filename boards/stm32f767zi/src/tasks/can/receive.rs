@@ -10,7 +10,8 @@ use hyped_communications::{
 
 use crate::board_state::EMERGENCY;
 
-use {defmt_rtt as _, panic_probe as _};
+use defmt_rtt as _;
+use panic_probe as _;
 
 /// Stores incoming state transitions received from CAN.
 /// All boards should listen to this channel and update their states accordingly.
