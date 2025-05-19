@@ -13,10 +13,9 @@ use embassy_stm32::{
     },
 };
 use embassy_time::{Duration, Instant, Timer};
-use hyped_boards_stm32l432kc::config::CONFIG;
 use hyped_control::{
     config::*,
-    lev_controllers::{ControllerTrait, PiController, PiGain, PidController, PidGain},
+    lev_controllers::{ControllerTrait, PiController, PidController},
 };
 
 use defmt_rtt as _;
