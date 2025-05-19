@@ -1,11 +1,12 @@
 use crate::io::Stm32l432kcAdc;
 use defmt_rtt as _;
-use embassy_stm32::adc::Adc;
-use embassy_stm32::adc::AdcChannel;
+use embassy_stm32::adc::{Adc, AdcChannel};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
 use embassy_time::{Duration, Timer};
-use hyped_sensors::laser_triangulation::LaserTriangulationError;
-use hyped_sensors::{laser_triangulation::LaserTriangulation, SensorValueRange};
+use hyped_sensors::{
+    laser_triangulation::{LaserTriangulation, LaserTriangulationError},
+    SensorValueRange,
+};
 
 /// The update frequency of the laser triangulation sensor in Hz
 const UPDATE_FREQUENCY: u64 = 1000;

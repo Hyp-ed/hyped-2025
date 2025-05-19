@@ -91,9 +91,9 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "config_to_rs"
-version = "0.2.1"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fe59efedb5aea134ace7c79553989a92d26cfa8274a53062756d3270c1e8dba"
+checksum = "48bc1f4cad1fb85887d4e2241f502fa35056a5952bc7a860ee22069417c79fc7"
 dependencies = [
  "convert_case 0.7.1",
  "hashlink",

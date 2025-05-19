@@ -1,16 +1,13 @@
 use crate::io::Stm32f767ziAdc;
 use defmt_rtt as _;
-use embassy_stm32::adc::Adc;
-use embassy_stm32::adc::AdcChannel;
+use embassy_stm32::adc::{Adc, AdcChannel};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
 use embassy_time::{Duration, Timer};
-use hyped_sensors::laser_triangulation::LaserTriangulationError;
-use hyped_sensors::{laser_triangulation::LaserTriangulation, SensorValueRange};
-
-/// The update frequency of the laser triangulation sensor in Hz
-const UPDATE_FREQUENCY: Duration = Duration::from_hz(1000);
-/// Reference voltage for the laser triangulation sensor
-const V_REF: f32 = 3.22;
+use hyped_core::config::SENSORS_CONFIG;
+use hyped_sensors::{
+    laser_triangulation::{LaserTriangulation, LaserTriangulationError},
+    SensorValueRange,
+};
 
 /// Test task that reads the distance by laser triangulation and sends it with the Watch Sender
 #[embassy_executor::task]
@@ -21,8 +18,11 @@ pub async fn read_laser_triangulation(
     let adc = Adc::new(p.ADC1);
     let pin = p.PA3; // Temporary pin until we know what our actual pin is
 
-    let mut laser_triangulation_sensor =
-        LaserTriangulation::new(Stm32f767ziAdc::new(adc, pin.degrade_adc(), V_REF));
+    let mut laser_triangulation_sensor = LaserTriangulation::new(Stm32f767ziAdc::new(
+        adc,
+        pin.degrade_adc(),
+        SENSORS_CONFIG.sensors.laser_triangulation.v_ref as f32,
+    ));
 
     loop {
         match laser_triangulation_sensor.read() {
@@ -36,6 +36,9 @@ pub async fn read_laser_triangulation(
                 }
             },
         }
-        Timer::after(UPDATE_FREQUENCY).await;
+        Timer::after(Duration::from_hz(
+            SENSORS_CONFIG.sensors.laser_triangulation.update_frequency as u64,
+        ))
+        .await;
     }
 }

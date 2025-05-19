@@ -61,10 +61,17 @@ macro_rules! set_up_network_stack {
             mac_addr,
         );
 
-        let config = embassy_net::Config::ipv4_static(embassy_net::StaticConfigV4 {
-            address: BOARD_STATIC_ADDRESS,
+        let config = embassy_net::Config::ipv4_static(StaticConfigV4 {
+            address: Ipv4Cidr::new(
+                Ipv4Address::from_str(TELEMETRY_CONFIG.networking.board.ip)
+                    .expect("Invalid board IP address"),
+                TELEMETRY_CONFIG.networking.board.subnet_mask as u8,
+            ),
             dns_servers: heapless::Vec::new(),
-            gateway: Some(GATEWAY_IP),
+            gateway: Some(
+                Ipv4Address::from_str(TELEMETRY_CONFIG.networking.gateway.ip)
+                    .expect("Invalid gateway IP address"),
+            ),
         });
 
         static STACK: StaticCell<Stack<Ethernet<'static, ETH, GenericSMI>>> = StaticCell::new();

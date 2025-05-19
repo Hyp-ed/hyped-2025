@@ -6,7 +6,8 @@ use crate::{
 use hyped_communications::{messages::CanMessage, state_transition::StateTransitionCommand};
 use hyped_state_machine::state_machine::StateMachine;
 
-use {defmt_rtt as _, panic_probe as _};
+use defmt_rtt as _;
+use panic_probe as _;
 
 /// Handles the state machine logic by receiving state transition requests and sending new states.
 /// Should only be run on one board.

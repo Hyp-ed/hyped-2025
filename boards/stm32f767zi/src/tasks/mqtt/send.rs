@@ -1,7 +1,8 @@
 use core::str::FromStr;
 
-use crate::{log::log, telemetry_config::MQTT_BROKER_ADDRESS};
-use embassy_net::{tcp::TcpSocket, Stack};
+use crate::log::log;
+use defmt_rtt as _;
+use embassy_net::{tcp::TcpSocket, Ipv4Address, Stack};
 use embassy_stm32::{
     eth::{generic_smi::GenericSMI, Ethernet},
     peripherals::ETH,
@@ -9,20 +10,24 @@ use embassy_stm32::{
 use embassy_sync::{blocking_mutex::raw::ThreadModeRawMutex, channel::Channel};
 use heapless::String;
 use hyped_core::{
+    config::TELEMETRY_CONFIG,
     format,
     format_string::show,
     log_types::LogLevel,
     mqtt::{HypedMqttClient, MqttMessage},
     mqtt_topics::MqttTopic,
 };
-use {defmt_rtt as _, panic_probe as _};
+use panic_probe as _;
 
 /// Channel for sending messages over MQTT.
 /// Any message sent to this channel will be sent to the MQTT broker by the `mqtt_send_task`
 pub static MQTT_SEND: Channel<ThreadModeRawMutex, MqttMessage, 128> = Channel::new();
 
 /// Sends messages from `SEND_CHANNEL` to the MQTT broker
-pub async fn mqtt_send(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) {
+pub async fn mqtt_send(
+    stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>,
+    mqtt_broker_address: (Ipv4Address, u16),
+) {
     let mut rx_buffer: [u8; 4096] = [0; 4096];
     let mut tx_buffer: [u8; 4096] = [0; 4096];
     let mut socket = TcpSocket::new(stack, &mut rx_buffer, &mut tx_buffer);
@@ -30,7 +35,7 @@ pub async fn mqtt_send(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>
 
     log(LogLevel::Info, "Connecting to Send Socket...").await;
 
-    match socket.connect(MQTT_BROKER_ADDRESS).await {
+    match socket.connect(mqtt_broker_address).await {
         Ok(()) => log(LogLevel::Info, "Connected to Send!").await,
         Err(connection_error) => {
             log(
@@ -52,7 +57,7 @@ pub async fn mqtt_send(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>
         RECV_BUFFER_LEN,
         &mut recv_buffer,
         WRITE_BUFFER_LEN,
-        "telemetry_board_sender",
+        TELEMETRY_CONFIG.mqtt.sender.client_id,
     );
 
     mqtt_client.connect_to_broker().await;

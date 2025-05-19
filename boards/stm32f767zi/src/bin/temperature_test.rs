@@ -2,6 +2,7 @@
 #![no_main]
 
 use core::cell::RefCell;
+use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_stm32::{
     bind_interrupts,
@@ -39,8 +40,8 @@ use hyped_communications::boards::Board;
 use hyped_core::config::MeasurementId;
 use hyped_sensors::SensorValueRange::{self, Critical, Safe, Warning};
 use hyped_state_machine::states::State;
+use panic_probe as _;
 use static_cell::StaticCell;
-use {defmt_rtt as _, panic_probe as _};
 
 bind_interrupts!(struct Irqs {
     CAN1_RX0 => Rx0InterruptHandler<CAN1>;

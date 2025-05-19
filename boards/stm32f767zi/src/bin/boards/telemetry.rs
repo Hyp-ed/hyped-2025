@@ -1,10 +1,11 @@
 #![no_std]
 #![no_main]
 
-use core::panic;
+use core::{panic, str::FromStr};
 
+use defmt_rtt as _;
 use embassy_executor::Spawner;
-use embassy_net::{Stack, StackResources};
+use embassy_net::{Ipv4Address, Ipv4Cidr, Stack, StackResources, StaticConfigV4};
 use embassy_stm32::{
     bind_interrupts,
     can::{
@@ -34,14 +35,13 @@ use hyped_boards_stm32f767zi::{
         network::net_task,
         state_machine::state_machine,
     },
-    telemetry_config::{BOARD_STATIC_ADDRESS, GATEWAY_IP},
 };
 use hyped_communications::boards::Board;
-use hyped_core::log_types::LogLevel;
+use hyped_core::{config::TELEMETRY_CONFIG, log_types::LogLevel};
 use hyped_state_machine::states::State;
+use panic_probe as _;
 use rand_core::RngCore;
 use static_cell::StaticCell;
-use {defmt_rtt as _, panic_probe as _};
 
 bind_interrupts!(struct Irqs {
     ETH => eth::InterruptHandler;

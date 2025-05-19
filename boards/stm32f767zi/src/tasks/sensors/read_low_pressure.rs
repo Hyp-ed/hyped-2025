@@ -6,13 +6,8 @@ use embassy_stm32::{
 };
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
 use embassy_time::{Duration, Timer};
-use hyped_sensors::low_pressure::LowPressure;
-use hyped_sensors::SensorValueRange;
-
-/// The update frequency of the low pressure sensor in Hz
-const UPDATE_FREQUENCY: Duration = Duration::from_hz(10);
-/// Reference voltage for the low pressure sensor
-const V_REF: f32 = 5.0;
+use hyped_core::config::SENSORS_CONFIG;
+use hyped_sensors::{low_pressure::LowPressure, SensorValueRange};
 
 /// Test task that just reads the pressure from the low pressure sensor and prints it to the console
 #[embassy_executor::task]
@@ -21,11 +16,14 @@ pub async fn read_low_pressure(
     pin: AnyAdcChannel<ADC1>,
     sender: Sender<'static, CriticalSectionRawMutex, Option<SensorValueRange<f32>>, 1>,
 ) -> ! {
-    let hyped_adc = Stm32f767ziAdc::new(adc, pin, V_REF);
+    let hyped_adc = Stm32f767ziAdc::new(adc, pin, SENSORS_CONFIG.sensors.low_pressure.v_ref as f32);
     let mut low_pressure_sensor = LowPressure::new(hyped_adc);
 
     loop {
         sender.send(low_pressure_sensor.read_pressure());
-        Timer::after(UPDATE_FREQUENCY).await;
+        Timer::after(Duration::from_hz(
+            SENSORS_CONFIG.sensors.low_pressure.update_frequency as u64,
+        ))
+        .await;
     }
 }

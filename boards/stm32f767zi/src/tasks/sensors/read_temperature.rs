@@ -18,14 +18,13 @@ use embassy_time::{Duration, Timer};
 use hyped_communications::{
     data::CanData, emergency::Reason, measurements::MeasurementReading, messages::CanMessage,
 };
-use hyped_core::config::MeasurementId;
-use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
-use hyped_sensors::SensorValueRange;
+use hyped_core::config::{MeasurementId, SENSORS_CONFIG};
+use hyped_sensors::{
+    temperature::{Status, Temperature, TemperatureAddresses},
+    SensorValueRange,
+};
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
-
-/// The update frequency of the temperature sensor in Hz
-const UPDATE_FREQUENCY: Duration = Duration::from_hz(1);
 
 /// Test task that just reads the temperature from the sensor and prints it to the console
 #[embassy_executor::task]
@@ -93,6 +92,9 @@ pub async fn read_temperature(
                 .await;
         }
 
-        Timer::after(UPDATE_FREQUENCY).await;
+        Timer::after(Duration::from_hz(
+            SENSORS_CONFIG.sensors.temperature.update_frequency as u64,
+        ))
+        .await;
     }
 }

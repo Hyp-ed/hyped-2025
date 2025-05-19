@@ -2,21 +2,22 @@
 #![no_main]
 
 use defmt::*;
+use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_net::tcp::State;
-use embassy_stm32::bind_interrupts;
-use embassy_stm32::can::filter::Mask32;
-use embassy_stm32::can::{
-    Can, Fifo, Id, Rx0InterruptHandler, Rx1InterruptHandler, SceInterruptHandler,
-    TxInterruptHandler,
+use embassy_stm32::{
+    bind_interrupts,
+    can::{
+        filter::Mask32, Can, Fifo, Id, Rx0InterruptHandler, Rx1InterruptHandler,
+        SceInterruptHandler, TxInterruptHandler,
+    },
+    peripherals::CAN1,
 };
-use embassy_stm32::peripherals::CAN1;
-use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
-use embassy_sync::watch::Watch;
+use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use hyped_can::HypedCanFrame;
 use hyped_communications::messages::CanMessage;
+use panic_probe as _;
 use static_cell::StaticCell;
-use {defmt_rtt as _, panic_probe as _};
 
 bind_interrupts!(struct Irqs {
     CAN1_RX0 => Rx0InterruptHandler<CAN1>;

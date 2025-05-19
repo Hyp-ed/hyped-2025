@@ -15,3 +15,6 @@ exclude = [
   "boards/stm32l432kc",
 ]
 resolver = "2"
+
+[workspace.lints.clippy]
+uninlined_format_args = "allow"

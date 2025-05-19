@@ -1,0 +1,6 @@
+pneumatics:
+  brakes:
+    # > this value means brakes are not actuated
+    actuation_threshold_mm: 5
+    # the maximum time in ms to wait for the brakes to actuate
+    check_timeout_ms: 100

@@ -3,11 +3,11 @@ use embassy_stm32::gpio::Input;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Sender};
 use embassy_time::{Duration, Timer};
 use hyped_communications::{data::CanData, measurements::MeasurementReading, messages::CanMessage};
-use hyped_core::{config::MeasurementId, types::DigitalSignal};
+use hyped_core::{
+    config::{MeasurementId, SENSORS_CONFIG},
+    types::DigitalSignal,
+};
 use hyped_sensors::keyence::Keyence;
-
-/// The update frequency of the Keyence sensor
-const UPDATE_FREQUENCY: Duration = Duration::from_hz(10);
 
 /// Test task that just continually updates the stripe count from the Keyence sensor (or other GPIO pin input)
 #[embassy_executor::task]
@@ -45,6 +45,9 @@ pub async fn read_keyence(
             )))
             .await;
 
-        Timer::after(UPDATE_FREQUENCY).await;
+        Timer::after(Duration::from_hz(
+            SENSORS_CONFIG.sensors.keyence.update_frequency as u64,
+        ))
+        .await;
     }
 }
