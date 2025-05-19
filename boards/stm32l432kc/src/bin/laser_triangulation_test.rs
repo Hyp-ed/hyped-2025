@@ -1,13 +1,13 @@
 #![no_std]
 #![no_main]
 
+use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32l432kc::tasks::read_laser_triangulation::read_laser_triangulation;
-use hyped_sensors::SensorValueRange;
-use hyped_sensors::SensorValueRange::*;
-use {defmt_rtt as _, panic_probe as _};
+use hyped_sensors::{SensorValueRange, SensorValueRange::*};
+use panic_probe as _;
 
 static LASER_TRIANGULATION_READING: Watch<CriticalSectionRawMutex, SensorValueRange<f32>, 1> =
     Watch::new();
