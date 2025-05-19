@@ -64,9 +64,9 @@ async fn main(_spawner: Spawner) {
         let actual_voltage = 0.8; // TODOLater we'll get that from a sensor
 
         let target_current = (pid_height.update(TARGET_HEIGHT, actual_height, SAMPLING_PERIOD))
-            .min(CONFIG.max_current_a as f32); // takes in height -> outputs current target (within boundaries) and uses filtered derivative
+            .min(MAX_CURRENT as f32); // takes in height -> outputs current target (within boundaries) and uses filtered derivative
         let target_voltage = (pi_current.update(target_current, actual_current, SAMPLING_PERIOD))
-            .min(CONFIG.max_voltage_v as f32); // takes in current -> outputs voltage (within boundaries)
+            .min(MAX_VOLTAGE as f32); // takes in current -> outputs voltage (within boundaries)
         let duty_cycle = pi_voltage
             .update(target_voltage, actual_voltage, SAMPLING_PERIOD)
             .min(max_duty); // takes in voltage -> outputs duty cycle (within boundaries)
