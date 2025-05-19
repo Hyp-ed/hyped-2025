@@ -746,7 +746,6 @@ dependencies = [
  "defmt",
  "embassy-sync 0.6.0",
  "embassy-time",
- "embassy-time",
  "heapless",
  "hyped_adc",
  "hyped_core",
