@@ -1,6 +1,7 @@
 use core::str::FromStr;
 
-use crate::{config::TELEMETRY, log::log};
+use crate::log::log;
+use defmt_rtt as _;
 use embassy_net::{tcp::TcpSocket, Ipv4Address, Stack};
 use embassy_stm32::{
     eth::{generic_smi::GenericSMI, Ethernet},
@@ -9,13 +10,14 @@ use embassy_stm32::{
 use embassy_sync::{blocking_mutex::raw::ThreadModeRawMutex, channel::Channel};
 use heapless::String;
 use hyped_core::{
+    config::TELEMETRY_CONFIG,
     format,
     format_string::show,
     log_types::LogLevel,
     mqtt::{HypedMqttClient, MqttMessage},
     mqtt_topics::MqttTopic,
 };
-use {defmt_rtt as _, panic_probe as _};
+use panic_probe as _;
 
 /// Channel for sending messages over MQTT.
 /// Any message sent to this channel will be sent to the MQTT broker by the `mqtt_send_task`
@@ -55,7 +57,7 @@ pub async fn mqtt_send(
         RECV_BUFFER_LEN,
         &mut recv_buffer,
         WRITE_BUFFER_LEN,
-        TELEMETRY.mqtt.sender.client_id,
+        TELEMETRY_CONFIG.mqtt.sender.client_id,
     );
 
     mqtt_client.connect_to_broker().await;

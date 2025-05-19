@@ -1,6 +1,5 @@
 use crate::{
     board_state::{EMERGENCY, THIS_BOARD},
-    config::{Sensors, SENSORS},
     emergency,
     io::Stm32f767ziI2c,
     tasks::can::send::CAN_SEND,
@@ -19,9 +18,11 @@ use embassy_time::{Duration, Timer};
 use hyped_communications::{
     data::CanData, emergency::Reason, measurements::MeasurementReading, messages::CanMessage,
 };
-use hyped_core::config::MeasurementId;
-use hyped_sensors::temperature::{Status, Temperature, TemperatureAddresses};
-use hyped_sensors::SensorValueRange;
+use hyped_core::config::{MeasurementId, SENSORS_CONFIG};
+use hyped_sensors::{
+    temperature::{Status, Temperature, TemperatureAddresses},
+    SensorValueRange,
+};
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
@@ -92,7 +93,7 @@ pub async fn read_temperature(
         }
 
         Timer::after(Duration::from_hz(
-            SENSORS.sensors.temperature.update_frequency,
+            SENSORS_CONFIG.sensors.temperature.update_frequency as u64,
         ))
         .await;
     }

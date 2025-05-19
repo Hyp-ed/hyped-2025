@@ -63,13 +63,13 @@ macro_rules! set_up_network_stack {
 
         let config = embassy_net::Config::ipv4_static(StaticConfigV4 {
             address: Ipv4Cidr::new(
-                Ipv4Address::from_str(TELEMETRY.networking.board.ip)
+                Ipv4Address::from_str(TELEMETRY_CONFIG.networking.board.ip)
                     .expect("Invalid board IP address"),
-                TELEMETRY.networking.board.subnet_mask as u8,
+                TELEMETRY_CONFIG.networking.board.subnet_mask as u8,
             ),
             dns_servers: heapless::Vec::new(),
             gateway: Some(
-                Ipv4Address::from_str(TELEMETRY.networking.gateway.ip)
+                Ipv4Address::from_str(TELEMETRY_CONFIG.networking.gateway.ip)
                     .expect("Invalid gateway IP address"),
             ),
         });

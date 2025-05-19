@@ -9,17 +9,17 @@ use embassy_stm32::{
     eth::{generic_smi::GenericSMI, Ethernet},
     peripherals::ETH,
 };
+use hyped_core::config::TELEMETRY_CONFIG;
 use receive::mqtt_receive;
 use send::mqtt_send;
-
-use crate::config::TELEMETRY;
 
 /// Split up the CAN peripheral into a sender and receiver.
 #[embassy_executor::task]
 pub async fn mqtt(stack: &'static Stack<Ethernet<'static, ETH, GenericSMI>>) {
     let mqtt_broker_address = (
-        Ipv4Address::from_str(TELEMETRY.mqtt.broker.ip).expect("Invalid MQTT broker IP address"),
-        TELEMETRY.mqtt.broker.port as u16,
+        Ipv4Address::from_str(TELEMETRY_CONFIG.mqtt.broker.ip)
+            .expect("Invalid MQTT broker IP address"),
+        TELEMETRY_CONFIG.mqtt.broker.port as u16,
     );
     join(
         mqtt_send(stack, mqtt_broker_address),

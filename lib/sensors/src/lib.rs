@@ -1,6 +1,5 @@
 #![cfg_attr(not(test), no_std)]
 
-pub mod config;
 pub mod keyence;
 pub mod laser_triangulation;
 pub mod low_pressure;

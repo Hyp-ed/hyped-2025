@@ -2,15 +2,16 @@ use embassy_time::{with_timeout, Duration, Timer};
 use hyped_communications::{
     boards::Board, emergency::Reason, heartbeat::Heartbeat, messages::CanMessage,
 };
+use hyped_core::config::HEARTBEAT_CONFIG;
 
 use crate::{
     board_state::{EMERGENCY, THIS_BOARD},
-    config::HEARTBEATS,
     emergency,
     tasks::can::{receive::INCOMING_HEARTBEATS, send::CAN_SEND},
 };
 
-use {defmt_rtt as _, panic_probe as _};
+use defmt_rtt as _;
+use panic_probe as _;
 
 /// Task that listens for incoming heartbeat messages from the target board
 /// and triggers an emergency stop if the target board does not respond in time.
@@ -33,7 +34,7 @@ pub async fn heartbeat_listener(from_board: Board) {
 
     loop {
         // Wait for an incoming heartbeat message from the target board
-        match with_timeout(Duration::from_millis(HEARTBEATS.boards.max_latency), async {
+        match with_timeout(Duration::from_millis(HEARTBEAT_CONFIG.boards.max_latency_ms as u64), async {
             loop {
                 // Only return when we receive a heartbeat message
                 let heartbeat = INCOMING_HEARTBEATS.receive().await;
@@ -64,7 +65,7 @@ pub async fn heartbeat_listener(from_board: Board) {
 /// Gives the boards a chance to wake up at the start.
 pub async fn wait_for_first_heartbeat(target_board: Board) -> Result<(), ()> {
     match with_timeout(
-        Duration::from_secs(HEARTBEATS.boards.startup_timeout),
+        Duration::from_secs(HEARTBEAT_CONFIG.boards.startup_timeout_s as u64),
         async {
             loop {
                 // Only return when we receive a heartbeat message
@@ -95,6 +96,6 @@ pub async fn send_heartbeat(to_board: Board) {
         defmt::debug!("Sending heartbeat: {:?}", heartbeat);
         can_sender.send(CanMessage::Heartbeat(heartbeat)).await;
 
-        Timer::after(Duration::from_hz(HEARTBEATS.boards.frequency)).await;
+        Timer::after(Duration::from_hz(HEARTBEAT_CONFIG.boards.frequency as u64)).await;
     }
 }
