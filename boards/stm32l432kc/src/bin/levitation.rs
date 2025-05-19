@@ -34,9 +34,9 @@ then performed, and the duty cycle is set, and timer restarted.
 
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) {
-    let mut pid_height = PidController::new(GAIN_HEIGHT.into());
-    let mut pi_current = PiController::new(GAIN_CURRENT.into());
-    let mut pi_voltage = PiController::new(GAIN_VOLTAGE.into());
+    let mut pid_height = PidController::new(GAIN_HEIGHT);
+    let mut pi_current = PiController::new(GAIN_CURRENT);
+    let mut pi_voltage = PiController::new(GAIN_VOLTAGE);
 
     let p = embassy_stm32::init(Default::default());
 
@@ -63,10 +63,10 @@ async fn main(_spawner: Spawner) {
         let actual_current = 1.0; // TODOLater we'll get that from a sensor
         let actual_voltage = 0.8; // TODOLater we'll get that from a sensor
 
-        let target_current = (pid_height.update(TARGET_HEIGHT, actual_height, SAMPLING_PERIOD))
-            .min(MAX_CURRENT as f32); // takes in height -> outputs current target (within boundaries) and uses filtered derivative
-        let target_voltage = (pi_current.update(target_current, actual_current, SAMPLING_PERIOD))
-            .min(MAX_VOLTAGE as f32); // takes in current -> outputs voltage (within boundaries)
+        let target_current =
+            (pid_height.update(TARGET_HEIGHT, actual_height, SAMPLING_PERIOD)).min(MAX_CURRENT); // takes in height -> outputs current target (within boundaries) and uses filtered derivative
+        let target_voltage =
+            (pi_current.update(target_current, actual_current, SAMPLING_PERIOD)).min(MAX_VOLTAGE); // takes in current -> outputs voltage (within boundaries)
         let duty_cycle = pi_voltage
             .update(target_voltage, actual_voltage, SAMPLING_PERIOD)
             .min(max_duty); // takes in voltage -> outputs duty cycle (within boundaries)
