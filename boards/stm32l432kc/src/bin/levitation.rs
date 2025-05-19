@@ -13,7 +13,8 @@ use hyped_control::lev_controllers::{
     ControllerTrait, PiController, PiGain, PidController, PidGain,
 };
 
-use {defmt_rtt as _, panic_probe as _};
+use defmt_rtt as _;
+use panic_probe as _;
 
 const MAX_VOLTAGE: f32 = 500.0;
 const MAX_CURRENT: f32 = 5.0; // TODOLater check with lev

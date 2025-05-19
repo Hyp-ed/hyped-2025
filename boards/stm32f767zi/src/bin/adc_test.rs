@@ -3,12 +3,16 @@
 
 // "Liberated" from https://github.com/embassy-rs/embassy/blob/6c4b3d82b637fce5ab6efdc312d7852381d8ddeb/examples/stm32f7/src/bin/adc.rs
 use defmt::*;
+use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_stm32::adc::{Adc, AdcChannel};
 use embassy_time::Timer;
 use hyped_adc::HypedAdc;
 use hyped_boards_stm32f767zi::io::Stm32f767ziAdc;
-use {defmt_rtt as _, panic_probe as _};
+use panic_probe as _;
+
+/// Reference Voltage constant so we can test the ADC
+const V_REF: f32 = 5.0;
 
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) {
@@ -28,7 +32,7 @@ async fn main(_spawner: Spawner) {
         (u32::from(sample) * VREFINT_MV / u32::from(vrefint_sample)) as u16
     };
 
-    let mut hyped_adc = Stm32f767ziAdc::new(adc, pin.degrade_adc());
+    let mut hyped_adc = Stm32f767ziAdc::new(adc, pin.degrade_adc(), V_REF);
 
     loop {
         let v = hyped_adc.read_value();
