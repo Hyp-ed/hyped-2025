@@ -5,4 +5,4 @@ accelerometers:
 keyence:
   num_sensors: 2
 optical_flow:
-  num_sensors: 2
+  num_sensors: 1
