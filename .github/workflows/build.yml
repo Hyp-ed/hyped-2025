@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: rustup update
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
       - uses: Swatinem/rust-cache@v2
       - run: cargo build --verbose
       - run: cargo test --verbose
@@ -30,7 +30,7 @@ jobs:
           - stm32l432kc
     steps:
       - uses: actions/checkout@v4
-      - run: rustup update
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
       - uses: Swatinem/rust-cache@v2
         with:
           key: ${{ matrix.board }}
