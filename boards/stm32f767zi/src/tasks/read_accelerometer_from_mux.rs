@@ -1,6 +1,4 @@
-#![no_std]
-#![no_main]
-
+use crate::io::Stm32f767ziI2c;
 use core::cell::RefCell;
 use embassy_executor::Spawner;
 use embassy_stm32::mode::Blocking;
@@ -8,7 +6,6 @@ use embassy_stm32::{i2c::I2c, time::Hertz};
 use embassy_sync::blocking_mutex::raw::NoopRawMutex;
 use embassy_sync::blocking_mutex::Mutex;
 use embassy_time::{Duration, Timer};
-use hyped_boards_stm32f767zi::io::Stm32f767ziI2c;
 use hyped_i2c::i2c_mux::I2cMux;
 use hyped_sensors::{
     accelerometer::{Accelerometer, AccelerometerAddresses},
@@ -85,7 +82,7 @@ async fn read_accelerometer_from_mux(
             }
         }
 
-        Timer::after(Duration::from_secs(1)).await;
+        Timer::after(Duration::from_millis(100)).await;
     }
 }
 
