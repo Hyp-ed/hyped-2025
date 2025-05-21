@@ -3,20 +3,21 @@
 
 use core::cell::RefCell;
 
+use defmt_rtt as _;
 use embassy_executor::Spawner;
-use embassy_stm32::gpio::Output;
-use embassy_stm32::gpio::{Level, Speed};
-use embassy_stm32::i2c::I2c;
-use embassy_stm32::mode::Blocking;
-use embassy_stm32::time::Hertz;
-use embassy_sync::blocking_mutex::raw::NoopRawMutex;
-use embassy_sync::blocking_mutex::Mutex;
+use embassy_stm32::{
+    gpio::{Level, Output, Speed},
+    i2c::I2c,
+    mode::Blocking,
+    time::Hertz,
+};
+use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32l476rg::io::{Stm32l476rgGpioOutput, Stm32l476rgI2c};
 use hyped_control::pneumatics::Pneumatics;
 use hyped_sensors::time_of_flight::{TimeOfFlight, TimeOfFlightAddresses};
+use panic_probe as _;
 use static_cell::StaticCell;
-use {defmt_rtt as _, panic_probe as _};
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 

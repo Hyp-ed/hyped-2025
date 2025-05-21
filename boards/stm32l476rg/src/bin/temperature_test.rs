@@ -3,6 +3,7 @@
 
 use core::cell::RefCell;
 
+use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_stm32::{i2c::I2c, mode::Blocking, time::Hertz};
 use embassy_sync::{
@@ -15,8 +16,8 @@ use embassy_sync::{
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32l476rg::tasks::read_temperature::read_temperature;
 use hyped_sensors::SensorValueRange::{self, *};
+use panic_probe as _;
 use static_cell::StaticCell;
-use {defmt_rtt as _, panic_probe as _};
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
@@ -37,14 +38,12 @@ async fn main(spawner: Spawner) -> ! {
     let temp_reading_sender = TEMP_READING.sender();
     let mut temp_reading_receiver = TEMP_READING.receiver().unwrap();
 
-    spawner
-        .spawn(read_temperature(i2c_bus, temp_reading_sender))
-        .unwrap();
+    spawner.must_spawn(read_temperature(i2c_bus, temp_reading_sender));
 
     // Every 100ms we read for the latest value from the temperature sensor.
     loop {
-        match temp_reading_receiver.try_changed() {
-            Some(reading) => match reading {
+        if let Some(reading) = temp_reading_receiver.try_changed() {
+            match reading {
                 Some(reading) => match reading {
                     Safe(temp) => {
                         defmt::info!("Temperature: {}°C (safe)", temp);
@@ -57,8 +56,7 @@ async fn main(spawner: Spawner) -> ! {
                     }
                 },
                 None => defmt::warn!("No temperature reading available."),
-            },
-            None => (),
+            }
         }
         Timer::after(Duration::from_millis(100)).await;
     }

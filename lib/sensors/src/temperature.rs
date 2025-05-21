@@ -70,7 +70,7 @@ impl<'a, T: HypedI2c> Temperature<'a, T> {
             .read_byte(self.device_address, STTS22H_DATA_TEMP_L)?;
 
         let combined: f32 =
-            ((temperature_high_byte as u16) << 8 | temperature_low_byte as u16) as f32;
+            (((temperature_high_byte as u16) << 8) | temperature_low_byte as u16) as f32;
 
         // Check if the temperature is negative
         if combined >= TWO_POWER_15 {

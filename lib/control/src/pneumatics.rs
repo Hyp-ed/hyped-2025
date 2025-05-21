@@ -1,5 +1,5 @@
-use embassy_time::with_timeout;
-use embassy_time::Duration;
+use embassy_time::{with_timeout, Duration};
+use hyped_core::config::CONTROL_CONFIG;
 use hyped_gpio::HypedGpioOutputPin;
 use hyped_i2c::HypedI2c;
 use hyped_sensors::{
@@ -26,8 +26,9 @@ pub enum BrakeActuationFailure {
     TimeoutError,
 }
 
-const BRAKE_ACTUATION_THRESHOLD: u8 = 5; // TODOLater: replace with whatever value indicates the brakes are actuated. > this value means brakes are not actuated.
-const BRAKE_CHECK_TIMEOUT: Duration = Duration::from_millis(100);
+/// the maximum time in ms to wait for the brakes to actuate
+const BRAKE_CHECK_TIMEOUT: Duration =
+    Duration::from_millis(CONTROL_CONFIG.pneumatics.brakes.check_timeout_ms as u64);
 
 /// Represents the pneumatics systems (brakes and lateral suspension) of the pod.
 /// Outputs two GPIO signals, one for the brakes and one for the lateral suspension, which turn on/off a solenoid valve.
@@ -135,7 +136,7 @@ impl<'a, P: HypedGpioOutputPin, T: HypedI2c> Pneumatics<'a, P, T> {
             SensorValueRange::Critical(c) => c,
         };
 
-        if sensor_value >= BRAKE_ACTUATION_THRESHOLD {
+        if sensor_value >= CONTROL_CONFIG.pneumatics.brakes.actuation_threshold_mm as u8 {
             return Err(BrakeActuationFailure::SensorNotInTolerance);
         }
 

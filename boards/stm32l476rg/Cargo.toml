@@ -22,6 +22,7 @@ rand_core = "0.6.3"
 critical-section = "1.1"
 embedded-storage = "0.3.1"
 static_cell = "2"
+heapless = "0.8"
 
 hyped_core = { path = "../../lib/core" }
 hyped_sensors = { path = "../../lib/sensors" }
@@ -29,7 +30,11 @@ hyped_control = { path = "../../lib/control" }
 
 hyped_adc = { path = "../../lib/io/hyped_adc" }
 hyped_adc_derive = { path = "../../lib/io/hyped_adc/hyped_adc_derive" }
+hyped_can = { path = "../../lib/io/hyped_can" }
+hyped_can_derive = { path = "../../lib/io/hyped_can/hyped_can_derive" }
 hyped_i2c = { path = "../../lib/io/hyped_i2c" }
 hyped_i2c_derive = { path = "../../lib/io/hyped_i2c/hyped_i2c_derive" }
 hyped_gpio = { path = "../../lib/io/hyped_gpio" }
 hyped_gpio_derive = { path = "../../lib/io/hyped_gpio/hyped_gpio_derive" }
+hyped_spi = { path = "../../lib/io/hyped_spi" }
+hyped_spi_derive = { path = "../../lib/io/hyped_spi/hyped_spi_derive" }

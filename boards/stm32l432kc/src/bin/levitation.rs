@@ -4,14 +4,19 @@
 use advanced_pid::{prelude::*, Pid, PidGain};
 use defmt::info;
 use embassy_executor::Spawner;
-use embassy_stm32::gpio::OutputType;
-use embassy_stm32::time::hz;
-use embassy_stm32::timer::low_level::CountingMode;
-use embassy_stm32::timer::simple_pwm::{PwmPin, SimplePwm};
-use embassy_stm32::timer::Channel;
+use embassy_stm32::{
+    gpio::OutputType,
+    time::hz,
+    timer::{
+        low_level::CountingMode,
+        simple_pwm::{PwmPin, SimplePwm},
+        Channel,
+    },
+};
 use embassy_time::Instant;
 
-use {defmt_rtt as _, panic_probe as _};
+use defmt_rtt as _;
+use panic_probe as _;
 
 const MAX_VOLTAGE: f32 = 500.0; // TODOLater
 const MAX_CURRENT: f32 = 500.0; // TODOLater

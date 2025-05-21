@@ -1,11 +1,12 @@
 #![no_std]
 #![no_main]
 
+use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_stm32::gpio::{Input, Pull};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use hyped_boards_stm32l476rg::tasks::read_keyence::read_keyence;
-use {defmt_rtt as _, panic_probe as _};
+use panic_probe as _;
 
 /// Used to keep the latest temperature sensor value.
 static KEYENCE_STRIPE_COUNT: Watch<CriticalSectionRawMutex, u32, 1> = Watch::new();

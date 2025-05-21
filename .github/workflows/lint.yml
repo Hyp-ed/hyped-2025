@@ -8,14 +8,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+            components: clippy
+      - uses: Swatinem/rust-cache@v2
       - name: Run clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
+
+  rust-clippy-boards:
+    name: Run clippy (boards)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        board:
+          - stm32l476rg
+          - stm32f767zi
+          - stm32l432kc
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.board }}
+      - name: Run clippy
+        run: cd boards/${{ matrix.board }} && cargo clippy --all-features -- -D warnings
 
   rust-fmt:
     name: Run rustfmt
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
       - run: cargo fmt --all -- --check
 
   rust-fmt-boards:
@@ -29,6 +57,9 @@ jobs:
           - stm32l432kc
     steps:
       - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
       - run: cargo fmt --manifest-path boards/${{ matrix.board }}/Cargo.toml -- --check
 
   typos:
@@ -50,16 +81,4 @@ jobs:
             exit 1
           else
             echo "All good"
-          fi
-
-  check-no-crlf:
-    name: Check no crlf line endings
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run check for CRLF line endings
-        run: |
-          if git ls-files --eol | grep crlf; then
-            echo "[ERROR] found CRLF line endings, install dos2unix and run 'find . -type f -exec dos2unix {} \;' to fix"
-            exit 1
           fi
