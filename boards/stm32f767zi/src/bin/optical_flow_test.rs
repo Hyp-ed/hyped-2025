@@ -1,15 +1,21 @@
 #![no_std]
 #![no_main]
 
+use defmt_rtt as _;
 use embassy_executor::Spawner;
-use embassy_stm32::gpio::{Level, Output, Speed};
-use embassy_stm32::spi::{self, BitOrder, Spi};
-use embassy_stm32::time::khz;
+use embassy_stm32::{
+    gpio::{Level, Output, Speed},
+    spi::{self, BitOrder, Spi},
+    time::khz,
+};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::io::{Stm32f767ziGpioOutput, Stm32f767ziSpi};
 use hyped_sensors::optical_flow::OpticalFlow;
 use hyped_spi::HypedSpiCsPin;
-use {defmt_rtt as _, panic_probe as _};
+use panic_probe as _;
+
+/// The frequency at which the optical flow sensor is read.
+const UPDATE_FREQUENCY: Duration = Duration::from_hz(100);
 
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) -> ! {
@@ -37,6 +43,6 @@ async fn main(_spawner: Spawner) -> ! {
     loop {
         let flow = optical_flow.get_motion().await.unwrap();
         defmt::info!("x: {:?}, y: {:?}", flow.x, flow.y);
-        Timer::after(Duration::from_millis(10)).await;
+        Timer::after(UPDATE_FREQUENCY).await;
     }
 }

@@ -1,6 +1,6 @@
-use crate::types::{
-    AccelerometerData, RawAccelerometerData, SensorChecks, NUM_ACCELEROMETERS,
-    NUM_ALLOWED_ACCELEROMETER_OUTLIERS, NUM_AXIS,
+use crate::{
+    config::{NUM_ACCELEROMETERS, NUM_ALLOWED_ACCELEROMETER_OUTLIERS, NUM_AXIS},
+    types::{AccelerometerData, RawAccelerometerData, SensorChecks},
 };
 use heapless::Vec;
 use nalgebra::{ComplexField, SimdComplexField};

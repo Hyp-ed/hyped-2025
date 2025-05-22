@@ -3,6 +3,7 @@
 
 use core::cell::RefCell;
 
+use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_stm32::{i2c::I2c, mode::Blocking, time::Hertz};
 use embassy_sync::{

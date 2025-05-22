@@ -1,11 +1,14 @@
+use core::slice::from_ref;
+
 use crate::{
+    config::{NUM_ACCELEROMETERS, NUM_AXIS},
     filtering::kalman_filter::KalmanFilter,
     preprocessing::{
         accelerometer::AccelerometerPreprocessor,
         keyence::{KeyenceAgrees, SensorChecks},
         optical::process_optical_data,
     },
-    types::{RawAccelerometerData, NUM_ACCELEROMETERS, NUM_AXIS},
+    types::RawAccelerometerData,
 };
 
 use heapless::Vec;
@@ -107,7 +110,7 @@ impl Localizer {
         accelerometer_data: RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS>,
     ) -> Result<(), PreprocessorError> {
         let processed_optical_data =
-            process_optical_data(Vec::from_slice(&[optical_data.clone()]).unwrap());
+            process_optical_data(Vec::from_slice(from_ref(&optical_data)).unwrap());
         self.optical_val = processed_optical_data as f64;
 
         let keyence_status = self

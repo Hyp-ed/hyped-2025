@@ -1,0 +1,19 @@
+sensors:
+  keyence:
+    update_frequency: 10 # Hz
+  laser_triangulation:
+    update_frequency: 1000 # Hz
+    v_ref: 3.22
+    base_distance: 20.0
+    measure_range: 25.0
+    zero_offset: 0.638
+  low_pressure:
+    update_frequency: 10 # Hz
+    v_ref: 5.0
+    max_pressure: 10.0
+    pressure_offset: 0.0
+  optical_flow:
+    timeout_s: 5
+    retry_duration_ms: 10
+  temperature:
+    update_frequency: 1 # Hz

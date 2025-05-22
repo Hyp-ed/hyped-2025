@@ -44,10 +44,11 @@ pub async fn read_accelerometer(
             Status::Unknown => {
                 panic!("Could not get the status of the accelerometer.");
             }
-            Status::Ok => {}
+            Status::Ok => {
+                sender.send(accelerometer.read());
+            }
         }
 
-        sender.send(accelerometer.read());
         Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
     }
 }
