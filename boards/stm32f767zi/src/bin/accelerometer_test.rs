@@ -13,13 +13,13 @@ use embassy_sync::{
     watch::Watch,
 };
 use embassy_time::{Duration, Timer};
-use hyped_boards_stm32f767zi::tasks::read_accelerometer::read_accelerometer;
+use hyped_boards_stm32f767zi::tasks::sensors::read_accelerometer::read_accelerometer;
 use hyped_sensors::{
     accelerometer::AccelerationValues,
     SensorValueRange::{self, *},
 };
+use panic_probe as _;
 use static_cell::StaticCell;
-use {defmt_rtt as _, panic_probe as _};
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
