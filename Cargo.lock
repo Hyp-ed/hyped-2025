@@ -66,10 +66,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "48bc1f4cad1fb85887d4e2241f502fa35056a5952bc7a860ee22069417c79fc7"
 dependencies = [
  "convert_case 0.7.1",
- "hashlink",
+ "hashlink 0.8.4",
  "proc-macro2",
  "quote",
- "saphyr",
+ "saphyr 0.0.3",
  "syn",
 ]
 
@@ -301,6 +301,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "foldhash"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2"
+
+[[package]]
 name = "futures-core"
 version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -350,12 +356,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "hashbrown"
+version = "0.15.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "84b26c544d002229e640969970a2e74021aadf6e2f96372b9c58eff97de08eb3"
+dependencies = [
+ "foldhash",
+]
+
+[[package]]
 name = "hashlink"
 version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8094feaf31ff591f651a2664fb9cfd92bba7a60ce3197265e9482ebe753c8f7"
 dependencies = [
- "hashbrown",
+ "hashbrown 0.14.5",
+]
+
+[[package]]
+name = "hashlink"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7382cf6263419f2d8df38c55d7da83da5c18aef87fc7a7fc1fb1e344edfe14c1"
+dependencies = [
+ "hashbrown 0.15.3",
 ]
 
 [[package]]
@@ -467,7 +491,7 @@ dependencies = [
  "convert_case 0.8.0",
  "heapless",
  "quote",
- "saphyr",
+ "saphyr 0.0.3",
 ]
 
 [[package]]
@@ -484,6 +508,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "hyped_sensor_bounds"
+version = "0.1.0"
+dependencies = [
+ "convert_case 0.8.0",
+ "heapless",
+ "hyped_core",
+ "quote",
+ "saphyr 0.0.4",
+]
+
+[[package]]
 name = "hyped_sensors"
 version = "0.1.0"
 dependencies = [
@@ -495,6 +530,7 @@ dependencies = [
  "hyped_core",
  "hyped_gpio",
  "hyped_i2c",
+ "hyped_sensor_bounds",
  "hyped_spi",
 ]
 
@@ -632,6 +668,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
 
 [[package]]
+name = "ordered-float"
+version = "5.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e2c1f9f56e534ac6a9b8a4600bdf0f530fb393b5f393e7b4d03489c3cf0c3f01"
+dependencies = [
+ "num-traits",
+]
+
+[[package]]
 name = "paste"
 version = "1.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -716,8 +761,21 @@ checksum = "2d31513a748cdf8fb8d1b64dcc14fdd997fa02f2431671c7ce34efbea5e7eeea"
 dependencies = [
  "arraydeque",
  "encoding_rs",
- "hashlink",
- "saphyr-parser",
+ "hashlink 0.8.4",
+ "saphyr-parser 0.0.3",
+]
+
+[[package]]
+name = "saphyr"
+version = "0.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9235237b78e93229dfceefd307ca041d6e1752ac7eaaf392531c3778fa4810a1"
+dependencies = [
+ "arraydeque",
+ "encoding_rs",
+ "hashlink 0.10.0",
+ "ordered-float",
+ "saphyr-parser 0.0.4",
 ]
 
 [[package]]
@@ -727,7 +785,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "123f0a6da68f3072c7c761450276d1d444cb391c8be182a757cd26cf684cb77f"
 dependencies = [
  "arraydeque",
- "hashlink",
+ "hashlink 0.8.4",
+]
+
+[[package]]
+name = "saphyr-parser"
+version = "0.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2f5c8d67f5937b6b8a42c0d6038d90571ca3d8a99cc4adae69e490ba0acc6bf1"
+dependencies = [
+ "arraydeque",
+ "hashlink 0.10.0",
 ]
 
 [[package]]

@@ -1,4 +1,5 @@
 use hyped_i2c::{HypedI2c, I2cError};
+use hyped_sensor_bounds::calculate_bounds_function;
 
 use crate::SensorValueRange;
 
@@ -21,15 +22,8 @@ impl<'a, T: HypedI2c> Temperature<'a, T> {
         i2c: &'a mut T,
         device_address: TemperatureAddresses,
     ) -> Result<Self, TemperatureError> {
-        Self::new_with_bounds(i2c, device_address, default_calculate_bounds)
-    }
+        calculate_bounds_function!("config/pods.yaml", "poddington", "thermistor_1");
 
-    /// Create a new instance of the temperature sensor with the specified bounds and attempt to configure it
-    pub fn new_with_bounds(
-        i2c: &'a mut T,
-        device_address: TemperatureAddresses,
-        calculate_bounds: fn(f32) -> SensorValueRange<f32>,
-    ) -> Result<Self, TemperatureError> {
         // Set up the temperature sensor by sending the configuration settings to the STTS22H_CTRL register
         let device_address = device_address as u8;
         match i2c.write_byte_to_register(device_address, STTS22H_CTRL, STTS22H_CONFIG_SETTINGS) {

@@ -8,6 +8,7 @@ members = [
   "lib/sensors",
   "lib/state_machine",
   "lib/communications",
+  "lib/sensor_bounds",
 ]
 exclude = [
   "boards/stm32l476rg",
