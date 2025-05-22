@@ -1,18 +1,17 @@
 use crate::io::Stm32f767ziI2c;
 use core::cell::RefCell;
+use defmt_rtt as _;
 use embassy_executor::Spawner;
-use embassy_stm32::mode::Blocking;
-use embassy_stm32::{i2c::I2c, time::Hertz};
-use embassy_sync::blocking_mutex::raw::NoopRawMutex;
-use embassy_sync::blocking_mutex::Mutex;
+use embassy_stm32::{i2c::I2c, mode::Blocking, time::Hertz};
+use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
 use embassy_time::{Duration, Timer};
 use hyped_i2c::i2c_mux::I2cMux;
 use hyped_sensors::{
     accelerometer::{Accelerometer, AccelerometerAddresses},
     SensorValueRange::*,
 };
+use panic_probe as _;
 use static_cell::StaticCell;
-use {defmt_rtt as _, panic_probe as _};
 
 const MUX_ADDRESS: u8 = 0x70;
 
@@ -22,7 +21,7 @@ type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 #[embassy_executor::task(pool_size = 4)]
 async fn read_accelerometer_from_mux(
     i2c_bus: &'static I2c1Bus,
-    accel_address: AccelerometerAddresses,
+    accelerometer_address: AccelerometerAddresses,
     mux_address: u8,
     channel: u8,
 ) -> ! {
@@ -45,35 +44,35 @@ async fn read_accelerometer_from_mux(
     };
 
     // Finally, we create an Accelerometer object by passing the I2C Mux object and the I2C address of the accelerometer.
-    let mut accelerometer = Accelerometer::new(&mut i2c_mux, accel_address).expect(
+    let mut accelerometer = Accelerometer::new(&mut i2c_mux, accelerometer_address).expect(
         "Failed to create accelerometer. Check the wiring and the I2C address of the sensor.",
     );
 
     loop {
         match accelerometer.read() {
-            Some(accel_values) => match accel_values {
-                Safe(accel_values) => {
+            Some(accelerometer_values) => match accelerometer_values {
+                Safe(accelerometer_values) => {
                     defmt::info!(
                         "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (safe)",
-                        accel_values.x,
-                        accel_values.y,
-                        accel_values.z
+                        accelerometer_values.x,
+                        accelerometer_values.y,
+                        accelerometer_values.z
                     );
                 }
-                Warning(accel_values) => {
+                Warning(accelerometer_values) => {
                     defmt::warn!(
                         "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (unsafe)",
-                        accel_values.x,
-                        accel_values.y,
-                        accel_values.z
+                        accelerometer_values.x,
+                        accelerometer_values.y,
+                        accelerometer_values.z
                     );
                 }
-                Critical(accel_values) => {
+                Critical(accelerometer_values) => {
                     defmt::error!(
                         "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (critical)",
-                        accel_values.x,
-                        accel_values.y,
-                        accel_values.z
+                        accelerometer_values.x,
+                        accelerometer_values.y,
+                        accelerometer_values.z
                     );
                 }
             },

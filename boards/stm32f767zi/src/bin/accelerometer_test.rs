@@ -25,7 +25,7 @@ use static_cell::StaticCell;
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
 /// Used to keep the latest acceleration values.
-static ACCEL_READING: Watch<
+static ACCELEROMETER_READING: Watch<
     CriticalSectionRawMutex,
     Option<SensorValueRange<AccelerationValues>>,
     1,
@@ -41,38 +41,38 @@ async fn main(spawner: Spawner) -> ! {
     let i2c_bus = I2C_BUS.init(Mutex::new(RefCell::new(i2c)));
 
     // Create a sender to pass to the acceleration reading task, and a receiver for reading the values back.
-    let accel_reading_sender = ACCEL_READING.sender();
-    let mut accel_reading_receiver = ACCEL_READING.receiver().unwrap();
+    let accelerometer_reading_sender = ACCELEROMETER_READING.sender();
+    let mut accelerometer_reading_receiver = ACCELEROMETER_READING.receiver().unwrap();
 
-    spawner.must_spawn(read_accelerometer(i2c_bus, accel_reading_sender));
+    spawner.must_spawn(read_accelerometer(i2c_bus, accelerometer_reading_sender));
 
     // Every 100ms we read for the latest value from the accelerometer.
     loop {
-        if let Some(accel_values) = accel_reading_receiver.try_changed() {
-            match accel_values {
-                Some(accel_values) => match accel_values {
-                    Safe(accel_values) => {
+        if let Some(accelerometer_values) = accelerometer_reading_receiver.try_changed() {
+            match accelerometer_values {
+                Some(accelerometer_values) => match accelerometer_values {
+                    Safe(accelerometer_values) => {
                         defmt::info!(
                             "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (safe)",
-                            accel_values.x,
-                            accel_values.y,
-                            accel_values.z
+                            accelerometer_values.x,
+                            accelerometer_values.y,
+                            accelerometer_values.z
                         );
                     }
-                    Warning(accel_values) => {
+                    Warning(accelerometer_values) => {
                         defmt::info!(
                             "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (unsafe)",
-                            accel_values.x,
-                            accel_values.y,
-                            accel_values.z
+                            accelerometer_values.x,
+                            accelerometer_values.y,
+                            accelerometer_values.z
                         );
                     }
-                    Critical(accel_values) => {
+                    Critical(accelerometer_values) => {
                         defmt::info!(
                             "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (critical)",
-                            accel_values.x,
-                            accel_values.y,
-                            accel_values.z
+                            accelerometer_values.x,
+                            accelerometer_values.y,
+                            accelerometer_values.z
                         );
                     }
                 },

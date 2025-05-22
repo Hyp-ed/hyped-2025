@@ -2,11 +2,13 @@ use crate::io::Stm32f767ziI2c;
 use core::cell::RefCell;
 use defmt_rtt as _;
 use embassy_stm32::{i2c::I2c, mode::Blocking};
-use embassy_sync::blocking_mutex::{
-    raw::{CriticalSectionRawMutex, NoopRawMutex},
-    Mutex,
+use embassy_sync::{
+    blocking_mutex::{
+        raw::{CriticalSectionRawMutex, NoopRawMutex},
+        Mutex,
+    },
+    watch::Sender,
 };
-use embassy_sync::watch::Sender;
 use embassy_time::{Duration, Timer};
 use hyped_sensors::{
     accelerometer::{AccelerationValues, Accelerometer, AccelerometerAddresses, Status},
