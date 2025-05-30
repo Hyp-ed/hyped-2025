@@ -9,6 +9,10 @@ use embassy_stm32::adc::{Adc, AdcChannel};
 use embassy_time::Timer;
 use hyped_adc::HypedAdc;
 use hyped_boards_stm32f767zi::io::Stm32f767ziAdc;
+use {defmt_rtt as _, panic_probe as _};
+
+/// Reference Voltage constant so we can test ADC
+const V_REF: f32 = 5.0;
 use panic_probe as _;
 
 /// Reference Voltage constant so we can test the ADC
