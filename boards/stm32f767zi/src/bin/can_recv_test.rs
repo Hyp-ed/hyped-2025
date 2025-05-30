@@ -2,16 +2,22 @@
 #![no_main]
 
 use defmt::*;
+use defmt_rtt as _;
 use embassy_executor::Spawner;
-use embassy_stm32::bind_interrupts;
-use embassy_stm32::can::filter::Mask32;
-use embassy_stm32::can::{
-    Can, Fifo, Rx0InterruptHandler, Rx1InterruptHandler, SceInterruptHandler, TxInterruptHandler,
+use embassy_net::tcp::State;
+use embassy_stm32::{
+    bind_interrupts,
+    can::{
+        filter::Mask32, Can, Fifo, Id, Rx0InterruptHandler, Rx1InterruptHandler,
+        SceInterruptHandler, TxInterruptHandler,
+    },
+    peripherals::CAN1,
 };
-use embassy_stm32::peripherals::CAN1;
-use embassy_time::{Duration, Timer};
+use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
+use hyped_can::HypedCanFrame;
+use hyped_communications::messages::CanMessage;
+use panic_probe as _;
 use static_cell::StaticCell;
-use {defmt_rtt as _, panic_probe as _};
 
 bind_interrupts!(struct Irqs {
     CAN1_RX0 => Rx0InterruptHandler<CAN1>;
@@ -19,6 +25,9 @@ bind_interrupts!(struct Irqs {
     CAN1_SCE => SceInterruptHandler<CAN1>;
     CAN1_TX => TxInterruptHandler<CAN1>;
 });
+
+/// The current state of the state machine.
+pub static CURRENT_STATE: Watch<CriticalSectionRawMutex, State, 1> = Watch::new();
 
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) {
@@ -35,9 +44,50 @@ async fn main(_spawner: Spawner) {
     let (_tx, mut rx) = can.split();
 
     loop {
-        println!("Waiting for message");
-        let envelope = rx.read().await.unwrap();
-        println!("Received: {:?}", envelope);
-        Timer::after(Duration::from_millis(100)).await;
+        if let Ok(envelope) = rx.read().await {
+            let id = envelope.frame.id();
+            let can_id = match id {
+                Id::Standard(id) => id.as_raw() as u32, // 11-bit ID
+                Id::Extended(id) => id.as_raw(),        // 29-bit ID
+            };
+
+            let mut data = [0; 8];
+            data.copy_from_slice(envelope.frame.data());
+            let can_frame = HypedCanFrame::new(can_id, data);
+            let can_message: CanMessage = can_frame.into();
+
+            match can_message {
+                CanMessage::MeasurementReading(measurement_reading) => {
+                    let measurement_id = measurement_reading.measurement_id;
+
+                    defmt::info!(
+                        "Received measurement reading over CAN: {:?}",
+                        measurement_id
+                    );
+                }
+                CanMessage::StateTransitionCommand(state_transition) => {
+                    defmt::info!(
+                        "Received state transition over CAN: {:?}",
+                        state_transition.to_state
+                    );
+                }
+                CanMessage::StateTransitionRequest(state_transition_request) => {
+                    defmt::info!(
+                        "Received state transition request over CAN: {:?}",
+                        state_transition_request.to_state
+                    );
+                }
+                CanMessage::Heartbeat(heartbeat) => {
+                    defmt::info!("Received heartbeat over CAN: {:?}", heartbeat.from);
+                }
+                CanMessage::Emergency(board, reason) => {
+                    defmt::info!(
+                        "Received emergency from board {:?} over CAN: {:?}",
+                        board,
+                        reason
+                    );
+                }
+            }
+        }
     }
 }
