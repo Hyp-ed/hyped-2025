@@ -3,7 +3,7 @@ import { PodControlsController } from './PodControls.controller';
 import { PodControlsService } from './PodControls.service';
 
 @Module({
-  controllers: [PodControlsController],
-  providers: [PodControlsService],
+	controllers: [PodControlsController],
+	providers: [PodControlsService],
 })
 export class PodControlsModule {}

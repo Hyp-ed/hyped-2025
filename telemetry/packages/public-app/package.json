@@ -1,45 +1,43 @@
 {
-  "name": "@hyped/public-app",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev -p 3001",
-    "dev:test": "next dev -p 3001",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint --ext .ts,.tsx . --max-warnings 0 --report-unused-disable-directives",
-    "lint:fix": "eslint --fix --ext .ts,.tsx ."
-  },
-  "dependencies": {
-    "@preact/signals-react": "^1.3.6",
-    "@radix-ui/react-switch": "^1.0.3",
-    "@tremor/react": "^3.9.2",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.0.0",
-    "date-fns": "^2.30.0",
-    "influxdb": "^0.0.1",
-    "lucide-react": "^0.292.0",
-    "next": "^14.1.0",
-    "next-themes": "^0.2.1",
-    "react": "^18",
-    "react-dom": "^18",
-    "react-google-charts": "^4.0.1",
-    "react-query": "^3.39.3",
-    "react-switch": "^7.0.0",
-    "tailwind-merge": "^2.0.0",
-    "tailwindcss-animate": "^1.0.7"
-  },
-  "devDependencies": {
-    "@hyped/eslint-config": "workspace:*",
-    "@hyped/telemetry-types": "workspace:*",
-    "@hyped/tsconfig": "workspace:*",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10",
-    "eslint-config-next": "13.5.4",
-    "postcss": "^8",
-    "tailwindcss": "^3",
-    "typescript": "^5"
-  }
+	"name": "@hyped/public-app",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev -p 3001",
+		"dev:test": "next dev -p 3001",
+		"build": "next build",
+		"start": "next start",
+		"lint": "biome lint .",
+		"lint:fix": "biome check --write ."
+	},
+	"dependencies": {
+		"@preact/signals-react": "^1.3.6",
+		"@radix-ui/react-switch": "^1.0.3",
+		"@tremor/react": "^3.9.2",
+		"class-variance-authority": "^0.7.0",
+		"clsx": "^2.0.0",
+		"date-fns": "^2.30.0",
+		"influxdb": "^0.0.1",
+		"lucide-react": "^0.292.0",
+		"next": "^14.1.0",
+		"next-themes": "^0.2.1",
+		"react": "^18",
+		"react-dom": "^18",
+		"react-google-charts": "^4.0.1",
+		"react-query": "^3.39.3",
+		"react-switch": "^7.0.0",
+		"tailwind-merge": "^2.0.0",
+		"tailwindcss-animate": "^1.0.7"
+	},
+	"devDependencies": {
+		"@hyped/telemetry-types": "workspace:*",
+		"@hyped/tsconfig": "workspace:*",
+		"@types/node": "^22.12.0",
+		"@types/react": "^18",
+		"@types/react-dom": "^18",
+		"autoprefixer": "^10",
+		"postcss": "^8",
+		"tailwindcss": "^3",
+		"typescript": "^5.7.3"
+	}
 }

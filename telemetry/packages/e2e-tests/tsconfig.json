@@ -1,6 +1,0 @@
-{
-  "extends": "@hyped/tsconfig/base.json",
-  "compilerOptions": {
-    "jsx": "react",
-  }
-}

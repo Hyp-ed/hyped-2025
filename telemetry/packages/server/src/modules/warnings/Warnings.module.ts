@@ -3,7 +3,7 @@ import { WarningsController } from './Warnings.controller';
 import { WarningsService } from './Warnings.service';
 
 @Module({
-  controllers: [WarningsController],
-  providers: [WarningsService],
+	controllers: [WarningsController],
+	providers: [WarningsService],
 })
 export class WarningsModule {}

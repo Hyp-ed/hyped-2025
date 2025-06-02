@@ -1,0 +1,38 @@
+# https://doc.rust-lang.org/cargo/guide/continuous-integration.html
+
+name: Cargo Build & Test
+
+on: push
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build_and_test:
+    name: Cargo Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo build --verbose
+      - run: cargo test --verbose
+
+  build_boards:
+    name: Cargo Build (boards)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        board:
+          - stm32l476rg
+          - stm32f767zi
+          - stm32l432kc
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.board }}
+      - run: cargo build --verbose
+        working-directory: boards/${{ matrix.board }}
