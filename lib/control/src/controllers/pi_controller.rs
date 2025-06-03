@@ -8,6 +8,7 @@ pub struct PiGain {
 
 #[derive(Debug, Clone)]
 pub struct PiController {
+    /// Simple PI controller
     config: PiGain,
     integral_term: f32,
 }

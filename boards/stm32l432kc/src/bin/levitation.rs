@@ -13,10 +13,7 @@ use embassy_stm32::{
     },
 };
 use embassy_time::{Duration, Instant, Timer};
-use hyped_control::{
-    config::*,
-    controllers::{pi_controller::PiController, pid_controller::PidController},
-};
+use hyped_control::{config::*, pi_controller::PiController, pid_controller::PidController};
 
 use defmt_rtt as _;
 use panic_probe as _;
