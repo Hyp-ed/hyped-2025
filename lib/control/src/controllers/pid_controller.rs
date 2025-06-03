@@ -1,6 +1,10 @@
 use super::ControllerTrait;
 use crate::config::SAMPLING_PERIOD;
 
+/// A filtered derivative component for use in PID controllers.
+/// Implements a first-order low-pass filter to smooth the derivative term.
+/// This helps to reduce noise and improve stability in the control output, as
+/// raw derivative calculations can be sensitive to high-frequency noise in the input signal.
 #[derive(Debug, Clone)]
 struct FilteredDerivative {
     b0: f32,
@@ -11,6 +15,8 @@ struct FilteredDerivative {
 }
 
 impl FilteredDerivative {
+    /// Creates a new filtered derivative with the given derivative gain `kd`,
+    /// time constant `tau`, and sampling period
     pub fn new(kd: f32, tau: f32, sampling_period: u64) -> Self {
         let sp = sampling_period as f32;
         let denom = sp * (tau + sp) + 2.0;
@@ -24,25 +30,33 @@ impl FilteredDerivative {
         }
     }
 
+    /// Updates the filter with the current error and returns the smoothed derivative value
     pub fn update(&mut self, error: f32) -> f32 {
         let output = self.b0 * error + self.b1 * self.prev_err - self.a1 * self.prev_output;
-        // Update previous values for the next iteration
         self.prev_err = error;
         self.prev_output = output;
         output
     }
 }
 
+/// Configuration values for a PID controller
 #[derive(Debug, Clone)]
 pub struct PidGain {
+    /// Proportional gain
     pub kp: f32,
+    /// Integral gain
     pub ki: f32,
+    /// Derivative gain
     pub kd: f32,
+    /// Gain applied to the reference value in the proportional term
     pub p_reference_gain: f32,
+    /// Gain applied to the reference value in the derivative term
     pub d_reference_gain: f32,
+    /// Filter coefficient used to smooth the derivative
     pub filter_coefficient: f32,
 }
 
+/// A PID controller implementation with filtered derivative term and reference gains
 #[derive(Debug, Clone)]
 pub struct PidController {
     config: PidGain,
@@ -51,6 +65,7 @@ pub struct PidController {
 }
 
 impl PidController {
+    /// Creates a new PID controller with a filtered derivative term using the provided gain configuration
     pub fn new(config: PidGain) -> Self {
         let tau = 1.0 / config.filter_coefficient;
         let filter = FilteredDerivative::new(config.kd, tau, SAMPLING_PERIOD);
@@ -63,6 +78,12 @@ impl PidController {
 }
 
 impl ControllerTrait for PidController {
+    /// Updates the PID controller and returns the controller output
+    ///
+    /// Arguments:
+    /// * `set_point` - The target value
+    /// * `actual` - The current measured value
+    /// * `dt` - The time step since the last update (TODOLater decide units)
     fn update(&mut self, set_point: f32, actual: f32, dt: u64) -> f32 {
         let p_error = (set_point * self.config.p_reference_gain) - actual;
         let i_error = set_point - actual;
@@ -72,7 +93,6 @@ impl ControllerTrait for PidController {
         let d_filtered = self.filter.update(d_error);
 
         self.config.kp * p_error + self.config.ki * self.integral_term + self.config.kd * d_filtered
-        // TODOLater Maybe could restrict output by min value here instead of using .min()
     }
 }
 
@@ -80,6 +100,7 @@ impl ControllerTrait for PidController {
 mod tests {
     use super::*;
 
+    /// Tests that the PID controller returns 0 when all values are 0
     #[test]
     fn test_pid_controller() {
         let config = PidGain {
