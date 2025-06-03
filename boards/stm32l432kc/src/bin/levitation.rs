@@ -15,7 +15,7 @@ use embassy_stm32::{
 use embassy_time::{Duration, Instant, Timer};
 use hyped_control::{
     config::*,
-    lev_controllers::{ControllerTrait, PiController, PidController},
+    controllers::{pi_controller::PiController, pid_controller::PidController},
 };
 
 use defmt_rtt as _;
@@ -34,9 +34,9 @@ then performed, and the duty cycle is set, and timer restarted.
 
 #[embassy_executor::main]
 async fn main(_spawner: Spawner) {
-    let mut pid_height = PidController::new(GAIN_HEIGHT);
-    let mut pi_current = PiController::new(GAIN_CURRENT);
-    let mut pi_voltage = PiController::new(GAIN_VOLTAGE);
+    let mut pid_height = PidController::new(HEIGHT_PID_CONSTANTS);
+    let mut pi_current = PiController::new(CURRENT_PI_CONSTANTS);
+    let mut pi_voltage = PiController::new(VOLTAGE_PI_CONSTANTS);
 
     let p = embassy_stm32::init(Default::default());
 

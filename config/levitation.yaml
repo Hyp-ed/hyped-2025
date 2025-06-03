@@ -3,7 +3,7 @@ max_current_a: 5.0
 target_height_mm: 15.0
 sampling_period: 1 # (decide units) TODOLater see how long this takes to run and go based on that
 
-gain_height:
+height_pid_constants:
   kp: 22058.3927852622
   ki: 194432.490685545
   kd: 614.513502234539
@@ -11,10 +11,10 @@ gain_height:
   d_reference_gain: 0.705728005
   filter_coefficient: 1026.87023225348
 
-gain_current:
+current_pi_constants:
     kp: 1000
     ki: 5000000
 
-gain_voltage:
+voltage_pi_constants:
     kp: 50
     ki: 10000000
