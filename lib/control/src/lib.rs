@@ -4,5 +4,3 @@ pub mod config;
 pub mod controllers;
 pub mod hp_relay;
 pub mod pneumatics;
-
-pub use controllers;
