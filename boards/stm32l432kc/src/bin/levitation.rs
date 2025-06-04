@@ -1,7 +1,6 @@
 #![no_std]
 #![no_main]
 
-use crate::controllers::{ControllerTrait, PiController, PidController};
 use defmt::info;
 use embassy_executor::Spawner;
 use embassy_stm32::{
@@ -14,7 +13,10 @@ use embassy_stm32::{
     },
 };
 use embassy_time::{Duration, Instant, Timer};
-use hyped_control::config::*;
+use hyped_control::{
+    config::*,
+    controllers::{Controller, PiController, PidController},
+};
 
 use defmt_rtt as _;
 use panic_probe as _;
