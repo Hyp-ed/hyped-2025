@@ -31,6 +31,9 @@ pub struct LocalisationConfig;
 #[config_to_rs(yaml, "../../../config/control.yaml")]
 pub struct ControlConfig;
 
+#[config_to_rs(yaml, "../../../config/levitation.yaml")]
+pub struct LevitationConfig;
+
 // TODOLater: this should be in a config
 pub static POD_NAME: &str = "poddington";
 

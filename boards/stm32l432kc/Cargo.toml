@@ -25,6 +25,7 @@ static_cell = "2"
 
 heapless = { version = "0.8", default-features = false, features = ["serde"]}
 hyped_sensors = { path = "../../lib/sensors" }
+hyped_control = { path = "../../lib/control" }
 advanced-pid = { version = "0.2.2", default-features = false }
 
 
