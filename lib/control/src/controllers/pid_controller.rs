@@ -1,4 +1,4 @@
-use super::ControllerTrait;
+use super::Controller;
 use crate::config::SAMPLING_PERIOD;
 
 /// A filtered derivative component for use in PID controllers.
@@ -77,7 +77,7 @@ impl PidController {
     }
 }
 
-impl ControllerTrait for PidController {
+impl Controller for PidController {
     /// Updates the PID controller and returns the controller output
     ///
     /// Arguments:

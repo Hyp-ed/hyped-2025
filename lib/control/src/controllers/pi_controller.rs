@@ -1,4 +1,4 @@
-use super::ControllerTrait;
+use super::Controller;
 
 /// Proportional-Integral (PI) controller gains
 #[derive(Debug, Clone)]
@@ -30,7 +30,7 @@ impl PiController {
     }
 }
 
-impl ControllerTrait for PiController {
+impl Controller for PiController {
     /// Updates the PI controller output
     ///
     /// Arguments:

@@ -6,6 +6,6 @@ pub use pid_controller::{PidController, PidGain};
 
 pub use crate::config;
 
-pub trait ControllerTrait {
+pub trait Controller {
     fn update(&mut self, set_point: f32, actual: f32, dt: u64) -> f32;
 }
