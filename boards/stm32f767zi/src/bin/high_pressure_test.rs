@@ -31,7 +31,7 @@ async fn main(spawner: Spawner) -> ! {
 
     // only prints when high pressure value updates
     loop {
-        let new_high_pressure_value = receiver.get().await;
+        let new_high_pressure_value = receiver.changed().await;
         defmt::info!("High pressure sensor value: {}", new_high_pressure_value);
     }
 }
