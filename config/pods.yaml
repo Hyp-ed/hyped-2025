@@ -1,20 +1,432 @@
 pods:
-  pod_1:
-    name: 'Pod 1'
+  poddington:
+    label: 'Poddington'
+    mode: 'LEVITATION_ONLY'
     measurements:
-      keyence:
-          name: 'Keyence'
-          unit: 'number of stripes'
-          format: 'integer'
-          limits:
-            critical:
-              min: 0
-              max: 16
       accelerometer_1:
-          name: 'Accelerometer 1'
-          unit: 'm/s^2'
-          format: 'float'
-          limits:
-            critical:
-              min: -150
-              max: 150
+        label: 'Accelerometer 1'
+        kind: 'acceleration'
+        unit: 'm/s²'
+        format: 'float'
+        limits:
+          critical:
+            low: -150
+            high: 150
+      accelerometer_2:
+        label: 'Accelerometer 2'
+        kind: 'acceleration'
+        unit: 'm/s²'
+        format: 'float'
+        limits:
+          critical:
+            low: -150
+            high: 150
+      accelerometer_3:
+        label: 'Accelerometer 3'
+        kind: 'acceleration'
+        unit: 'm/s²'
+        format: 'float'
+        limits:
+          critical:
+            low: -150
+            high: 150
+      accelerometer_4:
+        label: 'Accelerometer 4'
+        kind: 'acceleration'
+        unit: 'm/s²'
+        format: 'float'
+        limits:
+          critical:
+            low: -150
+            high: 150
+      accelerometer_avg:
+        label: 'Accelerometer Average'
+        kind: 'acceleration'
+        unit: 'm/s²'
+        format: 'float'
+        limits:
+          critical:
+            low: -150
+            high: 150
+      displacement:
+        label: 'Displacement'
+        kind: 'displacement'
+        unit: 'm'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      velocity:
+        label: 'Velocity'
+        kind: 'velocity'
+        unit: 'm/s'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 50
+      acceleration:
+        label: 'Acceleration'
+        kind: 'acceleration'
+        unit: 'm/s²'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 5
+      pressure_back_pull:
+        label: 'Pressure – Back Pull'
+        kind: 'pressure'
+        unit: 'bar'
+        format: 'float'
+        limits:
+          critical:
+            low: -0.2
+            high: 5.5
+          warning:
+            low: -0.19
+            high: 5.2
+      pressure_front_pull:
+        label: 'Pressure – Front Pull'
+        kind: 'pressure'
+        unit: 'bar'
+        format: 'float'
+        limits:
+          critical:
+            low: -0.2
+            high: 5.5
+          warning:
+            low: -0.19
+            high: 5.2
+      pressure_front_push:
+        label: 'Pressure – Front Push'
+        kind: 'pressure'
+        unit: 'bar'
+        format: 'float'
+        limits:
+          critical:
+            low: -0.2
+            high: 5.5
+          warning:
+            low: -0.19
+            high: 5.2
+      pressure_back_push:
+        label: 'Pressure – Back Push'
+        kind: 'pressure'
+        unit: 'bar'
+        format: 'float'
+        limits:
+          critical:
+            low: -0.2
+            high: 5.5
+          warning:
+            low: -0.19
+            high: 5.2
+      pressure_brakes_reservoir:
+        label: 'Pressure – Brakes Reservoir'
+        kind: 'pressure'
+        unit: 'bar'
+        format: 'float'
+        limits:
+          critical:
+            low: 3
+            high: 7.4
+          warning:
+            low: 3.5
+            high: 6.9
+      pressure_active_suspension_reservoir:
+        label: 'Pressure – Active Suspension Reservoir'
+        kind: 'pressure'
+        unit: 'bar'
+        format: 'float'
+        limits:
+          critical:
+            low: 3
+            high: 7.4
+          warning:
+            low: 3.5
+            high: 6.9
+      pressure_front_brake:
+        label: 'Pressure – Front Brake'
+        kind: 'pressure'
+        unit: 'bar'
+        format: 'float'
+        limits:
+          critical:
+            low: -0.2
+            high: 4.2
+          warning:
+            low: -0.19
+            high: 4
+      pressure_back_brake:
+        label: 'Pressure – Back Brake'
+        kind: 'pressure'
+        unit: 'bar'
+        format: 'float'
+        limits:
+          critical:
+            low: -0.2
+            high: 4.2
+          warning:
+            low: -0.19
+            high: 4
+      thermistor_1:
+        label: 'Thermistor 1'
+        kind: 'temperature'
+        unit: '°C'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      thermistor_2:
+        label: 'Thermistor 2'
+        kind: 'temperature'
+        unit: '°C'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      thermistor_3:
+        label: 'Thermistor 3'
+        kind: 'temperature'
+        unit: '°C'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      thermistor_4:
+        label: 'Thermistor 4'
+        kind: 'temperature'
+        unit: '°C'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      thermistor_5:
+        label: 'Thermistor 5'
+        kind: 'temperature'
+        unit: '°C'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      thermistor_6:
+        label: 'Thermistor 6'
+        kind: 'temperature'
+        unit: '°C'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      thermistor_7:
+        label: 'Thermistor 7'
+        kind: 'temperature'
+        unit: '°C'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      thermistor_8:
+        label: 'Thermistor 8'
+        kind: 'temperature'
+        unit: '°C'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      thermistor_9:
+        label: 'Thermistor 9'
+        kind: 'temperature'
+        unit: '°C'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      thermistor_10:
+        label: 'Thermistor 10'
+        kind: 'temperature'
+        unit: '°C'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      thermistor_11:
+        label: 'Thermistor 11'
+        kind: 'temperature'
+        unit: '°C'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      thermistor_12:
+        label: 'Thermistor 12'
+        kind: 'temperature'
+        unit: '°C'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      hall_effect_1:
+        label: 'Hall Effect 1'
+        kind: 'magnetism'
+        unit: 'mT'
+        format: 'float'
+        limits:
+          critical:
+            low: -100
+            high: 100
+      hall_effect_2:
+        label: 'Hall Effect 2'
+        kind: 'magnetism'
+        unit: 'mT'
+        format: 'float'
+        limits:
+          critical:
+            low: -100
+            high: 100
+      keyence_1:
+        label: 'Keyence 1'
+        kind: 'keyence'
+        unit: 'number of stripes'
+        format: 'integer'
+        limits:
+          critical:
+            low: 0
+            high: 16
+          warning:
+            low: 5
+            high: 10
+      keyence_2:
+        label: 'Keyence 2'
+        kind: 'keyence'
+        unit: 'number of stripes'
+        format: 'integer'
+        limits:
+          critical:
+            low: 0
+            high: 16
+          warning:
+            low: 5
+            high: 10
+      power_line_resistance:
+        label: 'Power Line Resistance'
+        kind: 'resistance'
+        unit: 'kΩ'
+        format: 'integer'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      levitation_height_1:
+        label: 'Levitation Height 1'
+        kind: 'levitation'
+        unit: 'mm'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      levitation_height_2:
+        label: 'Levitation Height 2'
+        kind: 'levitation'
+        unit: 'mm'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      levitation_height_3:
+        label: 'Levitation Height 3'
+        kind: 'levitation'
+        unit: 'mm'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      levitation_height_4:
+        label: 'Levitation Height 4'
+        kind: 'levitation'
+        unit: 'mm'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      levitation_height_lateral_1:
+        label: 'Levitation Height Lateral 1'
+        kind: 'levitation'
+        unit: 'mm'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+      levitation_height_lateral_2:
+        label: 'Levitation Height Lateral 2'
+        kind: 'levitation'
+        unit: 'mm'
+        format: 'float'
+        limits:
+          critical:
+            low: 0
+            high: 100
+    statuses:
+      brake_clamp_status:
+        label: 'Brake Clamp Status'
+        kind: 'binary-status'
+        format: 'enum'
+        values:
+          - value: 1
+            label: 'CLAMPED'
+          - value: 0
+            label: 'UNCLAMPED'
+      pod_raised_status:
+        label: 'Pod Raised Status'
+        kind: 'binary-status'
+        format: 'enum'
+        values:
+          - value: 1
+            label: 'RAISED'
+          - value: 0
+            label: 'LOWERED'
+      battery_status:
+        label: 'Battery Status'
+        kind: 'binary-status'
+        format: 'enum'
+        values:
+          - value: 1
+            label: 'HEALTHY'
+          - value: 0
+            label: 'UNHEALTHY'
+      motor_controller_status:
+        label: 'Motor Controller Status'
+        kind: 'binary-status'
+        format: 'enum'
+        values:
+          - value: 1
+            label: 'HEALTHY'
+          - value: 0
+            label: 'UNHEALTHY'
+      high_power_status:
+        label: 'High Power Status'
+        kind: 'binary-status'
+        format: 'enum'
+        values:
+          - value: 1
+            label: 'ACTIVE'
+          - value: 0
+            label: 'OFF'

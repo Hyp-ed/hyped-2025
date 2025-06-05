@@ -20,7 +20,6 @@ fn impl_hyped_gpio_input_pin(ast: &syn::DeriveInput) -> TokenStream {
         }
 
         impl #name {
-            /// Create a new instance of our GPIO implementation for the STM32L476RG
             pub fn new(pin: Input<'static>) -> Self {
                 Self { pin }
             }
@@ -49,7 +48,6 @@ fn impl_hyped_gpio_output_pin(ast: &syn::DeriveInput) -> TokenStream {
         }
 
         impl #name {
-            /// Create a new instance of our GPIO implementation for the STM32L476RG
             pub fn new(pin: Output<'static>) -> Self {
                 Self { pin }
             }

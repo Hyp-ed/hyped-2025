@@ -1,4 +1,7 @@
-use defmt::{info, warn};
+use crate::{
+    logging::{debug, info, warn},
+    mqtt_topics::MqttTopic,
+};
 use embassy_net::tcp::TcpSocket;
 use heapless::String;
 use rust_mqtt::{
@@ -10,9 +13,16 @@ use rust_mqtt::{
     utils::rng_generator::CountingRng,
 };
 
+#[derive(defmt::Format)]
 pub struct MqttMessage {
-    pub topic: String<48>,
+    pub topic: MqttTopic,
     pub payload: String<512>,
+}
+
+impl MqttMessage {
+    pub fn new(topic: MqttTopic, payload: String<512>) -> Self {
+        MqttMessage { topic, payload }
+    }
 }
 
 pub struct HypedMqttClient<'a, T, R>
@@ -84,6 +94,12 @@ impl<T: embedded_io_async::Read + embedded_io_async::Write, R: rand_core::RngCor
             Err(mqtt_error) => match mqtt_error {
                 ReasonCode::NetworkError => {
                     info!("MQTT Network Error");
+                }
+                ReasonCode::NoMatchingSubscribers => {
+                    debug!(
+                        "Is the base station subscribed to this topic? Topic: {}",
+                        topic
+                    );
                 }
                 _ => {
                     warn!("Other MQTT Error: {:?}", mqtt_error);

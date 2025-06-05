@@ -12,7 +12,8 @@
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab"
+		"indentStyle": "tab",
+		"formatWithErrors": true
 	},
 	"organizeImports": {
 		"enabled": true
@@ -26,6 +27,9 @@
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "single"
+		},
+		"parser": {
+			"unsafeParameterDecoratorsEnabled": true
 		}
 	}
 }

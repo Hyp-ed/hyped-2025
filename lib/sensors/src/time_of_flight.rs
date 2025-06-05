@@ -1,6 +1,7 @@
 use crate::SensorValueRange;
-use defmt;
+use hyped_core::logging::info;
 use hyped_i2c::{i2c_write_or_err_16, HypedI2c, I2cError};
+
 /// time_of_flight implements the logic to read Time of Flight data from the VL6180V1 Time of Flight
 /// sensor using I2C peripheral provided by the Hyped I2c trait.
 ///
@@ -30,6 +31,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
     ) -> Result<Self, TimeOfFlightError> {
         Self::new_with_bounds(i2c, device_address, default_calculate_bounds)
     }
+
     /// Create a new instance of the time of flight sensor and configure it with bounds involved.
     pub fn new_with_bounds(
         i2c: &'a mut T,
@@ -49,7 +51,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
         };
         // Check boot status; if it's not freshly reset, boot is complete. If it is, load all configs.
         if boot_status == 0 {
-            defmt::info!("Time Of Flight sensor booted");
+            info!("Time Of Flight sensor booted");
         } else {
             time_of_flight.load_config(device_address)?;
         }
@@ -116,7 +118,7 @@ impl<'a, T: HypedI2c> TimeOfFlight<'a, T> {
             SYS_INTERRUPT_CONFIG_GPIO_VAL,
             TimeOfFlightError
         );
-        defmt::info!("Time Of Flight sensor configured");
+        info!("Time Of Flight sensor configured");
 
         // Write 0x00 to SYS_FRESH_OUT_RESET to indicate that the sensor has been configured
         // Note: as above, this means that the sensor will need to be power cycled or this register will need to be written to 0x01 to reconfigure the sensor
