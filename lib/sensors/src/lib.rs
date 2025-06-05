@@ -1,5 +1,6 @@
 #![cfg_attr(not(test), no_std)]
 
+pub mod accelerometer;
 pub mod keyence;
 pub mod laser_triangulation;
 pub mod low_pressure;
