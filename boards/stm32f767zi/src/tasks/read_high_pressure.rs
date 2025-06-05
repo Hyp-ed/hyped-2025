@@ -18,7 +18,7 @@ pub async fn read_high_pressure(
     loop {
         match high_pressure_sensor.get_high_pressure_state() {
             Ok(high_pressure_state) => sender.send(Ok(high_pressure_state)),
-            Err(e) => panic!("Error: invalid high pressure"),
+            Err(_e) => panic!("Error: invalid high pressure"),
         }
         Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
     }
