@@ -1,5 +1,6 @@
 [default.extend-words]
 mosquitto = "mosquitto"
+SPAW = "SPAW"
 
 [files]
 extend-exclude = ["telemetry/pnpm-lock.yaml"]
