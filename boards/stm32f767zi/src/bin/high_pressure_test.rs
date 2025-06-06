@@ -1,12 +1,13 @@
 #![no_std]
 #![no_main]
 
+use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_stm32::gpio::{Input, Pull};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
 use hyped_boards_stm32f767zi::tasks::read_high_pressure::read_high_pressure;
 use hyped_sensors::high_pressure::{HighPressureError, State};
-use {defmt_rtt as _, panic_probe as _};
+use panic_probe as _;
 
 /// used to store latest high pressure sensor value
 static HIGH_PRESSURE_SENSOR_VALUE: Watch<
