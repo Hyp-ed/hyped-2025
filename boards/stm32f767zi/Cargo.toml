@@ -48,3 +48,7 @@ hyped_spi_derive = { path = "../../lib/io/hyped_spi/hyped_spi_derive" }
 [[bin]]
 name = "telemetry"
 path = "src/bin/boards/telemetry.rs"
+
+[[bin]]
+name = "i2cdetect"
+path = "src/bin/tools/i2cdetect.rs"
