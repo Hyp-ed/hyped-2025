@@ -19,16 +19,12 @@ async fn main(_spawner: Spawner) -> ! {
 
     defmt::info!("Starting I2C scan...");
     i2cdetect_scan(&mut i2c);
-    defmt::info!("I2C scan complete.");
-
-    // Don't do anything else, just loop forever
-    // Could modify this to loop calling i2cdetect_scan periodically
-    loop {}
+    panic!("I2C scan complete.")
 }
 
 fn i2cdetect_scan(i2c: &mut I2c<Blocking>) {
     for address in 0x03..=0x77 {
-        if let Ok(_) = i2c.blocking_read(address, &mut [0; 1]) {
+        if i2c.blocking_read(address, &mut [0; 1]).is_ok() {
             defmt::info!("Found device at address: 0x{:02X}", address);
         }
     }
