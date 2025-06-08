@@ -180,8 +180,8 @@ const LIS2DS12_DATA_NOT_READY: u8 = 0x00;
 
 // Values written to control registers (may need to change later)
 const LIS2DS12_CTRL1_VALUE: u8 = 0x54; // 200Hz, high performance, continuous, +-16g
-const LIS2DS12_CTRL2_VALUE: u8 = 0x0;
-const LIS2DS12_FIFO_CTRL_VALUE: u8 = 0x30;
+const LIS2DS12_CTRL2_VALUE: u8 = 0x00;
+const LIS2DS12_FIFO_CTRL_VALUE: u8 = 0x00;
 
 #[cfg(test)]
 mod tests {
