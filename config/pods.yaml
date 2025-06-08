@@ -10,8 +10,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: -150
-            high: 150
+            low: -150.0
+            high: 150.0
       accelerometer_2:
         label: 'Accelerometer 2'
         kind: 'acceleration'
@@ -19,8 +19,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: -150
-            high: 150
+            low: -150.0
+            high: 150.0
       accelerometer_3:
         label: 'Accelerometer 3'
         kind: 'acceleration'
@@ -28,8 +28,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: -150
-            high: 150
+            low: -150.0
+            high: 150.0
       accelerometer_4:
         label: 'Accelerometer 4'
         kind: 'acceleration'
@@ -37,8 +37,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: -150
-            high: 150
+            low: -150.0
+            high: 150.0
       accelerometer_avg:
         label: 'Accelerometer Average'
         kind: 'acceleration'
@@ -46,8 +46,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: -150
-            high: 150
+            low: -150.0
+            high: 150.0
       displacement:
         label: 'Displacement'
         kind: 'displacement'
@@ -55,8 +55,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       velocity:
         label: 'Velocity'
         kind: 'velocity'
@@ -64,8 +64,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 50
+            low: 0.0
+            high: 50.0
       acceleration:
         label: 'Acceleration'
         kind: 'acceleration'
@@ -73,8 +73,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 5
+            low: 0.0
+            high: 5.0
       pressure_back_pull:
         label: 'Pressure – Back Pull'
         kind: 'pressure'
@@ -130,7 +130,7 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 3
+            low: 3.0
             high: 7.4
           warning:
             low: 3.5
@@ -142,7 +142,7 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 3
+            low: 3.0
             high: 7.4
           warning:
             low: 3.5
@@ -158,7 +158,7 @@ pods:
             high: 4.2
           warning:
             low: -0.19
-            high: 4
+            high: 4.0
       pressure_back_brake:
         label: 'Pressure – Back Brake'
         kind: 'pressure'
@@ -170,7 +170,7 @@ pods:
             high: 4.2
           warning:
             low: -0.19
-            high: 4
+            high: 4.0
       thermistor_1:
         label: 'Thermistor 1'
         kind: 'temperature'
@@ -178,8 +178,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       thermistor_2:
         label: 'Thermistor 2'
         kind: 'temperature'
@@ -187,8 +187,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       thermistor_3:
         label: 'Thermistor 3'
         kind: 'temperature'
@@ -196,8 +196,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       thermistor_4:
         label: 'Thermistor 4'
         kind: 'temperature'
@@ -205,8 +205,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       thermistor_5:
         label: 'Thermistor 5'
         kind: 'temperature'
@@ -214,8 +214,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       thermistor_6:
         label: 'Thermistor 6'
         kind: 'temperature'
@@ -223,8 +223,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       thermistor_7:
         label: 'Thermistor 7'
         kind: 'temperature'
@@ -232,8 +232,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       thermistor_8:
         label: 'Thermistor 8'
         kind: 'temperature'
@@ -241,8 +241,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       thermistor_9:
         label: 'Thermistor 9'
         kind: 'temperature'
@@ -250,8 +250,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       thermistor_10:
         label: 'Thermistor 10'
         kind: 'temperature'
@@ -259,8 +259,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       thermistor_11:
         label: 'Thermistor 11'
         kind: 'temperature'
@@ -268,8 +268,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       thermistor_12:
         label: 'Thermistor 12'
         kind: 'temperature'
@@ -277,8 +277,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       hall_effect_1:
         label: 'Hall Effect 1'
         kind: 'magnetism'
@@ -286,8 +286,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: -100
-            high: 100
+            low: -100.0
+            high: 100.0
       hall_effect_2:
         label: 'Hall Effect 2'
         kind: 'magnetism'
@@ -295,8 +295,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: -100
-            high: 100
+            low: -100.0
+            high: 100.0
       keyence_1:
         label: 'Keyence 1'
         kind: 'keyence'
@@ -304,11 +304,11 @@ pods:
         format: 'integer'
         limits:
           critical:
-            low: 0
-            high: 16
+            low: 0.0
+            high: 16.0
           warning:
-            low: 5
-            high: 10
+            low: 5.0
+            high: 10.0
       keyence_2:
         label: 'Keyence 2'
         kind: 'keyence'
@@ -316,11 +316,11 @@ pods:
         format: 'integer'
         limits:
           critical:
-            low: 0
-            high: 16
+            low: 0.0
+            high: 16.0
           warning:
-            low: 5
-            high: 10
+            low: 5.0
+            high: 10.0
       power_line_resistance:
         label: 'Power Line Resistance'
         kind: 'resistance'
@@ -328,8 +328,8 @@ pods:
         format: 'integer'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       levitation_height_1:
         label: 'Levitation Height 1'
         kind: 'levitation'
@@ -337,8 +337,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       levitation_height_2:
         label: 'Levitation Height 2'
         kind: 'levitation'
@@ -346,8 +346,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       levitation_height_3:
         label: 'Levitation Height 3'
         kind: 'levitation'
@@ -355,8 +355,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       levitation_height_4:
         label: 'Levitation Height 4'
         kind: 'levitation'
@@ -364,8 +364,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       levitation_height_lateral_1:
         label: 'Levitation Height Lateral 1'
         kind: 'levitation'
@@ -373,8 +373,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
       levitation_height_lateral_2:
         label: 'Levitation Height Lateral 2'
         kind: 'levitation'
@@ -382,8 +382,8 @@ pods:
         format: 'float'
         limits:
           critical:
-            low: 0
-            high: 100
+            low: 0.0
+            high: 100.0
     statuses:
       brake_clamp_status:
         label: 'Brake Clamp Status'

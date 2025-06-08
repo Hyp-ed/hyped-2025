@@ -1,0 +1,15 @@
+[package]
+name = "hyped_sensor_bounds"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+convert_case = "0.8.0"
+quote = "1.0.40"
+saphyr = "0.0.4"
+heapless = "0.8"
+
+hyped_core = { path = "../core" }
