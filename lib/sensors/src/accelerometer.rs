@@ -1,3 +1,4 @@
+use defmt::Format;
 use hyped_i2c::{i2c_write_or_err, HypedI2c, I2cError};
 
 use crate::SensorValueRange;
@@ -104,7 +105,7 @@ impl<'a, T: HypedI2c> Accelerometer<'a, T> {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Format)]
 pub struct AccelerationValues {
     pub x: f32,
     pub y: f32,

@@ -17,3 +17,5 @@ sensors:
     retry_duration_ms: 10
   temperature:
     update_frequency: 1 # Hz
+  accelerometer:
+    update_frequency: 200 # Hz

@@ -10,15 +10,13 @@ use embassy_sync::{
     watch::Sender,
 };
 use embassy_time::{Duration, Timer};
+use hyped_core::config::SENSORS_CONFIG;
 use hyped_sensors::{
     accelerometer::{AccelerationValues, Accelerometer, AccelerometerAddresses, Status},
     SensorValueRange,
 };
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
-
-/// Update frequency of accelerometer in Hz
-const UPDATE_FREQUENCY: u64 = 200;
 
 /// Test task that reads the acceleration from the sensor and prints it to the console.
 #[embassy_executor::task]
@@ -51,6 +49,9 @@ pub async fn read_accelerometer(
             }
         }
 
-        Timer::after(Duration::from_hz(UPDATE_FREQUENCY)).await;
+        Timer::after(Duration::from_hz(
+            SENSORS_CONFIG.sensors.accelerometer.update_frequency as u64,
+        ))
+        .await;
     }
 }
