@@ -34,9 +34,6 @@ pub struct ControlConfig;
 #[config_to_rs(yaml, "../../../config/levitation.yaml")]
 pub struct LevitationConfig;
 
-#[config_to_rs(yaml, "../../../config/accelerometer_mux.yaml")]
-pub struct AccelerometerMuxConfig;
-
 // TODOLater: this should be in a config
 pub static POD_NAME: &str = "poddington";
 
