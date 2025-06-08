@@ -188,7 +188,7 @@ mod tests {
     use core::cell::RefCell;
 
     use super::*;
-    use embassy_sync::blocking_mutex::Mutex;
+    use embassy_sync::blocking_mutex::{CriticalSectionMutex, Mutex};
     use heapless::FnvIndexMap;
     use hyped_i2c::mock_i2c::MockI2c;
 
@@ -200,21 +200,21 @@ mod tests {
         assert_eq!(
             i2c.get_writes().get(&(
                 AccelerometerAddresses::Address1d as u8,
-                LIS2DS12_CTRL1_ADDRESS
+                LIS2DS12_CTRL1_ADDRESS.into()
             )),
             Some(&Some(LIS2DS12_CTRL1_VALUE))
         );
         assert_eq!(
             i2c.get_writes().get(&(
                 AccelerometerAddresses::Address1d as u8,
-                LIS2DS12_CTRL2_ADDRESS
+                LIS2DS12_CTRL2_ADDRESS.into()
             )),
             Some(&Some(LIS2DS12_CTRL2_VALUE))
         );
         assert_eq!(
             i2c.get_writes().get(&(
                 AccelerometerAddresses::Address1d as u8,
-                LIS2DS12_FIFO_CTRL_ADDRESS
+                LIS2DS12_FIFO_CTRL_ADDRESS.into()
             )),
             Some(&Some(LIS2DS12_FIFO_CTRL_VALUE))
         );
@@ -225,31 +225,49 @@ mod tests {
         let mut i2c_values = FnvIndexMap::new();
 
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_L as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_L as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_L as u16,
+            ),
             Some(0x00),
         );
 
-        let i2c_values = Mutex::new(RefCell::new(i2c_values));
+        let i2c_values = CriticalSectionMutex::new(RefCell::new(i2c_values));
         let mut i2c = MockI2c::new(&i2c_values);
         let mut accelerometer =
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
@@ -268,27 +286,45 @@ mod tests {
         let mut i2c_values = FnvIndexMap::new();
 
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_H as u16,
+            ),
             Some(0x09),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_L as u16,
+            ),
             Some(0xc4),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_L as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_L as u16,
+            ),
             Some(0x00),
         );
 
@@ -311,27 +347,45 @@ mod tests {
         let mut i2c_values = FnvIndexMap::new();
 
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_H as u16,
+            ),
             Some(0xf6),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_L as u16,
+            ),
             Some(0x3c),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_L as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_L as u16,
+            ),
             Some(0x00),
         );
 
@@ -354,27 +408,45 @@ mod tests {
         let mut i2c_values = FnvIndexMap::new();
 
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_L as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_H as u16,
+            ),
             Some(0x09),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_L as u16,
+            ),
             Some(0xc4),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_L as u16,
+            ),
             Some(0x00),
         );
 
@@ -397,27 +469,45 @@ mod tests {
         let mut i2c_values = FnvIndexMap::new();
 
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_L as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_H as u16,
+            ),
             Some(0xf6),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_L as u16,
+            ),
             Some(0x3c),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_L as u16,
+            ),
             Some(0x00),
         );
 
@@ -440,27 +530,45 @@ mod tests {
         let mut i2c_values = FnvIndexMap::new();
 
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_L as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_L as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_H as u16,
+            ),
             Some(0x09),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_L as u16,
+            ),
             Some(0xc4),
         );
 
@@ -483,27 +591,45 @@ mod tests {
         let mut i2c_values = FnvIndexMap::new();
 
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_L as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_L as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_H as u16,
+            ),
             Some(0xf6),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_L as u16,
+            ),
             Some(0x3c),
         );
 
@@ -525,27 +651,45 @@ mod tests {
     fn test_accel_read_combined() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_H as u16,
+            ),
             Some(0x00),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_X_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_X_L as u16,
+            ),
             Some(0xfa),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_H as u16,
+            ),
             Some(0x01),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Y_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Y_L as u16,
+            ),
             Some(0xf4),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_H),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_H as u16,
+            ),
             Some(0xfc),
         );
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_OUT_Z_L),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_OUT_Z_L as u16,
+            ),
             Some(0x18),
         );
 
@@ -567,7 +711,10 @@ mod tests {
     fn test_accel_status_data_not_ready() {
         let mut i2c_values = FnvIndexMap::new();
         let _ = i2c_values.insert(
-            (AccelerometerAddresses::Address1d as u8, LIS2DS12_STATUS),
+            (
+                AccelerometerAddresses::Address1d as u8,
+                LIS2DS12_STATUS as u16,
+            ),
             Some(LIS2DS12_DATA_NOT_READY),
         );
         let i2c_values = Mutex::new(RefCell::new(i2c_values));
