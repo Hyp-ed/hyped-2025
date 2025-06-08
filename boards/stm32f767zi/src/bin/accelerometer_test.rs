@@ -13,7 +13,6 @@ use embassy_sync::{
     },
     watch::Watch,
 };
-use embassy_time::{Duration, Timer};
 use hyped_boards_stm32f767zi::tasks::sensors::read_accelerometer::read_accelerometer;
 use hyped_sensors::{
     accelerometer::AccelerationValues,
@@ -48,39 +47,37 @@ async fn main(spawner: Spawner) -> ! {
 
     // Every 100ms we read for the latest value from the accelerometer.
     loop {
-        if let Some(accelerometer_values) = accelerometer_reading_receiver.try_changed() {
-            match accelerometer_values {
-                Some(accelerometer_values) => match accelerometer_values {
-                    Safe(accelerometer_values) => {
-                        defmt::info!(
-                            "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (safe)",
-                            accelerometer_values.x,
-                            accelerometer_values.y,
-                            accelerometer_values.z
-                        );
-                    }
-                    Warning(accelerometer_values) => {
-                        defmt::info!(
-                            "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (unsafe)",
-                            accelerometer_values.x,
-                            accelerometer_values.y,
-                            accelerometer_values.z
-                        );
-                    }
-                    Critical(accelerometer_values) => {
-                        defmt::info!(
-                            "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (critical)",
-                            accelerometer_values.x,
-                            accelerometer_values.y,
-                            accelerometer_values.z
-                        );
-                    }
-                },
-                None => {
-                    defmt::info!("Failed to read acceleration values.")
+        let reading = accelerometer_reading_receiver.changed().await;
+        match reading {
+            Some(accelerometer_values) => match accelerometer_values {
+                Safe(accelerometer_values) => {
+                    defmt::info!(
+                        "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (safe)",
+                        accelerometer_values.x,
+                        accelerometer_values.y,
+                        accelerometer_values.z
+                    );
                 }
+                Warning(accelerometer_values) => {
+                    defmt::info!(
+                        "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (unsafe)",
+                        accelerometer_values.x,
+                        accelerometer_values.y,
+                        accelerometer_values.z
+                    );
+                }
+                Critical(accelerometer_values) => {
+                    defmt::info!(
+                        "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (critical)",
+                        accelerometer_values.x,
+                        accelerometer_values.y,
+                        accelerometer_values.z
+                    );
+                }
+            },
+            None => {
+                defmt::info!("Failed to read acceleration values.")
             }
         }
-        Timer::after(Duration::from_millis(100)).await;
     }
 }
