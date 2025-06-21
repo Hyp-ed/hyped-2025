@@ -13,6 +13,7 @@ sensors:
     max_pressure: 10.0
     pressure_offset: 0.0
   optical_flow:
+    update_frequency: 100 # Hz
     timeout_s: 5
     retry_duration_ms: 10
   temperature:
