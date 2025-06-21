@@ -1,4 +1,5 @@
 use hyped_adc::HypedAdc;
+use hyped_core::config::SENSORS_CONFIG;
 
 use crate::SensorValueRange;
 
@@ -12,8 +13,6 @@ pub struct LowPressure<T: HypedAdc> {
     adc: T,
     calculate_bounds: fn(f32) -> SensorValueRange<f32>,
 }
-
-const MAX_PRESSURE: f32 = 10.0;
 
 impl<T: HypedAdc> LowPressure<T> {
     /// Create new low pressure sensor instance
@@ -64,4 +63,5 @@ pub fn default_calculate_bounds(value: f32) -> SensorValueRange<f32> {
 }
 
 /// The offset for the pressure value (in bar) read from the sensor.
-const PRESSURE_OFFSET: f32 = 0.0;
+const PRESSURE_OFFSET: f32 = SENSORS_CONFIG.sensors.low_pressure.pressure_offset as f32;
+const MAX_PRESSURE: f32 = SENSORS_CONFIG.sensors.low_pressure.max_pressure as f32;

@@ -1,13 +1,18 @@
 #![cfg_attr(not(test), no_std)]
 
+use defmt::Format;
+
+pub mod accelerometer;
+pub mod high_pressure;
 pub mod keyence;
+pub mod laser_triangulation;
 pub mod low_pressure;
 pub mod optical_flow;
 pub mod temperature;
 pub mod time_of_flight;
 
 #[must_use]
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Copy, Format)]
 pub enum SensorValueRange<T: PartialEq> {
     /// This is the normal range of values for the sensor.
     Safe(T),

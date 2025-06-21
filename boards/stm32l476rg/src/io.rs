@@ -29,6 +29,7 @@ use hyped_spi_derive::HypedSpi;
 pub struct Stm32l476rgAdc<'d, T: Instance> {
     adc: Adc<'d, T>,
     channel: AnyAdcChannel<T>,
+    v_ref: f32,
 }
 
 #[derive(HypedGpioInputPin)]

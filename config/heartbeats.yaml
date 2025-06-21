@@ -1,0 +1,6 @@
+base_station:
+  frequency: 10 # Hz
+boards:
+  frequency: 10 # Hz
+  max_latency_ms: 200
+  startup_timeout_s: 30

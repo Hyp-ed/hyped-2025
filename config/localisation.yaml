@@ -1,0 +1,8 @@
+num_axis: 3
+accelerometers:
+  num_sensors: 4
+  num_allowed_outliers: 2
+keyence:
+  num_sensors: 2
+optical_flow:
+  num_sensors: 1

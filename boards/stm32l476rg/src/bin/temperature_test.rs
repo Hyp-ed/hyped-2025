@@ -3,6 +3,7 @@
 
 use core::cell::RefCell;
 
+use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_stm32::{i2c::I2c, mode::Blocking, time::Hertz};
 use embassy_sync::{
@@ -15,8 +16,8 @@ use embassy_sync::{
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32l476rg::tasks::read_temperature::read_temperature;
 use hyped_sensors::SensorValueRange::{self, *};
+use panic_probe as _;
 use static_cell::StaticCell;
-use {defmt_rtt as _, panic_probe as _};
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 

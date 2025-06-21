@@ -1,3 +1,4 @@
+use crate::config::NUM_KEYENCE_SENSORS;
 use heapless::Vec;
 
 #[derive(PartialEq, Debug)]
@@ -25,7 +26,11 @@ impl KeyenceAgrees {
         }
     }
 
-    pub fn check_keyence_agrees(&mut self, keyence_data: Vec<u32, 2>) -> SensorChecks {
+    pub fn check_keyence_agrees(
+        &mut self,
+        keyence_data: Vec<u32, NUM_KEYENCE_SENSORS>,
+    ) -> SensorChecks {
+        // TODOLater: support more than 2 sensors
         if keyence_data[0] != keyence_data[1] && !self.previous_keyence_agreement {
             return SensorChecks::Unacceptable;
         } else {

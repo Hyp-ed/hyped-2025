@@ -2,11 +2,10 @@
 #![no_main]
 
 use core::cell::RefCell;
+use defmt_rtt as _;
 use embassy_executor::Spawner;
-use embassy_stm32::mode::Blocking;
-use embassy_stm32::{i2c::I2c, time::Hertz};
-use embassy_sync::blocking_mutex::raw::NoopRawMutex;
-use embassy_sync::blocking_mutex::Mutex;
+use embassy_stm32::{i2c::I2c, mode::Blocking, time::Hertz};
+use embassy_sync::blocking_mutex::{raw::NoopRawMutex, Mutex};
 use embassy_time::{Duration, Timer};
 use hyped_boards_stm32l476rg::io::Stm32l476rgI2c;
 use hyped_i2c::i2c_mux::I2cMux;
@@ -14,8 +13,8 @@ use hyped_sensors::{
     temperature::{Temperature, TemperatureAddresses},
     SensorValueRange::*,
 };
+use panic_probe as _;
 use static_cell::StaticCell;
-use {defmt_rtt as _, panic_probe as _};
 
 const MUX_ADDRESS: u8 = 0x70;
 

@@ -10,5 +10,7 @@ libm = "0.2.11"
 defmt = "0.3"
 heapless = { version = "0.8", default-features = false, features = ["serde"]}
 
+hyped_core = { path = "../core"}
+
 [dev-dependencies]
 defmt = { version = "0.3", features = ["unstable-test"] }
