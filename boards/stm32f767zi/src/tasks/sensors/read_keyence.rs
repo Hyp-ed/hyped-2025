@@ -10,7 +10,7 @@ use hyped_core::{
 use hyped_sensors::keyence::Keyence;
 
 /// Test task that just continually updates the stripe count from the Keyence sensor (or other GPIO pin input)
-#[embassy_executor::task]
+#[embassy_executor::task(pool_size = 2)]
 pub async fn read_keyence(
     gpio_pin: Input<'static>,
     measurement_id: MeasurementId,

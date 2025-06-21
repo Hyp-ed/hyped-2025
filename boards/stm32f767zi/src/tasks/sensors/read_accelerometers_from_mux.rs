@@ -11,16 +11,15 @@ use embassy_sync::{
 };
 use embassy_time::{Duration, Timer};
 use heapless::Vec;
-use hyped_core::config::{LOCALISATION_CONFIG, SENSORS_CONFIG};
+use hyped_core::config::SENSORS_CONFIG;
 use hyped_i2c::{i2c_mux::DEFAULT_MUX_ADDRESS, HypedI2c};
-use hyped_sensors::{
-    accelerometer::{self, AccelerationValues, Accelerometer, AccelerometerAddresses},
-    SensorValueRange::{self},
+use hyped_localisation::{
+    config::{NUM_ACCELEROMETERS, NUM_AXIS},
+    types::RawAccelerometerData,
 };
-const NUM_ACCELEROMETERS: usize = LOCALISATION_CONFIG.accelerometers.num_sensors as usize;
+use hyped_sensors::accelerometer::{self, Accelerometer, AccelerometerAddresses};
 
-pub type AccelerometerMuxReadings =
-    Vec<Option<SensorValueRange<AccelerationValues>>, NUM_ACCELEROMETERS>;
+pub type AccelerometerMuxReadings = RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS>;
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
@@ -77,8 +76,6 @@ pub async fn read_accelerometers_from_mux(
     defmt::info!("Accelerometer 4 initialized.");
 
     loop {
-        let mut readings: AccelerometerMuxReadings = Vec::new();
-
         // Read from all accelerometers
         defmt::info!("Reading accelerometers from mux");
 
@@ -97,10 +94,7 @@ pub async fn read_accelerometers_from_mux(
                 panic!("Could not get status of accelerometer")
             }
         }
-
-        readings
-            .push(accelerometer_1.read())
-            .expect("Failed to add acceleration reading to vector of readings.");
+        let reading_1 = accelerometer_1.read().unwrap();
 
         // Read the second accelerometer
         match accelerometer_2.check_status() {
@@ -112,10 +106,7 @@ pub async fn read_accelerometers_from_mux(
                 panic!("Could not get status of accelerometer")
             }
         }
-
-        readings
-            .push(accelerometer_2.read())
-            .expect("Failed to add acceleration reading to vector of readings.");
+        let reading_2 = accelerometer_2.read().unwrap();
 
         // Select channel 1
         hyped_i2c
@@ -132,9 +123,7 @@ pub async fn read_accelerometers_from_mux(
                 panic!("Could not get status of accelerometer")
             }
         }
-        readings
-            .push(accelerometer_3.read())
-            .expect("Failed to add acceleration reading to vector of readings.");
+        let reading_3 = accelerometer_3.read().unwrap();
 
         // Read the second accelerometer
         match accelerometer_4.check_status() {
@@ -146,9 +135,10 @@ pub async fn read_accelerometers_from_mux(
                 panic!("Could not get status of accelerometer")
             }
         }
-        readings
-            .push(accelerometer_4.read())
-            .expect("Failed to add acceleration reading to vector of readings.");
+        let reading_4 = accelerometer_4.read().unwrap();
+
+        let readings: RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS> =
+            Vec::from_slice(&[reading_1, reading_2, reading_3, reading_4]).unwrap();
 
         sender.send(readings);
         Timer::after(Duration::from_hz(

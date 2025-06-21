@@ -80,7 +80,7 @@ name = "telemetry"
 path = "src/bin/boards/telemetry.rs"
 
 [[bin]]
-name = "localiastion"
+name = "localisation"
 path = "src/bin/boards/localisation.rs"
 
 [[bin]]

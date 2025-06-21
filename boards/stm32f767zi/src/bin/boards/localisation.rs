@@ -1,38 +1,52 @@
 #![no_std]
 #![no_main]
 
+use core::cell::RefCell;
+
 use defmt::*;
 use embassy_executor::Spawner;
 use embassy_stm32::{
     gpio::{Input, Level, Output, Pull, Speed},
+    i2c::I2c,
     init,
+    mode::Blocking,
     spi::{self, BitOrder, Spi},
-    time::khz,
+    time::{khz, Hertz},
 };
-use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
+use embassy_sync::{
+    blocking_mutex::{
+        raw::{CriticalSectionRawMutex, NoopRawMutex},
+        Mutex,
+    },
+    watch::Watch,
+};
 use embassy_time::{Duration, Timer};
 use heapless::Vec;
 use hyped_boards_stm32f767zi::{
     io::{Stm32f767ziGpioOutput, Stm32f767ziSpi},
-    tasks::sensors::{read_keyence::read_keyence, read_optical_flow::read_optical_flow},
+    tasks::sensors::{
+        read_accelerometers_from_mux::{read_accelerometers_from_mux, AccelerometerMuxReadings},
+        read_keyence::read_keyence,
+        read_optical_flow::read_optical_flow,
+    },
 };
 use hyped_core::config::{MeasurementId, LOCALISATION_CONFIG};
-use hyped_localisation::{
-    control::localizer::Localizer, preprocessing::optical, types::RawAccelerometerData,
-};
+use hyped_localisation::{control::localizer::Localizer, types::RawAccelerometerData};
 use hyped_spi::HypedSpiCsPin;
 use panic_probe as _;
+use static_cell::StaticCell;
+type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
 /// A Watch to hold the latest Keyence stripe count
 static KEYENCE_1_STRIPE_COUNT: Watch<CriticalSectionRawMutex, u32, 1> = Watch::new();
 static KEYENCE_2_STRIPE_COUNT: Watch<CriticalSectionRawMutex, u32, 1> = Watch::new();
 
 /// A Watch to hold the latest optical flow data
-static OPTICAL_FLOW_DATA: Watch<
-    CriticalSectionRawMutex,
-    Vec<f64, { LOCALISATION_CONFIG.optical_flow.num_sensors as usize }>,
-    1,
-> = Watch::new();
+static OPTICAL_FLOW_DATA: Watch<CriticalSectionRawMutex, Vec<f64, 2>, 1> = Watch::new();
+
+/// A Watch to hold the latest accelerometer data
+static ACCELEROMETERS_DATA: Watch<CriticalSectionRawMutex, AccelerometerMuxReadings, 1> =
+    Watch::new();
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -51,6 +65,13 @@ async fn main(spawner: Spawner) -> ! {
         Level::High,
         Speed::VeryHigh,
     )));
+
+    let i2c = I2c::new_blocking(p.I2C1, p.PB8, p.PB9, Hertz(200_000), Default::default());
+
+    // Initialize the I2C bus and store it in a static cell so that it can be accessed from the task.
+    static I2C_BUS: StaticCell<I2c1Bus> = StaticCell::new();
+    let i2c_bus = I2C_BUS.init(Mutex::new(RefCell::new(i2c)));
+    defmt::info!("I2C initialized.");
 
     spawner
         .spawn(read_optical_flow(hyped_spi, cs, OPTICAL_FLOW_DATA.sender()))
@@ -71,39 +92,34 @@ async fn main(spawner: Spawner) -> ! {
         ))
         .unwrap();
 
+    spawner
+        .spawn(read_accelerometers_from_mux(
+            i2c_bus,
+            ACCELEROMETERS_DATA.sender(),
+        ))
+        .unwrap();
+
     // Initialise receivers
     let mut keyence_1_receiver = KEYENCE_1_STRIPE_COUNT.receiver().unwrap();
     let mut keyence_2_receiver = KEYENCE_2_STRIPE_COUNT.receiver().unwrap();
     let mut optical_flow_receiver = OPTICAL_FLOW_DATA.receiver().unwrap();
-    let mut accelerometers_receiver = 
+    let mut accelerometers_receiver = ACCELEROMETERS_DATA.receiver().unwrap();
 
     let mut localizer = Localizer::new();
 
     info!("Starting localizer loop...");
 
     loop {
-        // Wait for new Keyence stripe count.
-        let stripe_count1 = keyence_1_receiver.get().await;
-        let stripe_count2 = keyence_2_receiver.get().await;
+        let keyence_data: Vec<u32, 2> = Vec::from_slice(&[
+            keyence_1_receiver.get().await,
+            keyence_2_receiver.get().await,
+        ])
+        .unwrap();
 
-        defmt::info!(
-            "New Keyence stripe counts: sensor1 = {}, sensor2 = {}",
-            stripe_count1,
-            stripe_count2
-        );
-
-        // Create the sensor data. (no accelerometer data)
-        let keyence_data: Vec<u32, 2> = Vec::from_slice(&[stripe_count1, stripe_count2]).unwrap();
         let accelerometer_data: RawAccelerometerData<
             { LOCALISATION_CONFIG.accelerometers.num_sensors as usize },
             { LOCALISATION_CONFIG.num_axis as usize },
-        > = RawAccelerometerData::from_slice(&[
-            Vec::from_slice(&[0.0, 0.0, 9.81]).unwrap(),
-            Vec::from_slice(&[0.0, 0.0, 9.81]).unwrap(),
-            Vec::from_slice(&[0.0, 0.0, 9.81]).unwrap(),
-            Vec::from_slice(&[0.0, 0.0, 9.81]).unwrap(),
-        ])
-        .unwrap();
+        > = accelerometers_receiver.get().await;
 
         let optical_data = optical_flow_receiver.get().await;
 

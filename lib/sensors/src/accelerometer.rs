@@ -1,7 +1,5 @@
-use defmt::Format;
+use heapless::Vec;
 use hyped_i2c::{i2c_write_or_err, HypedI2c, I2cError};
-
-use crate::SensorValueRange;
 
 /// Accelerometer implements the logic to read the temperature from the LIS2DS12 accelerometer
 /// using the peripheral provided by the HypedI2c trait.
@@ -17,7 +15,6 @@ use crate::SensorValueRange;
 pub struct Accelerometer<'a, T: HypedI2c + 'a> {
     i2c: &'a mut T,
     device_address: u8,
-    calculate_bounds: fn(AccelerationValues) -> SensorValueRange<AccelerationValues>,
 }
 
 impl<'a, T: HypedI2c> Accelerometer<'a, T> {
@@ -25,14 +22,6 @@ impl<'a, T: HypedI2c> Accelerometer<'a, T> {
     pub fn new(
         i2c: &'a mut T,
         device_address: AccelerometerAddresses,
-    ) -> Result<Self, AccelerometerError> {
-        Self::new_with_bounds(i2c, device_address, default_calculate_bounds)
-    }
-
-    pub fn new_with_bounds(
-        i2c: &'a mut T,
-        device_address: AccelerometerAddresses,
-        calculate_bounds: fn(AccelerationValues) -> SensorValueRange<AccelerationValues>,
     ) -> Result<Self, AccelerometerError> {
         let device_address = device_address as u8;
 
@@ -62,12 +51,11 @@ impl<'a, T: HypedI2c> Accelerometer<'a, T> {
         Ok(Self {
             i2c,
             device_address,
-            calculate_bounds,
         })
     }
 
     /// Read the acceleration for each axis and return them as floating point values in gs.
-    pub fn read(&mut self) -> Option<SensorValueRange<AccelerationValues>> {
+    pub fn read(&mut self) -> Option<Vec<f32, 3>> {
         // Read the low and high bytes of the acceleration and combine them to get the acceleration for each axis
         let x_low_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_X_L)?;
         let x_high_byte = self.i2c.read_byte(self.device_address, LIS2DS12_OUT_X_H)?;
@@ -90,11 +78,11 @@ impl<'a, T: HypedI2c> Accelerometer<'a, T> {
         if z_combined >= TWO_POWER_15 {
             z_combined -= TWO_POWER_16;
         }
-        let x = x_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
-        let y = y_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
-        let z = z_combined * LIS2DS12_ACCEL_SCALING_FACTOR;
+        let x = (x_combined * LIS2DS12_ACCEL_SCALING_FACTOR) / 1000.0;
+        let y = (y_combined * LIS2DS12_ACCEL_SCALING_FACTOR) / 1000.0;
+        let z = (z_combined * LIS2DS12_ACCEL_SCALING_FACTOR) / 1000.0;
 
-        Some((self.calculate_bounds)(AccelerationValues { x, y, z }))
+        Some(Vec::from_slice(&[x, y, z]).unwrap())
     }
 
     pub fn check_status(&mut self) -> Status {
@@ -103,13 +91,6 @@ impl<'a, T: HypedI2c> Accelerometer<'a, T> {
             None => Status::Unknown,
         }
     }
-}
-
-#[derive(Debug, PartialEq, Clone, Format)]
-pub struct AccelerationValues {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
 }
 
 pub enum AccelerometerAddresses {
@@ -135,24 +116,6 @@ impl Status {
             LIS2DS12_DATA_NOT_READY => Self::DataNotReady,
             _ => Self::Ok,
         }
-    }
-}
-
-/// Default calculation of bounds for the accelerometer, if no bounds function is provided.
-/// The bounds are set to:
-/// Safe: Between -6g and +6g
-/// Warning: -8g to -6g and +6g to +8g
-/// Critical: Below -8g and above +8g
-pub fn default_calculate_bounds(
-    values: AccelerationValues,
-) -> SensorValueRange<AccelerationValues> {
-    let mut values_iter = [values.x, values.y, values.z].into_iter(); // there's probably a better way of doing this
-    if values_iter.any(|i| i >= 8000.0 || i <= -8000.0) {
-        SensorValueRange::Critical(values)
-    } else if values_iter.any(|i| i >= 6000.0 || i <= -6000.0) {
-        SensorValueRange::Warning(values)
-    } else {
-        SensorValueRange::Safe(values)
     }
 }
 
@@ -274,11 +237,7 @@ mod tests {
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(SensorValueRange::Safe(AccelerationValues {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0
-            }))
+            Some(Vec::from_slice(&[0.0, 0.0, 0.0]).unwrap())
         );
     }
 
@@ -335,11 +294,7 @@ mod tests {
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(SensorValueRange::Safe(AccelerationValues {
-                x: 1220.0,
-                y: 0.0,
-                z: 0.0
-            }))
+            Some(Vec::from_slice(&[1220.0, 0.0, 0.0]).unwrap())
         );
     }
 
@@ -396,11 +351,7 @@ mod tests {
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(SensorValueRange::Safe(AccelerationValues {
-                x: -1220.0,
-                y: 0.0,
-                z: 0.0
-            }))
+            Some(Vec::from_slice(&[-1220.0, 0.0, 0.0]).unwrap())
         );
     }
 
@@ -457,11 +408,7 @@ mod tests {
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(SensorValueRange::Safe(AccelerationValues {
-                x: 0.0,
-                y: 1220.0,
-                z: 0.0
-            }))
+            Some(Vec::from_slice(&[0.0, 1220.0, 0.0]).unwrap())
         );
     }
 
@@ -518,11 +465,7 @@ mod tests {
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(SensorValueRange::Safe(AccelerationValues {
-                x: 0.0,
-                y: -1220.0,
-                z: 0.0
-            }))
+            Some(Vec::from_slice(&[0.0, -1220.0, 0.0]).unwrap())
         );
     }
 
@@ -579,11 +522,7 @@ mod tests {
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(SensorValueRange::Safe(AccelerationValues {
-                x: 0.0,
-                y: 0.0,
-                z: 1220.0
-            }))
+            Some(Vec::from_slice(&[0.0, 0.0, 1220.0]).unwrap())
         );
     }
 
@@ -640,11 +579,7 @@ mod tests {
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(SensorValueRange::Safe(AccelerationValues {
-                x: 0.0,
-                y: 0.0,
-                z: -1220.0
-            }))
+            Some(Vec::from_slice(&[0.0, 0.0, -1220.0]).unwrap())
         );
     }
 
@@ -700,11 +635,7 @@ mod tests {
             Accelerometer::new(&mut i2c, AccelerometerAddresses::Address1d).unwrap();
         assert_eq!(
             accelerometer.read(),
-            Some(SensorValueRange::Safe(AccelerationValues {
-                x: 122.0,
-                y: 244.0,
-                z: -488.0
-            }))
+            Some(Vec::from_slice(&[122.0, 244.0, -488.0]).unwrap())
         );
     }
 
