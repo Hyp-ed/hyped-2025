@@ -67,7 +67,7 @@ mod tests {
         );
         assert_eq!(
             Err("Invalid reason for emergency stop"),
-            Reason::try_from(8)
+            Reason::try_from(9)
         );
     }
 }
