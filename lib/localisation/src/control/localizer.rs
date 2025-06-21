@@ -24,10 +24,10 @@ const DELTA_T: f64 = 0.01;
 const STRIPE_WIDTH: f64 = 1.0;
 
 pub struct Localizer {
-    displacement: f64,
-    velocity: f64,
-    previous_velocity: f64,
-    acceleration: f64,
+    pub displacement: f64,
+    pub velocity: f64,
+    pub previous_velocity: f64,
+    pub acceleration: f64,
     kalman_filter: KalmanFilter,
     keyence_checker: KeyenceAgrees,
     keyence_val: f64,
@@ -95,7 +95,7 @@ impl Default for Localizer {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, defmt::Format)]
 pub enum PreprocessorError {
     KeyenceUnacceptable,
     AccelerometerUnnaceptable,

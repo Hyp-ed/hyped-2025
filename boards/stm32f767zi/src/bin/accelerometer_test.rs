@@ -13,22 +13,15 @@ use embassy_sync::{
     },
     watch::Watch,
 };
+use heapless::Vec;
 use hyped_boards_stm32f767zi::tasks::sensors::read_accelerometer::read_accelerometer;
-use hyped_sensors::{
-    accelerometer::AccelerationValues,
-    SensorValueRange::{self, *},
-};
 use panic_probe as _;
 use static_cell::StaticCell;
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
 /// Used to keep the latest acceleration values.
-static ACCELEROMETER_READING: Watch<
-    CriticalSectionRawMutex,
-    Option<SensorValueRange<AccelerationValues>>,
-    1,
-> = Watch::new();
+static ACCELEROMETER_READING: Watch<CriticalSectionRawMutex, Option<Vec<f32, 3>>, 1> = Watch::new();
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -49,32 +42,14 @@ async fn main(spawner: Spawner) -> ! {
     loop {
         let reading = accelerometer_reading_receiver.changed().await;
         match reading {
-            Some(accelerometer_values) => match accelerometer_values {
-                Safe(accelerometer_values) => {
-                    defmt::info!(
-                        "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (safe)",
-                        accelerometer_values.x,
-                        accelerometer_values.y,
-                        accelerometer_values.z
-                    );
-                }
-                Warning(accelerometer_values) => {
-                    defmt::info!(
-                        "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (unsafe)",
-                        accelerometer_values.x,
-                        accelerometer_values.y,
-                        accelerometer_values.z
-                    );
-                }
-                Critical(accelerometer_values) => {
-                    defmt::info!(
-                        "Acceleration: x={:?}mg, y={:?}mg, z={:?}mg (critical)",
-                        accelerometer_values.x,
-                        accelerometer_values.y,
-                        accelerometer_values.z
-                    );
-                }
-            },
+            Some(accelerometer_values) => {
+                defmt::info!(
+                    "Accelerometer reading: x: {}, y: {}, z: {}",
+                    accelerometer_values[0],
+                    accelerometer_values[1],
+                    accelerometer_values[2]
+                )
+            }
             None => {
                 defmt::info!("Failed to read acceleration values.")
             }

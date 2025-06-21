@@ -13,17 +13,21 @@ use embassy_sync::{
     },
     watch::Watch,
 };
-use hyped_boards_stm32f767zi::tasks::sensors::read_accelerometers_from_mux::{
-    read_accelerometers_from_mux, AccelerometerMuxReadings,
+use hyped_boards_stm32f767zi::tasks::sensors::read_accelerometers_from_mux::read_accelerometers_from_mux;
+use hyped_localisation::{
+    config::{NUM_ACCELEROMETERS, NUM_AXIS},
+    types::RawAccelerometerData,
 };
-use hyped_sensors::SensorValueRange::*;
 use panic_probe as _;
 use static_cell::StaticCell;
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
-static ACCELERATION_MUX_READINGS: Watch<CriticalSectionRawMutex, AccelerometerMuxReadings, 1> =
-    Watch::new();
+static ACCELERATION_MUX_READINGS: Watch<
+    CriticalSectionRawMutex,
+    RawAccelerometerData<NUM_ACCELEROMETERS, NUM_AXIS>,
+    1,
+> = Watch::new();
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -49,40 +53,13 @@ async fn main(spawner: Spawner) -> ! {
     loop {
         let readings = accelerometer_mux_reading_receiver.changed().await;
         for (i, reading) in readings.iter().enumerate() {
-            match reading {
-                Some(reading) => match reading {
-                    Safe(accelerometer_values) => {
-                        defmt::info!(
-                            "Accelerometer {} reading: x={:?}mg, y={:?}mg, z={:?}mg (safe)",
-                            i,
-                            accelerometer_values.x,
-                            accelerometer_values.y,
-                            accelerometer_values.z
-                        );
-                    }
-                    Warning(accelerometer_values) => {
-                        defmt::info!(
-                            "Accelerometer {} reading: x={:?}mg, y={:?}mg, z={:?}mg (unsafe)",
-                            i,
-                            accelerometer_values.x,
-                            accelerometer_values.y,
-                            accelerometer_values.z
-                        );
-                    }
-                    Critical(accelerometer_values) => {
-                        defmt::info!(
-                            "Accelerometer {} reading: x={:?}mg, y={:?}mg, z={:?}mg (critical)",
-                            i,
-                            accelerometer_values.x,
-                            accelerometer_values.y,
-                            accelerometer_values.z
-                        );
-                    }
-                },
-                None => {
-                    defmt::info!("Accelerometer {} reading: None", i);
-                }
-            }
+            defmt::info!(
+                "Accelerometer {} reading: x: {}, y: {}, z: {}",
+                i + 1,
+                reading[0],
+                reading[1],
+                reading[2]
+            );
         }
     }
 }

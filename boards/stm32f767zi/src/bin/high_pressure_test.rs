@@ -5,7 +5,7 @@ use defmt_rtt as _;
 use embassy_executor::Spawner;
 use embassy_stm32::gpio::{Input, Pull};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, watch::Watch};
-use hyped_boards_stm32f767zi::tasks::read_high_pressure::read_high_pressure;
+use hyped_boards_stm32f767zi::tasks::sensors::read_high_pressure::read_high_pressure;
 use hyped_sensors::high_pressure::{HighPressureError, State};
 use panic_probe as _;
 

@@ -10,11 +10,9 @@ use embassy_sync::{
     watch::Sender,
 };
 use embassy_time::{Duration, Timer};
+use heapless::Vec;
 use hyped_core::config::SENSORS_CONFIG;
-use hyped_sensors::{
-    accelerometer::{AccelerationValues, Accelerometer, AccelerometerAddresses, Status},
-    SensorValueRange,
-};
+use hyped_sensors::accelerometer::{Accelerometer, AccelerometerAddresses, Status};
 
 type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 
@@ -22,12 +20,7 @@ type I2c1Bus = Mutex<NoopRawMutex, RefCell<I2c<'static, Blocking>>>;
 #[embassy_executor::task]
 pub async fn read_accelerometer(
     i2c_bus: &'static I2c1Bus,
-    sender: Sender<
-        'static,
-        CriticalSectionRawMutex,
-        Option<SensorValueRange<AccelerationValues>>,
-        1,
-    >,
+    sender: Sender<'static, CriticalSectionRawMutex, Option<Vec<f32, 3>>, 1>,
 ) -> ! {
     let mut hyped_i2c = Stm32f767ziI2c::new(i2c_bus);
 
